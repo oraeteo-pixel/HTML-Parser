@@ -579,20 +579,45 @@ export function getHwanggeukPosition(hwYear: number, hwMonth: number, hwDay: num
 
 export function getJeolguk(hwYear: number, hwMonth: number, hwDay: number): {
   name: string;
+  periodType: string;
   sogung: number;
   daegung: number;
 } {
+  const JEOLGUK_START_YEAR = 2025;
+  
   const daysFromHwEpoch = (hwYear - HW_EPOCH_YEAR) * HW_DAYS_PER_YEAR + 
     HW_MONTH_DAYS.slice(0, hwMonth - 1).reduce((a, b) => a + b, 0) + hwDay - 1;
-  
-  const normalizedDays = ((daysFromHwEpoch % 36) + 36) % 36;
-  const jeolgukIndex = normalizedDays;
-  const name = JEOLGUK_NAMES[jeolgukIndex];
-  
   const sogung = (((daysFromHwEpoch % 9) + 9) % 9) + 1;
   const daegung = ((Math.floor(Math.abs(daysFromHwEpoch) / 9) % 9)) + 1;
   
-  return { name, sogung, daegung };
+  if (hwYear < JEOLGUK_START_YEAR) {
+    const normalizedDays = ((daysFromHwEpoch % 36) + 36) % 36;
+    const name = JEOLGUK_NAMES[normalizedDays];
+    return { name, periodType: "", sogung, daegung };
+  }
+  
+  const periodInMonth = hwDay >= 18 ? 1 : (hwDay >= 3 ? 0 : -1);
+  
+  let periodIndex: number;
+  if (periodInMonth === -1) {
+    if (hwMonth === 1) {
+      periodIndex = -1;
+    } else {
+      periodIndex = (hwMonth - 2) * 2 + 1;
+    }
+  } else {
+    periodIndex = (hwMonth - 1) * 2 + periodInMonth;
+  }
+  
+  const yearOffset = hwYear - JEOLGUK_START_YEAR;
+  const totalPeriods = yearOffset * 24 + periodIndex;
+  
+  const jeolgukIndex = ((totalPeriods % 36) + 36) % 36;
+  const name = JEOLGUK_NAMES[jeolgukIndex];
+  
+  const periodType = (periodInMonth === -1 || periodInMonth === 1) ? "중화절국" : "원화절국";
+  
+  return { name, periodType, sogung, daegung };
 }
 
 const TIME_DIV_HHMM: [number, number][] = [

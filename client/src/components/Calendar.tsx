@@ -302,7 +302,7 @@ export function Calendar() {
                   ({displayData.hwanggeuk.yearGanZhi}年 {displayData.hwanggeuk.monthGanZhi}月 {displayData.dayGanZhi}日)
                 </span>
                 <span className="ml-2 text-xs font-normal">
-                  {liveJeolguk.name} &lt;소궁,대궁&gt;{liveSogungDaegung.sogung},{liveSogungDaegung.daegung}
+                  {liveJeolguk.periodType ? `${liveJeolguk.periodType} ` : ""}{liveJeolguk.name} &lt;소궁,대궁&gt;{liveSogungDaegung.sogung},{liveSogungDaegung.daegung}
                 </span>
                 <span className="ml-2 text-xs font-normal">
                   현재시각 ({liveHwanggeuk.yearGanZhi}년 {liveHwanggeuk.monthGanZhi}월 {liveDayGanZhi}일 {liveHourGanZhi}시)

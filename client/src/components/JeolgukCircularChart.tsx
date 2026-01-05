@@ -111,7 +111,8 @@ export function JeolgukCircularChart({ date }: JeolgukCircularChartProps) {
           
           {/* Radial dividers for 24 sectors */}
           {Array.from({ length: 24 }).map((_, i) => {
-            const angle = i * sectorAngle;
+            const startOffset = -sectorAngle / 2;
+            const angle = startOffset + i * sectorAngle;
             const rad = (angle - 90) * Math.PI / 180;
             const x1 = center + innerRing * Math.cos(rad);
             const y1 = center + innerRing * Math.sin(rad);
@@ -122,7 +123,9 @@ export function JeolgukCircularChart({ date }: JeolgukCircularChartProps) {
           
           {/* 24 Sector content */}
           {SECTORS_DATA.map((sector, index) => {
-            const midAngle = index * sectorAngle + sectorAngle / 2;
+            // Offset by half a sector so 亥 is centered at 12 o'clock
+            const startOffset = -sectorAngle / 2;
+            const midAngle = startOffset + index * sectorAngle + sectorAngle / 2;
             const isToday = todayJeolguk.name.includes(sector.jeolguk);
             
             // Text rotation - flip text on bottom half so it's readable
@@ -136,7 +139,7 @@ export function JeolgukCircularChart({ date }: JeolgukCircularChartProps) {
                 {/* Highlight today's sector */}
                 {isToday && (
                   <path 
-                    d={`M ${center} ${center} L ${getTextPosition(index * sectorAngle, outerRing).x} ${getTextPosition(index * sectorAngle, outerRing).y} A ${outerRing} ${outerRing} 0 0 1 ${getTextPosition((index + 1) * sectorAngle, outerRing).x} ${getTextPosition((index + 1) * sectorAngle, outerRing).y} Z`}
+                    d={`M ${center} ${center} L ${getTextPosition(startOffset + index * sectorAngle, outerRing).x} ${getTextPosition(startOffset + index * sectorAngle, outerRing).y} A ${outerRing} ${outerRing} 0 0 1 ${getTextPosition(startOffset + (index + 1) * sectorAngle, outerRing).x} ${getTextPosition(startOffset + (index + 1) * sectorAngle, outerRing).y} Z`}
                     fill="hsl(215 50% 35% / 0.12)"
                     className="dark:fill-blue-500/15"
                   />

@@ -551,11 +551,21 @@ export function getHwanggeukPosition(hwYear: number, hwMonth: number, hwDay: num
   const daysFromHwEpoch = (hwYear - HW_EPOCH_YEAR) * HW_DAYS_PER_YEAR + 
     HW_MONTH_DAYS.slice(0, hwMonth - 1).reduce((a, b) => a + b, 0) + hwDay - 1;
   
-  const stepIndex = Math.floor((daysFromHwEpoch + 0.5) / 4.5);
+  const exactPosition = daysFromHwEpoch / 4.5;
+  const isTransitionDay = Math.abs(exactPosition - Math.round(exactPosition)) < 0.12;
+  
+  const stepIndex = Math.floor(exactPosition);
   const cycleIndex = ((stepIndex % 81) + 81) % 81;
   
   const first = 2 + Math.floor(cycleIndex / 9);
   const second = 2 + (cycleIndex % 9);
+  
+  if (isTransitionDay && daysFromHwEpoch > 0) {
+    const nextCycleIndex = ((cycleIndex + 1) % 81);
+    const nextFirst = 2 + Math.floor(nextCycleIndex / 9);
+    const nextSecond = 2 + (nextCycleIndex % 9);
+    return `${first}지${second}/${nextFirst}지${nextSecond}`;
+  }
   
   return `${first}지${second}`;
 }

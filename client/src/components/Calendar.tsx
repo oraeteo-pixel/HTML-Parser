@@ -133,30 +133,21 @@ export function Calendar() {
     displayDay
   );
   
-  const liveDate = useMemo(() => {
-    const now = currentTime;
-    const adjustedDate = new Date(now);
-    if (now.getHours() >= 23) {
-      adjustedDate.setDate(adjustedDate.getDate() + 1);
-    }
-    return adjustedDate;
-  }, [currentTime]);
-  
   const liveHwanggeuk = useMemo(() => {
     return getHwanggeukDate(
-      liveDate.getFullYear(),
-      liveDate.getMonth() + 1,
-      liveDate.getDate()
+      currentTime.getFullYear(),
+      currentTime.getMonth() + 1,
+      currentTime.getDate()
     );
-  }, [liveDate]);
+  }, [currentTime]);
   
   const liveDayGanZhi = useMemo(() => {
     return getDayGanZhi(
-      liveDate.getFullYear(),
-      liveDate.getMonth() + 1,
-      liveDate.getDate()
+      currentTime.getFullYear(),
+      currentTime.getMonth() + 1,
+      currentTime.getDate()
     );
-  }, [liveDate]);
+  }, [currentTime]);
   
   const liveHourGanZhi = useMemo(() => {
     return getHwanggeukHourGanZhi(

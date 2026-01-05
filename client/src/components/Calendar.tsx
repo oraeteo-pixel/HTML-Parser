@@ -262,7 +262,7 @@ export function Calendar() {
     if (calType === "hw") {
       return Array.from({ length: 112 }, (_, i) => 1989 + i);
     }
-    return Array.from({ length: 200 }, (_, i) => 1900 + i);
+    return Array.from({ length: 221 }, (_, i) => 1830 + i);
   }, [calType]);
   const months = Array.from({ length: 12 }, (_, i) => i + 1);
 

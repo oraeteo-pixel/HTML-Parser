@@ -321,7 +321,7 @@ export function Calendar() {
                 <span className="badge-navy">
                   {hwMansion.mansion}{hwMansion.isZunkong ? "" : "수"}
                 </span>
-                <span className="badge-jade">
+                <span className="badge-slate">
                   {trigram.trigram}
                 </span>
               </div>
@@ -489,7 +489,7 @@ export function Calendar() {
                 
                 {dayData.solarTerm && (
                   <div className="flex-1 flex items-end">
-                    <span className="text-xs px-1 py-0.5 rounded bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-200">
+                    <span className="text-xs px-1 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200">
                       {dayData.solarTerm.korean}
                     </span>
                   </div>

@@ -66,7 +66,7 @@ export default function MansionChart() {
       >
         <div className="font-bold text-base orae-navy">{mansion}</div>
         <div className="text-[9px] text-muted-foreground">{MANSION_GENERALS[mansion]}</div>
-        {isZunkong && <Badge variant="outline" className="text-[7px] px-1 py-0 mx-auto mt-0.5 border-green-500 text-green-600">尊空</Badge>}
+        {isZunkong && <Badge variant="outline" className="text-[7px] px-1 py-0 mx-auto mt-0.5 border-slate-500 text-slate-600 dark:text-slate-400">尊空</Badge>}
         <div className="text-[7px] text-muted-foreground mt-auto flex flex-wrap justify-center gap-[1px] leading-tight">
           {ganjiList.map((g, i) => {
             const dayOffset = getGanjiDayOffset(g);
@@ -102,11 +102,11 @@ export default function MansionChart() {
             </div>
             <div className="flex items-center justify-center gap-2 mt-3 flex-wrap">
               <Badge 
-                className={`${todayMansion.isZunkong ? 'badge-jade' : 'badge-navy'}`}
+                className={`${todayMansion.isZunkong ? 'badge-slate' : 'badge-navy'}`}
               >
                 {todayMansion.mansion}{todayMansion.isZunkong ? "" : "宿"}
               </Badge>
-              <Badge className="badge-jade">
+              <Badge className="badge-slate">
                 {todayJeolguk.name}절국
               </Badge>
               <Badge className="badge-navy">
@@ -135,7 +135,7 @@ export default function MansionChart() {
                 <div className="col-span-7 row-span-1 flex items-center justify-center">
                   <Card className="p-4 text-center w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900/30 dark:to-slate-800/30 border-[hsl(var(--orae-navy))]/20">
                     <div className="font-bold text-xl orae-navy">曜雲殿</div>
-                    <Badge variant="outline" className="text-xs border-green-500 text-green-600 mt-1">星宿 尊空</Badge>
+                    <Badge variant="outline" className="text-xs border-slate-500 text-slate-600 dark:text-slate-400 mt-1">星宿 尊空</Badge>
                     <div className="text-xs text-muted-foreground mt-2">
                       闘以內脈制之 / 闘以外將軍制之
                     </div>
@@ -183,7 +183,7 @@ export default function MansionChart() {
             <p><span className="font-medium">남방(南方) 7수:</span> 軫翼張星柳鬼井</p>
             <p><span className="font-medium">서방(西方) 7수:</span> 參觜畢昴胃婁奎</p>
             <p><span className="font-medium">북방(北方) 7수:</span> 斗牛女虛危室壁</p>
-            <p><span className="font-medium text-green-600">尊空 (존공):</span> 星, 尾, 昴, 女</p>
+            <p><span className="font-medium text-slate-600 dark:text-slate-400">尊空 (존공):</span> 星, 尾, 昴, 女</p>
             <p><span className="font-medium orae-navy">中央 曜雲殿:</span> 己酉, 庚戌, 己卯, 庚辰</p>
           </div>
         </Card>

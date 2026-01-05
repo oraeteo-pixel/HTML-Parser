@@ -17,8 +17,8 @@
 
   --orae-navy: 215 50% 35%;
   --orae-navy-dark: 215 55% 25%;
-  --orae-jade: 145 40% 42%;
-  --orae-jade-light: 145 30% 50%;
+  --orae-slate: 210 20% 40%;
+  --orae-slate-light: 210 15% 55%;
   --ganji-surface: 45 30% 96%;
   --ganji-border: 45 20% 85%;
 
@@ -96,8 +96,8 @@
 
   --orae-navy: 215 50% 50%;
   --orae-navy-dark: 215 55% 40%;
-  --orae-jade: 145 35% 50%;
-  --orae-jade-light: 145 30% 60%;
+  --orae-slate: 210 20% 50%;
+  --orae-slate-light: 210 15% 65%;
   --ganji-surface: 0 0% 20%;
   --ganji-border: 0 0% 30%;
 
@@ -248,11 +248,11 @@
 }
 
 .calendar-cell.today {
-  @apply bg-green-50 dark:bg-green-900/20;
+  @apply bg-slate-100 dark:bg-slate-800/30;
 }
 
 .calendar-cell.today .ganji-box {
-  @apply bg-green-200 dark:bg-green-700;
+  @apply bg-slate-300 dark:bg-slate-600;
 }
 
 .calendar-cell.inactive {
@@ -263,8 +263,8 @@
   color: hsl(var(--orae-navy));
 }
 
-.orae-gold {
-  color: #f4d07a;
+.orae-gray {
+  color: hsl(210 15% 50%);
 }
 
 .day-number {
@@ -288,13 +288,13 @@
 .ganji-box {
   @apply px-1 py-0.5 rounded text-center mx-auto font-bold;
   font-size: clamp(0.625rem, 2.5vw, 0.875rem);
-  background: linear-gradient(135deg, hsl(var(--orae-jade)) 0%, hsl(var(--orae-jade-light)) 100%);
+  background: linear-gradient(135deg, hsl(var(--orae-slate)) 0%, hsl(var(--orae-slate-light)) 100%);
   color: white;
   box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
 .dark .ganji-box {
-  background: linear-gradient(135deg, hsl(var(--orae-jade)) 0%, hsl(var(--orae-jade-light)) 100%);
+  background: linear-gradient(135deg, hsl(var(--orae-slate)) 0%, hsl(var(--orae-slate-light)) 100%);
   color: white;
 }
 
@@ -353,8 +353,8 @@
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.badge-jade {
-  background: linear-gradient(135deg, hsl(var(--orae-jade)) 0%, hsl(var(--orae-jade-light)) 100%);
+.badge-slate {
+  background: linear-gradient(135deg, hsl(var(--orae-slate)) 0%, hsl(var(--orae-slate-light)) 100%);
   color: white;
   font-weight: 600;
   padding: 0.25rem 0.75rem;

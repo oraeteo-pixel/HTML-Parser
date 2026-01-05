@@ -1,3 +1,20 @@
+export function getKoreanTime(date: Date = new Date()): Date {
+  const utc = date.getTime() + (date.getTimezoneOffset() * 60000);
+  return new Date(utc + (9 * 60 * 60 * 1000));
+}
+
+export function getKoreanDate(): { year: number; month: number; day: number; hours: number; minutes: number; dayOfWeek: number } {
+  const kt = getKoreanTime();
+  return {
+    year: kt.getFullYear(),
+    month: kt.getMonth() + 1,
+    day: kt.getDate(),
+    hours: kt.getHours(),
+    minutes: kt.getMinutes(),
+    dayOfWeek: kt.getDay()
+  };
+}
+
 const HEAVENLY_STEMS = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"];
 const EARTHLY_BRANCHES = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
 

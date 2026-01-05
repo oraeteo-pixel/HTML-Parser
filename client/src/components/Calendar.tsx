@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { format, getDay, isToday, isSameDay } from "date-fns";
+import { format, getDay, isSameDay } from "date-fns";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
@@ -21,6 +21,7 @@ import {
   getSogungDaegung,
   getWeekdayHanja,
   hwanggeukToSolar,
+  getKoreanTime,
   CalendarDayData,
   WEEKDAYS_HANJA as WEEKDAYS_HANJA_DATA,
   MANSION_GENERAL_IMAGES
@@ -34,8 +35,15 @@ const CAL_DESCRIPTIONS = {
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 const WEEKDAYS_HANJA = ["日", "月", "火", "水", "木", "金", "土"];
 
+function isTodayKorean(date: Date): boolean {
+  const koreanNow = getKoreanTime();
+  return date.getFullYear() === koreanNow.getFullYear() &&
+         date.getMonth() === koreanNow.getMonth() &&
+         date.getDate() === koreanNow.getDate();
+}
+
 export function Calendar() {
-  const today = new Date();
+  const today = getKoreanTime();
   const todayHw = getHwanggeukDate(today.getFullYear(), today.getMonth() + 1, today.getDate());
   
   const [calType, setCalType] = useState<"hw" | "df">("hw");
@@ -100,11 +108,11 @@ export function Calendar() {
   const hwYearGanZhi = getHwanggeukYearGanZhi(hwYear);
   const hwMonthGanZhi = getHwanggeukMonthGanZhi(hwYear, hwMonth);
   
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [currentTime, setCurrentTime] = useState(getKoreanTime());
   
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentTime(new Date());
+      setCurrentTime(getKoreanTime());
     }, 60000);
     return () => clearInterval(timer);
   }, []);
@@ -414,7 +422,7 @@ export function Calendar() {
             const { hwDay, solarDate, dayData } = dayInfo;
             const isSun = solarDate.getDay() === 0;
             const isSat = solarDate.getDay() === 6;
-            const isCurrentDay = isToday(solarDate);
+            const isCurrentDay = isTodayKorean(solarDate);
             const isSelected = selectedDay && isSameDay(solarDate, selectedDay);
             const hwDate = getHwanggeukDate(solarDate.getFullYear(), solarDate.getMonth() + 1, solarDate.getDate());
             const cellMansion = getHwanggeuk28Mansion(hwDate.year, hwDate.month, hwDate.day);
@@ -454,7 +462,7 @@ export function Calendar() {
             const { solarDate, dayData, solarDay } = dayInfo;
             const isSun = solarDate.getDay() === 0;
             const isSat = solarDate.getDay() === 6;
-            const isCurrentDay = isToday(solarDate);
+            const isCurrentDay = isTodayKorean(solarDate);
             const isSelected = selectedDay && isSameDay(solarDate, selectedDay);
             
             return (

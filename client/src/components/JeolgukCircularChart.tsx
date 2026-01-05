@@ -41,15 +41,33 @@ const OUTER_RING_24 = [
 
 // 28수 시계방향 순서: 기미심방 저항각 진익장성 유귀정 삼자필묘위루규벽실위허여우두
 // 箕尾心房 氐亢角 軫翼張星 柳鬼井 參觜畢昴胃婁奎壁室危虛女牛斗
-// 28개를 24칸에 배치 - 4곳에 2개씩 (井參, 奎壁, 斗箕, 角軫)
-const MANSIONS_28 = [
-  "箕", "尾", "心", "房",           // 기미심방
-  "氐", "亢", "角軫",               // 저항각 (角軫 double)
-  "翼", "張", "星",                 // 진익장성 (軫 already in double)
-  "柳", "鬼", "井參",               // 유귀정 (井參 double)
-  "觜", "畢", "昴", "胃", "婁",     // 삼자필묘위루
-  "奎壁", "室", "危",               // 규벽실위 (奎壁 double)
-  "虛", "女", "牛", "斗箕"          // 허여우두 (斗箕 double) - wraps to 箕
+// 28개를 24칸에 배치 - 손방(巽), 리방(離), 진방(震), 감방(坎) 4곳에 2개씩
+// 離(index 4), 震(index 11), 坎(index 16), 巽(index 22)
+const MANSIONS_24 = [
+  "箕",     // 0: 丁
+  "尾",     // 1: 亥
+  "心",     // 2: 戊
+  "房",     // 3: 子
+  "氐亢",   // 4: 離 (double) - 리방
+  "角",     // 5: 丑
+  "軫",     // 6: 辛
+  "翼",     // 7: 寅
+  "張",     // 8: 壬
+  "星",     // 9: 卯
+  "柳",     // 10: 辰
+  "鬼井",   // 11: 震 (double) - 진방
+  "參",     // 12: 癸
+  "觜",     // 13: 巳
+  "畢",     // 14: 甲
+  "昴",     // 15: 午
+  "胃婁",   // 16: 坎 (double) - 감방
+  "奎",     // 17: 未
+  "壁",     // 18: 乙
+  "室",     // 19: 申
+  "危",     // 20: 丙
+  "虛",     // 21: 酉
+  "女牛",   // 22: 巽 (double) - 손방
+  "斗",     // 23: 戌
 ];
 
 // 24절국명 - 酉(元和)에서 시작, 12개 地支 각 2개씩
@@ -149,7 +167,7 @@ export function JeolgukCircularChart({ date }: JeolgukCircularChartProps) {
             const startOffset = -sectorAngle * 1.5;  // -22.5 degrees for proper alignment
             const midAngle = startOffset + index * sectorAngle + sectorAngle / 2;
             const jeolgukName = JEOLGUK_NAMES[index] || "";
-            const mansion = MANSIONS_28[index] || "";
+            const mansion = MANSIONS_24[index] || "";
             const isToday = jeolgukName && todayJeolguk.name.includes(jeolgukName);
             
             // Text rotation

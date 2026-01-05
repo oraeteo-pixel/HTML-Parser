@@ -10,6 +10,8 @@ import MapPage from "@/pages/MapPage";
 import Madang from "@/pages/Madang";
 import UserPage from "@/pages/UserPage";
 import MansionChart from "@/pages/MansionChart";
+import EbookPage from "@/pages/EbookPage";
+import StorePage from "@/pages/StorePage";
 
 function Router() {
   return (
@@ -20,6 +22,8 @@ function Router() {
       <Route path="/madang" component={Madang} />
       <Route path="/user" component={UserPage} />
       <Route path="/28su" component={MansionChart} />
+      <Route path="/ebook" component={EbookPage} />
+      <Route path="/store" component={StorePage} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -1,9 +1,9 @@
 import { useMemo, useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
-import { getHwanggeuk28Mansion, getHwanggeukDate, getDayGanZhi, getKoreanTime, getJeolguk, getSogungDaegung, getMansionGanjiMap } from "@/lib/calendarData";
-import { ArrowLeft } from "lucide-react";
-import { Link } from "wouter";
-import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { getHwanggeuk28Mansion, getHwanggeukDate, getDayGanZhi, getKoreanTime, getJeolguk, getSogungDaegung, getMansionGanjiMap, SIXTY_GANJI } from "@/lib/calendarData";
+import { Navigation } from "@/components/Navigation";
+import { TopBar } from "@/components/TopBar";
 
 const MANSION_GENERALS: { [key: string]: string } = {
   "角": "馬成", "亢": "鄧禹", "氐": "劉隆", "房": "馬武", "心": "藏宮", "尾": "耿純", "箕": "劉植",
@@ -38,7 +38,17 @@ export default function MansionChart() {
   const todayJeolguk = getJeolguk(todayHwDate.year, todayHwDate.month, todayHwDate.day);
   const todaySogungDaegung = getSogungDaegung(currentTime);
   
+  const todayGanZhiIndex = SIXTY_GANJI.indexOf(todayGanZhi);
+  
   const mansionGanjiMap = useMemo(() => getMansionGanjiMap(), []);
+  
+  const getGanjiDayOffset = (ganji: string): number => {
+    const ganjiIndex = SIXTY_GANJI.indexOf(ganji);
+    if (ganjiIndex === -1 || todayGanZhiIndex === -1) return 0;
+    let diff = ganjiIndex - todayGanZhiIndex;
+    if (diff < 0) diff += 60;
+    return diff;
+  };
   
   const renderMansionCell = (mansion: string, isToday: boolean) => {
     const isZunkong = ZUNKONG_MANSIONS.includes(mansion);
@@ -47,124 +57,138 @@ export default function MansionChart() {
     return (
       <div 
         className={`
-          p-1 rounded text-center min-h-[80px] flex flex-col
-          ${isToday ? 'ring-2 ring-pink-500 bg-pink-100 dark:bg-pink-900/30' : 'bg-muted/50'}
+          p-1.5 rounded-md text-center min-h-[90px] flex flex-col transition-all
+          ${isToday 
+            ? 'ring-2 ring-[var(--orae-pink)] bg-gradient-to-br from-pink-100 to-pink-50 dark:from-pink-900/40 dark:to-pink-800/20' 
+            : 'bg-[var(--ganji-surface)] hover-elevate'}
         `}
         data-testid={`mansion-cell-${mansion}`}
       >
-        <div className="font-bold text-lg">{mansion}</div>
-        <div className="text-[9px] text-muted-foreground">{MANSION_GENERALS[mansion]?.slice(0, 2)}</div>
-        {isZunkong && <div className="text-[8px] text-green-600 font-bold">尊空</div>}
-        <div className="text-[8px] text-muted-foreground mt-auto flex flex-wrap justify-center gap-[2px]">
-          {ganjiList.map((g, i) => (
-            <span key={i} className={todayGanZhi === g ? "font-bold text-pink-600" : ""}>{g}</span>
-          ))}
+        <div className="font-bold text-base orae-pink">{mansion}</div>
+        <div className="text-[9px] text-muted-foreground">{MANSION_GENERALS[mansion]}</div>
+        {isZunkong && <Badge variant="outline" className="text-[7px] px-1 py-0 mx-auto mt-0.5 border-green-500 text-green-600">尊空</Badge>}
+        <div className="text-[7px] text-muted-foreground mt-auto flex flex-wrap justify-center gap-[1px] leading-tight">
+          {ganjiList.map((g, i) => {
+            const dayOffset = getGanjiDayOffset(g);
+            const isCurrentGanji = todayGanZhi === g;
+            return (
+              <span 
+                key={i} 
+                className={`${isCurrentGanji ? "font-bold orae-pink" : ""}`}
+                title={isCurrentGanji ? "오늘" : `${dayOffset}일 후`}
+              >
+                {g}
+              </span>
+            );
+          })}
         </div>
       </div>
     );
   };
 
   return (
-    <div className="p-4 max-w-4xl mx-auto">
-      <div className="flex items-center gap-2 mb-4">
-        <Link href="/">
-          <Button variant="ghost" size="icon" data-testid="button-back-home">
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-        </Link>
-        <h1 className="text-xl font-bold" data-testid="text-chart-title">
-          後天 28宿 周天 星宿 配列圖
-        </h1>
-      </div>
+    <div className="min-h-screen bg-background">
+      <TopBar />
+      <Navigation />
       
-      <Card className="p-3 mb-4">
-        <div className="text-center mb-2">
-          <div className="text-sm text-muted-foreground">오늘</div>
-          <div className="text-xl font-bold" data-testid="text-today-ganzhi">
-            {todayHwDate.yearGanZhi}年 {todayHwDate.monthGanZhi}月 {todayGanZhi}日
-          </div>
-          <div className="flex items-center justify-center gap-2 mt-2 flex-wrap">
-            <span 
-              className="inline-block px-2 py-1 rounded text-white text-sm"
-              style={{ backgroundColor: todayMansion.isZunkong ? '#4a9f4a' : '#fb6c9f' }}
-            >
-              {todayMansion.mansion}{todayMansion.isZunkong ? "" : "宿"}
-            </span>
-            <span className="badge-jade px-2 py-1 rounded text-sm">
-              {todayJeolguk.name}절국
-            </span>
-            <span className="badge-pink px-2 py-1 rounded text-sm">
-              소궁,대궁 {todaySogungDaegung.sogung},{todaySogungDaegung.daegung}
-            </span>
-          </div>
-        </div>
-      </Card>
-
-      <div className="grid grid-cols-9 gap-1" data-testid="mansion-grid">
-        <div className="col-span-1"></div>
-        {TOP_ROW.map((mansion, i) => (
-          <div key={`top-${i}`} className="col-span-1">
-            {renderMansionCell(mansion, !todayMansion.isZunkong && todayMansion.mansion === mansion)}
-          </div>
-        ))}
-        <div className="col-span-1"></div>
-
-        {[0, 1, 2, 3, 4, 5, 6].map((rowIndex) => (
-          <div key={`row-${rowIndex}`} className="contents">
-            <div className="col-span-1">
-              {renderMansionCell(LEFT_COLUMN[rowIndex], !todayMansion.isZunkong && todayMansion.mansion === LEFT_COLUMN[rowIndex])}
+      <main className="max-w-[990px] mx-auto px-2 py-4">
+        <Card className="p-4 mb-4 bg-gradient-to-r from-pink-50/50 to-amber-50/50 dark:from-pink-950/20 dark:to-amber-950/20">
+          <h1 className="text-xl font-bold orae-pink text-center mb-3" data-testid="text-chart-title">
+            後天 28宿 周天 星宿 配列圖
+          </h1>
+          <div className="text-center">
+            <div className="text-sm text-muted-foreground">오늘의 황극력</div>
+            <div className="text-lg font-bold" data-testid="text-today-ganzhi">
+              {todayHwDate.yearGanZhi}年 {todayHwDate.monthGanZhi}月 {todayGanZhi}日
             </div>
-            
-            {rowIndex === 3 ? (
-              <div className="col-span-7 row-span-1 flex items-center justify-center">
-                <Card className="p-3 text-center w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-pink-50 to-amber-50 dark:from-pink-950/30 dark:to-amber-950/30">
-                  <div className="font-bold text-lg">曜雲殿</div>
-                  <div className="text-sm text-green-600 font-bold mb-1">星宿 尊空</div>
-                  <div className="text-xs text-muted-foreground mb-2">
-                    闘以內脈制之 / 闘以外將軍制之
-                  </div>
-                  <div className="flex gap-2 flex-wrap justify-center">
-                    {CENTER_GANJI.map((g, i) => (
-                      <span 
-                        key={i} 
-                        className={`px-2 py-1 rounded text-sm ${todayGanZhi === g ? "bg-pink-500 text-white font-bold" : "bg-muted"}`}
-                      >
-                        {g}
-                      </span>
-                    ))}
-                  </div>
-                </Card>
+            <div className="flex items-center justify-center gap-2 mt-3 flex-wrap">
+              <Badge 
+                className={`${todayMansion.isZunkong ? 'badge-jade' : 'badge-pink'}`}
+              >
+                {todayMansion.mansion}{todayMansion.isZunkong ? "" : "宿"}
+              </Badge>
+              <Badge className="badge-jade">
+                {todayJeolguk.name}절국
+              </Badge>
+              <Badge className="badge-pink">
+                소궁 {todaySogungDaegung.sogung} / 대궁 {todaySogungDaegung.daegung}
+              </Badge>
+            </div>
+          </div>
+        </Card>
+
+        <div className="grid grid-cols-9 gap-1" data-testid="mansion-grid">
+          <div className="col-span-1"></div>
+          {TOP_ROW.map((mansion, i) => (
+            <div key={`top-${i}`} className="col-span-1">
+              {renderMansionCell(mansion, !todayMansion.isZunkong && todayMansion.mansion === mansion)}
+            </div>
+          ))}
+          <div className="col-span-1"></div>
+
+          {[0, 1, 2, 3, 4, 5, 6].map((rowIndex) => (
+            <div key={`row-${rowIndex}`} className="contents">
+              <div className="col-span-1">
+                {renderMansionCell(LEFT_COLUMN[rowIndex], !todayMansion.isZunkong && todayMansion.mansion === LEFT_COLUMN[rowIndex])}
               </div>
-            ) : (
-              <div className="col-span-7"></div>
-            )}
-            
-            <div className="col-span-1">
-              {renderMansionCell(RIGHT_COLUMN[rowIndex], !todayMansion.isZunkong && todayMansion.mansion === RIGHT_COLUMN[rowIndex])}
+              
+              {rowIndex === 3 ? (
+                <div className="col-span-7 row-span-1 flex items-center justify-center">
+                  <Card className="p-4 text-center w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-amber-50 to-pink-50 dark:from-amber-950/30 dark:to-pink-950/30 border-[var(--orae-pink)]/20">
+                    <div className="font-bold text-xl orae-pink">曜雲殿</div>
+                    <Badge variant="outline" className="text-xs border-green-500 text-green-600 mt-1">星宿 尊空</Badge>
+                    <div className="text-xs text-muted-foreground mt-2">
+                      闘以內脈制之 / 闘以外將軍制之
+                    </div>
+                    <div className="flex gap-2 flex-wrap justify-center mt-3">
+                      {CENTER_GANJI.map((g, i) => {
+                        const isCurrentGanji = todayGanZhi === g;
+                        const dayOffset = getGanjiDayOffset(g);
+                        return (
+                          <Badge 
+                            key={i} 
+                            className={isCurrentGanji ? "badge-pink" : ""}
+                            variant={isCurrentGanji ? "default" : "secondary"}
+                            title={isCurrentGanji ? "오늘" : `${dayOffset}일 후`}
+                          >
+                            {g}
+                          </Badge>
+                        );
+                      })}
+                    </div>
+                  </Card>
+                </div>
+              ) : (
+                <div className="col-span-7"></div>
+              )}
+              
+              <div className="col-span-1">
+                {renderMansionCell(RIGHT_COLUMN[rowIndex], !todayMansion.isZunkong && todayMansion.mansion === RIGHT_COLUMN[rowIndex])}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
 
-        <div className="col-span-1"></div>
-        {BOTTOM_ROW.map((mansion, i) => (
-          <div key={`bottom-${i}`} className="col-span-1">
-            {renderMansionCell(mansion, !todayMansion.isZunkong && todayMansion.mansion === mansion)}
-          </div>
-        ))}
-        <div className="col-span-1"></div>
-      </div>
-
-      <Card className="p-4 mt-4">
-        <h3 className="font-bold text-sm mb-2">28宿 순환 설명</h3>
-        <div className="text-xs text-muted-foreground space-y-1">
-          <p>동방(東方) 7수: 角亢氐房心尾箕</p>
-          <p>남방(南方) 7수: 軫翼張星柳鬼井</p>
-          <p>서방(西方) 7수: 參觜畢昴胃婁奎</p>
-          <p>북방(北方) 7수: 斗牛女虛危室壁</p>
-          <p>尊空 (존공)에 해당하는 수: 星, 尾, 昴, 女</p>
-          <p>中央 (己酉, 庚戌, 己卯, 庚辰)은 曜雲殿에 해당합니다.</p>
+          <div className="col-span-1"></div>
+          {BOTTOM_ROW.map((mansion, i) => (
+            <div key={`bottom-${i}`} className="col-span-1">
+              {renderMansionCell(mansion, !todayMansion.isZunkong && todayMansion.mansion === mansion)}
+            </div>
+          ))}
+          <div className="col-span-1"></div>
         </div>
-      </Card>
+
+        <Card className="p-4 mt-4">
+          <h3 className="font-bold text-sm mb-2 orae-pink">28宿 순환 설명</h3>
+          <div className="text-xs text-muted-foreground space-y-1">
+            <p><span className="font-medium">동방(東方) 7수:</span> 角亢氐房心尾箕</p>
+            <p><span className="font-medium">남방(南方) 7수:</span> 軫翼張星柳鬼井</p>
+            <p><span className="font-medium">서방(西方) 7수:</span> 參觜畢昴胃婁奎</p>
+            <p><span className="font-medium">북방(北方) 7수:</span> 斗牛女虛危室壁</p>
+            <p><span className="font-medium text-green-600">尊空 (존공):</span> 星, 尾, 昴, 女</p>
+            <p><span className="font-medium orae-pink">中央 曜雲殿:</span> 己酉, 庚戌, 己卯, 庚辰</p>
+          </div>
+        </Card>
+      </main>
     </div>
   );
 }

@@ -51,7 +51,7 @@ export function Navigation() {
               <Popover>
                 <PopoverTrigger asChild>
                   <button 
-                    className="flex flex-col items-center gap-0 group cursor-pointer"
+                    className="flex flex-col items-center gap-0 group cursor-pointer p-1 rounded-md bg-[var(--orae-pink)]/20"
                     data-testid="nav-user"
                   >
                     <User className="h-8 w-8 orae-pink group-hover:opacity-70 transition-opacity" />

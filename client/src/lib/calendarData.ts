@@ -177,7 +177,7 @@ export function getMonthGanZhi(year: number, month: number): string {
 
 export function getDayGanZhi(year: number, month: number, day: number): string {
   const jd = getJulianDayNumber(year, month, day);
-  const offset = (jd - 11) % 60;
+  const offset = ((jd + 49) % 60 + 60) % 60;
   const stemIndex = offset % 10;
   const branchIndex = offset % 12;
   return HEAVENLY_STEMS[stemIndex] + EARTHLY_BRANCHES[branchIndex];

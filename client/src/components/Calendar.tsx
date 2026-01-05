@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { format, getDay, isToday, isSameDay } from "date-fns";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
@@ -11,6 +11,8 @@ import {
   getHwanggeukMonthDays,
   getHwanggeukYearGanZhi,
   getHwanggeukMonthGanZhi,
+  getHwanggeukHourGanZhi,
+  getHwanggeuk28Mansion,
   hwanggeukToSolar,
   CalendarDayData
 } from "@/lib/calendarData";
@@ -88,6 +90,26 @@ export function Calendar() {
 
   const hwYearGanZhi = getHwanggeukYearGanZhi(hwYear);
   const hwMonthGanZhi = getHwanggeukMonthGanZhi(hwYear, hwMonth);
+  
+  const [currentTime, setCurrentTime] = useState(new Date());
+  
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 60000);
+    return () => clearInterval(timer);
+  }, []);
+  
+  const hwHourGanZhi = getHwanggeukHourGanZhi(
+    displayYear, displayMonth, displayDay,
+    currentTime.getHours(), currentTime.getMinutes()
+  );
+  
+  const hwMansion = getHwanggeuk28Mansion(
+    displayData.hwanggeuk.year, 
+    displayData.hwanggeuk.month, 
+    displayData.hwanggeuk.day
+  );
 
   const handlePrevMonth = () => {
     setSelectedDay(null);
@@ -207,12 +229,15 @@ export function Calendar() {
               {displayData.currentTerm.hanja}
             </span>
           </div>
+          <div className="mt-1 text-xs text-muted-foreground">
+            현재시각 {hwHourGanZhi}時
+          </div>
           <div className="mt-2">
             <span 
               className="inline-block px-2 py-1 rounded text-white text-xs"
               style={{ backgroundColor: '#fb6c9f' }}
             >
-              {displayData.mansionDirection}, {displayData.mansion}宿{displayData.mansionGeneral}
+              {hwMansion.direction}, {hwMansion.mansion}宿{hwMansion.isZunkong ? "尊空" : hwMansion.general}
             </span>
           </div>
         </div>

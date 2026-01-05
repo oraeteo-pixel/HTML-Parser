@@ -403,6 +403,87 @@ export function getHwanggeukMonthData(hwYear: number, hwMonth: number): Array<{
   return result;
 }
 
+export function getHwanggeukHourGanZhi(year: number, month: number, day: number, hour: number, minute: number): string {
+  const daysFromEpoch = getHwanggeukDaysFromEpoch(year, month, day);
+  
+  let adjustedDaysFromEpoch = daysFromEpoch;
+  if (hour >= 23) {
+    adjustedDaysFromEpoch = daysFromEpoch + 1;
+  }
+  
+  const dayOffset = adjustedDaysFromEpoch % 5;
+  
+  const hourGanZhiTable = [
+    ["丁巳","戊午","己未","庚申","辛酉","壬戌","癸亥","甲子","乙丑","丙寅","丁卯","戊辰"],
+    ["己巳","庚午","辛未","壬申","癸酉","甲戌","乙亥","丙子","丁丑","戊寅","己卯","庚辰"],
+    ["辛巳","壬午","癸未","甲申","乙酉","丙戌","丁亥","戊子","己丑","庚寅","辛卯","壬辰"],
+    ["癸巳","甲午","乙未","丙申","丁酉","戊戌","己亥","庚子","辛丑","壬寅","癸卯","甲辰"],
+    ["乙巳","丙午","丁未","戊申","己酉","庚戌","辛亥","壬子","癸丑","甲寅","乙卯","丙辰"]
+  ];
+  
+  const timeValue = hour * 100 + minute;
+  
+  let hourIndex = 0;
+  if (timeValue >= 2300 || timeValue < 100) hourIndex = 0;
+  else if (timeValue >= 100 && timeValue < 300) hourIndex = 1;
+  else if (timeValue >= 300 && timeValue < 500) hourIndex = 2;
+  else if (timeValue >= 500 && timeValue < 700) hourIndex = 3;
+  else if (timeValue >= 700 && timeValue < 900) hourIndex = 4;
+  else if (timeValue >= 900 && timeValue < 1100) hourIndex = 5;
+  else if (timeValue >= 1100 && timeValue < 1300) hourIndex = 6;
+  else if (timeValue >= 1300 && timeValue < 1500) hourIndex = 7;
+  else if (timeValue >= 1500 && timeValue < 1700) hourIndex = 8;
+  else if (timeValue >= 1700 && timeValue < 1900) hourIndex = 9;
+  else if (timeValue >= 1900 && timeValue < 2100) hourIndex = 10;
+  else if (timeValue >= 2100 && timeValue < 2300) hourIndex = 11;
+  
+  return hourGanZhiTable[dayOffset][hourIndex];
+}
+
+const HW_28_MANSIONS = [
+  "角", "亢", "氐", "房", "心", "尾", "箕",
+  "斗", "牛", "女", "虛", "危", "室", "壁",
+  "奎", "婁", "胃", "昴", "畢", "觜", "參",
+  "井", "鬼", "柳", "星", "張", "翼", "軫"
+];
+
+const HW_28_GENERALS = [
+  "馬成", "鄧禹", "劉隆", "馬武", "藏宮", "耿純", "劉植",
+  "銚期", "邳肜", "蓋延", "万修", "景丹", "李忠", "祭遵",
+  "任光", "朱佑", "王覇", "馮異", "堅鐔", "岑膨", "傅俊",
+  "寇恂", "杜茂", "耿弇", "陣俊", "賈復", "王梁", "吳漢"
+];
+
+const HW_28_ZUNKOG_MANSIONS = ["星", "尾", "昴", "女"];
+
+export function getHwanggeuk28Mansion(hwYear: number, hwMonth: number, hwDay: number): { 
+  direction: string; 
+  mansion: string; 
+  general: string;
+  isZunkong: boolean;
+} {
+  const daysFromHwEpoch = (hwYear - HW_EPOCH_YEAR) * HW_DAYS_PER_YEAR + 
+    HW_MONTH_DAYS.slice(0, hwMonth - 1).reduce((a, b) => a + b, 0) + hwDay - 1;
+  
+  const mansionIndex = daysFromHwEpoch % 28;
+  const mansion = HW_28_MANSIONS[mansionIndex];
+  const general = HW_28_GENERALS[mansionIndex];
+  
+  const trigramCycle = Math.floor(mansionIndex / 4) % 9;
+  let direction: string;
+  
+  if (trigramCycle === 0 || trigramCycle === 4 || trigramCycle === 8) {
+    direction = "中";
+  } else {
+    const trigramIndex = trigramCycle < 4 ? trigramCycle : (trigramCycle > 4 ? trigramCycle - 1 : 0);
+    direction = EIGHT_TRIGRAMS[trigramIndex % 8];
+  }
+  
+  const isZunkong = HW_28_ZUNKOG_MANSIONS.includes(mansion);
+  
+  return { direction, mansion, general, isZunkong };
+}
+
 export function getHwanggeukYearGanZhi(hwYear: number): string {
   const yearsFromEpoch = hwYear - HW_EPOCH_YEAR;
   const baseYearStem = 5;

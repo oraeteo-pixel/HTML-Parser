@@ -284,18 +284,19 @@ export function getSolarTerm(month: number, day: number): { hanja: string; korea
   const days = termDays[month];
   if (!days) return null;
   
-  const termIndex = (month - 1) * 2;
   if (day === days[0]) {
+    const termIndex = month * 2 - 1;
     return {
-      hanja: SOLAR_TERMS_HANJA[(termIndex + 3) % 24],
-      korean: SOLAR_TERMS_KOREAN[(termIndex + 3) % 24],
-      general: TERM_GENERALS[(termIndex + 3) % 24]
+      hanja: SOLAR_TERMS_HANJA[termIndex],
+      korean: SOLAR_TERMS_KOREAN[termIndex],
+      general: TERM_GENERALS[termIndex]
     };
   } else if (day === days[1]) {
+    const termIndex = (month * 2) % 24;
     return {
-      hanja: SOLAR_TERMS_HANJA[(termIndex + 4) % 24],
-      korean: SOLAR_TERMS_KOREAN[(termIndex + 4) % 24],
-      general: TERM_GENERALS[(termIndex + 4) % 24]
+      hanja: SOLAR_TERMS_HANJA[termIndex],
+      korean: SOLAR_TERMS_KOREAN[termIndex],
+      general: TERM_GENERALS[termIndex]
     };
   }
   return null;

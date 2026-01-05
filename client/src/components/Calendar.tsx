@@ -503,7 +503,7 @@ export function Calendar() {
           <DialogHeader>
             <DialogTitle>
               {calType === "hw" ? (
-                `${displayData.hwanggeuk.year}년 ${displayData.hwanggeuk.month}월 ${displayData.hwanggeuk.day}일 (${WEEKDAYS[displayDate.getDay()]}요일)`
+                `${displayData.hwanggeuk.yearGanZhi}年 ${displayData.hwanggeuk.monthGanZhi}月 ${displayData.dayGanZhi}日 ${hwHourGanZhi}時`
               ) : (
                 `${displayYear}년 ${displayMonth}월 ${displayDay}일 (${WEEKDAYS[displayDate.getDay()]}요일)`
               )}
@@ -515,12 +515,6 @@ export function Calendar() {
           <div className="space-y-4 py-4">
             {calType === "hw" ? (
               <div className="grid grid-cols-2 gap-4 text-sm">
-                <div className="bg-muted/50 rounded p-3 col-span-2">
-                  <div className="text-muted-foreground text-xs mb-1">간지</div>
-                  <div className="font-bold text-lg">
-                    {displayData.hwanggeuk.yearGanZhi}年 {displayData.hwanggeuk.monthGanZhi}月 {displayData.dayGanZhi}日 {hwHourGanZhi}時
-                  </div>
-                </div>
                 <div className="bg-muted/50 rounded p-3">
                   <div className="text-muted-foreground text-xs mb-1">절기</div>
                   <div className="font-bold text-lg">{displayData.currentTerm.hanja} ({displayData.currentTerm.korean})</div>

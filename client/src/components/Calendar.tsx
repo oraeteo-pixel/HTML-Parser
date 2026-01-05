@@ -322,6 +322,7 @@ export function Calendar() {
             const isSat = solarDate.getDay() === 6;
             const isCurrentDay = isToday(solarDate);
             const isSelected = selectedDay && isSameDay(solarDate, selectedDay);
+            const cellMansion = getHwanggeuk28Mansion(dayData.hwanggeuk.year, dayData.hwanggeuk.month, dayData.hwanggeuk.day);
             
             return (
               <div 
@@ -344,9 +345,8 @@ export function Calendar() {
                 </div>
                 
                 <div className="flex-1 flex flex-col justify-end space-y-0.5">
-                  <div className="trigram-text">{dayData.trigram}</div>
-                  <div className="mansion-info">{dayData.mansionDirection},{dayData.mansion}宿{dayData.mansionGeneral}</div>
-                  <div className="direction-info">七之{(dayData.mansionIndex % 7) + 1}</div>
+                  <div className="trigram-text">{cellMansion.direction}</div>
+                  <div className="mansion-info">{cellMansion.direction},{cellMansion.mansion}宿{cellMansion.isZunkong ? "尊空" : ""}</div>
                 </div>
               </div>
             );
@@ -358,6 +358,7 @@ export function Calendar() {
             const isSat = solarDate.getDay() === 6;
             const isCurrentDay = isToday(solarDate);
             const isSelected = selectedDay && isSameDay(solarDate, selectedDay);
+            const cellMansion = getHwanggeuk28Mansion(dayData.hwanggeuk.year, dayData.hwanggeuk.month, dayData.hwanggeuk.day);
             
             return (
               <div 
@@ -380,9 +381,8 @@ export function Calendar() {
                 </div>
                 
                 <div className="flex-1 flex flex-col justify-end space-y-0.5">
-                  <div className="trigram-text">{dayData.trigram}</div>
-                  <div className="mansion-info">{dayData.mansionDirection},{dayData.mansion}宿{dayData.mansionGeneral}</div>
-                  <div className="direction-info">七之{(dayData.mansionIndex % 7) + 1}</div>
+                  <div className="trigram-text">{cellMansion.direction}</div>
+                  <div className="mansion-info">{cellMansion.direction},{cellMansion.mansion}宿{cellMansion.isZunkong ? "尊空" : ""}</div>
                 </div>
               </div>
             );
@@ -406,35 +406,26 @@ export function Calendar() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="grid grid-cols-2 gap-4 text-sm">
-              <div className="bg-muted/50 rounded p-3">
+              <div className="bg-muted/50 rounded p-3 col-span-2">
                 <div className="text-muted-foreground text-xs mb-1">간지</div>
                 <div className="font-bold text-lg">
-                  {displayData.hwanggeuk.yearGanZhi}年 {displayData.hwanggeuk.monthGanZhi}月 {displayData.dayGanZhi}日
+                  {displayData.hwanggeuk.yearGanZhi}年 {displayData.hwanggeuk.monthGanZhi}月 {displayData.dayGanZhi}日 {hwHourGanZhi}時
                 </div>
               </div>
               <div className="bg-muted/50 rounded p-3">
                 <div className="text-muted-foreground text-xs mb-1">절기</div>
                 <div className="font-bold text-lg">{displayData.currentTerm.hanja} ({displayData.currentTerm.korean})</div>
               </div>
-              <div className="bg-muted/50 rounded p-3 col-span-2">
-                <div className="text-muted-foreground text-xs mb-1">28수 (二十八宿)</div>
-                <div className="flex gap-3">
-                  <img 
-                    src={`/img/28j_${displayData.mansionImage}.jpg`}
-                    alt={displayData.mansionGeneral}
-                    className="w-16 h-16 object-cover rounded"
-                  />
-                  <div>
-                    <div className="font-bold text-lg">{displayData.mansionDirection}{displayData.mansion}宿</div>
-                    <div className="text-sm font-medium">{displayData.mansionGeneral}</div>
-                    <div className="text-xs text-muted-foreground mt-1">{displayData.mansionDescription}</div>
-                  </div>
-                </div>
-              </div>
               <div className="bg-muted/50 rounded p-3">
                 <div className="text-muted-foreground text-xs mb-1">팔괘</div>
-                <div className="font-bold text-lg">{displayData.trigram}卦</div>
-                <div className="text-xs text-muted-foreground">{displayData.trigramDirection}</div>
+                <div className="font-bold text-lg">{hwMansion.direction}</div>
+              </div>
+              <div className="bg-muted/50 rounded p-3 col-span-2">
+                <div className="text-muted-foreground text-xs mb-1">28수 (二十八宿)</div>
+                <div>
+                  <div className="font-bold text-lg">{hwMansion.direction}, {hwMansion.mansion}宿{hwMansion.isZunkong ? "尊空" : ""}</div>
+                  <div className="text-sm font-medium">{hwMansion.general}</div>
+                </div>
               </div>
               <div className="bg-muted/50 rounded p-3">
                 <div className="text-muted-foreground text-xs mb-1">음력</div>
@@ -449,7 +440,7 @@ export function Calendar() {
                   {displayData.hwanggeuk.year}.{displayData.hwanggeuk.month}.{displayData.hwanggeuk.day}
                 </div>
               </div>
-              <div className="bg-muted/50 rounded p-3">
+              <div className="bg-muted/50 rounded p-3 col-span-2">
                 <div className="text-muted-foreground text-xs mb-1">양력</div>
                 <div className="font-bold text-lg">
                   {displayYear}.{displayMonth}.{displayDay}

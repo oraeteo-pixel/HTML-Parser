@@ -141,6 +141,8 @@ export function solarToLunar(year: number, month: number, day: number): { year: 
       monthDays = getLunarMonthDays(lunarYear, i);
     }
     
+    lunarMonth = i;
+    
     if (offset < monthDays) {
       break;
     }
@@ -149,7 +151,6 @@ export function solarToLunar(year: number, month: number, day: number): { year: 
     if (isLeap && i === leapMonth + 1) {
       isLeap = false;
     }
-    lunarMonth = i;
   }
   
   return {

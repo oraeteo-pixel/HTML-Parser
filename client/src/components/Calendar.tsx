@@ -12,7 +12,9 @@ import {
   getHwanggeukYearGanZhi,
   getHwanggeukMonthGanZhi,
   getHwanggeukHourGanZhi,
+  getDayGanZhi,
   get28Mansion,
+  get8Trigram,
   getJeolguk,
   getWeekdayHanja,
   hwanggeukToSolar,
@@ -114,6 +116,55 @@ export function Calendar() {
     displayMonth, 
     displayDay
   );
+  
+  const trigram = get8Trigram(
+    displayYear, 
+    displayMonth, 
+    displayDay
+  );
+  
+  const liveDate = useMemo(() => {
+    const now = currentTime;
+    const adjustedDate = new Date(now);
+    if (now.getHours() >= 23) {
+      adjustedDate.setDate(adjustedDate.getDate() + 1);
+    }
+    return adjustedDate;
+  }, [currentTime]);
+  
+  const liveHwanggeuk = useMemo(() => {
+    return getHwanggeukDate(
+      liveDate.getFullYear(),
+      liveDate.getMonth() + 1,
+      liveDate.getDate()
+    );
+  }, [liveDate]);
+  
+  const liveDayGanZhi = useMemo(() => {
+    return getDayGanZhi(
+      liveDate.getFullYear(),
+      liveDate.getMonth() + 1,
+      liveDate.getDate()
+    );
+  }, [liveDate]);
+  
+  const liveHourGanZhi = useMemo(() => {
+    return getHwanggeukHourGanZhi(
+      currentTime.getFullYear(),
+      currentTime.getMonth() + 1,
+      currentTime.getDate(),
+      currentTime.getHours(),
+      currentTime.getMinutes()
+    );
+  }, [currentTime]);
+  
+  const liveJeolguk = useMemo(() => {
+    return getJeolguk(
+      liveHwanggeuk.year,
+      liveHwanggeuk.month,
+      liveHwanggeuk.day
+    );
+  }, [liveHwanggeuk]);
   
   const jeolguk = getJeolguk(
     displayData.hwanggeuk.year,
@@ -238,18 +289,24 @@ export function Calendar() {
                   ({displayData.hwanggeuk.yearGanZhi}年 {displayData.hwanggeuk.monthGanZhi}月 {displayData.dayGanZhi}日)
                 </span>
                 <span className="ml-2 text-xs font-normal">
-                  {jeolguk.name} &lt;소궁,대궁&gt;{jeolguk.sogung},{jeolguk.daegung}
+                  {liveJeolguk.name} &lt;소궁,대궁&gt;{liveJeolguk.sogung},{liveJeolguk.daegung}
                 </span>
                 <span className="ml-2 text-xs font-normal">
-                  현재시각 ({displayData.hwanggeuk.yearGanZhi}년 {displayData.hwanggeuk.monthGanZhi}월 {displayData.dayGanZhi}일 {hwHourGanZhi}시)
+                  현재시각 ({liveHwanggeuk.yearGanZhi}년 {liveHwanggeuk.monthGanZhi}월 {liveDayGanZhi}일 {liveHourGanZhi}시)
                 </span>
               </div>
-              <div className="mt-2">
+              <div className="mt-2 flex gap-2 flex-wrap">
                 <span 
                   className="inline-block px-2 py-1 rounded text-white text-xs"
                   style={{ backgroundColor: '#fb6c9f' }}
                 >
                   {hwMansion.position} {hwMansion.mansion}수{["星", "尾", "昴", "女"].includes(hwMansion.mansion) ? " 존공" : ""}
+                </span>
+                <span 
+                  className="inline-block px-2 py-1 rounded text-white text-xs"
+                  style={{ backgroundColor: '#4a9f4a' }}
+                >
+                  {trigram.trigram}괘 ({trigram.direction})
                 </span>
               </div>
             </>
@@ -446,7 +503,7 @@ export function Calendar() {
               </div>
               <div className="bg-muted/50 rounded p-3">
                 <div className="text-muted-foreground text-xs mb-1">팔괘 / 방위</div>
-                <div className="font-bold text-lg">{hwMansion.cardinalDirection}</div>
+                <div className="font-bold text-lg">{trigram.trigram}괘 ({trigram.direction})</div>
               </div>
               <div className="bg-muted/50 rounded p-3 col-span-2">
                 <div className="text-muted-foreground text-xs mb-1">28수 (二十八宿)</div>

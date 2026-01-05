@@ -9,6 +9,7 @@ import Square from "@/pages/Square";
 import MapPage from "@/pages/MapPage";
 import Madang from "@/pages/Madang";
 import UserPage from "@/pages/UserPage";
+import MansionChart from "@/pages/MansionChart";
 
 function Router() {
   return (
@@ -18,6 +19,7 @@ function Router() {
       <Route path="/map" component={MapPage} />
       <Route path="/madang" component={Madang} />
       <Route path="/user" component={UserPage} />
+      <Route path="/28su" component={MansionChart} />
       <Route component={NotFound} />
     </Switch>
   );

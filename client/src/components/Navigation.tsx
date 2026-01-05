@@ -1,4 +1,4 @@
-import { Grid, Map, User, LayoutGrid } from "lucide-react";
+import { Grid, Map, User, LayoutGrid, Star } from "lucide-react";
 import { format } from "date-fns";
 import { Link } from "wouter";
 import { getCalendarDayData } from "@/lib/calendarData";
@@ -13,6 +13,7 @@ export function Navigation() {
 
   const menuItems = [
     { icon: LayoutGrid, label: "Square", korLabel: "광장", href: "/square" },
+    { icon: Star, label: "28su", korLabel: "28수", href: "/28su" },
     { icon: Map, label: "Map", korLabel: "지도", href: "/map" },
     { icon: Grid, label: "Madang", korLabel: "마당", href: "/madang" },
     { icon: User, label: "User", korLabel: "회원", href: "/user" },

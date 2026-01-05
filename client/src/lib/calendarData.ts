@@ -67,7 +67,7 @@ const JEOLGUK_NAMES = [
 
 const WEEKDAYS_HANJA = ["日", "月", "火", "水", "木", "金", "土"];
 
-function getJulianDayNumber(year: number, month: number, day: number): number {
+export function getJulianDayNumber(year: number, month: number, day: number): number {
   const a = Math.floor((14 - month) / 12);
   const y = year + 4800 - a;
   const m = month + 12 * a - 3;

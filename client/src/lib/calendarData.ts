@@ -282,22 +282,24 @@ export function getHwanggeukDate(year: number, month: number, day: number): {
 } {
   const lunar = solarToLunar(year, month, day);
   
-  let hwYear = lunar.year;
-  let hwMonth = lunar.month;
-  let hwDay = lunar.day;
+  let hwMonth = ((lunar.month + 9 - 1) % 12) + 1;
   
-  if (lunar.month === 11 && lunar.day >= 1) {
-    hwYear = lunar.year + 1;
-    hwMonth = 1;
-    hwDay = lunar.day;
-  } else if (lunar.month === 12) {
-    hwYear = lunar.year + 1;
-    hwMonth = lunar.month - 10;
-    hwDay = lunar.day;
-  } else if (lunar.month >= 1 && lunar.month <= 10) {
+  let hwYear: number;
+  if (lunar.month >= 4) {
     hwYear = lunar.year;
-    hwMonth = lunar.month + 2;
-    hwDay = lunar.day;
+  } else {
+    hwYear = lunar.year - 1;
+  }
+  
+  let hwDay = lunar.day + 3;
+  const lunarMonthDays = getLunarMonthDays(lunar.year, lunar.month);
+  if (hwDay > lunarMonthDays) {
+    hwDay = hwDay - lunarMonthDays;
+    hwMonth = hwMonth + 1;
+    if (hwMonth > 12) {
+      hwMonth = 1;
+      hwYear = hwYear + 1;
+    }
   }
   
   const yearGanZhi = getYearGanZhi(hwYear);
@@ -349,34 +351,36 @@ function lunarToSolar(lunarYear: number, lunarMonth: number, lunarDay: number, i
 }
 
 export function hwanggeukToSolar(hwYear: number, hwMonth: number, hwDay: number): { year: number; month: number; day: number } {
-  let lunarYear = hwYear;
-  let lunarMonth = hwMonth;
+  let lunarMonth = ((hwMonth - 10 + 12 - 1) % 12) + 1;
   
-  if (hwMonth === 1) {
-    lunarYear = hwYear - 1;
-    lunarMonth = 11;
-  } else if (hwMonth === 2) {
-    lunarYear = hwYear - 1;
-    lunarMonth = 12;
+  let lunarYear: number;
+  if (hwMonth >= 10) {
+    lunarYear = hwYear;
   } else {
-    lunarMonth = hwMonth - 2;
+    lunarYear = hwYear + 1;
   }
   
-  return lunarToSolar(lunarYear, lunarMonth, hwDay, false);
+  let lunarDay = hwDay - 3;
+  if (lunarDay <= 0) {
+    lunarMonth = lunarMonth - 1;
+    if (lunarMonth <= 0) {
+      lunarMonth = 12;
+      lunarYear = lunarYear - 1;
+    }
+    lunarDay = getLunarMonthDays(lunarYear, lunarMonth) + lunarDay;
+  }
+  
+  return lunarToSolar(lunarYear, lunarMonth, lunarDay, false);
 }
 
 export function getHwanggeukMonthDays(hwYear: number, hwMonth: number): number {
-  let lunarYear = hwYear;
-  let lunarMonth = hwMonth;
+  let lunarMonth = ((hwMonth - 10 + 12 - 1) % 12) + 1;
   
-  if (hwMonth === 1) {
-    lunarYear = hwYear - 1;
-    lunarMonth = 11;
-  } else if (hwMonth === 2) {
-    lunarYear = hwYear - 1;
-    lunarMonth = 12;
+  let lunarYear: number;
+  if (hwMonth >= 10) {
+    lunarYear = hwYear;
   } else {
-    lunarMonth = hwMonth - 2;
+    lunarYear = hwYear + 1;
   }
   
   return getLunarMonthDays(lunarYear, lunarMonth);

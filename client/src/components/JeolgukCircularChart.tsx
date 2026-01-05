@@ -237,65 +237,57 @@ export function JeolgukCircularChart({ date }: JeolgukCircularChartProps) {
           })}
           
           
-          {/* Second ring - 8 Trigrams with numbers */}
+          {/* Second ring - 8 Trigrams with numbers, facing center */}
           <g transform={`translate(${center}, ${center})`}>
-            {/* 8 Trigrams positioned like the image */}
-            {/* Top (12 o'clock): ☷ 2 */}
-            <text x="0" y="-155" textAnchor="middle" fontSize="24" fill="#2d3748">☷</text>
+            {/* 12시: 곤괘 ☷ with 2 - rotated 180° to face center */}
+            <g transform="translate(0, -155) rotate(180)">
+              <text x="0" y="0" textAnchor="middle" dominantBaseline="middle" fontSize="24" fill="#2d3748">☷</text>
+            </g>
             <text x="0" y="-175" textAnchor="middle" fontSize="14" fill="#718096">2</text>
             
-            {/* Top-right (1:30): ☲ 9 */}
-            <text x="110" y="-110" textAnchor="middle" fontSize="24" fill="#2d3748">☲</text>
-            <text x="125" y="-125" textAnchor="middle" fontSize="14" fill="#718096">9</text>
+            {/* 1시(1:30): 리괘 ☲ with 9 - rotated to face center */}
+            <g transform="translate(110, -110) rotate(-135)">
+              <text x="0" y="0" textAnchor="middle" dominantBaseline="middle" fontSize="24" fill="#2d3748">☲</text>
+            </g>
+            <text x="130" y="-130" textAnchor="middle" fontSize="14" fill="#718096">9</text>
             
-            {/* Right (3 o'clock): ☳ 4 */}
-            <text x="155" y="0" textAnchor="middle" fontSize="24" fill="#2d3748">☳</text>
-            <text x="175" y="0" textAnchor="middle" fontSize="14" fill="#718096">4</text>
+            {/* 3시: 태괘 ☱ with 4 - rotated 270° to face center */}
+            <g transform="translate(155, 0) rotate(-90)">
+              <text x="0" y="0" textAnchor="middle" dominantBaseline="middle" fontSize="24" fill="#2d3748">☱</text>
+            </g>
+            <text x="178" y="0" textAnchor="middle" fontSize="14" fill="#718096">4</text>
             
-            {/* Bottom-right (4:30): ☶ 5 */}
-            <text x="110" y="110" textAnchor="middle" fontSize="24" fill="#2d3748">☶</text>
-            <text x="125" y="125" textAnchor="middle" fontSize="14" fill="#718096">5</text>
+            {/* 5시(4:30): 진괘 ☳ with 5 - rotated to face center */}
+            <g transform="translate(110, 110) rotate(-45)">
+              <text x="0" y="0" textAnchor="middle" dominantBaseline="middle" fontSize="24" fill="#2d3748">☳</text>
+            </g>
+            <text x="130" y="130" textAnchor="middle" fontSize="14" fill="#718096">5</text>
             
-            {/* Bottom (6 o'clock): ☷ 10 */}
-            <text x="0" y="160" textAnchor="middle" fontSize="24" fill="#2d3748">☷</text>
-            <text x="0" y="180" textAnchor="middle" fontSize="14" fill="#718096">10</text>
+            {/* 6시: 건괘 ☰ with 10 - no rotation, faces center */}
+            <g transform="translate(0, 160)">
+              <text x="0" y="0" textAnchor="middle" dominantBaseline="middle" fontSize="24" fill="#2d3748">☰</text>
+            </g>
+            <text x="0" y="185" textAnchor="middle" fontSize="14" fill="#718096">10</text>
             
-            {/* Bottom-left (7:30): ☵ 3 */}
-            <text x="-110" y="110" textAnchor="middle" fontSize="24" fill="#2d3748">☵</text>
-            <text x="-125" y="125" textAnchor="middle" fontSize="14" fill="#718096">3</text>
+            {/* 7시(7:30): 감괘 ☵ with 3 - rotated to face center */}
+            <g transform="translate(-110, 110) rotate(45)">
+              <text x="0" y="0" textAnchor="middle" dominantBaseline="middle" fontSize="24" fill="#2d3748">☵</text>
+            </g>
+            <text x="-130" y="130" textAnchor="middle" fontSize="14" fill="#718096">3</text>
             
-            {/* Left (9 o'clock): ☴ 8 */}
-            <text x="-155" y="0" textAnchor="middle" fontSize="24" fill="#2d3748">☴</text>
-            <text x="-175" y="0" textAnchor="middle" fontSize="14" fill="#718096">8</text>
+            {/* 9시: 간괘 ☶ with 8 - rotated 90° to face center */}
+            <g transform="translate(-155, 0) rotate(90)">
+              <text x="0" y="0" textAnchor="middle" dominantBaseline="middle" fontSize="24" fill="#2d3748">☶</text>
+            </g>
+            <text x="-178" y="0" textAnchor="middle" fontSize="14" fill="#718096">8</text>
             
-            {/* Top-left (10:30): ☰ 7 */}
-            <text x="-110" y="-110" textAnchor="middle" fontSize="24" fill="#2d3748">☰</text>
-            <text x="-125" y="-125" textAnchor="middle" fontSize="14" fill="#718096">7</text>
+            {/* 11시(10:30): 손괘 ☴ with 7 - rotated to face center */}
+            <g transform="translate(-110, -110) rotate(135)">
+              <text x="0" y="0" textAnchor="middle" dominantBaseline="middle" fontSize="24" fill="#2d3748">☴</text>
+            </g>
+            <text x="-130" y="-130" textAnchor="middle" fontSize="14" fill="#718096">7</text>
             
-            {/* Connecting arrows/lines like in the image */}
-            {/* Star pattern lines */}
-            <line x1="0" y1="-140" x2="95" y2="-95" stroke="#718096" strokeWidth="1" markerEnd="url(#arrowhead)" />
-            <line x1="95" y1="-95" x2="140" y2="0" stroke="#718096" strokeWidth="1" markerEnd="url(#arrowhead)" />
-            <line x1="140" y1="0" x2="95" y2="95" stroke="#718096" strokeWidth="1" markerEnd="url(#arrowhead)" />
-            <line x1="95" y1="95" x2="0" y2="145" stroke="#718096" strokeWidth="1" markerEnd="url(#arrowhead)" />
-            <line x1="0" y1="145" x2="-95" y2="95" stroke="#718096" strokeWidth="1" markerEnd="url(#arrowhead)" />
-            <line x1="-95" y1="95" x2="-140" y2="0" stroke="#718096" strokeWidth="1" markerEnd="url(#arrowhead)" />
-            <line x1="-140" y1="0" x2="-95" y2="-95" stroke="#718096" strokeWidth="1" markerEnd="url(#arrowhead)" />
-            <line x1="-95" y1="-95" x2="0" y2="-140" stroke="#718096" strokeWidth="1" markerEnd="url(#arrowhead)" />
-            
-            {/* Cross lines through center */}
-            <line x1="0" y1="0" x2="0" y2="-140" stroke="#2f855a" strokeWidth="1.5" />
-            <line x1="0" y1="0" x2="140" y2="0" stroke="#2f855a" strokeWidth="1.5" />
-            <line x1="0" y1="0" x2="0" y2="145" stroke="#2f855a" strokeWidth="1.5" />
-            <line x1="0" y1="0" x2="-140" y2="0" stroke="#2f855a" strokeWidth="1.5" />
           </g>
-          
-          {/* Arrow marker definition */}
-          <defs>
-            <marker id="arrowhead" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
-              <polygon points="0 0, 6 3, 0 6" fill="#718096" />
-            </marker>
-          </defs>
           
           {/* Center - 10 Heavenly Stems with numbers */}
           <g transform={`translate(${center}, ${center})`}>

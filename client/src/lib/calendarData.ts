@@ -317,6 +317,106 @@ export function getHwanggeukDate(year: number, month: number, day: number): {
   };
 }
 
+function lunarToSolar(lunarYear: number, lunarMonth: number, lunarDay: number, isLeapMonth: boolean): { year: number; month: number; day: number } {
+  const baseDate = new Date(1900, 0, 31);
+  let offset = 0;
+  
+  for (let y = 1900; y < lunarYear; y++) {
+    offset += getLunarYearDays(y);
+  }
+  
+  const leapMonth = getLeapMonth(lunarYear);
+  
+  for (let m = 1; m < lunarMonth; m++) {
+    offset += getLunarMonthDays(lunarYear, m);
+    if (m === leapMonth) {
+      offset += getLeapMonthDays(lunarYear);
+    }
+  }
+  
+  if (isLeapMonth && lunarMonth === leapMonth) {
+    offset += getLunarMonthDays(lunarYear, lunarMonth);
+  }
+  
+  offset += lunarDay - 1;
+  
+  const resultDate = new Date(baseDate.getTime() + offset * 86400000);
+  return {
+    year: resultDate.getFullYear(),
+    month: resultDate.getMonth() + 1,
+    day: resultDate.getDate()
+  };
+}
+
+export function hwanggeukToSolar(hwYear: number, hwMonth: number, hwDay: number): { year: number; month: number; day: number } {
+  let lunarYear = hwYear;
+  let lunarMonth = hwMonth;
+  
+  if (hwMonth === 1) {
+    lunarYear = hwYear - 1;
+    lunarMonth = 11;
+  } else if (hwMonth === 2) {
+    lunarYear = hwYear - 1;
+    lunarMonth = 12;
+  } else {
+    lunarMonth = hwMonth - 2;
+  }
+  
+  return lunarToSolar(lunarYear, lunarMonth, hwDay, false);
+}
+
+export function getHwanggeukMonthDays(hwYear: number, hwMonth: number): number {
+  let lunarYear = hwYear;
+  let lunarMonth = hwMonth;
+  
+  if (hwMonth === 1) {
+    lunarYear = hwYear - 1;
+    lunarMonth = 11;
+  } else if (hwMonth === 2) {
+    lunarYear = hwYear - 1;
+    lunarMonth = 12;
+  } else {
+    lunarMonth = hwMonth - 2;
+  }
+  
+  return getLunarMonthDays(lunarYear, lunarMonth);
+}
+
+export function getHwanggeukMonthData(hwYear: number, hwMonth: number): Array<{
+  hwDay: number;
+  solarDate: Date;
+  dayData: CalendarDayData;
+}> {
+  const days = getHwanggeukMonthDays(hwYear, hwMonth);
+  const result = [];
+  
+  for (let d = 1; d <= days; d++) {
+    const solar = hwanggeukToSolar(hwYear, hwMonth, d);
+    const solarDate = new Date(solar.year, solar.month - 1, solar.day);
+    const dayData = getCalendarDayData(solar.year, solar.month, solar.day);
+    
+    result.push({
+      hwDay: d,
+      solarDate,
+      dayData
+    });
+  }
+  
+  return result;
+}
+
+export function getHwanggeukYearGanZhi(hwYear: number): string {
+  return getYearGanZhi(hwYear);
+}
+
+export function getHwanggeukMonthGanZhi(hwYear: number, hwMonth: number): string {
+  const monthBase = (hwYear - 4) % 10;
+  const monthStemOffset = [2, 4, 6, 8, 0, 2, 4, 6, 8, 0];
+  const monthStemIndex = (monthStemOffset[monthBase] + hwMonth - 1) % 10;
+  const monthBranchIndex = (hwMonth + 1) % 12;
+  return HEAVENLY_STEMS[monthStemIndex] + EARTHLY_BRANCHES[monthBranchIndex];
+}
+
 export interface CalendarDayData {
   solarYear: number;
   solarMonth: number;

@@ -538,7 +538,7 @@ export function getHwanggeuk28Mansion(hwYear: number, hwMonth: number, hwDay: nu
   if (stemMapping === "中星宿尊空") {
     return { 
       direction: "中", 
-      mansion: "中星宿尊空", 
+      mansion: "中, 성수 존공", 
       general: "-",
       isZunkong: true,
       position: "中"

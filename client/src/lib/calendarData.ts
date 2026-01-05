@@ -307,8 +307,8 @@ export function getHwanggeukDate(year: number, month: number, day: number): {
   
   const monthBase = (hwYear - 4) % 10;
   const monthStemOffset = [2, 4, 6, 8, 0, 2, 4, 6, 8, 0];
-  const monthStemIndex = (monthStemOffset[monthBase] + hwMonth - 1) % 10;
-  const monthBranchIndex = (hwMonth + 1) % 12;
+  const monthStemIndex = (monthStemOffset[monthBase] + hwMonth + 4) % 10;
+  const monthBranchIndex = (hwMonth + 8) % 12;
   const monthGanZhi = HEAVENLY_STEMS[monthStemIndex] + EARTHLY_BRANCHES[monthBranchIndex];
   
   return { 
@@ -417,8 +417,8 @@ export function getHwanggeukYearGanZhi(hwYear: number): string {
 export function getHwanggeukMonthGanZhi(hwYear: number, hwMonth: number): string {
   const monthBase = (hwYear - 4) % 10;
   const monthStemOffset = [2, 4, 6, 8, 0, 2, 4, 6, 8, 0];
-  const monthStemIndex = (monthStemOffset[monthBase] + hwMonth - 1) % 10;
-  const monthBranchIndex = (hwMonth + 1) % 12;
+  const monthStemIndex = (monthStemOffset[monthBase] + hwMonth + 4) % 10;
+  const monthBranchIndex = (hwMonth + 8) % 12;
   return HEAVENLY_STEMS[monthStemIndex] + EARTHLY_BRANCHES[monthBranchIndex];
 }
 

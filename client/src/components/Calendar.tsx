@@ -213,7 +213,9 @@ export function Calendar() {
   const handlePrevYear = () => {
     setSelectedDay(null);
     if (calType === "hw") {
-      setHwYear(hwYear - 1);
+      if (hwYear > 1989) {
+        setHwYear(hwYear - 1);
+      }
     } else {
       setSolarYear(solarYear - 1);
     }
@@ -242,7 +244,12 @@ export function Calendar() {
     setShowDayDetail(true);
   };
 
-  const years = Array.from({ length: 200 }, (_, i) => 1900 + i);
+  const years = useMemo(() => {
+    if (calType === "hw") {
+      return Array.from({ length: 112 }, (_, i) => 1989 + i);
+    }
+    return Array.from({ length: 200 }, (_, i) => 1900 + i);
+  }, [calType]);
   const months = Array.from({ length: 12 }, (_, i) => i + 1);
 
   return (
@@ -306,7 +313,7 @@ export function Calendar() {
                   className="inline-block px-2 py-1 rounded text-white text-xs"
                   style={{ backgroundColor: '#4a9f4a' }}
                 >
-                  {trigram.trigram}괘 ({trigram.direction})
+                  {trigram.trigram}괘
                 </span>
               </div>
             </>
@@ -428,7 +435,7 @@ export function Calendar() {
                 </div>
                 
                 <div className="flex-1 flex flex-col justify-end space-y-0.5">
-                  <div className="trigram-text">{cellTrigram.trigram}괘 ({cellTrigram.direction})</div>
+                  <div className="trigram-text">{cellTrigram.trigram}괘</div>
                   <div className="mansion-info">{cellMansion.mansion},{cellMansion.general}</div>
                 </div>
               </div>
@@ -503,7 +510,7 @@ export function Calendar() {
               </div>
               <div className="bg-muted/50 rounded p-3">
                 <div className="text-muted-foreground text-xs mb-1">팔괘 / 방위</div>
-                <div className="font-bold text-lg">{trigram.trigram}괘 ({trigram.direction})</div>
+                <div className="font-bold text-lg">{trigram.trigram}괘</div>
               </div>
               <div className="bg-muted/50 rounded p-3 col-span-2">
                 <div className="text-muted-foreground text-xs mb-1">28수 (二十八宿)</div>

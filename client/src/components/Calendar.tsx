@@ -18,6 +18,7 @@ import {
   get28Mansion,
   get8Trigram,
   getJeolguk,
+  getSogungDaegung,
   getWeekdayHanja,
   hwanggeukToSolar,
   CalendarDayData,
@@ -167,6 +168,10 @@ export function Calendar() {
     );
   }, [liveHwanggeuk]);
   
+  const liveSogungDaegung = useMemo(() => {
+    return getSogungDaegung(currentTime);
+  }, [currentTime]);
+  
   const jeolguk = getJeolguk(
     displayData.hwanggeuk.year,
     displayData.hwanggeuk.month,
@@ -297,7 +302,7 @@ export function Calendar() {
                   ({displayData.hwanggeuk.yearGanZhi}年 {displayData.hwanggeuk.monthGanZhi}月 {displayData.dayGanZhi}日)
                 </span>
                 <span className="ml-2 text-xs font-normal">
-                  {liveJeolguk.name} &lt;소궁,대궁&gt;{liveJeolguk.sogung},{liveJeolguk.daegung}
+                  {liveJeolguk.name} &lt;소궁,대궁&gt;{liveSogungDaegung.sogung},{liveSogungDaegung.daegung}
                 </span>
                 <span className="ml-2 text-xs font-normal">
                   현재시각 ({liveHwanggeuk.yearGanZhi}년 {liveHwanggeuk.monthGanZhi}월 {liveDayGanZhi}일 {liveHourGanZhi}시)

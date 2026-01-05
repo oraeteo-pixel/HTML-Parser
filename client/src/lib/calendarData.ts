@@ -595,6 +595,54 @@ export function getJeolguk(hwYear: number, hwMonth: number, hwDay: number): {
   return { name, sogung, daegung };
 }
 
+const AM_SOGUNG_VALUES = [2, 3, 4, 5, 6, 7, 8, 9, 10];
+const PM_SOGUNG_VALUES = [3, 4, 7, 2, 6, 10, 5, 8, 9];
+
+export function getSogungDaegung(date: Date): {
+  sogung: number;
+  daegung: number;
+  sogungIndex: number;
+  isAM: boolean;
+  remainingMinutes: number;
+} {
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
+  
+  let minutesFromCycleStart: number;
+  let isAM: boolean;
+  
+  if (hours >= 23 || hours < 11) {
+    isAM = true;
+    if (hours >= 23) {
+      minutesFromCycleStart = (hours - 23) * 60 + minutes;
+    } else {
+      minutesFromCycleStart = (hours + 1) * 60 + minutes;
+    }
+  } else {
+    isAM = false;
+    minutesFromCycleStart = (hours - 11) * 60 + minutes;
+  }
+  
+  const sogungIndex = Math.floor(minutesFromCycleStart / 80);
+  const clampedIndex = Math.min(sogungIndex, 8);
+  
+  const sogungValues = isAM ? AM_SOGUNG_VALUES : PM_SOGUNG_VALUES;
+  const sogung = sogungValues[clampedIndex];
+  
+  const elapsedInSogung = minutesFromCycleStart - (clampedIndex * 80);
+  const remainingMinutes = Math.max(0, 80 - elapsedInSogung);
+  
+  const hwDate = getHwanggeukDate(date.getFullYear(), date.getMonth() + 1, date.getDate());
+  const daysFromEpoch = (hwDate.year - HW_EPOCH_YEAR) * HW_DAYS_PER_YEAR + 
+    HW_MONTH_DAYS.slice(0, hwDate.month - 1).reduce((a, b) => a + b, 0) + hwDate.day - 1;
+  
+  const halfDaysFromEpoch = daysFromEpoch * 2 + (isAM ? 0 : 1);
+  const daegungIndex = ((halfDaysFromEpoch % 9) + 9) % 9;
+  const daegung = daegungIndex + 2;
+  
+  return { sogung, daegung, sogungIndex: clampedIndex, isAM, remainingMinutes };
+}
+
 export function getWeekdayHanja(dayOfWeek: number): string {
   return WEEKDAYS_HANJA[dayOfWeek];
 }

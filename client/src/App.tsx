@@ -12,6 +12,8 @@ import UserPage from "@/pages/UserPage";
 import MansionChart from "@/pages/MansionChart";
 import EbookPage from "@/pages/EbookPage";
 import StorePage from "@/pages/StorePage";
+import CalendarPage from "@/pages/CalendarPage";
+import CommunityPage from "@/pages/CommunityPage";
 
 function Router() {
   return (
@@ -24,6 +26,8 @@ function Router() {
       <Route path="/28su" component={MansionChart} />
       <Route path="/ebook" component={EbookPage} />
       <Route path="/store" component={StorePage} />
+      <Route path="/calendar" component={CalendarPage} />
+      <Route path="/community" component={CommunityPage} />
       <Route component={NotFound} />
     </Switch>
   );

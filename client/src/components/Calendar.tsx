@@ -582,20 +582,20 @@ export function Calendar() {
                   </div>
                 </div>
                 <div className="bg-muted/50 rounded p-3">
-                  <div className="text-muted-foreground text-xs mb-1">양력</div>
+                  <div className="text-muted-foreground text-xs mb-1">양력 (陽曆)</div>
                   <div className="font-bold text-lg">
-                    {displayYear}.{displayMonth}.{displayDay}
+                    {displayYear}年 {displayMonth}月 {displayDay}日
                   </div>
                 </div>
                 <div className="bg-muted/50 rounded p-3">
-                  <div className="text-muted-foreground text-xs mb-1">음력</div>
+                  <div className="text-muted-foreground text-xs mb-1">음력 (陰曆)</div>
                   <div className="font-bold text-lg">
-                    {displayData.lunarYear}.{displayData.lunarMonth}.{displayData.lunarDay}
-                    {displayData.isLeapMonth && <span className="text-xs ml-1">(윤)</span>}
+                    {displayData.lunarYear}年 {displayData.lunarMonth}月 {displayData.lunarDay}日
+                    {displayData.isLeapMonth && <span className="text-xs ml-1">(閏)</span>}
                   </div>
                 </div>
                 <div className="bg-muted/50 rounded p-3 col-span-2">
-                  <div className="text-muted-foreground text-xs mb-1">절기</div>
+                  <div className="text-muted-foreground text-xs mb-1">절기 (節氣)</div>
                   <div className="font-bold text-lg">{displayData.currentTerm.hanja} ({displayData.currentTerm.korean})</div>
                 </div>
               </div>

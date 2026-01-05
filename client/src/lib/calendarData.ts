@@ -276,7 +276,7 @@ export function getHwanggeukDaysFromEpochExport(year: number, month: number, day
 
 export function getSolarTerm(month: number, day: number): { hanja: string; korean: string; general: string } | null {
   const termDays: { [key: number]: number[] } = {
-    1: [6, 20], 2: [4, 19], 3: [6, 21], 4: [5, 20],
+    1: [5, 20], 2: [4, 19], 3: [6, 21], 4: [5, 20],
     5: [6, 21], 6: [6, 21], 7: [7, 23], 8: [8, 23],
     9: [8, 23], 10: [8, 24], 11: [8, 22], 12: [7, 22]
   };

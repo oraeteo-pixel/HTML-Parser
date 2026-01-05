@@ -15,6 +15,7 @@ export const posts = pgTable("posts", {
   title: text("title").notNull(),
   content: text("content").notNull(),
   authorId: integer("author_id").references(() => users.id).notNull(),
+  mediaUrls: text("media_urls").array(),
   createdAt: timestamp("created_at").defaultNow(),
 });
 

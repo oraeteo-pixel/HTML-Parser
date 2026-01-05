@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { api, errorSchemas } from "@shared/routes";
 import { z } from "zod";
 import { setupAuth } from "./auth";
+import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
 
 export async function registerRoutes(
   httpServer: Server,
@@ -11,6 +12,9 @@ export async function registerRoutes(
 ): Promise<Server> {
   // Set up authentication (passport, session)
   setupAuth(app);
+
+  // Register object storage routes for file uploads
+  registerObjectStorageRoutes(app);
 
   // === Posts Routes ===
   
@@ -33,7 +37,7 @@ export async function registerRoutes(
       // Create post with logged-in user as author
       const post = await storage.createPost({
         ...input,
-        authorId: req.user!.id,
+        authorId: (req.user as { id: number }).id,
       });
       
       res.status(201).json(post);

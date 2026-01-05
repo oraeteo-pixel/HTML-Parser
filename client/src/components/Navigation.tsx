@@ -10,10 +10,10 @@ export function Navigation() {
   const dayName = dayNames[today.getDay()];
 
   const menuItems = [
-    { icon: LayoutGrid, label: "Square", korLabel: "광장" },
-    { icon: Map, label: "Map", korLabel: "지도" },
-    { icon: Grid, label: "Madang", korLabel: "마당" },
-    { icon: User, label: "User", korLabel: "회원" },
+    { icon: LayoutGrid, label: "Square", korLabel: "광장", href: "/square" },
+    { icon: Map, label: "Map", korLabel: "지도", href: "/map" },
+    { icon: Grid, label: "Madang", korLabel: "마당", href: "/madang" },
+    { icon: User, label: "User", korLabel: "회원", href: "/user" },
   ];
 
   return (
@@ -35,13 +35,14 @@ export function Navigation() {
 
           <div className="flex gap-4 items-end pb-1">
             {menuItems.map((item) => (
-              <button 
+              <Link 
                 key={item.label}
+                href={item.href}
                 className="flex flex-col items-center gap-0 group cursor-pointer"
                 data-testid={`nav-${item.label.toLowerCase()}`}
               >
                 <item.icon className="h-8 w-8 orae-pink group-hover:text-accent transition-colors" />
-              </button>
+              </Link>
             ))}
           </div>
         </div>

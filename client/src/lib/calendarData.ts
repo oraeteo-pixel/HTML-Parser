@@ -548,10 +548,13 @@ export function getHwanggeuk28Mansion(hwYear: number, hwMonth: number, hwDay: nu
 }
 
 export function getHwanggeukPosition(hwYear: number, hwMonth: number, hwDay: number): string {
-  const daysFromHwEpoch = (hwYear - HW_EPOCH_YEAR) * HW_DAYS_PER_YEAR + 
-    HW_MONTH_DAYS.slice(0, hwMonth - 1).reduce((a, b) => a + b, 0) + hwDay - 1;
+  const dayOfYear = HW_MONTH_DAYS.slice(0, hwMonth - 1).reduce((a, b) => a + b, 0) + hwDay;
   
-  const n = daysFromHwEpoch;
+  if (dayOfYear >= 365) {
+    return "존궁";
+  }
+  
+  const n = dayOfYear - 1;
   const step = Math.floor((n * 2) / 9);
   const cycleIndex = ((step % 81) + 81) % 81;
   

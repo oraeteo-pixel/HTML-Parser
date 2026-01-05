@@ -534,7 +534,7 @@ export function getHwanggeuk28Mansion(hwYear: number, hwMonth: number, hwDay: nu
   
   if (mapping === "中") {
     return { 
-      mansion: "中, 성수 존공", 
+      mansion: "中, 星宿尊空", 
       general: "-",
       isZunkong: true
     };
@@ -551,7 +551,7 @@ export function getHwanggeukPosition(hwYear: number, hwMonth: number, hwDay: num
   const dayOfYear = HW_MONTH_DAYS.slice(0, hwMonth - 1).reduce((a, b) => a + b, 0) + hwDay;
   
   if (dayOfYear >= 365) {
-    return "존궁";
+    return "尊宮";
   }
   
   const n = dayOfYear - 1;

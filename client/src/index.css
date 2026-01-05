@@ -271,7 +271,7 @@
 }
 
 .ganji-box {
-  @apply text-xs px-1.5 py-0.5 rounded text-center mx-auto;
+  @apply text-sm px-1.5 py-0.5 rounded text-center mx-auto font-bold;
   background-color: #e8f5e9;
   color: #2e7d32;
 }
@@ -282,15 +282,15 @@
 }
 
 .trigram-text {
-  @apply text-xs font-bold;
+  @apply text-sm font-bold;
   color: #fb6c9f;
 }
 
 .mansion-info {
-  @apply text-[10px] leading-tight;
+  @apply text-xs leading-tight font-medium;
   color: #fb6c9f;
 }
 
-.direction-info {
-  @apply text-[9px] text-muted-foreground;
+.position-text {
+  @apply text-xs text-muted-foreground;
 }

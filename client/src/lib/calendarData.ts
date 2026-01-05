@@ -523,10 +523,13 @@ export function getHwanggeukDayGanZhi(hwYear: number, hwMonth: number, hwDay: nu
   return HEAVENLY_STEMS[stemIndex] + EARTHLY_BRANCHES[branchIndex];
 }
 
+const POSITION_HANJA = ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十"];
+
 export function getHwanggeuk28Mansion(hwYear: number, hwMonth: number, hwDay: number): { 
   mansion: string; 
   general: string;
   isZunkong: boolean;
+  position: string;
 } {
   const dayGanZhi = getHwanggeukDayGanZhi(hwYear, hwMonth, hwDay);
   
@@ -536,7 +539,8 @@ export function getHwanggeuk28Mansion(hwYear: number, hwMonth: number, hwDay: nu
     return { 
       mansion: "中, 성수 존공", 
       general: "-",
-      isZunkong: true
+      isZunkong: true,
+      position: ""
     };
   }
   
@@ -544,7 +548,10 @@ export function getHwanggeuk28Mansion(hwYear: number, hwMonth: number, hwDay: nu
   const mansion = HW_28_MANSIONS[mansionIndex];
   const general = HW_28_GENERALS[mansionIndex];
   
-  return { mansion, general, isZunkong: false };
+  const positionInSeven = (mansionIndex % 7) + 1;
+  const position = `七之${POSITION_HANJA[positionInSeven - 1]}`;
+  
+  return { mansion, general, isZunkong: false, position };
 }
 
 export function getJeolguk(hwYear: number, hwMonth: number, hwDay: number): {

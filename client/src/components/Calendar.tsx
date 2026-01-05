@@ -313,7 +313,7 @@ export function Calendar() {
                   className="inline-block px-2 py-1 rounded text-white text-xs"
                   style={{ backgroundColor: '#4a9f4a' }}
                 >
-                  {trigram.trigram}괘
+                  {trigram.trigram}
                 </span>
               </div>
             </>
@@ -435,8 +435,9 @@ export function Calendar() {
                 </div>
                 
                 <div className="flex-1 flex flex-col justify-end space-y-0.5">
-                  <div className="trigram-text">{cellTrigram.trigram}괘</div>
+                  <div className="trigram-text">{cellTrigram.trigram}</div>
                   <div className="mansion-info">{cellMansion.mansion},{cellMansion.general}</div>
+                  {cellMansion.position && <div className="position-text">{cellMansion.position}</div>}
                 </div>
               </div>
             );
@@ -510,7 +511,7 @@ export function Calendar() {
               </div>
               <div className="bg-muted/50 rounded p-3">
                 <div className="text-muted-foreground text-xs mb-1">팔괘 / 방위</div>
-                <div className="font-bold text-lg">{trigram.trigram}괘</div>
+                <div className="font-bold text-lg">{trigram.trigram}</div>
               </div>
               <div className="bg-muted/50 rounded p-3 col-span-2">
                 <div className="text-muted-foreground text-xs mb-1">28수 (二十八宿)</div>

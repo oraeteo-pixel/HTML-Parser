@@ -520,6 +520,14 @@ export function Calendar() {
                 <div className="text-muted-foreground text-xs mb-1">팔괘 / 방위</div>
                 <div className="font-bold text-lg">{trigram.trigram}</div>
               </div>
+              <div className="bg-muted/50 rounded p-3">
+                <div className="text-muted-foreground text-xs mb-1">절국</div>
+                <div className="font-bold text-lg">{jeolguk.name}</div>
+              </div>
+              <div className="bg-muted/50 rounded p-3">
+                <div className="text-muted-foreground text-xs mb-1">소궁 / 대궁</div>
+                <div className="font-bold text-lg">{liveSogungDaegung.sogung} / {liveSogungDaegung.daegung}</div>
+              </div>
               <div className="bg-muted/50 rounded p-3 col-span-2">
                 <div className="text-muted-foreground text-xs mb-1">28수 (二十八宿)</div>
                 <div className="flex items-center gap-3">

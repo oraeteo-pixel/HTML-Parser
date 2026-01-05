@@ -277,8 +277,8 @@ export function getCurrentSolarTerm(month: number, day: number): { hanja: string
 }
 
 const HW_EPOCH_YEAR = 1989;
-const HW_EPOCH_MONTH = 3;
-const HW_EPOCH_DAY = 16;
+const HW_EPOCH_MONTH = 4;
+const HW_EPOCH_DAY = 21;
 const HW_DAYS_PER_YEAR = 366;
 const HW_MONTH_DAYS = [30, 31, 30, 31, 30, 31, 30, 31, 30, 31, 30, 31];
 

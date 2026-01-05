@@ -1,5 +1,6 @@
 import { TopBar } from "@/components/TopBar";
 import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
 import { Calendar } from "@/components/Calendar";
 import { PostList } from "@/components/PostList";
 import { Search, Home as HomeIcon, ArrowUp } from "lucide-react";
@@ -38,9 +39,7 @@ export default function Home() {
         </div>
       </main>
 
-      <footer className="max-w-[990px] mx-auto py-6 text-center text-muted-foreground text-xs">
-        <p>© 2026 오리알터닷컴. All rights reserved.</p>
-      </footer>
+      <Footer />
 
       <div className="fixed bottom-1 right-2 z-50">
         <Button 

@@ -1,5 +1,6 @@
 import { TopBar } from "@/components/TopBar";
 import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
 import { Card } from "@/components/ui/card";
 import { BookOpen } from "lucide-react";
 
@@ -18,6 +19,8 @@ export default function EbookPage() {
           </p>
         </Card>
       </main>
+      
+      <Footer />
     </div>
   );
 }

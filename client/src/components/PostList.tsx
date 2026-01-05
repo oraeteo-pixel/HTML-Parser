@@ -7,10 +7,9 @@ import { z } from "zod";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
-import { Card } from "./ui/card";
 import { formatDistanceToNow } from "date-fns";
 import { ko } from "date-fns/locale";
-import { Loader2, MessageSquare, Send } from "lucide-react";
+import { Loader2, MessageSquare, Send, User } from "lucide-react";
 
 export function PostList() {
   const { data: posts, isLoading } = usePosts();
@@ -34,85 +33,89 @@ export function PostList() {
   if (isLoading) {
     return (
       <div className="flex justify-center py-12">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <Loader2 className="h-8 w-8 animate-spin text-primary" data-testid="posts-loading" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-4" data-testid="post-list">
       <div className="flex items-center justify-between border-b-2 border-primary pb-2">
-        <h3 className="text-xl font-bold font-display flex items-center gap-2">
+        <h3 className="text-lg font-bold flex items-center gap-2">
           <MessageSquare className="h-5 w-5 text-accent" />
-          마당 (Madang / Community)
+          마당 (Community)
         </h3>
-        <span className="text-sm text-muted-foreground font-mono">
+        <span className="text-sm text-muted-foreground">
           Total {posts?.length || 0} posts
         </span>
       </div>
 
-      {/* Write Post Form */}
       {user ? (
-        <Card className="p-4 border-2 border-muted bg-muted/10">
+        <div className="bg-muted/30 border border-border rounded p-4" data-testid="post-form">
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
             <Input 
               placeholder="제목 (Title)" 
               {...form.register("title")} 
-              className="bg-white border-muted-foreground/30 focus-visible:border-primary"
+              className="bg-white"
+              data-testid="input-post-title"
             />
             <Textarea 
-              placeholder="무슨 생각을 하고 계신가요? (What's on your mind?)" 
+              placeholder="무슨 생각을 하고 계신가요?" 
               {...form.register("content")} 
-              className="bg-white min-h-[100px] border-muted-foreground/30 focus-visible:border-primary resize-none"
+              className="bg-white min-h-[80px] resize-none"
+              data-testid="input-post-content"
             />
             <div className="flex justify-end">
-              <Button type="submit" disabled={isPending} className="font-bold">
+              <Button type="submit" disabled={isPending} data-testid="button-post-submit">
                 {isPending ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
-                게시하기 (Post)
+                게시하기
               </Button>
             </div>
           </form>
-        </Card>
+        </div>
       ) : (
-        <div className="bg-muted/20 p-4 rounded text-center text-sm text-muted-foreground border border-dashed border-muted-foreground/30">
-          로그인 후 글을 작성할 수 있습니다. (Please login to post)
+        <div 
+          className="bg-muted/20 p-4 rounded text-center text-sm text-muted-foreground border border-dashed border-border"
+          data-testid="login-prompt"
+        >
+          로그인 후 글을 작성할 수 있습니다.
         </div>
       )}
 
-      {/* Posts List */}
-      <div className="space-y-4">
+      <div className="space-y-3">
         {posts?.length === 0 ? (
-          <div className="text-center py-12 text-muted-foreground">
-            No posts yet. Be the first to write in the Madang!
+          <div className="text-center py-12 text-muted-foreground" data-testid="no-posts">
+            아직 게시물이 없습니다. 첫 번째 글을 작성해보세요!
           </div>
         ) : (
           posts?.map((post) => (
             <div 
               key={post.id} 
-              className="group bg-white p-5 rounded border border-border hover:border-primary hover:shadow-md transition-all duration-200"
+              className="bg-white p-4 rounded border border-border hover:border-primary transition-colors"
+              data-testid={`post-item-${post.id}`}
             >
               <div className="flex justify-between items-start mb-2">
-                <h4 className="font-bold text-lg text-primary group-hover:text-accent transition-colors">
+                <h4 className="font-bold text-foreground hover:text-primary cursor-pointer">
                   {post.title}
                 </h4>
-                <span className="text-xs text-muted-foreground font-mono bg-muted px-2 py-1 rounded">
+                <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">
                   {formatDistanceToNow(new Date(post.createdAt || ""), { addSuffix: true, locale: ko })}
                 </span>
               </div>
-              <p className="text-foreground/80 leading-relaxed text-sm whitespace-pre-wrap">
+              <p className="text-foreground/80 text-sm whitespace-pre-wrap">
                 {post.content}
               </p>
-              <div className="mt-4 pt-3 border-t border-dashed border-muted flex items-center justify-between">
+              <div className="mt-3 pt-2 border-t border-dashed border-muted flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary">
-                    {post.author ? post.author[0].toUpperCase() : "?"}
+                  <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                    <User className="h-3 w-3 text-primary" />
                   </div>
-                  <span className="text-xs font-medium text-muted-foreground">
+                  <span className="text-xs text-muted-foreground">
                     {post.author}
                   </span>
                 </div>
-                <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground hover:text-accent">
-                  답글달기 (Reply)
+                <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground">
+                  답글
                 </Button>
               </div>
             </div>

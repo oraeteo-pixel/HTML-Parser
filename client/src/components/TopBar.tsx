@@ -1,48 +1,67 @@
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription } from "@/components/ui/dialog";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { AuthForms } from "@/components/AuthForms";
 import { useState } from "react";
 import { format } from "date-fns";
+import { Calendar, MessageSquare } from "lucide-react";
 
 export function TopBar() {
   const { user, logout } = useAuth();
   const [authOpen, setAuthOpen] = useState(false);
   
-  // Mock Korean lunar date for display
   const today = new Date();
-  const dateStr = format(today, "yyyy.M.d");
-  const dayName = ["日", "月", "火", "水", "木", "金", "土"][today.getDay()];
+  const dateStr = format(today, "yyyy-M-d");
+  const dayNames = ["日", "月", "火", "水", "木", "金", "土"];
+  const dayName = dayNames[today.getDay()];
   
   return (
-    <div className="bg-primary text-primary-foreground py-2 px-4 text-xs md:text-sm font-mono border-b-2 border-accent">
-      <div className="max-w-6xl mx-auto flex justify-between items-center">
-        <div className="flex items-center gap-2 opacity-90">
-          <span>{dateStr} ({dayName})</span>
-          <span className="hidden sm:inline text-accent">음11.17 己卯日</span>
+    <div 
+      data-testid="topbar"
+      className="bg-background border-b border-border shadow-sm fixed top-0 left-0 right-0 z-50"
+      style={{ boxShadow: "0 0 15px #ccc" }}
+    >
+      <div className="max-w-[990px] mx-auto h-[50px] flex items-center justify-between px-2">
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <Calendar className="h-4 w-4" />
+          <span className="text-sm font-medium">{dateStr}</span>
         </div>
 
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
+          <Button variant="ghost" size="icon" className="h-8 w-8" data-testid="button-comments">
+            <MessageSquare className="h-4 w-4" />
+          </Button>
+          
           {user ? (
             <div className="flex items-center gap-3">
-              <span className="text-secondary opacity-80">Welcome, {user.nickname}</span>
-              <button 
+              <span className="text-sm text-muted-foreground">{user.nickname}</span>
+              <Button 
+                variant="outline"
+                size="sm"
                 onClick={() => logout.mutate()}
-                className="hover:text-accent transition-colors underline decoration-accent/50 underline-offset-4"
+                data-testid="button-logout"
               >
                 로그아웃
-              </button>
+              </Button>
             </div>
           ) : (
             <Dialog open={authOpen} onOpenChange={setAuthOpen}>
               <DialogTrigger asChild>
-                <div className="flex gap-3 cursor-pointer">
-                  <span className="hover:text-accent transition-colors">로그인</span>
-                  <span className="opacity-30">|</span>
-                  <span className="hover:text-accent transition-colors">회원가입</span>
+                <div className="flex gap-2">
+                  <Button variant="default" size="sm" data-testid="button-login">
+                    로그인
+                  </Button>
+                  <Button variant="outline" size="sm" data-testid="button-register">
+                    회원가입
+                  </Button>
                 </div>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-md bg-[#FDFBF7] border-primary">
+              <DialogContent className="sm:max-w-md bg-card border-border">
+                <VisuallyHidden>
+                  <DialogTitle>로그인 / 회원가입</DialogTitle>
+                  <DialogDescription>오리알터닷컴 회원 인증</DialogDescription>
+                </VisuallyHidden>
                 <AuthForms onSuccess={() => setAuthOpen(false)} />
               </DialogContent>
             </Dialog>

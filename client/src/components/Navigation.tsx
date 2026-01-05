@@ -1,4 +1,4 @@
-import { Map, User, Star, BookOpen, ShoppingBag } from "lucide-react";
+import { Map, User, Star, BookOpen, ShoppingBag, CalendarDays } from "lucide-react";
 import { format } from "date-fns";
 import { Link } from "wouter";
 import { getCalendarDayData } from "@/lib/calendarData";
@@ -12,6 +12,7 @@ export function Navigation() {
   const todayData = getCalendarDayData(today.getFullYear(), today.getMonth() + 1, today.getDate());
 
   const menuItems = [
+    { icon: CalendarDays, label: "Calendar", korLabel: "달력", href: "/" },
     { icon: Star, label: "28su", korLabel: "28수", href: "/28su" },
     { icon: BookOpen, label: "Ebook", korLabel: "전자책", href: "/ebook" },
     { icon: ShoppingBag, label: "Store", korLabel: "문구몰", href: "/store" },

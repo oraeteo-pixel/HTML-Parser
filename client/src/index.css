@@ -15,10 +15,10 @@
   --elevate-1: rgba(0,0,0, .03);
   --elevate-2: rgba(0,0,0, .08);
 
-  --orae-pink: 340 85% 70%;
-  --orae-pink-dark: 340 75% 55%;
+  --orae-navy: 215 50% 35%;
+  --orae-navy-dark: 215 55% 25%;
   --orae-jade: 145 40% 42%;
-  --orae-jade-light: 145 35% 55%;
+  --orae-jade-light: 145 30% 50%;
   --ganji-surface: 45 30% 96%;
   --ganji-border: 45 20% 85%;
 
@@ -36,7 +36,7 @@
   --sidebar-border: 0 0% 60%;
   --sidebar-primary: 200 70% 50%;
   --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 340 60% 60%;
+  --sidebar-accent: 215 50% 40%;
   --sidebar-accent-foreground: 0 0% 100%;
   --sidebar-ring: 200 70% 50%;
 
@@ -53,7 +53,7 @@
   --muted: 0 0% 90%;
   --muted-foreground: 0 0% 45%;
 
-  --accent: 340 65% 55%;
+  --accent: 215 50% 40%;
   --accent-foreground: 0 0% 100%;
 
   --destructive: 0 70% 50%;
@@ -62,7 +62,7 @@
   --input: 0 0% 85%;
   --ring: 200 70% 45%;
   --chart-1: 200 70% 50%;
-  --chart-2: 340 65% 55%;
+  --chart-2: 215 50% 40%;
   --chart-3: 45 90% 55%;
   --chart-4: 140 50% 45%;
   --chart-5: 280 50% 55%;
@@ -94,8 +94,8 @@
   --elevate-1: rgba(255,255,255, .04);
   --elevate-2: rgba(255,255,255, .09);
 
-  --orae-pink: 340 80% 65%;
-  --orae-pink-dark: 340 70% 50%;
+  --orae-navy: 215 50% 50%;
+  --orae-navy-dark: 215 55% 40%;
   --orae-jade: 145 35% 50%;
   --orae-jade-light: 145 30% 60%;
   --ganji-surface: 0 0% 20%;
@@ -115,7 +115,7 @@
   --sidebar-border: 0 0% 25%;
   --sidebar-primary: 200 70% 50%;
   --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 340 60% 55%;
+  --sidebar-accent: 215 50% 50%;
   --sidebar-accent-foreground: 0 0% 100%;
   --sidebar-ring: 200 70% 50%;
 
@@ -132,7 +132,7 @@
   --muted: 0 0% 20%;
   --muted-foreground: 0 0% 60%;
 
-  --accent: 340 65% 55%;
+  --accent: 215 50% 50%;
   --accent-foreground: 0 0% 100%;
 
   --destructive: 0 70% 45%;
@@ -141,7 +141,7 @@
   --input: 0 0% 30%;
   --ring: 200 70% 55%;
   --chart-1: 200 70% 55%;
-  --chart-2: 340 65% 55%;
+  --chart-2: 215 50% 50%;
   --chart-3: 45 90% 55%;
   --chart-4: 140 50% 50%;
   --chart-5: 280 50% 55%;
@@ -259,8 +259,8 @@
   @apply bg-muted/20 opacity-60;
 }
 
-.orae-pink {
-  color: #fb6c9f;
+.orae-navy {
+  color: hsl(var(--orae-navy));
 }
 
 .orae-gold {
@@ -270,7 +270,7 @@
 .day-number {
   @apply font-bold;
   font-size: clamp(0.875rem, 3vw, 1.125rem);
-  color: hsl(var(--orae-pink-dark));
+  color: hsl(var(--orae-navy-dark));
 }
 
 .day-number.sunday {
@@ -301,13 +301,13 @@
 .trigram-text {
   @apply font-bold;
   font-size: clamp(0.625rem, 2.5vw, 0.875rem);
-  color: hsl(var(--orae-pink-dark));
+  color: hsl(var(--orae-navy-dark));
 }
 
 .mansion-info {
   @apply leading-tight font-medium;
   font-size: clamp(0.5rem, 2vw, 0.75rem);
-  color: hsl(var(--orae-pink));
+  color: hsl(var(--orae-navy));
 }
 
 .position-text {
@@ -319,14 +319,14 @@
   font-size: clamp(1rem, 4vw, 1.5rem);
   font-weight: 700;
   letter-spacing: 0.05em;
-  background: linear-gradient(135deg, hsl(var(--orae-pink-dark)) 0%, hsl(var(--orae-pink)) 100%);
+  background: linear-gradient(135deg, hsl(var(--orae-navy-dark)) 0%, hsl(var(--orae-navy)) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
 .dark .ganji-title {
-  background: linear-gradient(135deg, hsl(var(--orae-pink)) 0%, hsl(340 90% 80%) 100%);
+  background: linear-gradient(135deg, hsl(var(--orae-navy)) 0%, hsl(215 60% 70%) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -343,8 +343,8 @@
   background: linear-gradient(135deg, hsl(var(--ganji-surface)) 0%, hsl(var(--card)) 100%);
 }
 
-.badge-pink {
-  background: linear-gradient(135deg, hsl(var(--orae-pink-dark)) 0%, hsl(var(--orae-pink)) 100%);
+.badge-navy {
+  background: linear-gradient(135deg, hsl(var(--orae-navy-dark)) 0%, hsl(var(--orae-navy)) 100%);
   color: white;
   font-weight: 600;
   padding: 0.25rem 0.75rem;

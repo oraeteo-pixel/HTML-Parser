@@ -12,7 +12,7 @@ export function Footer() {
   return (
     <footer className="max-w-[990px] mx-auto py-4 text-center" data-testid="footer">
       <div className="text-sm mb-2" data-testid="footer-date">
-        <span className="orae-pink font-bold">{dateStr} {dayName}</span>
+        <span className="orae-navy font-bold">{dateStr} {dayName}</span>
         <span className="text-muted-foreground ml-2">
           (음{todayData.lunarMonth}.{todayData.lunarDay} {todayData.dayGanZhi}日)
         </span>

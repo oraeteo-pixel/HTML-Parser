@@ -280,7 +280,7 @@ export function Calendar() {
               ? "text-white border-0" 
               : "bg-white dark:bg-card text-foreground border border-border"
             }
-            style={calType === "hw" ? { backgroundColor: '#fb6c9f' } : {}}
+            style={calType === "hw" ? { backgroundColor: 'hsl(215 50% 35%)' } : {}}
           >
             황극력
           </Button>
@@ -292,7 +292,7 @@ export function Calendar() {
               ? "text-white border-0" 
               : "bg-white dark:bg-card text-foreground border border-border"
             }
-            style={calType === "df" ? { backgroundColor: '#fb6c9f' } : {}}
+            style={calType === "df" ? { backgroundColor: 'hsl(215 50% 35%)' } : {}}
           >
             선천력
           </Button>
@@ -310,7 +310,7 @@ export function Calendar() {
                 {liveHwanggeuk.yearGanZhi}年 {liveHwanggeuk.monthGanZhi}月 {liveDayGanZhi}日 {liveHourGanZhi}時
               </div>
               <div className="flex flex-wrap items-center gap-2">
-                <span className="badge-pink">
+                <span className="badge-navy">
                   {liveJeolguk.name}
                 </span>
                 <span className="text-fluid-sm text-muted-foreground">
@@ -318,7 +318,7 @@ export function Calendar() {
                 </span>
               </div>
               <div className="flex gap-2 flex-wrap">
-                <span className="badge-pink">
+                <span className="badge-navy">
                   {hwMansion.mansion}{hwMansion.isZunkong ? "" : "수"}
                 </span>
                 <span className="badge-jade">
@@ -335,7 +335,7 @@ export function Calendar() {
                 {displayYear}.{displayMonth}.{displayDay} {WEEKDAYS_HANJA[displayDate.getDay()]} · 음력 {displayData.lunarMonth}.{displayData.lunarDay}
               </div>
               <div className="flex gap-2 flex-wrap">
-                <span className="badge-pink">
+                <span className="badge-navy">
                   {displayData.currentTerm.hanja}
                 </span>
                 <span className="text-fluid-sm text-muted-foreground">
@@ -373,7 +373,7 @@ export function Calendar() {
             size="sm" 
             onClick={goToday}
             className="mx-2 text-white border-0"
-            style={{ backgroundColor: '#fb6c9f' }}
+            style={{ backgroundColor: 'hsl(215 50% 35%)' }}
             data-testid="button-today"
           >
             오늘

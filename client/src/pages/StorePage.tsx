@@ -10,8 +10,8 @@ export default function StorePage() {
       
       <main className="max-w-[990px] mx-auto px-2 py-4" data-testid="store-main">
         <Card className="p-8 text-center" data-testid="card-store">
-          <ShoppingBag className="h-16 w-16 mx-auto mb-4 orae-pink" data-testid="icon-store" />
-          <h1 className="text-2xl font-bold orae-pink mb-2" data-testid="text-store-title">문구몰</h1>
+          <ShoppingBag className="h-16 w-16 mx-auto mb-4 orae-navy" data-testid="icon-store" />
+          <h1 className="text-2xl font-bold orae-navy mb-2" data-testid="text-store-title">문구몰</h1>
           <p className="text-muted-foreground" data-testid="text-store-status">
             문구몰 서비스 준비 중입니다.
           </p>

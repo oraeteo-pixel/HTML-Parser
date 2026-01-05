@@ -67,7 +67,20 @@ export function Calendar() {
 
   const blanks = Array.from({ length: firstDayOfWeek });
 
-  const displayDate = selectedDay || today;
+  const displayDate = useMemo(() => {
+    if (selectedDay) {
+      return selectedDay;
+    }
+    if (calType === "hw" && hwMonthData.length > 0) {
+      const todayHwInfo = getHwanggeukDate(today.getFullYear(), today.getMonth() + 1, today.getDate());
+      if (todayHwInfo.year === hwYear && todayHwInfo.month === hwMonth) {
+        return today;
+      }
+      return hwMonthData[0].solarDate;
+    }
+    return today;
+  }, [selectedDay, calType, hwYear, hwMonth, hwMonthData, today]);
+  
   const displayYear = displayDate.getFullYear();
   const displayMonth = displayDate.getMonth() + 1;
   const displayDay = displayDate.getDate();
@@ -77,6 +90,7 @@ export function Calendar() {
   const hwMonthGanZhi = getHwanggeukMonthGanZhi(hwYear, hwMonth);
 
   const handlePrevMonth = () => {
+    setSelectedDay(null);
     if (calType === "hw") {
       if (hwMonth === 1) {
         setHwYear(hwYear - 1);
@@ -95,6 +109,7 @@ export function Calendar() {
   };
 
   const handleNextMonth = () => {
+    setSelectedDay(null);
     if (calType === "hw") {
       if (hwMonth === 12) {
         setHwYear(hwYear + 1);
@@ -113,6 +128,7 @@ export function Calendar() {
   };
 
   const handlePrevYear = () => {
+    setSelectedDay(null);
     if (calType === "hw") {
       setHwYear(hwYear - 1);
     } else {
@@ -121,6 +137,7 @@ export function Calendar() {
   };
 
   const handleNextYear = () => {
+    setSelectedDay(null);
     if (calType === "hw") {
       setHwYear(hwYear + 1);
     } else {
@@ -207,7 +224,7 @@ export function Calendar() {
           
           <Select 
             value={String(calType === "hw" ? hwYear : solarYear)} 
-            onValueChange={(v) => calType === "hw" ? setHwYear(Number(v)) : setSolarYear(Number(v))}
+            onValueChange={(v) => { setSelectedDay(null); calType === "hw" ? setHwYear(Number(v)) : setSolarYear(Number(v)); }}
           >
             <SelectTrigger className="w-[100px]" data-testid="select-year">
               <SelectValue />
@@ -239,7 +256,7 @@ export function Calendar() {
 
           <Select 
             value={String(calType === "hw" ? hwMonth : solarMonth)} 
-            onValueChange={(v) => calType === "hw" ? setHwMonth(Number(v)) : setSolarMonth(Number(v))}
+            onValueChange={(v) => { setSelectedDay(null); calType === "hw" ? setHwMonth(Number(v)) : setSolarMonth(Number(v)); }}
           >
             <SelectTrigger className="w-[80px]" data-testid="select-month">
               <SelectValue />

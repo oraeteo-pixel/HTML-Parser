@@ -201,23 +201,31 @@ export function get28Mansion(year: number, month: number, day: number): {
   mansion: string; 
   general: string; 
   direction: string;
+  cardinalDirection: string;
+  position: string;
   image: string;
   description: string;
   index: number;
 } {
   const jd = getJulianDayNumber(year, month, day);
-  const index = (jd + 11) % 28;
+  const index = (jd + 10) % 28;
   
-  let direction = "中";
-  if (index >= 0 && index < 7) direction = "東";
-  else if (index >= 7 && index < 14) direction = "北";
-  else if (index >= 14 && index < 21) direction = "西";
-  else direction = "南";
+  let cardinalDirection = "南";
+  if (index >= 0 && index < 7) cardinalDirection = "東";
+  else if (index >= 7 && index < 14) cardinalDirection = "北";
+  else if (index >= 14 && index < 21) cardinalDirection = "西";
+  
+  const positionIndex = (index % 7) + 1;
+  let position = "중";
+  if (positionIndex <= 2) position = "초";
+  else if (positionIndex >= 6) position = "말";
   
   return {
     mansion: TWENTY_EIGHT_MANSIONS[index],
     general: MANSION_GENERALS[index],
-    direction,
+    direction: cardinalDirection,
+    cardinalDirection,
+    position,
     image: MANSION_GENERAL_IMAGES[index],
     description: MANSION_DESCRIPTIONS[index],
     index

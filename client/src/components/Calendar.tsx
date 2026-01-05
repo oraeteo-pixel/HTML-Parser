@@ -249,7 +249,7 @@ export function Calendar() {
                   className="inline-block px-2 py-1 rounded text-white text-xs"
                   style={{ backgroundColor: '#fb6c9f' }}
                 >
-                  {hwMansion.direction}, {hwMansion.mansion}宿{["星", "尾", "昴", "女"].includes(hwMansion.mansion) ? "尊空" : ""}
+                  {hwMansion.position} {hwMansion.mansion}수{["星", "尾", "昴", "女"].includes(hwMansion.mansion) ? " 존공" : ""}
                 </span>
               </div>
             </>
@@ -445,19 +445,19 @@ export function Calendar() {
                 <div className="font-bold text-lg">{displayData.currentTerm.hanja} ({displayData.currentTerm.korean})</div>
               </div>
               <div className="bg-muted/50 rounded p-3">
-                <div className="text-muted-foreground text-xs mb-1">팔괘</div>
-                <div className="font-bold text-lg">{hwMansion.direction}</div>
+                <div className="text-muted-foreground text-xs mb-1">팔괘 / 방위</div>
+                <div className="font-bold text-lg">{hwMansion.cardinalDirection}</div>
               </div>
               <div className="bg-muted/50 rounded p-3 col-span-2">
                 <div className="text-muted-foreground text-xs mb-1">28수 (二十八宿)</div>
                 <div className="flex items-center gap-3">
                   <img 
-                    src={`/attached_assets/img/28j_${hwMansion.image}.jpg`} 
+                    src={`/img/28j_${hwMansion.image}.jpg`} 
                     alt={hwMansion.general} 
                     className="w-16 h-16 object-cover rounded"
                   />
                   <div>
-                    <div className="font-bold text-lg">{hwMansion.direction}, {hwMansion.mansion}宿{["星", "尾", "昴", "女"].includes(hwMansion.mansion) ? "尊空" : ""}</div>
+                    <div className="font-bold text-lg">{hwMansion.position} {hwMansion.mansion}수{["星", "尾", "昴", "女"].includes(hwMansion.mansion) ? " 존공" : ""}</div>
                     <div className="text-sm font-medium">{hwMansion.general}</div>
                     <div className="text-xs text-muted-foreground">七之{(hwMansion.index % 7) + 1}</div>
                   </div>

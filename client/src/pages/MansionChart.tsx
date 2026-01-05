@@ -3,7 +3,6 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { getHwanggeuk28Mansion, getHwanggeukDate, getDayGanZhi, getKoreanTime, getJeolguk, getSogungDaegung, getMansionGanjiMap, SIXTY_GANJI } from "@/lib/calendarData";
 import { Navigation } from "@/components/Navigation";
-import { TopBar } from "@/components/TopBar";
 import { Footer } from "@/components/Footer";
 
 const MANSION_GENERALS: { [key: string]: string } = {
@@ -89,7 +88,6 @@ export default function MansionChart() {
 
   return (
     <div className="min-h-screen bg-background">
-      <TopBar />
       <Navigation />
       
       <main className="max-w-[990px] mx-auto px-2 py-4">

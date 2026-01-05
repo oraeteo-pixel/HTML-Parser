@@ -1,4 +1,3 @@
-import { TopBar } from "@/components/TopBar";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { Calendar } from "@/components/Calendar";
@@ -6,7 +5,6 @@ import { Calendar } from "@/components/Calendar";
 export default function CalendarPage() {
   return (
     <div className="min-h-screen bg-background">
-      <TopBar />
       <Navigation />
       
       <main className="max-w-[990px] mx-auto px-2 py-4" data-testid="calendar-main">

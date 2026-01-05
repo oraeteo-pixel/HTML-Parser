@@ -237,36 +237,98 @@ export function JeolgukCircularChart({ date }: JeolgukCircularChartProps) {
           })}
           
           
+          {/* Second ring - 8 Trigrams with numbers */}
+          <g transform={`translate(${center}, ${center})`}>
+            {/* 8 Trigrams positioned like the image */}
+            {/* Top (12 o'clock): ☷ 2 */}
+            <text x="0" y="-155" textAnchor="middle" fontSize="24" fill="#2d3748">☷</text>
+            <text x="0" y="-175" textAnchor="middle" fontSize="14" fill="#718096">2</text>
+            
+            {/* Top-right (1:30): ☲ 9 */}
+            <text x="110" y="-110" textAnchor="middle" fontSize="24" fill="#2d3748">☲</text>
+            <text x="125" y="-125" textAnchor="middle" fontSize="14" fill="#718096">9</text>
+            
+            {/* Right (3 o'clock): ☳ 4 */}
+            <text x="155" y="0" textAnchor="middle" fontSize="24" fill="#2d3748">☳</text>
+            <text x="175" y="0" textAnchor="middle" fontSize="14" fill="#718096">4</text>
+            
+            {/* Bottom-right (4:30): ☶ 5 */}
+            <text x="110" y="110" textAnchor="middle" fontSize="24" fill="#2d3748">☶</text>
+            <text x="125" y="125" textAnchor="middle" fontSize="14" fill="#718096">5</text>
+            
+            {/* Bottom (6 o'clock): ☷ 10 */}
+            <text x="0" y="160" textAnchor="middle" fontSize="24" fill="#2d3748">☷</text>
+            <text x="0" y="180" textAnchor="middle" fontSize="14" fill="#718096">10</text>
+            
+            {/* Bottom-left (7:30): ☵ 3 */}
+            <text x="-110" y="110" textAnchor="middle" fontSize="24" fill="#2d3748">☵</text>
+            <text x="-125" y="125" textAnchor="middle" fontSize="14" fill="#718096">3</text>
+            
+            {/* Left (9 o'clock): ☴ 8 */}
+            <text x="-155" y="0" textAnchor="middle" fontSize="24" fill="#2d3748">☴</text>
+            <text x="-175" y="0" textAnchor="middle" fontSize="14" fill="#718096">8</text>
+            
+            {/* Top-left (10:30): ☰ 7 */}
+            <text x="-110" y="-110" textAnchor="middle" fontSize="24" fill="#2d3748">☰</text>
+            <text x="-125" y="-125" textAnchor="middle" fontSize="14" fill="#718096">7</text>
+            
+            {/* Connecting arrows/lines like in the image */}
+            {/* Star pattern lines */}
+            <line x1="0" y1="-140" x2="95" y2="-95" stroke="#718096" strokeWidth="1" markerEnd="url(#arrowhead)" />
+            <line x1="95" y1="-95" x2="140" y2="0" stroke="#718096" strokeWidth="1" markerEnd="url(#arrowhead)" />
+            <line x1="140" y1="0" x2="95" y2="95" stroke="#718096" strokeWidth="1" markerEnd="url(#arrowhead)" />
+            <line x1="95" y1="95" x2="0" y2="145" stroke="#718096" strokeWidth="1" markerEnd="url(#arrowhead)" />
+            <line x1="0" y1="145" x2="-95" y2="95" stroke="#718096" strokeWidth="1" markerEnd="url(#arrowhead)" />
+            <line x1="-95" y1="95" x2="-140" y2="0" stroke="#718096" strokeWidth="1" markerEnd="url(#arrowhead)" />
+            <line x1="-140" y1="0" x2="-95" y2="-95" stroke="#718096" strokeWidth="1" markerEnd="url(#arrowhead)" />
+            <line x1="-95" y1="-95" x2="0" y2="-140" stroke="#718096" strokeWidth="1" markerEnd="url(#arrowhead)" />
+            
+            {/* Cross lines through center */}
+            <line x1="0" y1="0" x2="0" y2="-140" stroke="#2f855a" strokeWidth="1.5" />
+            <line x1="0" y1="0" x2="140" y2="0" stroke="#2f855a" strokeWidth="1.5" />
+            <line x1="0" y1="0" x2="0" y2="145" stroke="#2f855a" strokeWidth="1.5" />
+            <line x1="0" y1="0" x2="-140" y2="0" stroke="#2f855a" strokeWidth="1.5" />
+          </g>
+          
+          {/* Arrow marker definition */}
+          <defs>
+            <marker id="arrowhead" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+              <polygon points="0 0, 6 3, 0 6" fill="#718096" />
+            </marker>
+          </defs>
+          
           {/* Center - 10 Heavenly Stems with numbers */}
           <g transform={`translate(${center}, ${center})`}>
-            {/* Center: 己甲 */}
-            <text x="0" y="0" textAnchor="middle" dominantBaseline="middle" fontSize="18" fontWeight="600" fill="#2d3748">己甲</text>
-            <text x="0" y="-18" textAnchor="middle" fontSize="12" fill="#718096">1·6</text>
+            {/* Center: (1)己 甲6 */}
+            <text x="-15" y="-8" textAnchor="middle" fontSize="10" fill="#718096">(1)</text>
+            <text x="-15" y="10" textAnchor="middle" fontSize="16" fontWeight="600" fill="#2d3748">己</text>
+            <text x="15" y="-8" textAnchor="middle" fontSize="10" fill="#718096">6</text>
+            <text x="15" y="10" textAnchor="middle" fontSize="16" fontWeight="600" fill="#2d3748">甲</text>
             
-            {/* Outer stems in octagon */}
-            <text x="0" y="-75" textAnchor="middle" fontSize="18" fontWeight={todayStem === '庚' ? "bold" : "normal"} fill={todayStem === '庚' ? "#1a365d" : "#2d3748"}>庚</text>
-            <text x="0" y="-92" textAnchor="middle" fontSize="12" fill="#718096">7</text>
+            {/* Outer stems in octagon - smaller radius */}
+            <text x="0" y="-55" textAnchor="middle" fontSize="16" fontWeight={todayStem === '庚' ? "bold" : "normal"} fill={todayStem === '庚' ? "#1a365d" : "#2d3748"}>庚</text>
+            <text x="15" y="-55" textAnchor="middle" fontSize="10" fill="#718096">7</text>
             
-            <text x="55" y="-55" textAnchor="middle" fontSize="18" fontWeight={todayStem === '丁' ? "bold" : "normal"} fill={todayStem === '丁' ? "#1a365d" : "#2d3748"}>丁</text>
-            <text x="68" y="-68" textAnchor="middle" fontSize="12" fill="#718096">9</text>
+            <text x="40" y="-40" textAnchor="middle" fontSize="16" fontWeight={todayStem === '丁' ? "bold" : "normal"} fill={todayStem === '丁' ? "#1a365d" : "#2d3748"}>丁</text>
+            <text x="55" y="-50" textAnchor="middle" fontSize="10" fill="#718096">9</text>
             
-            <text x="78" y="0" textAnchor="middle" fontSize="18" fontWeight={todayStem === '壬' ? "bold" : "normal"} fill={todayStem === '壬' ? "#1a365d" : "#2d3748"}>壬</text>
-            <text x="95" y="0" textAnchor="middle" fontSize="12" fill="#718096">4</text>
+            <text x="58" y="5" textAnchor="middle" fontSize="16" fontWeight={todayStem === '壬' ? "bold" : "normal"} fill={todayStem === '壬' ? "#1a365d" : "#2d3748"}>壬</text>
+            <text x="72" y="5" textAnchor="middle" fontSize="10" fill="#718096">4</text>
             
-            <text x="55" y="55" textAnchor="middle" fontSize="18" fontWeight={todayStem === '癸' ? "bold" : "normal"} fill={todayStem === '癸' ? "#1a365d" : "#2d3748"}>癸</text>
-            <text x="68" y="68" textAnchor="middle" fontSize="12" fill="#718096">5</text>
+            <text x="40" y="45" textAnchor="middle" fontSize="16" fontWeight={todayStem === '癸' ? "bold" : "normal"} fill={todayStem === '癸' ? "#1a365d" : "#2d3748"}>癸</text>
+            <text x="55" y="55" textAnchor="middle" fontSize="10" fill="#718096">5</text>
             
-            <text x="0" y="78" textAnchor="middle" fontSize="18" fontWeight={todayStem === '戊' ? "bold" : "normal"} fill={todayStem === '戊' ? "#1a365d" : "#2d3748"}>戊</text>
-            <text x="0" y="95" textAnchor="middle" fontSize="12" fill="#718096">10</text>
+            <text x="0" y="60" textAnchor="middle" fontSize="16" fontWeight={todayStem === '戊' ? "bold" : "normal"} fill={todayStem === '戊' ? "#1a365d" : "#2d3748"}>戊</text>
+            <text x="0" y="75" textAnchor="middle" fontSize="10" fill="#718096">10</text>
             
-            <text x="-55" y="55" textAnchor="middle" fontSize="18" fontWeight={todayStem === '辛' ? "bold" : "normal"} fill={todayStem === '辛' ? "#1a365d" : "#2d3748"}>辛</text>
-            <text x="-68" y="68" textAnchor="middle" fontSize="12" fill="#718096">3</text>
+            <text x="-40" y="45" textAnchor="middle" fontSize="16" fontWeight={todayStem === '辛' ? "bold" : "normal"} fill={todayStem === '辛' ? "#1a365d" : "#2d3748"}>辛</text>
+            <text x="-55" y="55" textAnchor="middle" fontSize="10" fill="#718096">3</text>
             
-            <text x="-78" y="0" textAnchor="middle" fontSize="18" fontWeight={todayStem === '丙' ? "bold" : "normal"} fill={todayStem === '丙' ? "#1a365d" : "#2d3748"}>丙</text>
-            <text x="-95" y="0" textAnchor="middle" fontSize="12" fill="#718096">8</text>
+            <text x="-58" y="5" textAnchor="middle" fontSize="16" fontWeight={todayStem === '丙' ? "bold" : "normal"} fill={todayStem === '丙' ? "#1a365d" : "#2d3748"}>丙</text>
+            <text x="-72" y="5" textAnchor="middle" fontSize="10" fill="#718096">8</text>
             
-            <text x="-55" y="-55" textAnchor="middle" fontSize="18" fontWeight={todayStem === '乙' ? "bold" : "normal"} fill={todayStem === '乙' ? "#1a365d" : "#2d3748"}>乙</text>
-            <text x="-68" y="-68" textAnchor="middle" fontSize="12" fill="#718096">7</text>
+            <text x="-40" y="-40" textAnchor="middle" fontSize="16" fontWeight={todayStem === '乙' ? "bold" : "normal"} fill={todayStem === '乙' ? "#1a365d" : "#2d3748"}>乙</text>
+            <text x="-55" y="-50" textAnchor="middle" fontSize="10" fill="#718096">7</text>
           </g>
         </svg>
       </div>

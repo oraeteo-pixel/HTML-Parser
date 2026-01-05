@@ -728,6 +728,11 @@ export interface CalendarDayData {
   yearGanZhi: string;
   monthGanZhi: string;
   dayGanZhi: string;
+  lunarGanZhi: {
+    year: string;
+    month: string;
+    day: string;
+  };
   mansion: string;
   mansionGeneral: string;
   mansionDirection: string;
@@ -747,11 +752,27 @@ export interface CalendarDayData {
   };
 }
 
+export function getLunarGanZhi(year: number, month: number, day: number): { year: string; month: string; day: string } {
+  const calendar = new KoreanLunarCalendar();
+  
+  if (calendar.setSolarDate(year, month, day)) {
+    const gapja = calendar.getChineseGapja();
+    return {
+      year: gapja.year.replace('年', ''),
+      month: gapja.month.replace('月', ''),
+      day: gapja.day.replace('日', '')
+    };
+  }
+  
+  return { year: '-', month: '-', day: '-' };
+}
+
 export function getCalendarDayData(year: number, month: number, day: number): CalendarDayData {
   const lunar = solarToLunar(year, month, day);
   const yearGanZhi = getYearGanZhi(year);
   const monthGanZhi = getMonthGanZhi(year, month);
   const dayGanZhi = getDayGanZhi(year, month, day);
+  const lunarGanZhi = getLunarGanZhi(year, month, day);
   const mansion = get28Mansion(year, month, day);
   const trigram = get8Trigram(year, month, day);
   const solarTerm = getSolarTerm(month, day);
@@ -769,6 +790,7 @@ export function getCalendarDayData(year: number, month: number, day: number): Ca
     yearGanZhi,
     monthGanZhi,
     dayGanZhi,
+    lunarGanZhi,
     mansion: mansion.mansion,
     mansionGeneral: mansion.general,
     mansionDirection: mansion.direction,

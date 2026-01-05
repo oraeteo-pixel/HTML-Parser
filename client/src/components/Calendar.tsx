@@ -513,65 +513,93 @@ export function Calendar() {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div className="bg-muted/50 rounded p-3 col-span-2">
-                <div className="text-muted-foreground text-xs mb-1">간지</div>
-                <div className="font-bold text-lg">
-                  {displayData.hwanggeuk.yearGanZhi}年 {displayData.hwanggeuk.monthGanZhi}月 {displayData.dayGanZhi}日 {hwHourGanZhi}時
+            {calType === "hw" ? (
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="bg-muted/50 rounded p-3 col-span-2">
+                  <div className="text-muted-foreground text-xs mb-1">간지</div>
+                  <div className="font-bold text-lg">
+                    {displayData.hwanggeuk.yearGanZhi}年 {displayData.hwanggeuk.monthGanZhi}月 {displayData.dayGanZhi}日 {hwHourGanZhi}時
+                  </div>
                 </div>
-              </div>
-              <div className="bg-muted/50 rounded p-3">
-                <div className="text-muted-foreground text-xs mb-1">절기</div>
-                <div className="font-bold text-lg">{displayData.currentTerm.hanja} ({displayData.currentTerm.korean})</div>
-              </div>
-              <div className="bg-muted/50 rounded p-3">
-                <div className="text-muted-foreground text-xs mb-1">팔괘 / 방위</div>
-                <div className="font-bold text-lg">{trigram.trigram}</div>
-              </div>
-              <div className="bg-muted/50 rounded p-3">
-                <div className="text-muted-foreground text-xs mb-1">절국</div>
-                <div className="font-bold text-lg">{jeolguk.name}</div>
-              </div>
-              <div className="bg-muted/50 rounded p-3">
-                <div className="text-muted-foreground text-xs mb-1">소궁 / 대궁</div>
-                <div className="font-bold text-lg">{liveSogungDaegung.sogung} / {liveSogungDaegung.daegung}</div>
-              </div>
-              <div className="bg-muted/50 rounded p-3 col-span-2">
-                <div className="text-muted-foreground text-xs mb-1">28수 (二十八宿)</div>
-                <div className="flex items-center gap-3">
-                  {!hwMansion.isZunkong && (
-                    <img 
-                      src={`/img/28j_jinjun.jpg`} 
-                      alt={hwMansion.general} 
-                      className="w-16 h-16 object-cover rounded"
-                    />
-                  )}
-                  <div>
-                    <div className="font-bold text-lg">{hwMansion.mansion}{hwMansion.isZunkong ? "" : "수"}</div>
-                    <div className="text-sm font-medium">{hwMansion.general !== "-" ? hwMansion.general : ""}</div>
+                <div className="bg-muted/50 rounded p-3">
+                  <div className="text-muted-foreground text-xs mb-1">절기</div>
+                  <div className="font-bold text-lg">{displayData.currentTerm.hanja} ({displayData.currentTerm.korean})</div>
+                </div>
+                <div className="bg-muted/50 rounded p-3">
+                  <div className="text-muted-foreground text-xs mb-1">팔괘 / 방위</div>
+                  <div className="font-bold text-lg">{trigram.trigram}</div>
+                </div>
+                <div className="bg-muted/50 rounded p-3">
+                  <div className="text-muted-foreground text-xs mb-1">절국</div>
+                  <div className="font-bold text-lg">{jeolguk.name}</div>
+                </div>
+                <div className="bg-muted/50 rounded p-3">
+                  <div className="text-muted-foreground text-xs mb-1">소궁 / 대궁</div>
+                  <div className="font-bold text-lg">{liveSogungDaegung.sogung} / {liveSogungDaegung.daegung}</div>
+                </div>
+                <div className="bg-muted/50 rounded p-3 col-span-2">
+                  <div className="text-muted-foreground text-xs mb-1">28수 (二十八宿)</div>
+                  <div className="flex items-center gap-3">
+                    {!hwMansion.isZunkong && (
+                      <img 
+                        src={`/img/28j_jinjun.jpg`} 
+                        alt={hwMansion.general} 
+                        className="w-16 h-16 object-cover rounded"
+                      />
+                    )}
+                    <div>
+                      <div className="font-bold text-lg">{hwMansion.mansion}{hwMansion.isZunkong ? "" : "수"}</div>
+                      <div className="text-sm font-medium">{hwMansion.general !== "-" ? hwMansion.general : ""}</div>
+                    </div>
+                  </div>
+                </div>
+                <div className="bg-muted/50 rounded p-3">
+                  <div className="text-muted-foreground text-xs mb-1">음력</div>
+                  <div className="font-bold text-lg">
+                    {displayData.lunarMonth}월 {displayData.lunarDay}일
+                    {displayData.isLeapMonth && <span className="text-xs ml-1">(윤)</span>}
+                  </div>
+                </div>
+                <div className="bg-muted/50 rounded p-3">
+                  <div className="text-muted-foreground text-xs mb-1">황극력</div>
+                  <div className="font-bold text-lg">
+                    {displayData.hwanggeuk.year}.{displayData.hwanggeuk.month}.{displayData.hwanggeuk.day}
+                  </div>
+                </div>
+                <div className="bg-muted/50 rounded p-3 col-span-2">
+                  <div className="text-muted-foreground text-xs mb-1">양력</div>
+                  <div className="font-bold text-lg">
+                    {displayYear}.{displayMonth}.{displayDay}
                   </div>
                 </div>
               </div>
-              <div className="bg-muted/50 rounded p-3">
-                <div className="text-muted-foreground text-xs mb-1">음력</div>
-                <div className="font-bold text-lg">
-                  {displayData.lunarMonth}월 {displayData.lunarDay}일
-                  {displayData.isLeapMonth && <span className="text-xs ml-1">(윤)</span>}
+            ) : (
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div className="bg-muted/50 rounded p-3 col-span-2">
+                  <div className="text-muted-foreground text-xs mb-1">음력 간지 (60갑자)</div>
+                  <div className="font-bold text-lg">
+                    {displayData.lunarGanZhi.year}年 {displayData.lunarGanZhi.month}月 {displayData.lunarGanZhi.day}日
+                  </div>
+                </div>
+                <div className="bg-muted/50 rounded p-3">
+                  <div className="text-muted-foreground text-xs mb-1">양력</div>
+                  <div className="font-bold text-lg">
+                    {displayYear}.{displayMonth}.{displayDay}
+                  </div>
+                </div>
+                <div className="bg-muted/50 rounded p-3">
+                  <div className="text-muted-foreground text-xs mb-1">음력</div>
+                  <div className="font-bold text-lg">
+                    {displayData.lunarYear}.{displayData.lunarMonth}.{displayData.lunarDay}
+                    {displayData.isLeapMonth && <span className="text-xs ml-1">(윤)</span>}
+                  </div>
+                </div>
+                <div className="bg-muted/50 rounded p-3 col-span-2">
+                  <div className="text-muted-foreground text-xs mb-1">절기</div>
+                  <div className="font-bold text-lg">{displayData.currentTerm.hanja} ({displayData.currentTerm.korean})</div>
                 </div>
               </div>
-              <div className="bg-muted/50 rounded p-3">
-                <div className="text-muted-foreground text-xs mb-1">황극력</div>
-                <div className="font-bold text-lg">
-                  {displayData.hwanggeuk.year}.{displayData.hwanggeuk.month}.{displayData.hwanggeuk.day}
-                </div>
-              </div>
-              <div className="bg-muted/50 rounded p-3 col-span-2">
-                <div className="text-muted-foreground text-xs mb-1">양력</div>
-                <div className="font-bold text-lg">
-                  {displayYear}.{displayMonth}.{displayDay}
-                </div>
-              </div>
-            </div>
+            )}
             <p className="text-xs text-muted-foreground">
               {CAL_DESCRIPTIONS[calType]}
             </p>

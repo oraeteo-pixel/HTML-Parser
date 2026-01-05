@@ -235,6 +235,53 @@ export function getDayGanZhi(year: number, month: number, day: number): string {
   return HEAVENLY_STEMS[stemIndex] + EARTHLY_BRANCHES[branchIndex];
 }
 
+export function getSeoncheonHourGanZhi(year: number, month: number, day: number, hour: number, minute: number): string {
+  const dayGanZhi = getDayGanZhi(year, month, day);
+  const dayStem = dayGanZhi[0];
+  
+  let adjustedYear = year;
+  let adjustedMonth = month;
+  let adjustedDay = day;
+  if (hour >= 23) {
+    const nextDate = new Date(year, month - 1, day + 1);
+    adjustedYear = nextDate.getFullYear();
+    adjustedMonth = nextDate.getMonth() + 1;
+    adjustedDay = nextDate.getDate();
+  }
+  
+  const adjustedDayGanZhi = getDayGanZhi(adjustedYear, adjustedMonth, adjustedDay);
+  const adjustedDayStem = adjustedDayGanZhi[0];
+  
+  const stemStartMap: { [key: string]: number } = {
+    "甲": 0, "己": 0,
+    "乙": 2, "庚": 2,
+    "丙": 4, "辛": 4,
+    "丁": 6, "壬": 6,
+    "戊": 8, "癸": 8
+  };
+  
+  const hourStemStart = stemStartMap[adjustedDayStem] || 0;
+  
+  const timeValue = hour * 100 + minute;
+  let branchIndex = 0;
+  if (timeValue >= 2300 || timeValue < 100) branchIndex = 0;
+  else if (timeValue >= 100 && timeValue < 300) branchIndex = 1;
+  else if (timeValue >= 300 && timeValue < 500) branchIndex = 2;
+  else if (timeValue >= 500 && timeValue < 700) branchIndex = 3;
+  else if (timeValue >= 700 && timeValue < 900) branchIndex = 4;
+  else if (timeValue >= 900 && timeValue < 1100) branchIndex = 5;
+  else if (timeValue >= 1100 && timeValue < 1300) branchIndex = 6;
+  else if (timeValue >= 1300 && timeValue < 1500) branchIndex = 7;
+  else if (timeValue >= 1500 && timeValue < 1700) branchIndex = 8;
+  else if (timeValue >= 1700 && timeValue < 1900) branchIndex = 9;
+  else if (timeValue >= 1900 && timeValue < 2100) branchIndex = 10;
+  else if (timeValue >= 2100 && timeValue < 2300) branchIndex = 11;
+  
+  const stemIndex = (hourStemStart + branchIndex) % 10;
+  
+  return HEAVENLY_STEMS[stemIndex] + EARTHLY_BRANCHES[branchIndex];
+}
+
 export function get28Mansion(year: number, month: number, day: number): { 
   mansion: string; 
   general: string; 

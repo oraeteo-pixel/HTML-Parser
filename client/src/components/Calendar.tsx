@@ -15,6 +15,7 @@ import {
   getHwanggeuk28Mansion,
   getHwanggeukPosition,
   getDayGanZhi,
+  getSeoncheonHourGanZhi,
   get28Mansion,
   get8Trigram,
   getJeolguk,
@@ -151,6 +152,16 @@ export function Calendar() {
   
   const liveHourGanZhi = useMemo(() => {
     return getHwanggeukHourGanZhi(
+      currentTime.getFullYear(),
+      currentTime.getMonth() + 1,
+      currentTime.getDate(),
+      currentTime.getHours(),
+      currentTime.getMinutes()
+    );
+  }, [currentTime]);
+  
+  const liveSeoncheonHourGanZhi = useMemo(() => {
+    return getSeoncheonHourGanZhi(
       currentTime.getFullYear(),
       currentTime.getMonth() + 1,
       currentTime.getDate(),
@@ -316,12 +327,12 @@ export function Calendar() {
               </div>
             </div>
           ) : (
-            <div className="space-y-1">
+            <div className="space-y-2">
               <div className="ganji-title">
-                {displayYear}.{displayMonth}.{displayDay} {WEEKDAYS_HANJA[displayDate.getDay()]}
+                {displayData.yearGanZhi}年 {displayData.monthGanZhi}月 {displayData.dayGanZhi}日 {liveSeoncheonHourGanZhi}時
               </div>
               <div className="text-fluid-sm text-muted-foreground">
-                음력 {displayData.lunarMonth}.{displayData.lunarDay} · {displayData.dayGanZhi}日
+                {displayYear}.{displayMonth}.{displayDay} {WEEKDAYS_HANJA[displayDate.getDay()]} · 음력 {displayData.lunarMonth}.{displayData.lunarDay}
               </div>
               <div className="flex gap-2 flex-wrap">
                 <span className="badge-pink">

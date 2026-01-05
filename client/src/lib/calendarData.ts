@@ -466,7 +466,7 @@ export function getHwanggeukHourGanZhi(year: number, month: number, day: number,
     adjustedDaysFromEpoch = daysFromEpoch + 1;
   }
   
-  const dayOffset = adjustedDaysFromEpoch % 5;
+  const dayOffset = ((adjustedDaysFromEpoch % 5) + 5) % 5;
   
   const hourGanZhiTable = [
     ["丁巳","戊午","己未","庚申","辛酉","壬戌","癸亥","甲子","乙丑","丙寅","丁卯","戊辰"],

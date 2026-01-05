@@ -561,12 +561,6 @@ export function Calendar() {
                   </div>
                 </div>
                 <div className="bg-muted/50 rounded p-3">
-                  <div className="text-muted-foreground text-xs mb-1">황극력</div>
-                  <div className="font-bold text-lg">
-                    {displayData.hwanggeuk.year}.{displayData.hwanggeuk.month}.{displayData.hwanggeuk.day}
-                  </div>
-                </div>
-                <div className="bg-muted/50 rounded p-3 col-span-2">
                   <div className="text-muted-foreground text-xs mb-1">양력</div>
                   <div className="font-bold text-lg">
                     {displayYear}.{displayMonth}.{displayDay}

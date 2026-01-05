@@ -679,11 +679,12 @@ export function getSogungDaegung(date: Date): {
     HW_MONTH_DAYS.slice(0, hwDate.month - 1).reduce((a, b) => a + b, 0) + hwDate.day - 1;
   
   const slotIndex = isAM ? (timeSlot - 1) : (timeSlot - 10);
-  const sogung = calculateSogung(slotIndex, daysFromEpoch);
   
-  const daegungBase = daysFromEpoch * 2 + (isAM ? 1 : 5);
-  const daegungIndex = ((daegungBase) % 9 + 9) % 9;
-  const daegung = daegungIndex + 2;
+  const sogungBase = ((daysFromEpoch + 6) % 9 + 9) % 9;
+  const sogung = sogungBase + 2;
+  
+  const daegungBase = ((daysFromEpoch) % 9 + 9) % 9;
+  const daegung = daegungBase + 2;
   
   const currentSlotIdx = Math.max(0, timeSlot - 1);
   const slotEndHHMM = TIME_DIV_HHMM[Math.min(currentSlotIdx, 17)][1];

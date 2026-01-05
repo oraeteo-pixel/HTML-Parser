@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { getHwanggeuk28Mansion, getHwanggeukDate, getDayGanZhi, getKoreanTime, getJeolguk, getSogungDaegung, getMansionGanjiMap, SIXTY_GANJI } from "@/lib/calendarData";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
+import { JeolgukChart } from "@/components/JeolgukChart";
 
 const MANSION_GENERALS: { [key: string]: string } = {
   "角": "馬成", "亢": "鄧禹", "氐": "劉隆", "房": "馬武", "心": "藏宮", "尾": "耿純", "箕": "劉植",
@@ -187,6 +188,9 @@ export default function MansionChart() {
             <p><span className="font-medium orae-navy">中央 曜雲殿:</span> 己酉, 庚戌, 己卯, 庚辰</p>
           </div>
         </Card>
+
+        {/* 24 Jeolguk Chart */}
+        <JeolgukChart date={today} />
       </main>
       
       <Footer />

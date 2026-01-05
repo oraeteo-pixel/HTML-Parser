@@ -45,17 +45,17 @@ const TEN_GWA_CYCLE = [
   { name: "乾", direction: "西北" }
 ];
 
-const STEM_TO_MANSION_INDEX: { [key: string]: number | "中星宿尊空" } = {
-  "甲": 26, // 翼
-  "乙": 25, // 張
-  "丙": 24, // 星
-  "丁": 23, // 柳
-  "戊": 22, // 鬼
-  "己": "中星宿尊空",
-  "庚": "中星宿尊空",
-  "辛": 1,  // 亢
-  "壬": 0,  // 角
-  "癸": 27  // 軫
+const GANJI_TO_MANSION: { [key: string]: number | "中" } = {
+  "甲子": 16, "乙丑": 15, "丙寅": 14, "丁卯": 13, "戊辰": 12, "己巳": 11,
+  "庚午": 10, "辛未": 9, "壬申": 8, "癸酉": 7, "甲戌": 6, "乙亥": 5,
+  "丙子": 4, "丁丑": 3, "戊寅": 2, "己卯": "中", "庚辰": "中", "辛巳": 1,
+  "壬午": 0, "癸未": 27, "甲申": 26, "乙酉": 25, "丙戌": 24, "丁亥": 23,
+  "戊子": 22, "己丑": 21, "庚寅": 20, "辛卯": 19, "壬辰": 18, "癸巳": 17,
+  "甲午": 16, "乙未": 15, "丙申": 14, "丁酉": 13, "戊戌": 12, "己亥": 11,
+  "庚子": 10, "辛丑": 9, "壬寅": 8, "癸卯": 7, "甲辰": 6, "乙巳": 5,
+  "丙午": 4, "丁未": 3, "戊申": 2, "己酉": "中", "庚戌": "中", "辛亥": 1,
+  "壬子": 0, "癸丑": 27, "甲寅": 26, "乙卯": 25, "丙辰": 24, "丁巳": 23,
+  "戊午": 22, "己未": 21, "庚申": 20, "辛酉": 19, "壬戌": 18, "癸亥": 17
 };
 
 const SOLAR_TERMS_HANJA = [
@@ -524,42 +524,27 @@ export function getHwanggeukDayGanZhi(hwYear: number, hwMonth: number, hwDay: nu
 }
 
 export function getHwanggeuk28Mansion(hwYear: number, hwMonth: number, hwDay: number): { 
-  direction: string; 
   mansion: string; 
   general: string;
   isZunkong: boolean;
-  position: string;
 } {
   const dayGanZhi = getHwanggeukDayGanZhi(hwYear, hwMonth, hwDay);
-  const stem = dayGanZhi.charAt(0);
   
-  const stemMapping = STEM_TO_MANSION_INDEX[stem];
+  const mapping = GANJI_TO_MANSION[dayGanZhi];
   
-  if (stemMapping === "中星宿尊空") {
+  if (mapping === "中") {
     return { 
-      direction: "中", 
       mansion: "中, 성수 존공", 
       general: "-",
-      isZunkong: true,
-      position: "中"
+      isZunkong: true
     };
   }
   
-  const mansionIndex = stemMapping as number;
+  const mansionIndex = mapping as number;
   const mansion = HW_28_MANSIONS[mansionIndex];
   const general = HW_28_GENERALS[mansionIndex];
   
-  let direction = "南";
-  if (mansionIndex >= 0 && mansionIndex < 7) direction = "東";
-  else if (mansionIndex >= 7 && mansionIndex < 14) direction = "北";
-  else if (mansionIndex >= 14 && mansionIndex < 21) direction = "西";
-  
-  const positionInSeven = (mansionIndex % 7) + 1;
-  let position = "중";
-  if (positionInSeven <= 2) position = "초";
-  else if (positionInSeven >= 6) position = "말";
-  
-  return { direction, mansion, general, isZunkong: false, position };
+  return { mansion, general, isZunkong: false };
 }
 
 export function getJeolguk(hwYear: number, hwMonth: number, hwDay: number): {

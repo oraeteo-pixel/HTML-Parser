@@ -119,7 +119,7 @@ export default function MansionChart() {
         </div>
 
         <div className="text-center text-xs text-muted-foreground mb-2">
-          천간 己, 庚일은 中央에 해당합니다
+          己卯, 庚辰, 己酉, 庚戌일은 中央에 해당합니다
         </div>
         
         <div className="grid grid-cols-7 gap-1 text-center text-xs mb-4 border rounded p-2">

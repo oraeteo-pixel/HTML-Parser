@@ -430,7 +430,6 @@ export function Calendar() {
                 <div className="flex-1 flex flex-col justify-end space-y-0.5">
                   <div className="trigram-text">{cellTrigram.trigram}괘 ({cellTrigram.direction})</div>
                   <div className="mansion-info">{cellMansion.mansion},{cellMansion.general}</div>
-                  <div className="direction-info">{cellMansion.position}</div>
                 </div>
               </div>
             );
@@ -519,7 +518,6 @@ export function Calendar() {
                   <div>
                     <div className="font-bold text-lg">{hwMansion.mansion}{hwMansion.isZunkong ? "" : "수"}</div>
                     <div className="text-sm font-medium">{hwMansion.general !== "-" ? hwMansion.general : ""}</div>
-                    <div className="text-xs text-muted-foreground">{hwMansion.position}</div>
                   </div>
                 </div>
               </div>

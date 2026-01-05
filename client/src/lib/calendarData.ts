@@ -465,19 +465,18 @@ export function getHwanggeuk28Mansion(hwYear: number, hwMonth: number, hwDay: nu
   const daysFromHwEpoch = (hwYear - HW_EPOCH_YEAR) * HW_DAYS_PER_YEAR + 
     HW_MONTH_DAYS.slice(0, hwMonth - 1).reduce((a, b) => a + b, 0) + hwDay - 1;
   
-  const mansionIndex = daysFromHwEpoch % 28;
+  const mansionOffset = 24;
+  const mansionIndex = (daysFromHwEpoch + mansionOffset) % 28;
   const mansion = HW_28_MANSIONS[mansionIndex];
   const general = HW_28_GENERALS[mansionIndex];
   
-  const trigramCycle = Math.floor(mansionIndex / 4) % 9;
-  let direction: string;
-  
-  if (trigramCycle === 0 || trigramCycle === 4 || trigramCycle === 8) {
-    direction = "中";
-  } else {
-    const trigramIndex = trigramCycle < 4 ? trigramCycle : (trigramCycle > 4 ? trigramCycle - 1 : 0);
-    direction = EIGHT_TRIGRAMS[trigramIndex % 8];
-  }
+  const directionPattern = [
+    "中", "乾", "乾", "乾", "乾", "兌", "兌", "兌",
+    "中", "離", "離", "離", "離", "震", "震", "震",
+    "中", "巽", "巽", "巽", "巽", "坎", "坎", "坎",
+    "中", "艮", "艮", "艮"
+  ];
+  const direction = directionPattern[mansionIndex];
   
   const isZunkong = HW_28_ZUNKOG_MANSIONS.includes(mansion);
   

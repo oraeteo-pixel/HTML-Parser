@@ -230,14 +230,14 @@ export function Calendar() {
             </span>
           </div>
           <div className="mt-1 text-xs text-muted-foreground">
-            현재시각 {hwHourGanZhi}時
+            현재시각 {displayData.hwanggeuk.yearGanZhi}년 {displayData.hwanggeuk.monthGanZhi}월 {displayData.dayGanZhi}일 {hwHourGanZhi}시
           </div>
           <div className="mt-2">
             <span 
               className="inline-block px-2 py-1 rounded text-white text-xs"
               style={{ backgroundColor: '#fb6c9f' }}
             >
-              {hwMansion.direction}, {hwMansion.mansion}宿{hwMansion.isZunkong ? "尊空" : hwMansion.general}
+              {hwMansion.direction}, {hwMansion.mansion}宿{hwMansion.isZunkong ? "尊空" : ""}
             </span>
           </div>
         </div>

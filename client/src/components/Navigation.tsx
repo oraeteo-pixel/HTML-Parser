@@ -31,8 +31,8 @@ export function Navigation() {
       <div className="max-w-[990px] mx-auto px-2">
         <div className="h-[70px] flex items-center justify-between relative">
           <Link href="/" className="flex items-center gap-1 hover:opacity-80 transition-opacity" data-testid="link-logo">
-            <img src={logoImage} alt="ORAE Logo" className="h-12 w-12" />
-            <span className="text-[48px] font-black leading-none tracking-tight" style={{ color: '#1a365d', fontFamily: 'Arial Black, Helvetica, sans-serif' }}>orae</span>
+            <img src={logoImage} alt="ORAE Logo" className="h-9 w-9" />
+            <span className="text-[36px] font-black leading-none tracking-tight" style={{ color: '#1a365d', fontFamily: 'Arial Black, Helvetica, sans-serif' }}>orae</span>
           </Link>
 
           <div className="flex gap-4 items-end pb-1">

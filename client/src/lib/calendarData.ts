@@ -9,17 +9,17 @@ const TWENTY_EIGHT_MANSIONS = [
 ];
 
 const MANSION_GENERALS = [
-  "鄧禹", "馬成", "劉隆", "馬武", "藏宮", "耿純", "劉植",
-  "銚期", "邳肜", "蓋延", "万修", "景丹", "李忠", "祭遵",
-  "任光", "朱佑", "王覇", "馮異", "堅鐔", "岑膨", "傅俊",
-  "寇恂", "杜茂", "耿弇", "陣俊", "賈復", "王梁", "吳漢"
+  "鄧禹", "馬成", "吳漢", "王梁", "賈復", "陣俊", "耿弇",
+  "杜茂", "寇恂", "傅俊", "岑膨", "堅鐔", "馮異", "王覇",
+  "朱佑", "任光", "祭遵", "李忠", "景丹", "万修", "蓋延",
+  "邳肜", "銚期", "劉植", "耿純", "藏宮", "馬武", "劉隆"
 ];
 
 const MANSION_GENERAL_IMAGES = [
-  "deungwoo", "masung", "yuyung", "mamu", "jangkung", "kungsun", "yusik",
-  "yoki", "biyung", "kaeyoen", "mansu", "kyungdan", "leechung", "jejun",
-  "limkwang", "juwoo", "wangpae", "punge", "kyunsim", "jampeng", "pujun",
-  "kusun", "dumu", "kungdan", "jinjun", "kabok", "wanglyang", "ohan"
+  "deungwoo", "masung", "ohan", "wanglyang", "kabok", "jinjun", "kungdan",
+  "dumu", "kusun", "pujun", "jampeng", "kyunsim", "punge", "wangpae",
+  "juwoo", "limkwang", "jejun", "leechung", "kyungdan", "mansu", "kaeyoen",
+  "biyung", "yoki", "yusik", "kungsun", "jangkung", "mamu", "yuyung"
 ];
 
 const MANSION_DESCRIPTIONS = [
@@ -503,10 +503,10 @@ const HW_28_MANSIONS = [
 ];
 
 const HW_28_GENERALS = [
-  "鄧禹", "馬成", "劉隆", "馬武", "藏宮", "耿純", "劉植",
-  "銚期", "邳肜", "蓋延", "万修", "景丹", "李忠", "祭遵",
-  "任光", "朱佑", "王覇", "馮異", "堅鐔", "岑膨", "傅俊",
-  "寇恂", "杜茂", "耿弇", "陣俊", "賈復", "王梁", "吳漢"
+  "鄧禹", "馬成", "吳漢", "王梁", "賈復", "陣俊", "耿弇",
+  "杜茂", "寇恂", "傅俊", "岑膨", "堅鐔", "馮異", "王覇",
+  "朱佑", "任光", "祭遵", "李忠", "景丹", "万修", "蓋延",
+  "邳肜", "銚期", "劉植", "耿純", "藏宮", "馬武", "劉隆"
 ];
 
 const HW_28_ZUNKOG_MANSIONS = ["星", "尾", "昴", "女"];

@@ -1,3 +1,5 @@
+import KoreanLunarCalendar from 'korean-lunar-calendar';
+
 export function getKoreanTime(date: Date = new Date()): Date {
   const utc = date.getTime() + (date.getTimezoneOffset() * 60000);
   return new Date(utc + (9 * 60 * 60 * 1000));
@@ -166,52 +168,23 @@ function getLunarMonthDays(year: number, month: number): number {
 }
 
 export function solarToLunar(year: number, month: number, day: number): { year: number; month: number; day: number; isLeap: boolean } {
-  const baseDate = new Date(1900, 0, 31);
-  const targetDate = new Date(year, month - 1, day);
-  let offset = Math.floor((targetDate.getTime() - baseDate.getTime()) / 86400000);
+  const calendar = new KoreanLunarCalendar();
   
-  let lunarYear = 1900;
-  let yearDays;
-  while (lunarYear < 2100 && offset > 0) {
-    yearDays = getLunarYearDays(lunarYear);
-    offset -= yearDays;
-    lunarYear++;
-  }
-  if (offset < 0) {
-    offset += getLunarYearDays(--lunarYear);
-  }
-  
-  const leapMonth = getLeapMonth(lunarYear);
-  let isLeap = false;
-  let lunarMonth = 1;
-  let monthDays;
-  
-  for (let i = 1; i <= 12; i++) {
-    if (leapMonth > 0 && i === leapMonth + 1 && !isLeap) {
-      --i;
-      isLeap = true;
-      monthDays = getLeapMonthDays(lunarYear);
-    } else {
-      monthDays = getLunarMonthDays(lunarYear, i);
-    }
-    
-    lunarMonth = i;
-    
-    if (offset < monthDays) {
-      break;
-    }
-    offset -= monthDays;
-    
-    if (isLeap && i === leapMonth + 1) {
-      isLeap = false;
-    }
+  if (calendar.setSolarDate(year, month, day)) {
+    const lunar = calendar.getLunarCalendar();
+    return {
+      year: lunar.year,
+      month: lunar.month,
+      day: lunar.day,
+      isLeap: lunar.intercalation === true
+    };
   }
   
   return {
-    year: lunarYear,
-    month: lunarMonth,
-    day: offset + 2,
-    isLeap
+    year: year,
+    month: 1,
+    day: 1,
+    isLeap: false
   };
 }
 
@@ -401,33 +374,21 @@ export function getHwanggeukDate(year: number, month: number, day: number): {
 }
 
 function lunarToSolar(lunarYear: number, lunarMonth: number, lunarDay: number, isLeapMonth: boolean): { year: number; month: number; day: number } {
-  const baseDate = new Date(1900, 0, 31);
-  let offset = 0;
+  const calendar = new KoreanLunarCalendar();
   
-  for (let y = 1900; y < lunarYear; y++) {
-    offset += getLunarYearDays(y);
+  if (calendar.setLunarDate(lunarYear, lunarMonth, lunarDay, isLeapMonth)) {
+    const solar = calendar.getSolarCalendar();
+    return {
+      year: solar.year,
+      month: solar.month,
+      day: solar.day
+    };
   }
   
-  const leapMonth = getLeapMonth(lunarYear);
-  
-  for (let m = 1; m < lunarMonth; m++) {
-    offset += getLunarMonthDays(lunarYear, m);
-    if (m === leapMonth) {
-      offset += getLeapMonthDays(lunarYear);
-    }
-  }
-  
-  if (isLeapMonth && lunarMonth === leapMonth) {
-    offset += getLunarMonthDays(lunarYear, lunarMonth);
-  }
-  
-  offset += lunarDay - 1;
-  
-  const resultDate = new Date(baseDate.getTime() + offset * 86400000);
   return {
-    year: resultDate.getFullYear(),
-    month: resultDate.getMonth() + 1,
-    day: resultDate.getDate()
+    year: lunarYear,
+    month: 1,
+    day: 1
   };
 }
 

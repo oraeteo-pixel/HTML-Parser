@@ -64,6 +64,7 @@ The `shared/` directory contains code used by both frontend and backend:
 - `@tanstack/react-query` - Data fetching and caching
 - `@radix-ui/*` - Accessible UI primitives (20+ packages)
 - `date-fns` - Date manipulation for calendar
+- `korean-lunar-calendar` - Korean lunar calendar (KARI standard, 1000-2050)
 - `lucide-react` - Icon library
 - `react-hook-form` with `@hookform/resolvers` - Form handling
 - `wouter` - Lightweight routing

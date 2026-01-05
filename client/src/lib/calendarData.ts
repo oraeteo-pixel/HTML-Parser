@@ -32,6 +32,19 @@ const MANSION_DESCRIPTIONS = [
 const EIGHT_TRIGRAMS = ["乾", "兌", "離", "震", "巽", "坎", "艮", "坤"];
 const TRIGRAM_DIRECTIONS = ["西北", "西", "南", "東", "東南", "北", "東北", "西南"];
 
+const TEN_GWA_CYCLE = [
+  { name: "中星宿尊空", direction: "中央" },
+  { name: "坤괘", direction: "西南" },
+  { name: "坎괘", direction: "北" },
+  { name: "兌괘", direction: "西" },
+  { name: "震괘", direction: "東" },
+  { name: "中星宿尊空", direction: "中央" },
+  { name: "巽괘", direction: "東南" },
+  { name: "艮괘", direction: "東北" },
+  { name: "離괘", direction: "南" },
+  { name: "乾괘", direction: "西北" }
+];
+
 const SOLAR_TERMS_HANJA = [
   "冬至", "小寒", "大寒", "立春", "雨水", "驚蟄",
   "春分", "淸明", "穀雨", "立夏", "小滿", "芒種",

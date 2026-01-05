@@ -156,7 +156,7 @@ export function solarToLunar(year: number, month: number, day: number): { year: 
   return {
     year: lunarYear,
     month: lunarMonth,
-    day: offset + 1,
+    day: offset + 2,
     isLeap
   };
 }

@@ -236,29 +236,6 @@ export function JeolgukCircularChart({ date }: JeolgukCircularChartProps) {
             );
           })}
           
-          {/* Inner trigram numbers - aligned with new startOffset */}
-          {[
-            { num: "2", angle: 45 },      // 離 position (index 4)
-            { num: "4", angle: 150 },     // 震 position (index 11)
-            { num: "3", angle: 225 },     // 坎 position (index 16)
-            { num: "9", angle: 315 },     // 巽 position (index 22)
-          ].map((item, index) => {
-            const pos = getTextPosition(item.angle, trigramRadius);
-            return (
-              <text
-                key={index}
-                x={pos.x}
-                y={pos.y}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                fontSize="22"
-                fontWeight="600"
-                fill="#4a5568"
-              >
-                {item.num}
-              </text>
-            );
-          })}
           
           {/* Center - 10 Heavenly Stems with numbers */}
           <g transform={`translate(${center}, ${center})`}>

@@ -276,6 +276,11 @@ export function getCurrentSolarTerm(month: number, day: number): { hanja: string
   };
 }
 
+const HW_EPOCH_JD = getJulianDayNumber(1989, 3, 16);
+const HW_DAYS_PER_YEAR = 366;
+const HW_MONTH_DAYS = [30, 31, 30, 31, 30, 31, 30, 31, 30, 31, 30, 31];
+const HW_MONTH_CUMULATIVE = [0, 30, 61, 91, 122, 152, 183, 213, 244, 274, 305, 335, 366];
+
 export function getHwanggeukDate(year: number, month: number, day: number): { 
   year: number; 
   month: number; 
@@ -283,35 +288,25 @@ export function getHwanggeukDate(year: number, month: number, day: number): {
   yearGanZhi: string;
   monthGanZhi: string;
 } {
-  const lunar = solarToLunar(year, month, day);
+  const jd = getJulianDayNumber(year, month, day);
+  const daysElapsed = jd - HW_EPOCH_JD;
   
-  let hwMonth = ((lunar.month + 9 - 1) % 12) + 1;
+  const hwYear = Math.floor(daysElapsed / HW_DAYS_PER_YEAR) + 1;
+  const dayOfYear = (daysElapsed % HW_DAYS_PER_YEAR) + 1;
   
-  let hwYear: number;
-  if (lunar.month >= 4) {
-    hwYear = lunar.year;
-  } else {
-    hwYear = lunar.year - 1;
-  }
+  let hwMonth = 1;
+  let hwDay = dayOfYear;
   
-  let hwDay = lunar.day + 3;
-  const lunarMonthDays = getLunarMonthDays(lunar.year, lunar.month);
-  if (hwDay > lunarMonthDays) {
-    hwDay = hwDay - lunarMonthDays;
-    hwMonth = hwMonth + 1;
-    if (hwMonth > 12) {
-      hwMonth = 1;
-      hwYear = hwYear + 1;
+  for (let m = 0; m < 12; m++) {
+    if (dayOfYear <= HW_MONTH_CUMULATIVE[m + 1]) {
+      hwMonth = m + 1;
+      hwDay = dayOfYear - HW_MONTH_CUMULATIVE[m];
+      break;
     }
   }
   
-  const yearGanZhi = getYearGanZhi(hwYear);
-  
-  const monthBase = (hwYear - 4) % 10;
-  const monthStemOffset = [2, 4, 6, 8, 0, 2, 4, 6, 8, 0];
-  const monthStemIndex = (monthStemOffset[monthBase] + hwMonth + 4) % 10;
-  const monthBranchIndex = (hwMonth + 8) % 12;
-  const monthGanZhi = HEAVENLY_STEMS[monthStemIndex] + EARTHLY_BRANCHES[monthBranchIndex];
+  const yearGanZhi = getHwanggeukYearGanZhi(hwYear);
+  const monthGanZhi = getHwanggeukMonthGanZhi(hwYear, hwMonth);
   
   return { 
     year: hwYear, 
@@ -354,39 +349,27 @@ function lunarToSolar(lunarYear: number, lunarMonth: number, lunarDay: number, i
 }
 
 export function hwanggeukToSolar(hwYear: number, hwMonth: number, hwDay: number): { year: number; month: number; day: number } {
-  let lunarMonth = ((hwMonth - 10 + 12 - 1) % 12) + 1;
+  const dayOfYear = HW_MONTH_CUMULATIVE[hwMonth - 1] + hwDay;
+  const daysFromEpoch = (hwYear - 1) * HW_DAYS_PER_YEAR + dayOfYear - 1;
+  const jd = HW_EPOCH_JD + daysFromEpoch;
   
-  let lunarYear: number;
-  if (hwMonth >= 10) {
-    lunarYear = hwYear;
-  } else {
-    lunarYear = hwYear + 1;
-  }
+  const z = jd + 1;
+  const a = Math.floor((z - 1867216.25) / 36524.25);
+  const aa = z + 1 + a - Math.floor(a / 4);
+  const b = aa + 1524;
+  const c = Math.floor((b - 122.1) / 365.25);
+  const d = Math.floor(365.25 * c);
+  const e = Math.floor((b - d) / 30.6001);
   
-  let lunarDay = hwDay - 3;
-  if (lunarDay <= 0) {
-    lunarMonth = lunarMonth - 1;
-    if (lunarMonth <= 0) {
-      lunarMonth = 12;
-      lunarYear = lunarYear - 1;
-    }
-    lunarDay = getLunarMonthDays(lunarYear, lunarMonth) + lunarDay;
-  }
+  const day = b - d - Math.floor(30.6001 * e);
+  const month = e < 14 ? e - 1 : e - 13;
+  const year = month > 2 ? c - 4716 : c - 4715;
   
-  return lunarToSolar(lunarYear, lunarMonth, lunarDay, false);
+  return { year, month, day };
 }
 
 export function getHwanggeukMonthDays(hwYear: number, hwMonth: number): number {
-  let lunarMonth = ((hwMonth - 10 + 12 - 1) % 12) + 1;
-  
-  let lunarYear: number;
-  if (hwMonth >= 10) {
-    lunarYear = hwYear;
-  } else {
-    lunarYear = hwYear + 1;
-  }
-  
-  return getLunarMonthDays(lunarYear, lunarMonth);
+  return HW_MONTH_DAYS[hwMonth - 1];
 }
 
 export function getHwanggeukMonthData(hwYear: number, hwMonth: number): Array<{
@@ -413,14 +396,19 @@ export function getHwanggeukMonthData(hwYear: number, hwMonth: number): Array<{
 }
 
 export function getHwanggeukYearGanZhi(hwYear: number): string {
-  return getYearGanZhi(hwYear);
+  const baseYear = 1989;
+  const baseYearOffset = (baseYear - 4) % 60;
+  const hwOffset = (baseYearOffset + hwYear - 1) % 60;
+  const stemIndex = hwOffset % 10;
+  const branchIndex = hwOffset % 12;
+  return HEAVENLY_STEMS[stemIndex] + EARTHLY_BRANCHES[branchIndex];
 }
 
 export function getHwanggeukMonthGanZhi(hwYear: number, hwMonth: number): string {
-  const monthBase = (hwYear - 4) % 10;
+  const yearStemIndex = ((1989 - 4 + hwYear - 1) % 60) % 10;
   const monthStemOffset = [2, 4, 6, 8, 0, 2, 4, 6, 8, 0];
-  const monthStemIndex = (monthStemOffset[monthBase] + hwMonth + 4) % 10;
-  const monthBranchIndex = (hwMonth + 8) % 12;
+  const monthStemIndex = (monthStemOffset[yearStemIndex] + hwMonth - 1) % 10;
+  const monthBranchIndex = (hwMonth + 1) % 12;
   return HEAVENLY_STEMS[monthStemIndex] + EARTHLY_BRANCHES[monthBranchIndex];
 }
 

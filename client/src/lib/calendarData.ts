@@ -33,17 +33,30 @@ const EIGHT_TRIGRAMS = ["乾", "兌", "離", "震", "巽", "坎", "艮", "坤"];
 const TRIGRAM_DIRECTIONS = ["西北", "西", "南", "東", "東南", "北", "東北", "西南"];
 
 const TEN_GWA_CYCLE = [
-  { name: "中星宿尊空", direction: "中央" },
-  { name: "坤괘", direction: "西南" },
-  { name: "坎괘", direction: "北" },
-  { name: "兌괘", direction: "西" },
-  { name: "震괘", direction: "東" },
-  { name: "中星宿尊空", direction: "中央" },
-  { name: "巽괘", direction: "東南" },
-  { name: "艮괘", direction: "東北" },
-  { name: "離괘", direction: "南" },
-  { name: "乾괘", direction: "西北" }
+  { name: "中", direction: "中央" },
+  { name: "坤", direction: "西南" },
+  { name: "坎", direction: "北" },
+  { name: "兌", direction: "西" },
+  { name: "震", direction: "東" },
+  { name: "中", direction: "中央" },
+  { name: "巽", direction: "東南" },
+  { name: "艮", direction: "東北" },
+  { name: "離", direction: "南" },
+  { name: "乾", direction: "西北" }
 ];
+
+const STEM_TO_MANSION_INDEX: { [key: string]: number | "中星宿尊空" } = {
+  "甲": 26, // 翼
+  "乙": 25, // 張
+  "丙": 24, // 星
+  "丁": 23, // 柳
+  "戊": 22, // 鬼
+  "己": "中星宿尊空",
+  "庚": "中星宿尊空",
+  "辛": 1,  // 亢
+  "壬": 0,  // 角
+  "癸": 27  // 軫
+};
 
 const SOLAR_TERMS_HANJA = [
   "冬至", "小寒", "大寒", "立春", "雨水", "驚蟄",
@@ -246,15 +259,22 @@ export function get28Mansion(year: number, month: number, day: number): {
 }
 
 export function get8Trigram(year: number, month: number, day: number): { trigram: string; direction: string } {
-  const jd = getJulianDayNumber(year, month, day);
-  const index = jd % 9;
-  if (index === 8) {
-    return { trigram: "中", direction: "中央" };
+  const daysFromEpoch = getHwanggeukDaysFromEpochExport(year, month, day);
+  
+  if (daysFromEpoch < 0) {
+    return { trigram: "-", direction: "-" };
   }
+  
+  const offset = 2;
+  const index = ((daysFromEpoch + offset) % 10 + 10) % 10;
   return {
-    trigram: EIGHT_TRIGRAMS[index],
-    direction: TRIGRAM_DIRECTIONS[index]
+    trigram: TEN_GWA_CYCLE[index].name,
+    direction: TEN_GWA_CYCLE[index].direction
   };
+}
+
+export function getHwanggeukDaysFromEpochExport(year: number, month: number, day: number): number {
+  return getHwanggeukDaysFromEpoch(year, month, day);
 }
 
 export function getSolarTerm(month: number, day: number): { hanja: string; korean: string; general: string } | null {
@@ -491,6 +511,18 @@ const HW_28_GENERALS = [
 
 const HW_28_ZUNKOG_MANSIONS = ["星", "尾", "昴", "女"];
 
+export function getHwanggeukDayGanZhi(hwYear: number, hwMonth: number, hwDay: number): string {
+  const daysFromHwEpoch = (hwYear - HW_EPOCH_YEAR) * HW_DAYS_PER_YEAR + 
+    HW_MONTH_DAYS.slice(0, hwMonth - 1).reduce((a, b) => a + b, 0) + hwDay - 1;
+  
+  const baseStem = 7;
+  const baseBranch = 11;
+  const stemIndex = ((baseStem + daysFromHwEpoch) % 10 + 10) % 10;
+  const branchIndex = ((baseBranch + daysFromHwEpoch) % 12 + 12) % 12;
+  
+  return HEAVENLY_STEMS[stemIndex] + EARTHLY_BRANCHES[branchIndex];
+}
+
 export function getHwanggeuk28Mansion(hwYear: number, hwMonth: number, hwDay: number): { 
   direction: string; 
   mansion: string; 
@@ -498,27 +530,36 @@ export function getHwanggeuk28Mansion(hwYear: number, hwMonth: number, hwDay: nu
   isZunkong: boolean;
   position: string;
 } {
-  const daysFromHwEpoch = (hwYear - HW_EPOCH_YEAR) * HW_DAYS_PER_YEAR + 
-    HW_MONTH_DAYS.slice(0, hwMonth - 1).reduce((a, b) => a + b, 0) + hwDay - 1;
+  const dayGanZhi = getHwanggeukDayGanZhi(hwYear, hwMonth, hwDay);
+  const stem = dayGanZhi.charAt(0);
   
-  const mansionOffset = 24;
-  const mansionIndex = (((daysFromHwEpoch + mansionOffset) % 28) + 28) % 28;
+  const stemMapping = STEM_TO_MANSION_INDEX[stem];
+  
+  if (stemMapping === "中星宿尊空") {
+    return { 
+      direction: "中", 
+      mansion: "中星宿尊空", 
+      general: "-",
+      isZunkong: true,
+      position: "中"
+    };
+  }
+  
+  const mansionIndex = stemMapping as number;
   const mansion = HW_28_MANSIONS[mansionIndex];
   const general = HW_28_GENERALS[mansionIndex];
   
-  const directionPattern = [
-    "中", "乾", "乾", "乾", "乾", "兌", "兌", "兌",
-    "中", "離", "離", "離", "離", "震", "震", "震",
-    "中", "巽", "巽", "巽", "巽", "坎", "坎", "坎",
-    "中", "艮", "艮", "艮"
-  ];
-  const direction = directionPattern[mansionIndex];
+  let direction = "南";
+  if (mansionIndex >= 0 && mansionIndex < 7) direction = "東";
+  else if (mansionIndex >= 7 && mansionIndex < 14) direction = "北";
+  else if (mansionIndex >= 14 && mansionIndex < 21) direction = "西";
   
-  const isZunkong = HW_28_ZUNKOG_MANSIONS.includes(mansion);
   const positionInSeven = (mansionIndex % 7) + 1;
-  const position = `七之${positionInSeven}`;
+  let position = "중";
+  if (positionInSeven <= 2) position = "초";
+  else if (positionInSeven >= 6) position = "말";
   
-  return { direction, mansion, general, isZunkong, position };
+  return { direction, mansion, general, isZunkong: false, position };
 }
 
 export function getJeolguk(hwYear: number, hwMonth: number, hwDay: number): {

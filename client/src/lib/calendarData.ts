@@ -291,14 +291,23 @@ export function getHwanggeukDaysFromEpochExport(year: number, month: number, day
   return getHwanggeukDaysFromEpoch(year, month, day);
 }
 
+const SOLAR_TERM_DAYS: { [key: number]: number[] } = {
+  1: [5, 20],
+  2: [4, 18],
+  3: [5, 20],
+  4: [4, 20],
+  5: [5, 21],
+  6: [5, 21],
+  7: [7, 22],
+  8: [7, 23],
+  9: [7, 22],
+  10: [8, 23],
+  11: [7, 22],
+  12: [7, 21]
+};
+
 export function getSolarTerm(month: number, day: number): { hanja: string; korean: string; general: string } | null {
-  const termDays: { [key: number]: number[] } = {
-    1: [5, 20], 2: [4, 19], 3: [6, 21], 4: [5, 20],
-    5: [6, 21], 6: [6, 21], 7: [7, 23], 8: [8, 23],
-    9: [8, 23], 10: [8, 24], 11: [8, 22], 12: [7, 22]
-  };
-  
-  const days = termDays[month];
+  const days = SOLAR_TERM_DAYS[month];
   if (!days) return null;
   
   if (day === days[0]) {
@@ -320,14 +329,9 @@ export function getSolarTerm(month: number, day: number): { hanja: string; korea
 }
 
 export function getCurrentSolarTerm(month: number, day: number): { hanja: string; korean: string; general: string } {
-  const termDays: { [key: number]: number[] } = {
-    1: [5, 20], 2: [4, 19], 3: [5, 20], 4: [4, 20],
-    5: [5, 21], 6: [5, 21], 7: [7, 22], 8: [7, 23],
-    9: [7, 23], 10: [8, 23], 11: [7, 22], 12: [7, 21]
-  };
+  const days = SOLAR_TERM_DAYS[month];
   
   let termIndex: number;
-  const days = termDays[month];
   
   if (day >= days[1]) {
     termIndex = (month - 1) * 2 + 2;

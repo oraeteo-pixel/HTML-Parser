@@ -1,0 +1,1 @@
+<?php header("HTTP/1.0 404 Not Found");exit;?>a:4:{s:11:"maps_apikey";s:40:"7e6f7bd4adf2a3d55b75bd437881eee06b752ad3";s:12:"local_apikey";s:40:"d24c7fc7f3d6a19619a02f4631fa1db28195644a";s:6:"dm_lat";s:17:"37.86769870399902";s:6:"dm_lng";s:18:"127.73884573306562";}

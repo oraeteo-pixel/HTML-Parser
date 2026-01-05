@@ -1,0 +1,1 @@
+<?php header("HTTP/1.0 404 Not Found");exit;?>a:4:{s:5:"email";s:16:"6gicho@gmail.com";s:4:"name";s:9:"육기초";s:6:"passwd";s:11:"dbrrlch0919";s:6:"apikey";s:0:"";}

@@ -1,0 +1,1 @@
+<?php header("HTTP/1.0 404 Not Found");exit;?>a:4:{s:4:"skin";s:5:"basic";s:11:"thumb_width";s:3:"200";s:12:"thumb_height";s:3:"100";s:14:"content_length";s:3:"200";}

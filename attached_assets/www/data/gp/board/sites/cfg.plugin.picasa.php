@@ -1,0 +1,1 @@
+<?php header("HTTP/1.0 404 Not Found");exit;?>a:3:{s:5:"email";s:20:"orialteo4u@gmail.com";s:6:"passwd";s:12:"dhfldkfxj4db";s:10:"view_thumb";s:6:"thumb3";}

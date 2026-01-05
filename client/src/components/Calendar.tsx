@@ -4,46 +4,23 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "./ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
+import { 
+  getCalendarDayData, 
+  getYearGanZhi, 
+  getMonthGanZhi, 
+  getDayGanZhi,
+  get28Mansion,
+  get8Trigram,
+  solarToLunar,
+  getCurrentSolarTerm,
+  getHwanggeukDate,
+  CalendarDayData
+} from "@/lib/calendarData";
 
-const HEAVENLY_STEMS = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"];
-const EARTHLY_BRANCHES = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
-const TWENTY_EIGHT_MANSIONS = [
-  "角", "亢", "氐", "房", "心", "尾", "箕",
-  "斗", "牛", "女", "虛", "危", "室", "壁",
-  "奎", "婁", "胃", "昴", "畢", "觜", "參",
-  "井", "鬼", "柳", "星", "張", "翼", "軫"
-];
-const EIGHT_TRIGRAMS = ["乾", "兌", "離", "震", "巽", "坎", "艮", "坤", "中"];
-const GENERALS = ["劉植", "銚期", "邳肜", "蓋延", "万修", "景丹", "李忠", "祭遵", "耿純", "臧宮", "馬武", "劉隆"];
-
-function getGanJi(dayIndex: number) {
-  const stemIndex = dayIndex % 10;
-  const branchIndex = dayIndex % 12;
-  return HEAVENLY_STEMS[stemIndex] + EARTHLY_BRANCHES[branchIndex];
-}
-
-function getMansion(dayIndex: number) {
-  return TWENTY_EIGHT_MANSIONS[dayIndex % 28];
-}
-
-function getTrigram(dayIndex: number) {
-  return EIGHT_TRIGRAMS[dayIndex % 9];
-}
-
-function getGeneral(dayIndex: number) {
-  return GENERALS[dayIndex % 12];
-}
-
-function getLunarDay(solarDay: number, month: number) {
-  const offset = (month * 2 + solarDay) % 30;
-  return offset === 0 ? 30 : offset;
-}
-
-const SEASONS = ["立春", "雨水", "驚蟄", "春分", "清明", "穀雨", "立夏", "小滿", "芒種", "夏至", "小暑", "大暑", "立秋", "處暑", "白露", "秋分", "寒露", "霜降", "立冬", "小雪", "大雪", "冬至", "小寒", "大寒"];
 const ELEMENTS = ["木", "火", "土", "金", "水"];
 const CAL_DESCRIPTIONS = {
-  hw: "황극력(皇極曆)은 고대 동아시아 천문학을 기반으로 한 역법입니다.",
-  df: "선천력(先天曆)은 복희의 선천팔괘를 기반으로 한 역법입니다."
+  hw: "황극력(皇極曆)은 고대 동아시아 천문학을 기반으로 한 역법입니다. 동지를 한 해의 시작으로 하며, 23시를 자시(子時)의 시작으로 봅니다.",
+  df: "선천력(先天曆)은 양력을 기준으로 하며, 복희의 선천팔괘를 기반으로 한 역법입니다."
 };
 
 export function Calendar() {
@@ -62,23 +39,24 @@ export function Calendar() {
   const nextMonth = () => setCurrentDate(addMonths(currentDate, 1));
   const prevYear = () => setCurrentDate(subYears(currentDate, 1));
   const nextYear = () => setCurrentDate(addYears(currentDate, 1));
-  const goToday = () => setCurrentDate(new Date());
+  const goToday = () => {
+    setCurrentDate(new Date());
+    setSelectedDay(null);
+  };
 
   const currentYear = currentDate.getFullYear();
   const currentMonth = currentDate.getMonth() + 1;
 
-  const years = Array.from({ length: 120 }, (_, i) => 1989 + i);
+  const years = Array.from({ length: 200 }, (_, i) => 1900 + i);
   const months = Array.from({ length: 12 }, (_, i) => i + 1);
 
   const displayDate = selectedDay || new Date();
-  const displayDayIndex = displayDate.getDate() + displayDate.getMonth() * 30;
-  const displayGanJi = getGanJi(displayDayIndex);
-  const displayMansion = getMansion(displayDayIndex);
-  const displayTrigram = getTrigram(displayDayIndex);
-  const displayElement = ELEMENTS[displayDayIndex % 5];
-  const displaySeason = SEASONS[displayDate.getMonth() * 2 + (displayDate.getDate() > 15 ? 1 : 0)];
-  const displayYearGanJi = getGanJi(displayDate.getFullYear() - 4);
-  const displayMonthGanJi = getGanJi(displayDate.getMonth() + displayDate.getFullYear() * 12);
+  const displayYear = displayDate.getFullYear();
+  const displayMonth = displayDate.getMonth() + 1;
+  const displayDay = displayDate.getDate();
+  
+  const displayData = getCalendarDayData(displayYear, displayMonth, displayDay);
+  const displayElement = ELEMENTS[(displayYear + displayMonth + displayDay) % 5];
 
   const handleDayClick = (day: Date) => {
     setSelectedDay(day);
@@ -114,26 +92,34 @@ export function Calendar() {
           onClick={() => setShowDayDetail(true)}
         >
           <div className="font-bold">
-            {format(displayDate, "yyyy.M.d")} {["日", "月", "火", "水", "木", "金", "土"][displayDate.getDay()]}
+            {calType === "hw" ? (
+              <>
+                {displayData.hwanggeuk.year}.{displayData.hwanggeuk.month}.{displayData.hwanggeuk.day} {["日", "月", "火", "水", "木", "金", "土"][displayDate.getDay()]}
+              </>
+            ) : (
+              <>
+                {format(displayDate, "yyyy.M.d")} {["日", "月", "火", "水", "木", "金", "土"][displayDate.getDay()]}
+              </>
+            )}
             <span className="ml-2 text-xs font-normal text-muted-foreground">
               {calType === "hw" ? "황극력" : "선천력"}
             </span>
           </div>
           <div className="text-muted-foreground text-xs mt-1">
-            ({displayYearGanJi}年 {displayMonthGanJi}月 {displayGanJi}日) {displaySeason}節局
+            ({displayData.yearGanZhi}年 {displayData.monthGanZhi}月 {displayData.dayGanZhi}日) {displayData.currentTerm.hanja}
           </div>
           <div className="mt-2 flex gap-2 flex-wrap">
             <Button variant="outline" size="sm" data-testid="button-28mansions">
-              {displayTrigram}, {displayMansion}宿
+              {displayData.trigram}, {displayData.mansion}宿 ({displayData.mansionGeneral})
             </Button>
-            <Button variant="outline" size="sm" data-testid="button-element">
-              {displayElement}行
+            <Button variant="outline" size="sm" data-testid="button-lunar">
+              음{displayData.lunarMonth}.{displayData.lunarDay}
             </Button>
           </div>
         </div>
 
         <div className="flex items-center justify-center gap-1 flex-wrap">
-          <Button variant="ghost" size="icon" onClick={prevYear} className="h-8 w-8">
+          <Button variant="ghost" size="icon" onClick={prevYear} className="h-8 w-8" data-testid="button-prev-year">
             <ChevronLeft className="h-4 w-4" />
           </Button>
           
@@ -151,7 +137,7 @@ export function Calendar() {
             </SelectContent>
           </Select>
 
-          <Button variant="ghost" size="icon" onClick={nextYear} className="h-8 w-8">
+          <Button variant="ghost" size="icon" onClick={nextYear} className="h-8 w-8" data-testid="button-next-year">
             <ChevronRight className="h-4 w-4" />
           </Button>
 
@@ -165,7 +151,7 @@ export function Calendar() {
             오늘
           </Button>
 
-          <Button variant="ghost" size="icon" onClick={prevMonth} className="h-8 w-8">
+          <Button variant="ghost" size="icon" onClick={prevMonth} className="h-8 w-8" data-testid="button-prev-month">
             <ChevronLeft className="h-4 w-4" />
           </Button>
 
@@ -183,13 +169,13 @@ export function Calendar() {
             </SelectContent>
           </Select>
 
-          <Button variant="ghost" size="icon" onClick={nextMonth} className="h-8 w-8">
+          <Button variant="ghost" size="icon" onClick={nextMonth} className="h-8 w-8" data-testid="button-next-month">
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
       </div>
 
-      <div className="grid grid-cols-7 bg-amber-100 text-center font-bold text-sm border-t border-border">
+      <div className="grid grid-cols-7 bg-amber-100 dark:bg-amber-900/30 text-center font-bold text-sm border-t border-border">
         {["일", "월", "화", "수", "목", "금", "토"].map((day, i) => (
           <div 
             key={day} 
@@ -207,14 +193,12 @@ export function Calendar() {
         
         {daysInMonth.map((day) => {
           const dayNum = day.getDate();
-          const dayIndex = day.getDate() + day.getMonth() * 30;
+          const dayMonth = day.getMonth() + 1;
+          const dayYear = day.getFullYear();
           const isSun = getDay(day) === 0;
           const isSat = getDay(day) === 6;
-          const lunarDay = getLunarDay(dayNum, day.getMonth());
-          const ganJi = getGanJi(dayIndex);
-          const mansion = getMansion(dayIndex);
-          const trigram = getTrigram(dayIndex);
-          const general = getGeneral(dayIndex);
+          
+          const dayData = getCalendarDayData(dayYear, dayMonth, dayNum);
           
           return (
             <div 
@@ -225,23 +209,29 @@ export function Calendar() {
             >
               <div className="flex justify-between items-start">
                 <span className={`text-lg font-bold ${isSun ? "text-red-500" : isSat ? "text-blue-500" : "text-foreground"}`}>
-                  {dayNum}
+                  {calType === "hw" ? dayData.hwanggeuk.day : dayNum}
                 </span>
                 <div className="text-right">
                   <div className="text-xs text-muted-foreground bg-muted rounded px-1">
-                    {lunarDay}
+                    {calType === "hw" ? `${dayMonth}.${dayNum}` : `${dayData.lunarMonth}.${dayData.lunarDay}`}
                   </div>
                 </div>
               </div>
               
               <div className="ganji-text mt-1 text-center">
-                {ganJi}
+                {dayData.dayGanZhi}
               </div>
               
               <div className="mansions-text mt-auto space-y-0.5 text-right">
-                <div><strong className="text-primary">{trigram}</strong></div>
-                <div>{mansion}, {general}</div>
+                <div><strong className="text-primary">{dayData.trigram}</strong></div>
+                <div>{dayData.mansion}, {dayData.mansionGeneral}</div>
               </div>
+              
+              {dayData.solarTerm && (
+                <div className="absolute top-0 left-0 text-xs text-red-500 font-bold">
+                  {dayData.solarTerm.korean}
+                </div>
+              )}
             </div>
           );
         })}
@@ -261,27 +251,34 @@ export function Calendar() {
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div className="bg-muted/50 rounded p-3">
                 <div className="text-muted-foreground text-xs mb-1">간지 (干支)</div>
-                <div className="font-bold text-lg">{displayYearGanJi}年 {displayMonthGanJi}月 {displayGanJi}日</div>
+                <div className="font-bold text-lg">{displayData.yearGanZhi}年 {displayData.monthGanZhi}月 {displayData.dayGanZhi}日</div>
               </div>
               <div className="bg-muted/50 rounded p-3">
                 <div className="text-muted-foreground text-xs mb-1">절기 (節氣)</div>
-                <div className="font-bold text-lg">{displaySeason}</div>
+                <div className="font-bold text-lg">{displayData.currentTerm.hanja} ({displayData.currentTerm.korean})</div>
               </div>
               <div className="bg-muted/50 rounded p-3">
                 <div className="text-muted-foreground text-xs mb-1">28수 (二十八宿)</div>
-                <div className="font-bold text-lg">{displayMansion}宿</div>
+                <div className="font-bold text-lg">{displayData.mansionDirection}{displayData.mansion}宿</div>
+                <div className="text-xs text-muted-foreground">{displayData.mansionGeneral}</div>
               </div>
               <div className="bg-muted/50 rounded p-3">
                 <div className="text-muted-foreground text-xs mb-1">팔괘 (八卦)</div>
-                <div className="font-bold text-lg">{displayTrigram}卦</div>
-              </div>
-              <div className="bg-muted/50 rounded p-3">
-                <div className="text-muted-foreground text-xs mb-1">오행 (五行)</div>
-                <div className="font-bold text-lg">{displayElement}</div>
+                <div className="font-bold text-lg">{displayData.trigram}卦</div>
+                <div className="text-xs text-muted-foreground">{displayData.trigramDirection}</div>
               </div>
               <div className="bg-muted/50 rounded p-3">
                 <div className="text-muted-foreground text-xs mb-1">음력</div>
-                <div className="font-bold text-lg">{getLunarDay(displayDate.getDate(), displayDate.getMonth())}일</div>
+                <div className="font-bold text-lg">
+                  {displayData.lunarMonth}월 {displayData.lunarDay}일
+                  {displayData.isLeapMonth && <span className="text-xs ml-1">(윤)</span>}
+                </div>
+              </div>
+              <div className="bg-muted/50 rounded p-3">
+                <div className="text-muted-foreground text-xs mb-1">황극력</div>
+                <div className="font-bold text-lg">
+                  {displayData.hwanggeuk.year}.{displayData.hwanggeuk.month}.{displayData.hwanggeuk.day}
+                </div>
               </div>
             </div>
             <p className="text-xs text-muted-foreground">

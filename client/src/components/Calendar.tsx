@@ -13,6 +13,7 @@ import {
   getHwanggeukMonthGanZhi,
   getHwanggeukHourGanZhi,
   getHwanggeuk28Mansion,
+  getHwanggeukPosition,
   getDayGanZhi,
   get28Mansion,
   get8Trigram,
@@ -412,6 +413,7 @@ export function Calendar() {
             const isSelected = selectedDay && isSameDay(solarDate, selectedDay);
             const hwDate = getHwanggeukDate(solarDate.getFullYear(), solarDate.getMonth() + 1, solarDate.getDate());
             const cellMansion = getHwanggeuk28Mansion(hwDate.year, hwDate.month, hwDate.day);
+            const cellPosition = getHwanggeukPosition(hwDate.year, hwDate.month, hwDate.day);
             const cellTrigram = get8Trigram(solarDate.getFullYear(), solarDate.getMonth() + 1, solarDate.getDate());
             
             return (
@@ -437,7 +439,7 @@ export function Calendar() {
                 <div className="flex-1 flex flex-col justify-end space-y-0.5">
                   <div className="trigram-text">{cellTrigram.trigram}</div>
                   <div className="mansion-info">{cellMansion.mansion},{cellMansion.general}</div>
-                  {cellMansion.position && <div className="position-text">{cellMansion.position}</div>}
+                  <div className="position-text">{cellPosition}</div>
                 </div>
               </div>
             );

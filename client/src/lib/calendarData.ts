@@ -595,9 +595,6 @@ export function getJeolguk(hwYear: number, hwMonth: number, hwDay: number): {
   return { name, sogung, daegung };
 }
 
-const AM_SOGUNG_VALUES = [2, 3, 4, 5, 6, 7, 8, 9, 10];
-const PM_SOGUNG_VALUES = [3, 4, 7, 2, 6, 10, 5, 8, 9];
-
 const TIME_DIV_HHMM: [number, number][] = [
   [0, 20],
   [21, 140],
@@ -619,6 +616,19 @@ const TIME_DIV_HHMM: [number, number][] = [
   [2141, 2300]
 ];
 
+function calculateSogung(slotIndex: number, daysFromEpoch: number): number {
+  const groupIndex = Math.floor(slotIndex / 3);
+  const positionInGroup = slotIndex % 3;
+  
+  const sogungOffset = 8;
+  const baseSogung = ((daysFromEpoch + sogungOffset) % 9 + 9) % 9;
+  
+  const groupStart = (baseSogung + groupIndex) % 9;
+  const sogungValue = (groupStart - positionInGroup * 3 + 27) % 9;
+  
+  return sogungValue + 2;
+}
+
 export function getSogungDaegung(date: Date): {
   sogung: number;
   daegung: number;
@@ -633,7 +643,7 @@ export function getSogungDaegung(date: Date): {
   let timeSlot = 0;
   
   if (timeHHMM > 2300) {
-    timeSlot = 0;
+    timeSlot = 1;
   } else {
     for (let t = 0; t < TIME_DIV_HHMM.length; t++) {
       if (timeHHMM >= TIME_DIV_HHMM[t][0] && timeHHMM <= TIME_DIV_HHMM[t][1]) {
@@ -654,26 +664,7 @@ export function getSogungDaegung(date: Date): {
   if (timeSlot > 18) timeSlot = 18;
   if (timeSlot < 1) timeSlot = 1;
   
-  const isAM = timeSlot <= 9 || hours >= 23;
-  
-  let sogungIndex: number;
-  let sogungValues: number[];
-  
-  if (timeSlot <= 9) {
-    sogungIndex = timeSlot - 1;
-    sogungValues = AM_SOGUNG_VALUES;
-  } else {
-    sogungIndex = timeSlot - 10;
-    sogungValues = PM_SOGUNG_VALUES;
-  }
-  
-  const sogung = sogungValues[Math.min(Math.max(sogungIndex, 0), 8)];
-  
-  const currentSlotIdx = Math.max(0, timeSlot - 1);
-  const slotEndHHMM = TIME_DIV_HHMM[Math.min(currentSlotIdx, 17)][1];
-  const slotEndMinutes = Math.floor(slotEndHHMM / 100) * 60 + (slotEndHHMM % 100);
-  const currentMinutes = hours * 60 + minutes;
-  const remainingMinutes = Math.max(0, slotEndMinutes - currentMinutes);
+  const isAM = timeSlot <= 9;
   
   let adjustedDate = new Date(date);
   if (hours >= 23) {
@@ -684,9 +675,18 @@ export function getSogungDaegung(date: Date): {
   const daysFromEpoch = (hwDate.year - HW_EPOCH_YEAR) * HW_DAYS_PER_YEAR + 
     HW_MONTH_DAYS.slice(0, hwDate.month - 1).reduce((a, b) => a + b, 0) + hwDate.day - 1;
   
-  const halfDaysFromEpoch = daysFromEpoch * 2 + (isAM ? 0 : 1);
-  const daegungIndex = ((halfDaysFromEpoch % 9) + 9) % 9;
+  const slotIndex = isAM ? (timeSlot - 1) : (timeSlot - 10);
+  const sogung = calculateSogung(slotIndex, daysFromEpoch);
+  
+  const daegungBase = daysFromEpoch * 2 + (isAM ? 1 : 5);
+  const daegungIndex = ((daegungBase) % 9 + 9) % 9;
   const daegung = daegungIndex + 2;
+  
+  const currentSlotIdx = Math.max(0, timeSlot - 1);
+  const slotEndHHMM = TIME_DIV_HHMM[Math.min(currentSlotIdx, 17)][1];
+  const slotEndMinutes = Math.floor(slotEndHHMM / 100) * 60 + (slotEndHHMM % 100);
+  const currentMinutes = hours * 60 + minutes;
+  const remainingMinutes = Math.max(0, slotEndMinutes - currentMinutes);
   
   return { sogung, daegung, timeSlot, isAM, remainingMinutes };
 }

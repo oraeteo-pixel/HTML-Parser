@@ -169,9 +169,7 @@ export function Calendar() {
   }, [liveHwanggeuk]);
   
   const liveSogungDaegung = useMemo(() => {
-    const result = getSogungDaegung(currentTime);
-    console.log('DEBUG liveSogungDaegung:', result, 'time:', currentTime.getHours(), currentTime.getMinutes());
-    return result;
+    return getSogungDaegung(currentTime);
   }, [currentTime]);
   
   const jeolguk = getJeolguk(

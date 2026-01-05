@@ -167,18 +167,26 @@ export function Calendar() {
       <div className="p-2 space-y-2">
         <div className="flex gap-2">
           <Button 
-            variant={calType === "hw" ? "default" : "secondary"}
             size="sm"
             onClick={() => setCalType("hw")}
             data-testid="button-hwanggeuk"
+            className={calType === "hw" 
+              ? "text-white border-0" 
+              : "bg-white dark:bg-card text-foreground border border-border"
+            }
+            style={calType === "hw" ? { backgroundColor: '#fb6c9f' } : {}}
           >
             황극력
           </Button>
           <Button 
-            variant={calType === "df" ? "default" : "secondary"}
             size="sm"
             onClick={() => setCalType("df")}
             data-testid="button-seoncheon"
+            className={calType === "df" 
+              ? "text-white border-0" 
+              : "bg-white dark:bg-card text-foreground border border-border"
+            }
+            style={calType === "df" ? { backgroundColor: '#fb6c9f' } : {}}
           >
             선천력
           </Button>
@@ -186,34 +194,26 @@ export function Calendar() {
 
         <div 
           id="calDate" 
-          className="bg-muted/50 rounded p-3 text-sm cursor-pointer hover:bg-muted transition-colors"
+          className="bg-sky-100 dark:bg-sky-900/30 rounded p-3 text-sm cursor-pointer hover:bg-sky-200 dark:hover:bg-sky-900/50 transition-colors"
           data-testid="calendar-info"
           onClick={() => setShowDayDetail(true)}
         >
-          <div className="font-bold">
-            {calType === "hw" ? (
-              <>
-                {displayData.hwanggeuk.year}.{displayData.hwanggeuk.month}.{displayData.hwanggeuk.day} {WEEKDAYS_HANJA[displayDate.getDay()]}
-              </>
-            ) : (
-              <>
-                {format(displayDate, "yyyy.M.d")} {WEEKDAYS_HANJA[displayDate.getDay()]}
-              </>
-            )}
+          <div className="font-bold text-base">
+            {displayData.hwanggeuk.year}.{displayData.hwanggeuk.month}.{displayData.hwanggeuk.day} {WEEKDAYS_HANJA[displayDate.getDay()]} 
+            <span className="font-normal ml-1">
+              ({displayData.hwanggeuk.yearGanZhi}年 {displayData.hwanggeuk.monthGanZhi}月 {displayData.dayGanZhi}日)
+            </span>
             <span className="ml-2 text-xs font-normal text-muted-foreground">
-              {calType === "hw" ? "황극력" : "선천력"}
+              {displayData.currentTerm.hanja}
             </span>
           </div>
-          <div className="text-muted-foreground text-xs mt-1">
-            ({displayData.hwanggeuk.yearGanZhi}年 {displayData.hwanggeuk.monthGanZhi}月 {displayData.dayGanZhi}日) {displayData.currentTerm.hanja}
-          </div>
-          <div className="mt-2 flex gap-2 flex-wrap">
-            <Button variant="outline" size="sm" data-testid="button-28mansions">
-              {displayData.trigram}, {displayData.mansion}宿 ({displayData.mansionGeneral})
-            </Button>
-            <Button variant="outline" size="sm" data-testid="button-lunar">
-              음{displayData.lunarMonth}.{displayData.lunarDay}
-            </Button>
+          <div className="mt-2">
+            <span 
+              className="inline-block px-2 py-1 rounded text-white text-xs"
+              style={{ backgroundColor: '#fb6c9f' }}
+            >
+              {displayData.mansionDirection}, {displayData.mansion}宿{displayData.mansionGeneral}
+            </span>
           </div>
         </div>
 
@@ -241,10 +241,10 @@ export function Calendar() {
           </Button>
 
           <Button 
-            variant="default" 
             size="sm" 
             onClick={goToday}
-            className="mx-2"
+            className="mx-2 text-white border-0"
+            style={{ backgroundColor: '#fb6c9f' }}
             data-testid="button-today"
           >
             오늘
@@ -274,11 +274,11 @@ export function Calendar() {
         </div>
       </div>
 
-      <div className="grid grid-cols-7 bg-amber-100 dark:bg-amber-900/30 text-center font-bold text-sm border-t border-border">
+      <div className="grid grid-cols-7 bg-gray-100 dark:bg-gray-800 text-center font-bold text-sm border-t border-border">
         {WEEKDAYS.map((day, i) => (
           <div 
             key={day} 
-            className={`py-2 border-b border-border ${i === 0 ? "text-red-500" : i === 6 ? "text-blue-500" : ""}`}
+            className={`py-2 border-b border-r last:border-r-0 border-border ${i === 0 ? "text-red-500" : i === 6 ? "text-blue-500" : ""}`}
           >
             {day}
           </div>
@@ -305,31 +305,24 @@ export function Calendar() {
                 data-testid={`calendar-day-${hwDay}`}
                 onClick={() => handleDayClick(solarDate)}
               >
-                <div className="flex justify-between items-start">
-                  <span className={`text-lg font-bold ${isSun ? "text-red-500" : isSat ? "text-blue-500" : "text-foreground"}`}>
+                <div className="flex justify-between items-start mb-1">
+                  <span className={`day-number ${isSun ? "sunday" : isSat ? "saturday" : ""}`}>
                     {hwDay}
                   </span>
-                  <div className="text-right">
-                    <div className="text-xs text-muted-foreground bg-muted rounded px-1">
-                      {solarDate.getDate()}
-                    </div>
-                  </div>
+                  <span className="solar-day">
+                    {solarDate.getDate()}
+                  </span>
                 </div>
                 
-                <div className="ganji-text mt-1 text-center">
+                <div className="ganji-box mb-1">
                   {dayData.dayGanZhi}
                 </div>
                 
-                <div className="mansions-text mt-auto space-y-0.5 text-right">
-                  <div><strong className="text-primary">{dayData.trigram}</strong></div>
-                  <div>{dayData.mansion}, {dayData.mansionGeneral}</div>
+                <div className="flex-1 flex flex-col justify-end space-y-0.5">
+                  <div className="trigram-text">{dayData.trigram}</div>
+                  <div className="mansion-info">{dayData.mansionDirection},{dayData.mansion}宿{dayData.mansionGeneral}</div>
+                  <div className="direction-info">七之{(dayData.mansionIndex % 7) + 1}</div>
                 </div>
-                
-                {dayData.solarTerm && (
-                  <div className="absolute top-0 left-0 text-xs text-red-500 font-bold">
-                    {dayData.solarTerm.korean}
-                  </div>
-                )}
               </div>
             );
           })
@@ -348,31 +341,24 @@ export function Calendar() {
                 data-testid={`calendar-day-${solarDay}`}
                 onClick={() => handleDayClick(solarDate)}
               >
-                <div className="flex justify-between items-start">
-                  <span className={`text-lg font-bold ${isSun ? "text-red-500" : isSat ? "text-blue-500" : "text-foreground"}`}>
+                <div className="flex justify-between items-start mb-1">
+                  <span className={`day-number ${isSun ? "sunday" : isSat ? "saturday" : ""}`}>
                     {solarDay}
                   </span>
-                  <div className="text-right">
-                    <div className="text-xs text-muted-foreground bg-muted rounded px-1">
-                      {dayData.lunarMonth}.{dayData.lunarDay}
-                    </div>
-                  </div>
+                  <span className="solar-day">
+                    {dayData.lunarMonth}.{dayData.lunarDay}
+                  </span>
                 </div>
                 
-                <div className="ganji-text mt-1 text-center">
+                <div className="ganji-box mb-1">
                   {dayData.dayGanZhi}
                 </div>
                 
-                <div className="mansions-text mt-auto space-y-0.5 text-right">
-                  <div><strong className="text-primary">{dayData.trigram}</strong></div>
-                  <div>{dayData.mansion}, {dayData.mansionGeneral}</div>
+                <div className="flex-1 flex flex-col justify-end space-y-0.5">
+                  <div className="trigram-text">{dayData.trigram}</div>
+                  <div className="mansion-info">{dayData.mansionDirection},{dayData.mansion}宿{dayData.mansionGeneral}</div>
+                  <div className="direction-info">七之{(dayData.mansionIndex % 7) + 1}</div>
                 </div>
-                
-                {dayData.solarTerm && (
-                  <div className="absolute top-0 left-0 text-xs text-red-500 font-bold">
-                    {dayData.solarTerm.korean}
-                  </div>
-                )}
               </div>
             );
           })

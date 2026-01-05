@@ -222,11 +222,11 @@
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  @apply border border-border bg-white;
+  @apply border-t border-l border-border bg-white dark:bg-card;
 }
 
 .calendar-cell {
-  @apply bg-white p-2 min-h-[90px] border border-border flex flex-col relative;
+  @apply bg-white dark:bg-card p-1.5 min-h-[100px] border-r border-b border-border flex flex-col relative;
 }
 
 .calendar-cell:hover {
@@ -234,7 +234,11 @@
 }
 
 .calendar-cell.today {
-  @apply bg-primary/5 border-primary;
+  @apply bg-green-50 dark:bg-green-900/20;
+}
+
+.calendar-cell.today .ganji-box {
+  @apply bg-green-200 dark:bg-green-700;
 }
 
 .calendar-cell.inactive {
@@ -243,19 +247,50 @@
 
 .orae-pink {
   color: #fb6c9f;
-  text-shadow: 1px 1px 1px #aaa;
 }
 
 .orae-gold {
   color: #f4d07a;
-  text-shadow: 1px 1px 1px #c2a663;
 }
 
-.ganji-text {
-  font-family: var(--font-display);
-  @apply text-xs bg-primary/10 text-primary px-1 rounded;
+.day-number {
+  @apply text-lg font-bold;
+  color: #fb6c9f;
 }
 
-.mansions-text {
-  @apply text-[10px] text-muted-foreground leading-tight;
+.day-number.sunday {
+  color: #e74c3c;
+}
+
+.day-number.saturday {
+  color: #3498db;
+}
+
+.solar-day {
+  @apply text-xs text-muted-foreground;
+}
+
+.ganji-box {
+  @apply text-xs px-1.5 py-0.5 rounded text-center mx-auto;
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+.dark .ganji-box {
+  background-color: rgba(46, 125, 50, 0.3);
+  color: #81c784;
+}
+
+.trigram-text {
+  @apply text-xs font-bold;
+  color: #fb6c9f;
+}
+
+.mansion-info {
+  @apply text-[10px] leading-tight;
+  color: #fb6c9f;
+}
+
+.direction-info {
+  @apply text-[9px] text-muted-foreground;
 }

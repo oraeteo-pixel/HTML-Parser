@@ -131,8 +131,9 @@ export function JeolgukCircularChart({ date }: JeolgukCircularChartProps) {
           <circle cx={center} cy={center} r={coreRadius} fill="#f8f4ec" className="dark:fill-slate-800" stroke="#2d3748" strokeWidth="1.5" />
           
           {/* Radial dividers for 24 sectors */}
+          {/* 亥 at index 1 must be at 0 degrees (12 o'clock), so startOffset = -22.5 */}
           {Array.from({ length: 24 }).map((_, i) => {
-            const startOffset = -sectorAngle / 2;
+            const startOffset = -sectorAngle * 1.5;  // -22.5 degrees
             const angle = startOffset + i * sectorAngle;
             const rad = (angle - 90) * Math.PI / 180;
             const x1 = center + innerRing * Math.cos(rad);
@@ -143,8 +144,9 @@ export function JeolgukCircularChart({ date }: JeolgukCircularChartProps) {
           })}
           
           {/* 24 Sector content */}
+          {/* 亥 at index 1 = 0 degrees, 寅 at index 7 = 90 degrees, 巳 at index 13 = 180 degrees, 申 at index 19 = 270 degrees */}
           {OUTER_RING_24.map((item, index) => {
-            const startOffset = -sectorAngle / 2;
+            const startOffset = -sectorAngle * 1.5;  // -22.5 degrees for proper alignment
             const midAngle = startOffset + index * sectorAngle + sectorAngle / 2;
             const jeolgukName = JEOLGUK_NAMES[index] || "";
             const mansion = MANSIONS_28[index] || "";
@@ -216,12 +218,12 @@ export function JeolgukCircularChart({ date }: JeolgukCircularChartProps) {
             );
           })}
           
-          {/* Inner trigram numbers */}
+          {/* Inner trigram numbers - aligned with new startOffset */}
           {[
-            { num: "2", angle: 37.5 },    // 離 position (sector 5)
-            { num: "4", angle: 172.5 },   // 震 position (sector 12)
-            { num: "3", angle: 247.5 },   // 坎 position (sector 17)
-            { num: "9", angle: 337.5 },   // 巽 position (sector 23)
+            { num: "2", angle: 45 },      // 離 position (index 4)
+            { num: "4", angle: 150 },     // 震 position (index 11)
+            { num: "3", angle: 225 },     // 坎 position (index 16)
+            { num: "9", angle: 315 },     // 巽 position (index 22)
           ].map((item, index) => {
             const pos = getTextPosition(item.angle, trigramRadius);
             return (

@@ -1,38 +1,53 @@
-import { type User, type InsertUser } from "@shared/schema";
-import { randomUUID } from "crypto";
-
-// modify the interface with any CRUD methods
-// you might need
+import { users, posts, type User, type InsertUser, type Post, type InsertPost } from "@shared/schema";
+import { db } from "./db";
+import { eq, desc } from "drizzle-orm";
 
 export interface IStorage {
-  getUser(id: string): Promise<User | undefined>;
+  getUser(id: number): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  
+  createPost(post: InsertPost): Promise<Post>;
+  getPosts(): Promise<(Post & { author: string })[]>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-
-  constructor() {
-    this.users = new Map();
-  }
-
-  async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+export class DatabaseStorage implements IStorage {
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id };
-    this.users.set(id, user);
+    const [user] = await db.insert(users).values(insertUser).returning();
     return user;
+  }
+
+  async createPost(post: InsertPost): Promise<Post> {
+    const [newPost] = await db.insert(posts).values(post).returning();
+    return newPost;
+  }
+
+  async getPosts(): Promise<(Post & { author: string })[]> {
+    // Join with users to get author name
+    const result = await db.select({
+      id: posts.id,
+      title: posts.title,
+      content: posts.content,
+      authorId: posts.authorId,
+      createdAt: posts.createdAt,
+      author: users.nickname
+    })
+    .from(posts)
+    .innerJoin(users, eq(posts.authorId, users.id))
+    .orderBy(desc(posts.createdAt));
+    
+    return result;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();

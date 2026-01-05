@@ -287,6 +287,39 @@ export function JeolgukCircularChart({ date }: JeolgukCircularChartProps) {
             </g>
             <text x="-130" y="-130" textAnchor="middle" fontSize="14" fill="#718096">7</text>
             
+            {/* Arrows connecting numbers in sequence: 1→2→3→4→5→6→7→8→9→10 */}
+            <defs>
+              <marker id="arrowhead" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto">
+                <polygon points="0 0, 6 3, 0 6" fill="#718096" />
+              </marker>
+            </defs>
+            
+            {/* 1(center) → 2(12시) */}
+            <line x1="0" y1="-25" x2="0" y2="-135" stroke="#718096" strokeWidth="1" markerEnd="url(#arrowhead)" />
+            
+            {/* 2(12시) → 3(7시) */}
+            <line x1="-15" y1="-145" x2="-95" y2="95" stroke="#718096" strokeWidth="1" markerEnd="url(#arrowhead)" />
+            
+            {/* 3(7시) → 4(3시) */}
+            <line x1="-95" y1="95" x2="135" y2="0" stroke="#718096" strokeWidth="1" markerEnd="url(#arrowhead)" />
+            
+            {/* 4(3시) → 5(5시) */}
+            <line x1="140" y1="15" x2="110" y2="95" stroke="#718096" strokeWidth="1" markerEnd="url(#arrowhead)" />
+            
+            {/* 5(5시) → 6(center) */}
+            <line x1="95" y1="95" x2="20" y2="15" stroke="#718096" strokeWidth="1" markerEnd="url(#arrowhead)" />
+            
+            {/* 6(center) → 7(11시) */}
+            <line x1="-15" y1="-25" x2="-95" y2="-95" stroke="#718096" strokeWidth="1" markerEnd="url(#arrowhead)" />
+            
+            {/* 7(11시) → 8(9시) */}
+            <line x1="-110" y1="-95" x2="-140" y2="-15" stroke="#718096" strokeWidth="1" markerEnd="url(#arrowhead)" />
+            
+            {/* 8(9시) → 9(1시) */}
+            <line x1="-140" y1="0" x2="95" y2="-95" stroke="#718096" strokeWidth="1" markerEnd="url(#arrowhead)" />
+            
+            {/* 9(1시) → 10(6시) */}
+            <line x1="95" y1="-95" x2="0" y2="140" stroke="#718096" strokeWidth="1" markerEnd="url(#arrowhead)" />
           </g>
           
           {/* Center - 10 Heavenly Stems with numbers */}

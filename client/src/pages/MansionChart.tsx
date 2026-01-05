@@ -1,6 +1,9 @@
 import { useMemo, useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
-import { getHwanggeuk28Mansion, getHwanggeukDate, getDayGanZhi, getJulianDayNumber } from "@/lib/calendarData";
+import { getHwanggeuk28Mansion, getHwanggeukDate, getDayGanZhi, getJulianDayNumber, getKoreanTime, getJeolguk, getSogungDaegung } from "@/lib/calendarData";
+import { ArrowLeft } from "lucide-react";
+import { Link } from "wouter";
+import { Button } from "@/components/ui/button";
 
 const HEAVENLY_STEMS = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"];
 const EARTHLY_BRANCHES = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
@@ -39,11 +42,11 @@ function getDayGanZhiForOffset(baseYear: number, baseMonth: number, baseDay: num
 }
 
 export default function MansionChart() {
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [currentTime, setCurrentTime] = useState(getKoreanTime());
   
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentTime(new Date());
+      setCurrentTime(getKoreanTime());
     }, 60000);
     return () => clearInterval(timer);
   }, []);
@@ -52,6 +55,8 @@ export default function MansionChart() {
   const todayGanZhi = getDayGanZhi(today.getFullYear(), today.getMonth() + 1, today.getDate());
   const todayHwDate = getHwanggeukDate(today.getFullYear(), today.getMonth() + 1, today.getDate());
   const todayMansion = getHwanggeuk28Mansion(todayHwDate.year, todayHwDate.month, todayHwDate.day);
+  const todayJeolguk = getJeolguk(todayHwDate.year, todayHwDate.month, todayHwDate.day);
+  const todaySogungDaegung = getSogungDaegung(currentTime);
   
   const todayStem = todayGanZhi.charAt(0);
   const isCenter = CENTER_STEMS.includes(todayStem);
@@ -97,23 +102,36 @@ export default function MansionChart() {
 
   return (
     <div className="p-4 max-w-4xl mx-auto">
-      <h1 className="text-xl font-bold text-center mb-2" data-testid="text-chart-title">
-        後天 28宿 周天 星宿 配列圖
-      </h1>
+      <div className="flex items-center gap-2 mb-4">
+        <Link href="/">
+          <Button variant="ghost" size="icon" data-testid="button-back-home">
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+        </Link>
+        <h1 className="text-xl font-bold" data-testid="text-chart-title">
+          後天 28宿 周天 星宿 配列圖
+        </h1>
+      </div>
       <p className="text-center text-sm text-muted-foreground mb-4">中央 曜雲殿</p>
       
       <Card className="p-4 mb-4">
         <div className="text-center mb-4">
           <div className="text-sm text-muted-foreground">오늘</div>
           <div className="text-2xl font-bold" data-testid="text-today-ganzhi">
-            {todayGanZhi}日
+            {todayHwDate.yearGanZhi}年 {todayHwDate.monthGanZhi}月 {todayGanZhi}日
           </div>
-          <div className="text-lg">
+          <div className="flex items-center justify-center gap-2 mt-2 flex-wrap">
             <span 
               className="inline-block px-2 py-1 rounded text-white text-sm"
               style={{ backgroundColor: todayMansion.isZunkong ? '#4a9f4a' : '#fb6c9f' }}
             >
-              {todayMansion.mansion}{todayMansion.isZunkong ? "" : "수"}
+              {todayMansion.mansion}{todayMansion.isZunkong ? "" : "宿"}
+            </span>
+            <span className="badge-jade px-2 py-1 rounded text-sm">
+              {todayJeolguk.name}절국
+            </span>
+            <span className="badge-pink px-2 py-1 rounded text-sm">
+              소궁,대궁 {todaySogungDaegung.sogung},{todaySogungDaegung.daegung}
             </span>
           </div>
         </div>

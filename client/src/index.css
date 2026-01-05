@@ -15,6 +15,13 @@
   --elevate-1: rgba(0,0,0, .03);
   --elevate-2: rgba(0,0,0, .08);
 
+  --orae-pink: 340 85% 70%;
+  --orae-pink-dark: 340 75% 55%;
+  --orae-jade: 145 40% 42%;
+  --orae-jade-light: 145 35% 55%;
+  --ganji-surface: 45 30% 96%;
+  --ganji-border: 45 20% 85%;
+
   --background: 0 0% 95%;
   --foreground: 0 0% 20%;
 
@@ -86,6 +93,13 @@
   --opaque-button-border-intensity: 9;
   --elevate-1: rgba(255,255,255, .04);
   --elevate-2: rgba(255,255,255, .09);
+
+  --orae-pink: 340 80% 65%;
+  --orae-pink-dark: 340 70% 50%;
+  --orae-jade: 145 35% 50%;
+  --orae-jade-light: 145 30% 60%;
+  --ganji-surface: 0 0% 20%;
+  --ganji-border: 0 0% 30%;
 
   --background: 0 0% 12%;
   --foreground: 0 0% 90%;
@@ -254,8 +268,9 @@
 }
 
 .day-number {
-  @apply text-lg font-bold;
-  color: #fb6c9f;
+  @apply font-bold;
+  font-size: clamp(0.875rem, 3vw, 1.125rem);
+  color: hsl(var(--orae-pink-dark));
 }
 
 .day-number.sunday {
@@ -271,26 +286,91 @@
 }
 
 .ganji-box {
-  @apply text-sm px-1.5 py-0.5 rounded text-center mx-auto font-bold;
-  background-color: #e8f5e9;
-  color: #2e7d32;
+  @apply px-1 py-0.5 rounded text-center mx-auto font-bold;
+  font-size: clamp(0.625rem, 2.5vw, 0.875rem);
+  background: linear-gradient(135deg, hsl(var(--orae-jade)) 0%, hsl(var(--orae-jade-light)) 100%);
+  color: white;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
 .dark .ganji-box {
-  background-color: rgba(46, 125, 50, 0.3);
-  color: #81c784;
+  background: linear-gradient(135deg, hsl(var(--orae-jade)) 0%, hsl(var(--orae-jade-light)) 100%);
+  color: white;
 }
 
 .trigram-text {
-  @apply text-sm font-bold;
-  color: #fb6c9f;
+  @apply font-bold;
+  font-size: clamp(0.625rem, 2.5vw, 0.875rem);
+  color: hsl(var(--orae-pink-dark));
 }
 
 .mansion-info {
-  @apply text-xs leading-tight font-medium;
-  color: #fb6c9f;
+  @apply leading-tight font-medium;
+  font-size: clamp(0.5rem, 2vw, 0.75rem);
+  color: hsl(var(--orae-pink));
 }
 
 .position-text {
   @apply text-xs text-muted-foreground;
+}
+
+.ganji-title {
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 4vw, 1.5rem);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  background: linear-gradient(135deg, hsl(var(--orae-pink-dark)) 0%, hsl(var(--orae-pink)) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.dark .ganji-title {
+  background: linear-gradient(135deg, hsl(var(--orae-pink)) 0%, hsl(340 90% 80%) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.info-card {
+  background: linear-gradient(135deg, hsl(var(--ganji-surface)) 0%, hsl(var(--background)) 100%);
+  border: 1px solid hsl(var(--ganji-border));
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+}
+
+.dark .info-card {
+  background: linear-gradient(135deg, hsl(var(--ganji-surface)) 0%, hsl(var(--card)) 100%);
+}
+
+.badge-pink {
+  background: linear-gradient(135deg, hsl(var(--orae-pink-dark)) 0%, hsl(var(--orae-pink)) 100%);
+  color: white;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.badge-jade {
+  background: linear-gradient(135deg, hsl(var(--orae-jade)) 0%, hsl(var(--orae-jade-light)) 100%);
+  color: white;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.text-fluid-sm {
+  font-size: clamp(0.7rem, 2.5vw, 0.875rem);
+}
+
+.text-fluid-base {
+  font-size: clamp(0.875rem, 3vw, 1rem);
+}
+
+.text-fluid-lg {
+  font-size: clamp(1rem, 3.5vw, 1.25rem);
 }

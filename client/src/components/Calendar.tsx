@@ -298,42 +298,48 @@ export function Calendar() {
 
         <div 
           id="calDate" 
-          className="bg-sky-100 dark:bg-sky-900/30 rounded p-3 text-sm cursor-pointer hover:bg-sky-200 dark:hover:bg-sky-900/50 transition-colors"
+          className="info-card cursor-pointer hover:shadow-md transition-all"
           data-testid="calendar-info"
           onClick={() => setShowDayDetail(true)}
         >
           {calType === "hw" ? (
-            <>
-              <div className="font-bold text-base">
+            <div className="space-y-2">
+              <div className="ganji-title">
                 {liveHwanggeuk.yearGanZhi}年 {liveHwanggeuk.monthGanZhi}月 {liveDayGanZhi}日 {liveHourGanZhi}時
-                <span className="ml-2 text-xs font-normal">
-                  {liveJeolguk.name} &lt;소궁,대궁&gt;{liveSogungDaegung.sogung},{liveSogungDaegung.daegung}
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="badge-pink">
+                  {liveJeolguk.name}
+                </span>
+                <span className="text-fluid-sm text-muted-foreground">
+                  소궁 {liveSogungDaegung.sogung} · 대궁 {liveSogungDaegung.daegung}
                 </span>
               </div>
-              <div className="mt-2 flex gap-2 flex-wrap">
-                <span 
-                  className="inline-block px-2 py-1 rounded text-white text-xs"
-                  style={{ backgroundColor: '#fb6c9f' }}
-                >
+              <div className="flex gap-2 flex-wrap">
+                <span className="badge-pink">
                   {hwMansion.mansion}{hwMansion.isZunkong ? "" : "수"}
                 </span>
-                <span 
-                  className="inline-block px-2 py-1 rounded text-white text-xs"
-                  style={{ backgroundColor: '#4a9f4a' }}
-                >
+                <span className="badge-jade">
                   {trigram.trigram}
                 </span>
               </div>
-            </>
+            </div>
           ) : (
-            <div className="font-bold text-base">
-              {displayYear}.{displayMonth}.{displayDay} {WEEKDAYS_HANJA[displayDate.getDay()]} 
-              <span className="font-normal ml-1">
-                (음{displayData.lunarMonth}.{displayData.lunarDay} {displayData.dayGanZhi}日)
-              </span>
-              <span className="ml-2 text-xs font-normal">
-                {displayData.currentTerm.hanja}, {displayData.currentTerm.general}
-              </span>
+            <div className="space-y-1">
+              <div className="ganji-title">
+                {displayYear}.{displayMonth}.{displayDay} {WEEKDAYS_HANJA[displayDate.getDay()]}
+              </div>
+              <div className="text-fluid-sm text-muted-foreground">
+                음력 {displayData.lunarMonth}.{displayData.lunarDay} · {displayData.dayGanZhi}日
+              </div>
+              <div className="flex gap-2 flex-wrap">
+                <span className="badge-pink">
+                  {displayData.currentTerm.hanja}
+                </span>
+                <span className="text-fluid-sm text-muted-foreground">
+                  {displayData.currentTerm.general}
+                </span>
+              </div>
             </div>
           )}
         </div>
@@ -493,9 +499,9 @@ export function Calendar() {
       </div>
 
       <Dialog open={showDayDetail} onOpenChange={setShowDayDetail}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md max-w-[95vw]">
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle className="ganji-title">
               {calType === "hw" ? (
                 `${displayData.hwanggeuk.yearGanZhi}年 ${displayData.hwanggeuk.monthGanZhi}月 ${displayData.dayGanZhi}日 ${hwHourGanZhi}時`
               ) : (
@@ -508,77 +514,78 @@ export function Calendar() {
           </DialogHeader>
           <div className="space-y-4 py-4">
             {calType === "hw" ? (
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div className="bg-muted/50 rounded p-3">
-                  <div className="text-muted-foreground text-xs mb-1">절기</div>
-                  <div className="font-bold text-lg">{displayData.currentTerm.hanja} ({displayData.currentTerm.korean})</div>
+              <div className="grid grid-cols-2 gap-3 text-fluid-sm">
+                <div className="info-card">
+                  <div className="text-muted-foreground text-xs mb-1 uppercase tracking-wide">절기</div>
+                  <div className="font-bold text-fluid-lg">{displayData.currentTerm.hanja}</div>
+                  <div className="text-muted-foreground text-xs">{displayData.currentTerm.korean}</div>
                 </div>
-                <div className="bg-muted/50 rounded p-3">
-                  <div className="text-muted-foreground text-xs mb-1">팔괘 / 방위</div>
-                  <div className="font-bold text-lg">{trigram.trigram}</div>
+                <div className="info-card">
+                  <div className="text-muted-foreground text-xs mb-1 uppercase tracking-wide">팔괘</div>
+                  <div className="font-bold text-fluid-lg">{trigram.trigram}</div>
                 </div>
-                <div className="bg-muted/50 rounded p-3">
-                  <div className="text-muted-foreground text-xs mb-1">절국</div>
-                  <div className="font-bold text-lg">{jeolguk.name}</div>
+                <div className="info-card">
+                  <div className="text-muted-foreground text-xs mb-1 uppercase tracking-wide">절국</div>
+                  <div className="font-bold text-fluid-lg">{jeolguk.name}</div>
                 </div>
-                <div className="bg-muted/50 rounded p-3">
-                  <div className="text-muted-foreground text-xs mb-1">소궁 / 대궁</div>
-                  <div className="font-bold text-lg">{liveSogungDaegung.sogung} / {liveSogungDaegung.daegung}</div>
+                <div className="info-card">
+                  <div className="text-muted-foreground text-xs mb-1 uppercase tracking-wide">소궁 · 대궁</div>
+                  <div className="font-bold text-fluid-lg">{liveSogungDaegung.sogung} · {liveSogungDaegung.daegung}</div>
                 </div>
-                <div className="bg-muted/50 rounded p-3 col-span-2">
-                  <div className="text-muted-foreground text-xs mb-1">28수 (二十八宿)</div>
+                <div className="info-card col-span-2">
+                  <div className="text-muted-foreground text-xs mb-1 uppercase tracking-wide">28수</div>
                   <div className="flex items-center gap-3">
                     {!hwMansion.isZunkong && (
                       <img 
                         src={`/img/28j_jinjun.jpg`} 
                         alt={hwMansion.general} 
-                        className="w-16 h-16 object-cover rounded"
+                        className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded"
                       />
                     )}
                     <div>
-                      <div className="font-bold text-lg">{hwMansion.mansion}{hwMansion.isZunkong ? "" : "수"}</div>
-                      <div className="text-sm font-medium">{hwMansion.general !== "-" ? hwMansion.general : ""}</div>
+                      <div className="font-bold text-fluid-lg">{hwMansion.mansion}{hwMansion.isZunkong ? "" : "수"}</div>
+                      <div className="text-muted-foreground text-sm">{hwMansion.general !== "-" ? hwMansion.general : ""}</div>
                     </div>
                   </div>
                 </div>
-                <div className="bg-muted/50 rounded p-3">
-                  <div className="text-muted-foreground text-xs mb-1">음력</div>
-                  <div className="font-bold text-lg">
+                <div className="info-card">
+                  <div className="text-muted-foreground text-xs mb-1 uppercase tracking-wide">음력</div>
+                  <div className="font-bold text-fluid-base">
                     {displayData.lunarMonth}월 {displayData.lunarDay}일
                     {displayData.isLeapMonth && <span className="text-xs ml-1">(윤)</span>}
                   </div>
                 </div>
-                <div className="bg-muted/50 rounded p-3">
-                  <div className="text-muted-foreground text-xs mb-1">양력</div>
-                  <div className="font-bold text-lg">
+                <div className="info-card">
+                  <div className="text-muted-foreground text-xs mb-1 uppercase tracking-wide">양력</div>
+                  <div className="font-bold text-fluid-base">
                     {displayYear}.{displayMonth}.{displayDay}
                   </div>
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div className="bg-muted/50 rounded p-3 col-span-2">
-                  <div className="text-muted-foreground text-xs mb-1">음력 간지 (60갑자)</div>
-                  <div className="font-bold text-lg">
+              <div className="grid grid-cols-2 gap-3 text-fluid-sm">
+                <div className="info-card col-span-2">
+                  <div className="text-muted-foreground text-xs mb-1 uppercase tracking-wide">음력 간지 (60갑자)</div>
+                  <div className="font-bold text-fluid-lg">
                     {displayData.lunarGanZhi.year}年 {displayData.lunarGanZhi.month}月 {displayData.lunarGanZhi.day}日
                   </div>
                 </div>
-                <div className="bg-muted/50 rounded p-3">
-                  <div className="text-muted-foreground text-xs mb-1">양력 (陽曆)</div>
-                  <div className="font-bold text-lg">
+                <div className="info-card">
+                  <div className="text-muted-foreground text-xs mb-1 uppercase tracking-wide">양력 (陽曆)</div>
+                  <div className="font-bold text-fluid-base">
                     {displayYear}年 {displayMonth}月 {displayDay}日
                   </div>
                 </div>
-                <div className="bg-muted/50 rounded p-3">
-                  <div className="text-muted-foreground text-xs mb-1">음력 (陰曆)</div>
-                  <div className="font-bold text-lg">
+                <div className="info-card">
+                  <div className="text-muted-foreground text-xs mb-1 uppercase tracking-wide">음력 (陰曆)</div>
+                  <div className="font-bold text-fluid-base">
                     {displayData.lunarYear}年 {displayData.lunarMonth}月 {displayData.lunarDay}日
                     {displayData.isLeapMonth && <span className="text-xs ml-1">(閏)</span>}
                   </div>
                 </div>
-                <div className="bg-muted/50 rounded p-3 col-span-2">
-                  <div className="text-muted-foreground text-xs mb-1">절기 (節氣)</div>
-                  <div className="font-bold text-lg">{displayData.currentTerm.hanja} ({displayData.currentTerm.korean})</div>
+                <div className="info-card col-span-2">
+                  <div className="text-muted-foreground text-xs mb-1 uppercase tracking-wide">절기 (節氣)</div>
+                  <div className="font-bold text-fluid-lg">{displayData.currentTerm.hanja} ({displayData.currentTerm.korean})</div>
                 </div>
               </div>
             )}

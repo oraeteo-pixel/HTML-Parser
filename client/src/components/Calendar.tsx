@@ -12,6 +12,7 @@ import {
   getHwanggeukYearGanZhi,
   getHwanggeukMonthGanZhi,
   getHwanggeukHourGanZhi,
+  getHwanggeuk28Mansion,
   getDayGanZhi,
   get28Mansion,
   get8Trigram,
@@ -111,11 +112,10 @@ export function Calendar() {
     currentTime.getHours(), currentTime.getMinutes()
   );
   
-  const hwMansion = get28Mansion(
-    displayYear, 
-    displayMonth, 
-    displayDay
-  );
+  const hwMansion = useMemo(() => {
+    const hwDate = getHwanggeukDate(displayYear, displayMonth, displayDay);
+    return getHwanggeuk28Mansion(hwDate.year, hwDate.month, hwDate.day);
+  }, [displayYear, displayMonth, displayDay]);
   
   const trigram = get8Trigram(
     displayYear, 
@@ -300,7 +300,7 @@ export function Calendar() {
                   className="inline-block px-2 py-1 rounded text-white text-xs"
                   style={{ backgroundColor: '#fb6c9f' }}
                 >
-                  {hwMansion.position} {hwMansion.mansion}수{["星", "尾", "昴", "女"].includes(hwMansion.mansion) ? " 존공" : ""}
+                  {hwMansion.mansion}{hwMansion.isZunkong ? "" : "수"}
                 </span>
                 <span 
                   className="inline-block px-2 py-1 rounded text-white text-xs"
@@ -403,8 +403,9 @@ export function Calendar() {
             const isSat = solarDate.getDay() === 6;
             const isCurrentDay = isToday(solarDate);
             const isSelected = selectedDay && isSameDay(solarDate, selectedDay);
-            const cellMansion = get28Mansion(solarDate.getFullYear(), solarDate.getMonth() + 1, solarDate.getDate());
-            const positionInSeven = (cellMansion.index % 7) + 1;
+            const hwDate = getHwanggeukDate(solarDate.getFullYear(), solarDate.getMonth() + 1, solarDate.getDate());
+            const cellMansion = getHwanggeuk28Mansion(hwDate.year, hwDate.month, hwDate.day);
+            const cellTrigram = get8Trigram(solarDate.getFullYear(), solarDate.getMonth() + 1, solarDate.getDate());
             
             return (
               <div 
@@ -427,9 +428,9 @@ export function Calendar() {
                 </div>
                 
                 <div className="flex-1 flex flex-col justify-end space-y-0.5">
-                  <div className="trigram-text">{cellMansion.direction}</div>
+                  <div className="trigram-text">{cellTrigram.trigram}괘 ({cellTrigram.direction})</div>
                   <div className="mansion-info">{cellMansion.mansion},{cellMansion.general}</div>
-                  <div className="direction-info">七之{positionInSeven}</div>
+                  <div className="direction-info">{cellMansion.position}</div>
                 </div>
               </div>
             );
@@ -508,15 +509,17 @@ export function Calendar() {
               <div className="bg-muted/50 rounded p-3 col-span-2">
                 <div className="text-muted-foreground text-xs mb-1">28수 (二十八宿)</div>
                 <div className="flex items-center gap-3">
-                  <img 
-                    src={`/img/28j_${hwMansion.image}.jpg`} 
-                    alt={hwMansion.general} 
-                    className="w-16 h-16 object-cover rounded"
-                  />
+                  {!hwMansion.isZunkong && (
+                    <img 
+                      src={`/img/28j_jinjun.jpg`} 
+                      alt={hwMansion.general} 
+                      className="w-16 h-16 object-cover rounded"
+                    />
+                  )}
                   <div>
-                    <div className="font-bold text-lg">{hwMansion.position} {hwMansion.mansion}수{["星", "尾", "昴", "女"].includes(hwMansion.mansion) ? " 존공" : ""}</div>
-                    <div className="text-sm font-medium">{hwMansion.general}</div>
-                    <div className="text-xs text-muted-foreground">七之{(hwMansion.index % 7) + 1}</div>
+                    <div className="font-bold text-lg">{hwMansion.mansion}{hwMansion.isZunkong ? "" : "수"}</div>
+                    <div className="text-sm font-medium">{hwMansion.general !== "-" ? hwMansion.general : ""}</div>
+                    <div className="text-xs text-muted-foreground">{hwMansion.position}</div>
                   </div>
                 </div>
               </div>

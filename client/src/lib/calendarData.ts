@@ -80,15 +80,12 @@ const TERM_GENERALS = [
 ];
 
 const JEOLGUK_NAMES = [
-  "風火節局", "山火節局", "水火節局", "雷火節局",
-  "風澤節局", "山澤節局", "水澤節局", "雷澤節局",
-  "風地節局", "山地節局", "水地節局", "雷地節局",
-  "風天節局", "山天節局", "水天節局", "雷天節局",
-  "風雷節局", "山雷節局", "水雷節局", "火雷節局",
-  "風水節局", "山水節局", "澤水節局", "火水節局",
-  "風山節局", "澤山節局", "水山節局", "火山節局",
-  "雷風節局", "澤風節局", "水風節局", "火風節局",
-  "風化節局", "山化節局", "水化節局", "雷化節局"
+  "원화(元和)", "중화(中化)", "대화(大和)", "포화(布化)",
+  "뇌화(雷和)", "풍화(風化)", "입화(立和)", "행화(行化)",
+  "건화(建和)", "보화(普化)", "청화(淸和)", "평화(平化)",
+  "성화(成和)", "입화(入化)", "함화(咸和)", "형화(亨化)",
+  "정화(正和)", "명화(明化)", "지화(至和)", "정화(貞化)",
+  "태화(太和)", "체화(體化)", "인화(仁和)", "성화(性化)"
 ];
 
 const WEEKDAYS_HANJA = ["日", "月", "火", "水", "木", "金", "土"];
@@ -591,8 +588,8 @@ export function getJeolguk(hwYear: number, hwMonth: number, hwDay: number): {
   const daegung = ((Math.floor(Math.abs(daysFromHwEpoch) / 9) % 9)) + 1;
   
   if (hwYear < JEOLGUK_START_YEAR) {
-    const normalizedDays = ((daysFromHwEpoch % 36) + 36) % 36;
-    const name = JEOLGUK_NAMES[normalizedDays];
+    const normalizedDays = ((daysFromHwEpoch % 24) + 24) % 24;
+    const name = JEOLGUK_NAMES[normalizedDays] + "절국";
     return { name, periodType: "", sogung, daegung };
   }
   
@@ -601,7 +598,7 @@ export function getJeolguk(hwYear: number, hwMonth: number, hwDay: number): {
   let periodIndex: number;
   if (periodInMonth === -1) {
     if (hwMonth === 1) {
-      periodIndex = -1;
+      periodIndex = 23;
     } else {
       periodIndex = (hwMonth - 2) * 2 + 1;
     }
@@ -612,12 +609,10 @@ export function getJeolguk(hwYear: number, hwMonth: number, hwDay: number): {
   const yearOffset = hwYear - JEOLGUK_START_YEAR;
   const totalPeriods = yearOffset * 24 + periodIndex;
   
-  const jeolgukIndex = ((totalPeriods % 36) + 36) % 36;
-  const name = JEOLGUK_NAMES[jeolgukIndex];
+  const jeolgukIndex = ((totalPeriods % 24) + 24) % 24;
+  const name = JEOLGUK_NAMES[jeolgukIndex] + "절국";
   
-  const periodType = (periodInMonth === -1 || periodInMonth === 1) ? "중화절국" : "원화절국";
-  
-  return { name, periodType, sogung, daegung };
+  return { name, periodType: "", sogung, daegung };
 }
 
 const TIME_DIV_HHMM: [number, number][] = [

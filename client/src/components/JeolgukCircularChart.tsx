@@ -1,45 +1,44 @@
 import { getHwanggeukDate, getJeolguk, getDayGanZhi } from "@/lib/calendarData";
 
-// 24 sectors - exact data from image
-// 亥 at 12 o'clock (top), going clockwise
-// Each branch occupies 2 sectors (30° total = 2 × 15°)
+// 24 sectors - 亥 at 12 o'clock (top), going clockwise
+// 酉(유)에서 元和(원화) 1월 시작, 시계방향으로 24절국 진행
 const SECTORS_DATA = [
   // Sector 1-2: 亥 (해) - 12시 TOP - 3月
-  { sector: 1, stem: "庚", branch: "亥", month: "3月", jeolguk: "雷和", mansion: "氐", ganji: "己未" },
+  { sector: 1, stem: "", branch: "亥", month: "3月", jeolguk: "雷和", mansion: "氐", ganji: "己未" },
   { sector: 2, stem: "", branch: "亥", month: "3月", jeolguk: "風化", mansion: "房", ganji: "甲戌" },
   // Sector 3-4: 子 (자) - 4月
-  { sector: 3, stem: "", branch: "子", month: "4月", jeolguk: "立和", mansion: "心", ganji: "己丑" },
-  { sector: 4, stem: "丁", branch: "子", month: "4月", jeolguk: "行化", mansion: "尾", ganji: "甲辰" },
+  { sector: 3, stem: "丁", branch: "子", month: "4月", jeolguk: "立和", mansion: "心", ganji: "己丑" },
+  { sector: 4, stem: "", branch: "子", month: "4月", jeolguk: "行化", mansion: "尾", ganji: "甲辰" },
   // Sector 5-6: 丑 (축) - 5月
   { sector: 5, stem: "", branch: "丑", month: "5月", jeolguk: "建和", mansion: "箕", ganji: "己未" },
   { sector: 6, stem: "", branch: "丑", month: "5月", jeolguk: "普化", mansion: "斗", ganji: "甲戌" },
   // Sector 7-8: 寅 (인) - 3시 RIGHT - 6月
-  { sector: 7, stem: "壬", branch: "寅", month: "6月", jeolguk: "淸和", mansion: "牛", ganji: "己丑" },
+  { sector: 7, stem: "", branch: "寅", month: "6月", jeolguk: "淸和", mansion: "牛", ganji: "己丑" },
   { sector: 8, stem: "", branch: "寅", month: "6月", jeolguk: "平和", mansion: "女", ganji: "甲辰" },
   // Sector 9-10: 卯 (묘) - 7月
-  { sector: 9, stem: "", branch: "卯", month: "7月", jeolguk: "成和", mansion: "虛", ganji: "己未" },
-  { sector: 10, stem: "癸", branch: "卯", month: "7月", jeolguk: "入化", mansion: "危", ganji: "甲戌" },
+  { sector: 9, stem: "壬", branch: "卯", month: "7月", jeolguk: "成和", mansion: "虛", ganji: "己未" },
+  { sector: 10, stem: "", branch: "卯", month: "7月", jeolguk: "入化", mansion: "危", ganji: "甲戌" },
   // Sector 11-12: 辰 (진) - 8月
   { sector: 11, stem: "", branch: "辰", month: "8月", jeolguk: "咸和", mansion: "室", ganji: "己丑" },
   { sector: 12, stem: "", branch: "辰", month: "8月", jeolguk: "亨化", mansion: "壁", ganji: "甲辰" },
   // Sector 13-14: 巳 (사) - 6시 BOTTOM - 9月
-  { sector: 13, stem: "戊", branch: "巳", month: "9月", jeolguk: "正和", mansion: "奎", ganji: "己未" },
+  { sector: 13, stem: "", branch: "巳", month: "9月", jeolguk: "正和", mansion: "奎", ganji: "己未" },
   { sector: 14, stem: "", branch: "巳", month: "9月", jeolguk: "明和", mansion: "婁", ganji: "甲戌" },
   // Sector 15-16: 午 (오) - 10月
-  { sector: 15, stem: "", branch: "午", month: "10月", jeolguk: "至和", mansion: "胃", ganji: "己丑" },
-  { sector: 16, stem: "辛", branch: "午", month: "10月", jeolguk: "貞和", mansion: "昴", ganji: "甲辰" },
+  { sector: 15, stem: "癸", branch: "午", month: "10月", jeolguk: "至和", mansion: "胃", ganji: "己丑" },
+  { sector: 16, stem: "", branch: "午", month: "10月", jeolguk: "貞和", mansion: "昴", ganji: "甲辰" },
   // Sector 17-18: 未 (미) - 11月
   { sector: 17, stem: "", branch: "未", month: "11月", jeolguk: "太和", mansion: "畢", ganji: "己未" },
   { sector: 18, stem: "", branch: "未", month: "11月", jeolguk: "體和", mansion: "觜", ganji: "甲戌" },
   // Sector 19-20: 申 (신) - 9시 LEFT - 12月
-  { sector: 19, stem: "丙", branch: "申", month: "12月", jeolguk: "仁和", mansion: "參", ganji: "己丑" },
+  { sector: 19, stem: "", branch: "申", month: "12月", jeolguk: "仁和", mansion: "參", ganji: "己丑" },
   { sector: 20, stem: "", branch: "申", month: "12月", jeolguk: "性和", mansion: "井", ganji: "甲辰" },
-  // Sector 21-22: 酉 (유) - 1月
-  { sector: 21, stem: "", branch: "酉", month: "1月", jeolguk: "布化", mansion: "鬼", ganji: "己未" },
-  { sector: 22, stem: "乙", branch: "酉", month: "1月", jeolguk: "大和", mansion: "柳", ganji: "甲戌" },
+  // Sector 21-22: 酉 (유) - 1月 - 元和 시작!
+  { sector: 21, stem: "戊", branch: "酉", month: "1月", jeolguk: "元和", mansion: "鬼", ganji: "己未" },
+  { sector: 22, stem: "", branch: "酉", month: "1月", jeolguk: "中化", mansion: "柳", ganji: "甲戌" },
   // Sector 23-24: 戌 (술) - 2月
-  { sector: 23, stem: "", branch: "戌", month: "2月", jeolguk: "中化", mansion: "星", ganji: "己丑" },
-  { sector: 24, stem: "", branch: "戌", month: "2月", jeolguk: "元和", mansion: "張", ganji: "甲辰" },
+  { sector: 23, stem: "", branch: "戌", month: "2月", jeolguk: "大和", mansion: "星", ganji: "己丑" },
+  { sector: 24, stem: "", branch: "戌", month: "2月", jeolguk: "布化", mansion: "張", ganji: "甲辰" },
 ];
 
 // 8 Trigrams - matching image positions
@@ -69,7 +68,7 @@ export function JeolgukCircularChart({ date }: JeolgukCircularChartProps) {
   
   // Ring radii - well spaced
   const outerRing = 350;          // 최외곽 원
-  const stemRadius = 338;         // 천간 (庚丁壬癸戊辛丙乙)
+  const stemRadius = 338;         // 천간 (戊丁壬癸)
   const branchRadius = 310;       // 지지 (亥子丑寅...)
   const monthRadius = 285;        // 월 (3月, 4月...)
   const jeolgukRadius = 255;      // 절국명 (雷和, 風化...)

@@ -270,10 +270,20 @@ export function Calendar() {
                 <div className="text-muted-foreground text-xs mb-1">절기 (節氣)</div>
                 <div className="font-bold text-lg">{displayData.currentTerm.hanja} ({displayData.currentTerm.korean})</div>
               </div>
-              <div className="bg-muted/50 rounded p-3">
+              <div className="bg-muted/50 rounded p-3 col-span-2">
                 <div className="text-muted-foreground text-xs mb-1">28수 (二十八宿)</div>
-                <div className="font-bold text-lg">{displayData.mansionDirection}{displayData.mansion}宿</div>
-                <div className="text-xs text-muted-foreground">{displayData.mansionGeneral}</div>
+                <div className="flex gap-3">
+                  <img 
+                    src={`/img/28j_${displayData.mansionImage}.jpg`}
+                    alt={displayData.mansionGeneral}
+                    className="w-16 h-16 object-cover rounded"
+                  />
+                  <div>
+                    <div className="font-bold text-lg">{displayData.mansionDirection}{displayData.mansion}宿</div>
+                    <div className="text-sm font-medium">{displayData.mansionGeneral}</div>
+                    <div className="text-xs text-muted-foreground mt-1">{displayData.mansionDescription}</div>
+                  </div>
+                </div>
               </div>
               <div className="bg-muted/50 rounded p-3">
                 <div className="text-muted-foreground text-xs mb-1">팔괘 (八卦)</div>

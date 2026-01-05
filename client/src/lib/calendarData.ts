@@ -15,6 +15,20 @@ const MANSION_GENERALS = [
   "寇恂", "杜茂", "耿弇", "陣俊", "賈復", "王梁", "吳漢"
 ];
 
+const MANSION_GENERAL_IMAGES = [
+  "masung", "deungwoo", "yuyung", "mamu", "jangkung", "kungsun", "yusik",
+  "yoki", "biyung", "kaeyoen", "mansu", "kyungdan", "leechung", "jejun",
+  "limkwang", "juwoo", "wangpae", "punge", "kyunsim", "jampeng", "pujun",
+  "kusun", "dumu", "kungdan", "jinjun", "kabok", "wanglyang", "ohan"
+];
+
+const MANSION_DESCRIPTIONS = [
+  "日月之位", "天地之間", "瑞化之造", "珀雨之順", "寵露之功", "玲霜之心", "玉雪之契",
+  "熱薰之序", "寒冷之節", "陰氣之理", "陽氣之理", "走獸之迷", "飛禽之殊", "人生之貴",
+  "沙石之極", "岩岸之顯", "澤地之幽", "山岳之脉", "江水之精", "四季之土", "三冬之水",
+  "三秋之金", "三夏之火", "三春之木", "煙霧之化", "風雲之墟", "河漢之邊", "星辰之道"
+];
+
 const EIGHT_TRIGRAMS = ["乾", "兌", "離", "震", "巽", "坎", "艮", "坤"];
 const TRIGRAM_DIRECTIONS = ["西北", "西", "南", "東", "東南", "北", "東北", "西南"];
 
@@ -168,7 +182,14 @@ export function getDayGanZhi(year: number, month: number, day: number): string {
   return HEAVENLY_STEMS[stemIndex] + EARTHLY_BRANCHES[branchIndex];
 }
 
-export function get28Mansion(year: number, month: number, day: number): { mansion: string; general: string; direction: string } {
+export function get28Mansion(year: number, month: number, day: number): { 
+  mansion: string; 
+  general: string; 
+  direction: string;
+  image: string;
+  description: string;
+  index: number;
+} {
   const jd = getJulianDayNumber(year, month, day);
   const index = (jd + 11) % 28;
   
@@ -181,7 +202,10 @@ export function get28Mansion(year: number, month: number, day: number): { mansio
   return {
     mansion: TWENTY_EIGHT_MANSIONS[index],
     general: MANSION_GENERALS[index],
-    direction
+    direction,
+    image: MANSION_GENERAL_IMAGES[index],
+    description: MANSION_DESCRIPTIONS[index],
+    index
   };
 }
 
@@ -307,6 +331,9 @@ export interface CalendarDayData {
   mansion: string;
   mansionGeneral: string;
   mansionDirection: string;
+  mansionImage: string;
+  mansionDescription: string;
+  mansionIndex: number;
   trigram: string;
   trigramDirection: string;
   solarTerm: { hanja: string; korean: string; general: string } | null;
@@ -345,6 +372,9 @@ export function getCalendarDayData(year: number, month: number, day: number): Ca
     mansion: mansion.mansion,
     mansionGeneral: mansion.general,
     mansionDirection: mansion.direction,
+    mansionImage: mansion.image,
+    mansionDescription: mansion.description,
+    mansionIndex: mansion.index,
     trigram: trigram.trigram,
     trigramDirection: trigram.direction,
     solarTerm,
@@ -358,6 +388,8 @@ export {
   EARTHLY_BRANCHES,
   TWENTY_EIGHT_MANSIONS,
   MANSION_GENERALS,
+  MANSION_GENERAL_IMAGES,
+  MANSION_DESCRIPTIONS,
   EIGHT_TRIGRAMS,
   SOLAR_TERMS_HANJA,
   SOLAR_TERMS_KOREAN

@@ -561,6 +561,10 @@ export function getHwanggeukPosition(hwYear: number, hwMonth: number, hwDay: num
   const first = 2 + Math.floor(cycleIndex / 9);
   const second = 2 + (cycleIndex % 9);
   
+  if (first === 10 && second === 10) {
+    return "10지10/尊宮";
+  }
+  
   const isTransitionDay = (n % 9) === 4;
   
   if (isTransitionDay) {

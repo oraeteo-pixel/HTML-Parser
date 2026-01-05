@@ -1,6 +1,6 @@
 import { useMemo, useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
-import { get28Mansion, getDayGanZhi, getJulianDayNumber } from "@/lib/calendarData";
+import { getHwanggeuk28Mansion, getHwanggeukDate, getDayGanZhi, getJulianDayNumber } from "@/lib/calendarData";
 
 const HEAVENLY_STEMS = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"];
 const EARTHLY_BRANCHES = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
@@ -50,7 +50,8 @@ export default function MansionChart() {
   
   const today = currentTime;
   const todayGanZhi = getDayGanZhi(today.getFullYear(), today.getMonth() + 1, today.getDate());
-  const todayMansion = get28Mansion(today.getFullYear(), today.getMonth() + 1, today.getDate());
+  const todayHwDate = getHwanggeukDate(today.getFullYear(), today.getMonth() + 1, today.getDate());
+  const todayMansion = getHwanggeuk28Mansion(todayHwDate.year, todayHwDate.month, todayHwDate.day);
   
   const todayStem = todayGanZhi.charAt(0);
   const isCenter = CENTER_STEMS.includes(todayStem);
@@ -59,12 +60,10 @@ export default function MansionChart() {
     const result = [];
     for (let i = 0; i < 7; i++) {
       const ganzhi = getDayGanZhiForOffset(today.getFullYear(), today.getMonth() + 1, today.getDate(), i);
-      const mansion = get28Mansion(
-        new Date(today.getFullYear(), today.getMonth(), today.getDate() + i).getFullYear(),
-        new Date(today.getFullYear(), today.getMonth(), today.getDate() + i).getMonth() + 1,
-        new Date(today.getFullYear(), today.getMonth(), today.getDate() + i).getDate()
-      );
-      result.push({ ganzhi, mansion: mansion.mansion, index: mansion.index });
+      const futureDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + i);
+      const hwDate = getHwanggeukDate(futureDate.getFullYear(), futureDate.getMonth() + 1, futureDate.getDate());
+      const mansion = getHwanggeuk28Mansion(hwDate.year, hwDate.month, hwDate.day);
+      result.push({ ganzhi, mansion: mansion.mansion, general: mansion.general, isZunkong: mansion.isZunkong });
     }
     return result;
   }, [today]);
@@ -74,8 +73,9 @@ export default function MansionChart() {
       <div className="text-sm font-bold" style={{ color }}>{direction}方</div>
       <div className="flex gap-1 flex-wrap justify-center">
         {indices.map((idx) => {
-          const isToday = todayMansion.index === idx;
-          const isZunkong = ZUNKONG_MANSIONS.includes(TWENTY_EIGHT_MANSIONS[idx]);
+          const mansionName = TWENTY_EIGHT_MANSIONS[idx];
+          const isToday = !todayMansion.isZunkong && todayMansion.mansion === mansionName;
+          const isZunkong = ZUNKONG_MANSIONS.includes(mansionName);
           return (
             <div 
               key={idx}
@@ -85,7 +85,7 @@ export default function MansionChart() {
               `}
               data-testid={`mansion-cell-${idx}`}
             >
-              <div className="font-bold text-base">{TWENTY_EIGHT_MANSIONS[idx]}</div>
+              <div className="font-bold text-base">{mansionName}</div>
               <div className="text-[10px] text-muted-foreground">{MANSION_GENERALS[idx].slice(0, 2)}</div>
               {isZunkong && <div className="text-[8px] text-pink-600 font-bold">尊空</div>}
             </div>
@@ -111,10 +111,9 @@ export default function MansionChart() {
           <div className="text-lg">
             <span 
               className="inline-block px-2 py-1 rounded text-white text-sm"
-              style={{ backgroundColor: isCenter ? '#4a9f4a' : '#fb6c9f' }}
+              style={{ backgroundColor: todayMansion.isZunkong ? '#4a9f4a' : '#fb6c9f' }}
             >
-              {isCenter ? "중" : todayMansion.position} {todayMansion.mansion}수
-              {ZUNKONG_MANSIONS.includes(todayMansion.mansion) && " 존공"}
+              {todayMansion.mansion}{todayMansion.isZunkong ? "" : "수"}
             </span>
           </div>
         </div>

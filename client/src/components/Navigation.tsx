@@ -2,6 +2,7 @@ import { Map, User, Star, BookOpen, ShoppingBag, CalendarDays, Users } from "luc
 import { format } from "date-fns";
 import { Link } from "wouter";
 import { getCalendarDayData } from "@/lib/calendarData";
+import logoImage from "@assets/image_1767628183426.png";
 
 export function Navigation() {
   const today = new Date();
@@ -25,10 +26,9 @@ export function Navigation() {
     <div className="bg-white dark:bg-card border-b border-border pt-[50px]">
       <div className="max-w-[990px] mx-auto px-2">
         <div className="h-[70px] flex items-center justify-between relative">
-          <Link href="/" className="block" data-testid="link-logo">
-            <span className="text-3xl font-bold orae-pink hover:opacity-80 transition-opacity">
-              오리알터<span className="text-sm text-muted-foreground align-top">닷컴</span>
-            </span>
+          <Link href="/" className="flex items-center gap-2 hover:opacity-80 transition-opacity" data-testid="link-logo">
+            <img src={logoImage} alt="ORAE Logo" className="h-8 w-8" />
+            <span className="text-2xl font-bold orae-pink">ORAE</span>
           </Link>
 
           <div className="absolute bottom-1 left-0">

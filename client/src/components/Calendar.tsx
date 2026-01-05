@@ -12,12 +12,13 @@ import {
   getHwanggeukYearGanZhi,
   getHwanggeukMonthGanZhi,
   getHwanggeukHourGanZhi,
-  getHwanggeuk28Mansion,
+  get28Mansion,
   getJeolguk,
   getWeekdayHanja,
   hwanggeukToSolar,
   CalendarDayData,
-  WEEKDAYS_HANJA as WEEKDAYS_HANJA_DATA
+  WEEKDAYS_HANJA as WEEKDAYS_HANJA_DATA,
+  MANSION_GENERAL_IMAGES
 } from "@/lib/calendarData";
 
 const CAL_DESCRIPTIONS = {
@@ -108,10 +109,10 @@ export function Calendar() {
     currentTime.getHours(), currentTime.getMinutes()
   );
   
-  const hwMansion = getHwanggeuk28Mansion(
-    displayData.hwanggeuk.year, 
-    displayData.hwanggeuk.month, 
-    displayData.hwanggeuk.day
+  const hwMansion = get28Mansion(
+    displayYear, 
+    displayMonth, 
+    displayDay
   );
   
   const jeolguk = getJeolguk(
@@ -240,7 +241,7 @@ export function Calendar() {
                   {jeolguk.name} &lt;소궁,대궁&gt;{jeolguk.sogung},{jeolguk.daegung}
                 </span>
                 <span className="ml-2 text-xs font-normal">
-                  현재시각 {hwHourGanZhi}時
+                  현재시각 ({displayData.hwanggeuk.yearGanZhi}년 {displayData.hwanggeuk.monthGanZhi}월 {displayData.dayGanZhi}일 {hwHourGanZhi}시)
                 </span>
               </div>
               <div className="mt-2">
@@ -248,7 +249,7 @@ export function Calendar() {
                   className="inline-block px-2 py-1 rounded text-white text-xs"
                   style={{ backgroundColor: '#fb6c9f' }}
                 >
-                  {hwMansion.direction}, {hwMansion.mansion}宿{hwMansion.isZunkong ? "尊空" : ""}
+                  {hwMansion.direction}, {hwMansion.mansion}宿{["星", "尾", "昴", "女"].includes(hwMansion.mansion) ? "尊空" : ""}
                 </span>
               </div>
             </>
@@ -345,7 +346,8 @@ export function Calendar() {
             const isSat = solarDate.getDay() === 6;
             const isCurrentDay = isToday(solarDate);
             const isSelected = selectedDay && isSameDay(solarDate, selectedDay);
-            const cellMansion = getHwanggeuk28Mansion(dayData.hwanggeuk.year, dayData.hwanggeuk.month, dayData.hwanggeuk.day);
+            const cellMansion = get28Mansion(solarDate.getFullYear(), solarDate.getMonth() + 1, solarDate.getDate());
+            const positionInSeven = (cellMansion.index % 7) + 1;
             
             return (
               <div 
@@ -370,7 +372,7 @@ export function Calendar() {
                 <div className="flex-1 flex flex-col justify-end space-y-0.5">
                   <div className="trigram-text">{cellMansion.direction}</div>
                   <div className="mansion-info">{cellMansion.mansion},{cellMansion.general}</div>
-                  <div className="direction-info">{cellMansion.position}</div>
+                  <div className="direction-info">七之{positionInSeven}</div>
                 </div>
               </div>
             );
@@ -448,9 +450,17 @@ export function Calendar() {
               </div>
               <div className="bg-muted/50 rounded p-3 col-span-2">
                 <div className="text-muted-foreground text-xs mb-1">28수 (二十八宿)</div>
-                <div>
-                  <div className="font-bold text-lg">{hwMansion.direction}, {hwMansion.mansion}宿{hwMansion.isZunkong ? "尊空" : ""}</div>
-                  <div className="text-sm font-medium">{hwMansion.general}</div>
+                <div className="flex items-center gap-3">
+                  <img 
+                    src={`/attached_assets/img/28j_${hwMansion.image}.jpg`} 
+                    alt={hwMansion.general} 
+                    className="w-16 h-16 object-cover rounded"
+                  />
+                  <div>
+                    <div className="font-bold text-lg">{hwMansion.direction}, {hwMansion.mansion}宿{["星", "尾", "昴", "女"].includes(hwMansion.mansion) ? "尊空" : ""}</div>
+                    <div className="text-sm font-medium">{hwMansion.general}</div>
+                    <div className="text-xs text-muted-foreground">七之{(hwMansion.index % 7) + 1}</div>
+                  </div>
                 </div>
               </div>
               <div className="bg-muted/50 rounded p-3">

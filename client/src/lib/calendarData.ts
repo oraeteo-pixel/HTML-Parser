@@ -598,25 +598,25 @@ export function getJeolguk(hwYear: number, hwMonth: number, hwDay: number): {
 const AM_SOGUNG_VALUES = [2, 3, 4, 5, 6, 7, 8, 9, 10];
 const PM_SOGUNG_VALUES = [3, 4, 7, 2, 6, 10, 5, 8, 9];
 
-const TIME_DIVISIONS = [
-  { start: 0, end: 20 },
-  { start: 21, end: 140 },
-  { start: 141, end: 300 },
-  { start: 301, end: 420 },
-  { start: 421, end: 540 },
-  { start: 541, end: 700 },
-  { start: 701, end: 820 },
-  { start: 821, end: 940 },
-  { start: 941, end: 1100 },
-  { start: 1101, end: 1220 },
-  { start: 1221, end: 1340 },
-  { start: 1341, end: 1500 },
-  { start: 1501, end: 1620 },
-  { start: 1621, end: 1740 },
-  { start: 1741, end: 1900 },
-  { start: 1901, end: 2020 },
-  { start: 2021, end: 2140 },
-  { start: 2141, end: 2300 }
+const TIME_DIV_HHMM: [number, number][] = [
+  [0, 20],
+  [21, 140],
+  [141, 300],
+  [301, 420],
+  [421, 540],
+  [541, 700],
+  [701, 820],
+  [821, 940],
+  [941, 1100],
+  [1101, 1220],
+  [1221, 1340],
+  [1341, 1500],
+  [1501, 1620],
+  [1621, 1740],
+  [1741, 1900],
+  [1901, 2020],
+  [2021, 2140],
+  [2141, 2300]
 ];
 
 export function getSogungDaegung(date: Date): {
@@ -628,30 +628,50 @@ export function getSogungDaegung(date: Date): {
 } {
   const hours = date.getHours();
   const minutes = date.getMinutes();
-  const timeValue = hours * 100 + minutes;
+  const timeHHMM = hours * 100 + minutes;
   
   let timeSlot = 0;
   
-  if (timeValue > 2300) {
+  if (timeHHMM > 2300) {
     timeSlot = 0;
   } else {
-    for (let t = 0; t < TIME_DIVISIONS.length; t++) {
-      if (timeValue >= TIME_DIVISIONS[t].start && timeValue <= TIME_DIVISIONS[t].end) {
-        timeSlot = t;
+    for (let t = 0; t < TIME_DIV_HHMM.length; t++) {
+      if (timeHHMM >= TIME_DIV_HHMM[t][0] && timeHHMM <= TIME_DIV_HHMM[t][1]) {
+        timeSlot = t + 1;
         break;
+      }
+    }
+    if (timeSlot === 0) {
+      for (let t = TIME_DIV_HHMM.length - 1; t >= 0; t--) {
+        if (timeHHMM > TIME_DIV_HHMM[t][1]) {
+          timeSlot = t + 2;
+          break;
+        }
       }
     }
   }
   
-  const isAM = timeSlot < 9 || hours >= 23;
+  if (timeSlot > 18) timeSlot = 18;
+  if (timeSlot < 1) timeSlot = 1;
   
-  const sogungIndex = timeSlot < 9 ? timeSlot : timeSlot - 9;
-  const sogungValues = isAM ? AM_SOGUNG_VALUES : PM_SOGUNG_VALUES;
-  const sogung = sogungValues[sogungIndex];
+  const isAM = timeSlot <= 9 || hours >= 23;
   
-  const currentSlot = TIME_DIVISIONS[timeSlot];
-  const slotStartMinutes = Math.floor(currentSlot.start / 100) * 60 + (currentSlot.start % 100);
-  const slotEndMinutes = Math.floor(currentSlot.end / 100) * 60 + (currentSlot.end % 100);
+  let sogungIndex: number;
+  let sogungValues: number[];
+  
+  if (timeSlot <= 9) {
+    sogungIndex = timeSlot - 1;
+    sogungValues = AM_SOGUNG_VALUES;
+  } else {
+    sogungIndex = timeSlot - 10;
+    sogungValues = PM_SOGUNG_VALUES;
+  }
+  
+  const sogung = sogungValues[Math.min(Math.max(sogungIndex, 0), 8)];
+  
+  const currentSlotIdx = Math.max(0, timeSlot - 1);
+  const slotEndHHMM = TIME_DIV_HHMM[Math.min(currentSlotIdx, 17)][1];
+  const slotEndMinutes = Math.floor(slotEndHHMM / 100) * 60 + (slotEndHHMM % 100);
   const currentMinutes = hours * 60 + minutes;
   const remainingMinutes = Math.max(0, slotEndMinutes - currentMinutes);
   

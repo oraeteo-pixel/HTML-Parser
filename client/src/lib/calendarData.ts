@@ -680,8 +680,14 @@ export function getSogungDaegung(date: Date): {
   
   const slotIndex = isAM ? (timeSlot - 1) : (timeSlot - 10);
   
-  const sogung = ((daysFromEpoch + 7) % 9 + 9) % 9 + 2;
-  const daegung = ((daysFromEpoch + 1) % 9 + 9) % 9 + 2;
+  const baseSogung = ((daysFromEpoch + 7) % 9 + 9) % 9 + 2;
+  const baseDaegung = ((daysFromEpoch + 1) % 9 + 9) % 9 + 2;
+  
+  const sogungShift = Math.floor(slotIndex / 3);
+  const sogung = ((baseSogung - 2 + sogungShift) % 9 + 9) % 9 + 2;
+  
+  const daegungShift = isAM ? 0 : 4;
+  const daegung = ((baseDaegung - 2 + daegungShift) % 9 + 9) % 9 + 2;
   
   const currentSlotIdx = Math.max(0, timeSlot - 1);
   const slotEndHHMM = TIME_DIV_HHMM[Math.min(currentSlotIdx, 17)][1];

@@ -249,20 +249,48 @@ export function getCurrentSolarTerm(month: number, day: number): { hanja: string
   };
 }
 
-export function getHwanggeukDate(year: number, month: number, day: number): { year: number; month: number; day: number } {
-  const hour = new Date().getHours();
+export function getHwanggeukDate(year: number, month: number, day: number): { 
+  year: number; 
+  month: number; 
+  day: number;
+  yearGanZhi: string;
+  monthGanZhi: string;
+} {
+  const lunar = solarToLunar(year, month, day);
   
-  let hwYear = year;
-  let hwMonth = month;
-  let hwDay = day;
+  let hwYear = lunar.year;
+  let hwMonth = lunar.month;
+  let hwDay = lunar.day;
   
-  if (month >= 11 || month <= 1) {
-    hwYear = year + 1;
+  if (lunar.month === 11 && lunar.day >= 1) {
+    hwYear = lunar.year + 1;
+    hwMonth = 1;
+    hwDay = lunar.day;
+  } else if (lunar.month === 12) {
+    hwYear = lunar.year + 1;
+    hwMonth = lunar.month - 10;
+    hwDay = lunar.day;
+  } else if (lunar.month >= 1 && lunar.month <= 10) {
+    hwYear = lunar.year;
+    hwMonth = lunar.month + 2;
+    hwDay = lunar.day;
   }
   
-  hwMonth = ((month + 1) % 12) + 1;
+  const yearGanZhi = getYearGanZhi(hwYear);
   
-  return { year: hwYear, month: hwMonth, day: hwDay };
+  const monthBase = (hwYear - 4) % 10;
+  const monthStemOffset = [2, 4, 6, 8, 0, 2, 4, 6, 8, 0];
+  const monthStemIndex = (monthStemOffset[monthBase] + hwMonth - 1) % 10;
+  const monthBranchIndex = (hwMonth + 1) % 12;
+  const monthGanZhi = HEAVENLY_STEMS[monthStemIndex] + EARTHLY_BRANCHES[monthBranchIndex];
+  
+  return { 
+    year: hwYear, 
+    month: hwMonth, 
+    day: hwDay,
+    yearGanZhi,
+    monthGanZhi
+  };
 }
 
 export interface CalendarDayData {
@@ -283,7 +311,13 @@ export interface CalendarDayData {
   trigramDirection: string;
   solarTerm: { hanja: string; korean: string; general: string } | null;
   currentTerm: { hanja: string; korean: string; general: string };
-  hwanggeuk: { year: number; month: number; day: number };
+  hwanggeuk: { 
+    year: number; 
+    month: number; 
+    day: number;
+    yearGanZhi: string;
+    monthGanZhi: string;
+  };
 }
 
 export function getCalendarDayData(year: number, month: number, day: number): CalendarDayData {

@@ -106,7 +106,11 @@ export function Calendar() {
             </span>
           </div>
           <div className="text-muted-foreground text-xs mt-1">
-            ({displayData.yearGanZhi}年 {displayData.monthGanZhi}月 {displayData.dayGanZhi}日) {displayData.currentTerm.hanja}
+            {calType === "hw" ? (
+              <>({displayData.hwanggeuk.yearGanZhi}年 {displayData.hwanggeuk.monthGanZhi}月 {displayData.dayGanZhi}日) {displayData.currentTerm.hanja}</>
+            ) : (
+              <>({displayData.yearGanZhi}年 {displayData.monthGanZhi}月 {displayData.dayGanZhi}日) {displayData.currentTerm.hanja}</>
+            )}
           </div>
           <div className="mt-2 flex gap-2 flex-wrap">
             <Button variant="outline" size="sm" data-testid="button-28mansions">
@@ -209,11 +213,13 @@ export function Calendar() {
             >
               <div className="flex justify-between items-start">
                 <span className={`text-lg font-bold ${isSun ? "text-red-500" : isSat ? "text-blue-500" : "text-foreground"}`}>
-                  {calType === "hw" ? dayData.hwanggeuk.day : dayNum}
+                  {dayNum}
                 </span>
                 <div className="text-right">
                   <div className="text-xs text-muted-foreground bg-muted rounded px-1">
-                    {calType === "hw" ? `${dayMonth}.${dayNum}` : `${dayData.lunarMonth}.${dayData.lunarDay}`}
+                    {calType === "hw" 
+                      ? `${dayData.hwanggeuk.month}.${dayData.hwanggeuk.day}` 
+                      : `${dayData.lunarMonth}.${dayData.lunarDay}`}
                   </div>
                 </div>
               </div>
@@ -250,8 +256,15 @@ export function Calendar() {
           <div className="space-y-4 py-4">
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div className="bg-muted/50 rounded p-3">
-                <div className="text-muted-foreground text-xs mb-1">간지 (干支)</div>
-                <div className="font-bold text-lg">{displayData.yearGanZhi}年 {displayData.monthGanZhi}月 {displayData.dayGanZhi}日</div>
+                <div className="text-muted-foreground text-xs mb-1">
+                  {calType === "hw" ? "황극력 간지" : "선천력 간지"}
+                </div>
+                <div className="font-bold text-lg">
+                  {calType === "hw" 
+                    ? `${displayData.hwanggeuk.yearGanZhi}年 ${displayData.hwanggeuk.monthGanZhi}月 ${displayData.dayGanZhi}日`
+                    : `${displayData.yearGanZhi}年 ${displayData.monthGanZhi}月 ${displayData.dayGanZhi}日`
+                  }
+                </div>
               </div>
               <div className="bg-muted/50 rounded p-3">
                 <div className="text-muted-foreground text-xs mb-1">절기 (節氣)</div>
@@ -278,6 +291,9 @@ export function Calendar() {
                 <div className="text-muted-foreground text-xs mb-1">황극력</div>
                 <div className="font-bold text-lg">
                   {displayData.hwanggeuk.year}.{displayData.hwanggeuk.month}.{displayData.hwanggeuk.day}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                  {displayData.hwanggeuk.yearGanZhi}年 {displayData.hwanggeuk.monthGanZhi}月
                 </div>
               </div>
             </div>

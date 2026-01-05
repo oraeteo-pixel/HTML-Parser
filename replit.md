@@ -81,3 +81,14 @@ The `shared/` directory contains code used by both frontend and backend:
 - esbuild for server bundling (production)
 - tsx for TypeScript execution (development)
 - Replit-specific plugins for development experience
+
+## Recent Changes (2026-01-05)
+
+### 24절국 원형 차트 완성
+- **팔괘(八卦) 배치**: 12시-곤(☷), 1시-리(☲), 3시-태(☱), 5시-진(☳), 6시-건(☰), 7시-감(☵), 9시-간(☶), 11시-손(☴) - 모두 중심을 바라보게 회전
+- **28수(二十八宿) 수정**: 
+  - 辰 위치: 壁奎 (double mansion)
+  - 震 위치: 室
+  - 坎 위치: 箕斗 (double mansion)
+- **숫자 화살표 연결**: 1→2→3→4→5→6→7→8→9→10 순서로 낙서(洛書) 패턴 표시
+- **24방 배치**: 亥가 12시 방향, 寅申巳亥가 사방위(90°간격)에 정확히 위치

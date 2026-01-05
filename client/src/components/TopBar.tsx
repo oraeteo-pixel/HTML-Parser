@@ -5,7 +5,7 @@ import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { AuthForms } from "@/components/AuthForms";
 import { useState } from "react";
 import { format } from "date-fns";
-import { Calendar, MessageSquare } from "lucide-react";
+import { Calendar } from "lucide-react";
 
 export function TopBar() {
   const { user, logout } = useAuth();
@@ -29,10 +29,6 @@ export function TopBar() {
         </div>
 
         <div className="flex items-center gap-3">
-          <Button variant="ghost" size="icon" className="h-8 w-8" data-testid="button-comments">
-            <MessageSquare className="h-4 w-4" />
-          </Button>
-          
           {user ? (
             <div className="flex items-center gap-3">
               <span className="text-sm text-muted-foreground">{user.nickname}</span>

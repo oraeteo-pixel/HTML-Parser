@@ -2,7 +2,6 @@ import { TopBar } from "@/components/TopBar";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { Calendar } from "@/components/Calendar";
-import { PostList } from "@/components/PostList";
 import { Search, Home as HomeIcon, ArrowUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,17 +25,9 @@ export default function Home() {
         className="max-w-[990px] mx-auto bg-white border border-border min-h-[850px] relative mt-2 p-4"
         data-testid="main-content"
       >
-        <div className="space-y-6">
-          <section data-testid="calendar-section">
-            <Calendar />
-          </section>
-
-          <div id="commentsBox" />
-          
-          <section data-testid="posts-section">
-            <PostList />
-          </section>
-        </div>
+        <section data-testid="calendar-section">
+          <Calendar />
+        </section>
       </main>
 
       <Footer />

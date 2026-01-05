@@ -598,41 +598,69 @@ export function getJeolguk(hwYear: number, hwMonth: number, hwDay: number): {
 const AM_SOGUNG_VALUES = [2, 3, 4, 5, 6, 7, 8, 9, 10];
 const PM_SOGUNG_VALUES = [3, 4, 7, 2, 6, 10, 5, 8, 9];
 
+const TIME_DIVISIONS = [
+  { start: 0, end: 20 },
+  { start: 21, end: 140 },
+  { start: 141, end: 300 },
+  { start: 301, end: 420 },
+  { start: 421, end: 540 },
+  { start: 541, end: 700 },
+  { start: 701, end: 820 },
+  { start: 821, end: 940 },
+  { start: 941, end: 1100 },
+  { start: 1101, end: 1220 },
+  { start: 1221, end: 1340 },
+  { start: 1341, end: 1500 },
+  { start: 1501, end: 1620 },
+  { start: 1621, end: 1740 },
+  { start: 1741, end: 1900 },
+  { start: 1901, end: 2020 },
+  { start: 2021, end: 2140 },
+  { start: 2141, end: 2300 }
+];
+
 export function getSogungDaegung(date: Date): {
   sogung: number;
   daegung: number;
-  sogungIndex: number;
+  timeSlot: number;
   isAM: boolean;
   remainingMinutes: number;
 } {
   const hours = date.getHours();
   const minutes = date.getMinutes();
+  const timeValue = hours * 100 + minutes;
   
-  let minutesFromCycleStart: number;
-  let isAM: boolean;
+  let timeSlot = 0;
   
-  if (hours >= 23 || hours < 11) {
-    isAM = true;
-    if (hours >= 23) {
-      minutesFromCycleStart = (hours - 23) * 60 + minutes;
-    } else {
-      minutesFromCycleStart = (hours + 1) * 60 + minutes;
-    }
+  if (timeValue > 2300) {
+    timeSlot = 0;
   } else {
-    isAM = false;
-    minutesFromCycleStart = (hours - 11) * 60 + minutes;
+    for (let t = 0; t < TIME_DIVISIONS.length; t++) {
+      if (timeValue >= TIME_DIVISIONS[t].start && timeValue <= TIME_DIVISIONS[t].end) {
+        timeSlot = t;
+        break;
+      }
+    }
   }
   
-  const sogungIndex = Math.floor(minutesFromCycleStart / 80);
-  const clampedIndex = Math.min(sogungIndex, 8);
+  const isAM = timeSlot < 9 || hours >= 23;
   
+  const sogungIndex = timeSlot < 9 ? timeSlot : timeSlot - 9;
   const sogungValues = isAM ? AM_SOGUNG_VALUES : PM_SOGUNG_VALUES;
-  const sogung = sogungValues[clampedIndex];
+  const sogung = sogungValues[sogungIndex];
   
-  const elapsedInSogung = minutesFromCycleStart - (clampedIndex * 80);
-  const remainingMinutes = Math.max(0, 80 - elapsedInSogung);
+  const currentSlot = TIME_DIVISIONS[timeSlot];
+  const slotStartMinutes = Math.floor(currentSlot.start / 100) * 60 + (currentSlot.start % 100);
+  const slotEndMinutes = Math.floor(currentSlot.end / 100) * 60 + (currentSlot.end % 100);
+  const currentMinutes = hours * 60 + minutes;
+  const remainingMinutes = Math.max(0, slotEndMinutes - currentMinutes);
   
-  const hwDate = getHwanggeukDate(date.getFullYear(), date.getMonth() + 1, date.getDate());
+  let adjustedDate = new Date(date);
+  if (hours >= 23) {
+    adjustedDate.setDate(adjustedDate.getDate() + 1);
+  }
+  
+  const hwDate = getHwanggeukDate(adjustedDate.getFullYear(), adjustedDate.getMonth() + 1, adjustedDate.getDate());
   const daysFromEpoch = (hwDate.year - HW_EPOCH_YEAR) * HW_DAYS_PER_YEAR + 
     HW_MONTH_DAYS.slice(0, hwDate.month - 1).reduce((a, b) => a + b, 0) + hwDate.day - 1;
   
@@ -640,7 +668,7 @@ export function getSogungDaegung(date: Date): {
   const daegungIndex = ((halfDaysFromEpoch % 9) + 9) % 9;
   const daegung = daegungIndex + 2;
   
-  return { sogung, daegung, sogungIndex: clampedIndex, isAM, remainingMinutes };
+  return { sogung, daegung, timeSlot, isAM, remainingMinutes };
 }
 
 export function getWeekdayHanja(dayOfWeek: number): string {

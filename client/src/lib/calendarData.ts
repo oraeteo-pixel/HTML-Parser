@@ -53,6 +53,20 @@ const TERM_GENERALS = [
   "靖遲節", "虞世南", "劉靖灰", "唐儉", "李世勣", "秦菽寶"
 ];
 
+const JEOLGUK_NAMES = [
+  "風火節局", "山火節局", "水火節局", "雷火節局",
+  "風澤節局", "山澤節局", "水澤節局", "雷澤節局",
+  "風地節局", "山地節局", "水地節局", "雷地節局",
+  "風天節局", "山天節局", "水天節局", "雷天節局",
+  "風雷節局", "山雷節局", "水雷節局", "火雷節局",
+  "風水節局", "山水節局", "澤水節局", "火水節局",
+  "風山節局", "澤山節局", "水山節局", "火山節局",
+  "雷風節局", "澤風節局", "水風節局", "火風節局",
+  "風化節局", "山化節局", "水化節局", "雷化節局"
+];
+
+const WEEKDAYS_HANJA = ["日", "月", "火", "水", "木", "金", "土"];
+
 function getJulianDayNumber(year: number, month: number, day: number): number {
   const a = Math.floor((14 - month) / 12);
   const y = year + 4800 - a;
@@ -461,12 +475,13 @@ export function getHwanggeuk28Mansion(hwYear: number, hwMonth: number, hwDay: nu
   mansion: string; 
   general: string;
   isZunkong: boolean;
+  position: string;
 } {
   const daysFromHwEpoch = (hwYear - HW_EPOCH_YEAR) * HW_DAYS_PER_YEAR + 
     HW_MONTH_DAYS.slice(0, hwMonth - 1).reduce((a, b) => a + b, 0) + hwDay - 1;
   
   const mansionOffset = 24;
-  const mansionIndex = (daysFromHwEpoch + mansionOffset) % 28;
+  const mansionIndex = (((daysFromHwEpoch + mansionOffset) % 28) + 28) % 28;
   const mansion = HW_28_MANSIONS[mansionIndex];
   const general = HW_28_GENERALS[mansionIndex];
   
@@ -479,8 +494,32 @@ export function getHwanggeuk28Mansion(hwYear: number, hwMonth: number, hwDay: nu
   const direction = directionPattern[mansionIndex];
   
   const isZunkong = HW_28_ZUNKOG_MANSIONS.includes(mansion);
+  const positionInSeven = (mansionIndex % 7) + 1;
+  const position = `七之${positionInSeven}`;
   
-  return { direction, mansion, general, isZunkong };
+  return { direction, mansion, general, isZunkong, position };
+}
+
+export function getJeolguk(hwYear: number, hwMonth: number, hwDay: number): {
+  name: string;
+  sogung: number;
+  daegung: number;
+} {
+  const daysFromHwEpoch = (hwYear - HW_EPOCH_YEAR) * HW_DAYS_PER_YEAR + 
+    HW_MONTH_DAYS.slice(0, hwMonth - 1).reduce((a, b) => a + b, 0) + hwDay - 1;
+  
+  const normalizedDays = ((daysFromHwEpoch % 36) + 36) % 36;
+  const jeolgukIndex = normalizedDays;
+  const name = JEOLGUK_NAMES[jeolgukIndex];
+  
+  const sogung = (((daysFromHwEpoch % 9) + 9) % 9) + 1;
+  const daegung = ((Math.floor(Math.abs(daysFromHwEpoch) / 9) % 9)) + 1;
+  
+  return { name, sogung, daegung };
+}
+
+export function getWeekdayHanja(dayOfWeek: number): string {
+  return WEEKDAYS_HANJA[dayOfWeek];
 }
 
 export function getHwanggeukYearGanZhi(hwYear: number): string {
@@ -577,5 +616,7 @@ export {
   MANSION_DESCRIPTIONS,
   EIGHT_TRIGRAMS,
   SOLAR_TERMS_HANJA,
-  SOLAR_TERMS_KOREAN
+  SOLAR_TERMS_KOREAN,
+  TERM_GENERALS,
+  WEEKDAYS_HANJA
 };

@@ -13,8 +13,11 @@ import {
   getHwanggeukMonthGanZhi,
   getHwanggeukHourGanZhi,
   getHwanggeuk28Mansion,
+  getJeolguk,
+  getWeekdayHanja,
   hwanggeukToSolar,
-  CalendarDayData
+  CalendarDayData,
+  WEEKDAYS_HANJA as WEEKDAYS_HANJA_DATA
 } from "@/lib/calendarData";
 
 const CAL_DESCRIPTIONS = {
@@ -108,6 +111,12 @@ export function Calendar() {
   const hwMansion = getHwanggeuk28Mansion(
     displayData.hwanggeuk.year, 
     displayData.hwanggeuk.month, 
+    displayData.hwanggeuk.day
+  );
+  
+  const jeolguk = getJeolguk(
+    displayData.hwanggeuk.year,
+    displayData.hwanggeuk.month,
     displayData.hwanggeuk.day
   );
 
@@ -220,26 +229,40 @@ export function Calendar() {
           data-testid="calendar-info"
           onClick={() => setShowDayDetail(true)}
         >
-          <div className="font-bold text-base">
-            {displayData.hwanggeuk.year}.{displayData.hwanggeuk.month}.{displayData.hwanggeuk.day} {WEEKDAYS_HANJA[displayDate.getDay()]} 
-            <span className="font-normal ml-1">
-              ({displayData.hwanggeuk.yearGanZhi}年 {displayData.hwanggeuk.monthGanZhi}月 {displayData.dayGanZhi}日)
-            </span>
-            <span className="ml-2 text-xs font-normal text-muted-foreground">
-              {displayData.currentTerm.hanja}
-            </span>
-          </div>
-          <div className="mt-1 text-xs text-muted-foreground">
-            현재시각 {displayData.hwanggeuk.yearGanZhi}년 {displayData.hwanggeuk.monthGanZhi}월 {displayData.dayGanZhi}일 {hwHourGanZhi}시
-          </div>
-          <div className="mt-2">
-            <span 
-              className="inline-block px-2 py-1 rounded text-white text-xs"
-              style={{ backgroundColor: '#fb6c9f' }}
-            >
-              {hwMansion.direction}, {hwMansion.mansion}宿{hwMansion.isZunkong ? "尊空" : ""}
-            </span>
-          </div>
+          {calType === "hw" ? (
+            <>
+              <div className="font-bold text-base">
+                {displayData.hwanggeuk.year}.{displayData.hwanggeuk.month}.{displayData.hwanggeuk.day} {WEEKDAYS_HANJA[displayDate.getDay()]} 
+                <span className="font-normal ml-1">
+                  ({displayData.hwanggeuk.yearGanZhi}年 {displayData.hwanggeuk.monthGanZhi}月 {displayData.dayGanZhi}日)
+                </span>
+                <span className="ml-2 text-xs font-normal">
+                  {jeolguk.name} &lt;소궁,대궁&gt;{jeolguk.sogung},{jeolguk.daegung}
+                </span>
+                <span className="ml-2 text-xs font-normal">
+                  현재시각 {hwHourGanZhi}時
+                </span>
+              </div>
+              <div className="mt-2">
+                <span 
+                  className="inline-block px-2 py-1 rounded text-white text-xs"
+                  style={{ backgroundColor: '#fb6c9f' }}
+                >
+                  {hwMansion.direction}, {hwMansion.mansion}宿{hwMansion.isZunkong ? "尊空" : ""}
+                </span>
+              </div>
+            </>
+          ) : (
+            <div className="font-bold text-base">
+              {displayYear}.{displayMonth}.{displayDay} {WEEKDAYS_HANJA[displayDate.getDay()]} 
+              <span className="font-normal ml-1">
+                (음{displayData.lunarMonth}.{displayData.lunarDay} {displayData.dayGanZhi}日)
+              </span>
+              <span className="ml-2 text-xs font-normal">
+                {displayData.currentTerm.hanja}, {displayData.currentTerm.general}
+              </span>
+            </div>
+          )}
         </div>
 
         <div className="flex items-center justify-center gap-1 flex-wrap">
@@ -346,7 +369,8 @@ export function Calendar() {
                 
                 <div className="flex-1 flex flex-col justify-end space-y-0.5">
                   <div className="trigram-text">{cellMansion.direction}</div>
-                  <div className="mansion-info">{cellMansion.direction},{cellMansion.mansion}宿{cellMansion.isZunkong ? "尊空" : ""}</div>
+                  <div className="mansion-info">{cellMansion.mansion},{cellMansion.general}</div>
+                  <div className="direction-info">{cellMansion.position}</div>
                 </div>
               </div>
             );
@@ -358,7 +382,6 @@ export function Calendar() {
             const isSat = solarDate.getDay() === 6;
             const isCurrentDay = isToday(solarDate);
             const isSelected = selectedDay && isSameDay(solarDate, selectedDay);
-            const cellMansion = getHwanggeuk28Mansion(dayData.hwanggeuk.year, dayData.hwanggeuk.month, dayData.hwanggeuk.day);
             
             return (
               <div 
@@ -371,8 +394,8 @@ export function Calendar() {
                   <span className={`day-number ${isSun ? "sunday" : isSat ? "saturday" : ""}`}>
                     {solarDay}
                   </span>
-                  <span className="solar-day">
-                    {dayData.lunarMonth}.{dayData.lunarDay}
+                  <span className="solar-day text-orange-500">
+                    {dayData.hwanggeuk.day}
                   </span>
                 </div>
                 
@@ -380,10 +403,13 @@ export function Calendar() {
                   {dayData.dayGanZhi}
                 </div>
                 
-                <div className="flex-1 flex flex-col justify-end space-y-0.5">
-                  <div className="trigram-text">{cellMansion.direction}</div>
-                  <div className="mansion-info">{cellMansion.direction},{cellMansion.mansion}宿{cellMansion.isZunkong ? "尊空" : ""}</div>
-                </div>
+                {dayData.solarTerm && (
+                  <div className="flex-1 flex items-end">
+                    <span className="text-xs px-1 py-0.5 rounded bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-200">
+                      {dayData.solarTerm.korean}
+                    </span>
+                  </div>
+                )}
               </div>
             );
           })

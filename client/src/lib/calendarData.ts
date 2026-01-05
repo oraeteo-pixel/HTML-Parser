@@ -251,18 +251,20 @@ export function getSolarTerm(month: number, day: number): { hanja: string; korea
 
 export function getCurrentSolarTerm(month: number, day: number): { hanja: string; korean: string; general: string } {
   const termDays: { [key: number]: number[] } = {
-    1: [6, 20], 2: [4, 19], 3: [6, 21], 4: [5, 20],
-    5: [6, 21], 6: [6, 21], 7: [7, 23], 8: [8, 23],
-    9: [8, 23], 10: [8, 24], 11: [8, 22], 12: [7, 22]
+    1: [5, 20], 2: [4, 19], 3: [5, 20], 4: [4, 20],
+    5: [5, 21], 6: [5, 21], 7: [7, 22], 8: [7, 23],
+    9: [7, 23], 10: [8, 23], 11: [7, 22], 12: [7, 21]
   };
   
-  let termIndex = (month - 1) * 2 + 2;
+  let termIndex: number;
   const days = termDays[month];
   
   if (day >= days[1]) {
-    termIndex = (month - 1) * 2 + 4;
+    termIndex = (month - 1) * 2 + 2;
   } else if (day >= days[0]) {
-    termIndex = (month - 1) * 2 + 3;
+    termIndex = (month - 1) * 2 + 1;
+  } else {
+    termIndex = (month - 1) * 2;
   }
   
   termIndex = ((termIndex % 24) + 24) % 24;

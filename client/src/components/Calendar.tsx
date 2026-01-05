@@ -305,15 +305,9 @@ export function Calendar() {
           {calType === "hw" ? (
             <>
               <div className="font-bold text-base">
-                {displayData.hwanggeuk.year}.{displayData.hwanggeuk.month}.{displayData.hwanggeuk.day} {WEEKDAYS_HANJA[displayDate.getDay()]} 
-                <span className="font-normal ml-1">
-                  ({displayData.hwanggeuk.yearGanZhi}年 {displayData.hwanggeuk.monthGanZhi}月 {displayData.dayGanZhi}日)
-                </span>
+                {liveHwanggeuk.yearGanZhi}年 {liveHwanggeuk.monthGanZhi}月 {liveDayGanZhi}日 {liveHourGanZhi}時
                 <span className="ml-2 text-xs font-normal">
                   {liveJeolguk.name} &lt;소궁,대궁&gt;{liveSogungDaegung.sogung},{liveSogungDaegung.daegung}
-                </span>
-                <span className="ml-2 text-xs font-normal">
-                  현재시각 ({liveHwanggeuk.yearGanZhi}년 {liveHwanggeuk.monthGanZhi}월 {liveDayGanZhi}일 {liveHourGanZhi}시)
                 </span>
               </div>
               <div className="mt-2 flex gap-2 flex-wrap">

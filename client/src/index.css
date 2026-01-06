@@ -409,7 +409,7 @@
 }
 
 .slim-badge-navy {
-  background: hsl(var(--orae-navy));
+  background: hsl(215 45% 60%);
   color: white;
   font-family: var(--font-korean);
   font-weight: 500;

@@ -4,7 +4,6 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useLocation } from "wouter";
 import { Button } from "./ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
 import { 
   getCalendarDayData, 
   getHwanggeukDate,
@@ -119,6 +118,15 @@ export function Calendar() {
     }, 60000);
     return () => clearInterval(timer);
   }, []);
+  
+  useEffect(() => {
+    if (showDayDetail) {
+      const element = document.getElementById('day-detail-section');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  }, [showDayDetail]);
   
   const hwHourGanZhi = getHwanggeukHourGanZhi(
     displayYear, displayMonth, displayDay,
@@ -343,30 +351,34 @@ export function Calendar() {
               </div>
             </div>
           ) : (
-            <div className="flex items-center justify-between gap-2 flex-wrap">
-              <div className="flex items-center gap-1 flex-wrap text-sm">
-                <span className="font-medium text-gray-700 dark:text-gray-300">
+            <div className="flex flex-col gap-0 sm:flex-row sm:items-center sm:justify-between sm:gap-2">
+              <div className="flex items-center gap-1 text-sm">
+                <span className="hidden sm:inline font-medium text-gray-700 dark:text-gray-300">
                   {displayYear}.{displayMonth}.{displayDay}
                 </span>
-                <span className="text-gray-600 dark:text-gray-400">
+                <span className="hidden sm:inline text-gray-600 dark:text-gray-400">
                   {WEEKDAYS_HANJA[displayDate.getDay()]}
                 </span>
                 <span className="text-gray-500 dark:text-gray-400">
                   ({displayData.yearGanZhi}年 {displayData.monthGanZhi}月 {displayData.dayGanZhi}日)
                 </span>
+                <span className="text-gray-500 dark:text-gray-400">현재</span>
+                <span className="font-medium text-gray-700 dark:text-gray-300">{liveSeoncheonHourGanZhi}時</span>
+                <span className="hidden sm:inline font-medium text-gray-700 dark:text-gray-300">
+                  {displayData.currentTerm.hanja}
+                </span>
+                <span className="hidden sm:inline slim-badge-navy">
+                  {displayData.currentTerm.general}
+                </span>
+              </div>
+              <div className="flex sm:hidden items-center gap-1 text-sm">
                 <span className="font-medium text-gray-700 dark:text-gray-300">
                   {displayData.currentTerm.hanja}
                 </span>
-                <span className="text-gray-500 dark:text-gray-400">
-                  현재시각
-                </span>
-                <span className="font-medium text-gray-700 dark:text-gray-300">
-                  {liveSeoncheonHourGanZhi}時
+                <span className="slim-badge-navy">
+                  {displayData.currentTerm.general}
                 </span>
               </div>
-              <span className="slim-badge-navy">
-                {displayData.currentTerm.general}
-              </span>
             </div>
           )}
         </div>
@@ -527,21 +539,32 @@ export function Calendar() {
         </div>
       </div>
 
-      <Dialog open={showDayDetail} onOpenChange={setShowDayDetail}>
-        <DialogContent className="sm:max-w-md max-w-[95vw]">
-          <DialogHeader>
-            <DialogTitle className="ganji-title">
+      {showDayDetail && (
+        <div 
+          id="day-detail-section" 
+          className="mt-4 p-4 rounded-md border border-border bg-card animate-in slide-in-from-top-2 duration-200"
+        >
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-bold text-lg ganji-title">
               {calType === "hw" ? (
                 `${displayData.hwanggeuk.yearGanZhi}年 ${displayData.hwanggeuk.monthGanZhi}月 ${displayData.dayGanZhi}日 ${hwHourGanZhi}時`
               ) : (
                 `${displayYear}년 ${displayMonth}월 ${displayDay}일 (${WEEKDAYS[displayDate.getDay()]}요일)`
               )}
-            </DialogTitle>
-            <DialogDescription>
-              {calType === "hw" ? "황극력" : "선천력"} 상세 정보
-            </DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
+            </h3>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={() => setShowDayDetail(false)}
+              data-testid="button-close-detail"
+            >
+              <span className="text-lg">×</span>
+            </Button>
+          </div>
+          <p className="text-sm text-muted-foreground mb-3">
+            {calType === "hw" ? "황극력" : "선천력"} 상세 정보
+          </p>
+          <div className="space-y-4">
             {calType === "hw" ? (
               <div className="grid grid-cols-2 gap-3 text-fluid-sm">
                 <div className="info-card">
@@ -622,8 +645,8 @@ export function Calendar() {
               {CAL_DESCRIPTIONS[calType]}
             </p>
           </div>
-        </DialogContent>
-      </Dialog>
+        </div>
+      )}
     </div>
   );
 }

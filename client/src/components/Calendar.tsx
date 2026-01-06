@@ -326,11 +326,10 @@ export function Calendar() {
                     {WEEKDAYS_HANJA[currentTime.getDay()]}
                   </span>
                   <span className="text-gray-500 dark:text-gray-400">
-                    {liveHwanggeuk.yearGanZhi}年 {liveHwanggeuk.monthGanZhi}月 {liveDayGanZhi}日
+                    {liveHwanggeuk.yearGanZhi}年 {liveHwanggeuk.monthGanZhi}月 {liveDayGanZhi}日 {liveHourGanZhi}時
                   </span>
                 </div>
                 <div className="flex items-center gap-1 text-sm whitespace-nowrap">
-                  <span className="font-medium text-gray-700 dark:text-gray-300">{liveHourGanZhi}時</span>
                   <span className="font-medium text-gray-700 dark:text-gray-300">{liveJeolguk.name}</span>
                   <span className="text-gray-500 dark:text-gray-400">{liveSogungDaegung.sogung},{liveSogungDaegung.daegung}</span>
                   <span className="slim-badge-navy">
@@ -372,11 +371,10 @@ export function Calendar() {
                     {WEEKDAYS_HANJA[currentTime.getDay()]}
                   </span>
                   <span className="text-gray-500 dark:text-gray-400">
-                    {displayData.yearGanZhi}年 {displayData.monthGanZhi}月 {displayData.dayGanZhi}日
+                    {displayData.yearGanZhi}年 {displayData.monthGanZhi}月 {displayData.dayGanZhi}日 {liveSeoncheonHourGanZhi}時
                   </span>
                 </div>
                 <div className="flex items-center gap-1 text-sm whitespace-nowrap">
-                  <span className="font-medium text-gray-700 dark:text-gray-300">{liveSeoncheonHourGanZhi}時</span>
                   <span className="font-medium text-gray-700 dark:text-gray-300">{displayData.currentTerm.hanja}</span>
                   <span className="slim-badge-navy">{displayData.currentTerm.general}</span>
                 </div>
@@ -562,11 +560,11 @@ export function Calendar() {
       <div className="mt-3 py-2 px-3 text-center text-sm text-muted-foreground border-t border-border">
         {calType === "hw" ? (
           <span>
-            황극력 {liveHwanggeuk.yearGanZhi}年 {liveHwanggeuk.monthGanZhi}月 {liveDayGanZhi}日 {liveHourGanZhi}時
+            {liveHwanggeuk.yearGanZhi}年 {liveHwanggeuk.monthGanZhi}月 {liveDayGanZhi}日 {liveHourGanZhi}時
           </span>
         ) : (
           <span>
-            선천력 {displayData.yearGanZhi}年 {displayData.monthGanZhi}月 {displayData.dayGanZhi}日 {liveSeoncheonHourGanZhi}時
+            {displayData.yearGanZhi}年 {displayData.monthGanZhi}月 {displayData.dayGanZhi}日 {liveSeoncheonHourGanZhi}時
           </span>
         )}
       </div>

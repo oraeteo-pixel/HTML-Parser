@@ -317,17 +317,11 @@ export function Calendar() {
           {calType === "hw" ? (
             <div className="flex flex-col gap-0 sm:flex-row sm:items-center sm:justify-between sm:gap-2">
               <div className="flex items-center gap-1 text-sm">
-                <span className="sm:hidden font-medium text-gray-700 dark:text-gray-300">
+                <span className="font-medium text-gray-700 dark:text-gray-300">
                   {liveHwanggeuk.year}.{liveHwanggeuk.month}.{liveHwanggeuk.day}
                 </span>
-                <span className="sm:hidden text-gray-600 dark:text-gray-400">
+                <span className="text-gray-600 dark:text-gray-400">
                   {WEEKDAYS_HANJA[currentTime.getDay()]}
-                </span>
-                <span className="hidden sm:inline font-medium text-gray-700 dark:text-gray-300">
-                  {displayYear}.{displayMonth}.{displayDay}
-                </span>
-                <span className="hidden sm:inline text-gray-600 dark:text-gray-400">
-                  {WEEKDAYS_HANJA[displayDate.getDay()]}
                 </span>
                 <span className="sm:hidden text-gray-500 dark:text-gray-400">
                   ({liveHwanggeuk.yearGanZhi}年 {liveHwanggeuk.monthGanZhi}月 {liveDayGanZhi}日)
@@ -364,17 +358,11 @@ export function Calendar() {
           ) : (
             <div className="flex flex-col gap-0 sm:flex-row sm:items-center sm:justify-between sm:gap-2">
               <div className="flex items-center gap-1 text-sm">
-                <span className="sm:hidden font-medium text-gray-700 dark:text-gray-300">
+                <span className="font-medium text-gray-700 dark:text-gray-300">
                   {liveHwanggeuk.year}.{liveHwanggeuk.month}.{liveHwanggeuk.day}
                 </span>
-                <span className="sm:hidden text-gray-600 dark:text-gray-400">
+                <span className="text-gray-600 dark:text-gray-400">
                   {WEEKDAYS_HANJA[currentTime.getDay()]}
-                </span>
-                <span className="hidden sm:inline font-medium text-gray-700 dark:text-gray-300">
-                  {displayYear}.{displayMonth}.{displayDay}
-                </span>
-                <span className="hidden sm:inline text-gray-600 dark:text-gray-400">
-                  {WEEKDAYS_HANJA[displayDate.getDay()]}
                 </span>
                 <span className="hidden sm:inline text-gray-500 dark:text-gray-400">
                   ({displayData.yearGanZhi}年 {displayData.monthGanZhi}月 {displayData.dayGanZhi}日)

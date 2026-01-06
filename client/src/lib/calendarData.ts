@@ -783,6 +783,19 @@ export function getWeekdayHanja(dayOfWeek: number): string {
   return WEEKDAYS_HANJA[dayOfWeek];
 }
 
+const SOGUNG_DAEGUNG_HANJA = ["", "", "二", "三", "四", "五", "六", "七", "八", "九", "十"];
+
+export function numberToSogungHanja(num: number): string {
+  if (num >= 2 && num <= 10) {
+    return SOGUNG_DAEGUNG_HANJA[num];
+  }
+  return num.toString();
+}
+
+export function formatSogungDaegungHanja(sogung: number, daegung: number): string {
+  return `${numberToSogungHanja(sogung)}之${numberToSogungHanja(daegung)}`;
+}
+
 export function getHwanggeukYearGanZhi(hwYear: number): string {
   const yearsFromEpoch = hwYear - HW_EPOCH_YEAR;
   const baseYearStem = 5;

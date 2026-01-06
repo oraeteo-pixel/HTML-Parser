@@ -339,7 +339,7 @@ export function Calendar() {
                 </div>
                 <div className="flex items-center gap-1 text-sm whitespace-nowrap">
                   <span className="font-medium text-gray-700 dark:text-gray-300">{liveJeolguk.name}</span>
-                  <span className="text-gray-500 dark:text-gray-400">&lt;{liveSogungDaegung.sogung},{liveSogungDaegung.daegung}&gt;</span>
+                  <span className="text-gray-500 dark:text-gray-400">&lt;소궁,대궁&gt;{liveSogungDaegung.sogung},{liveSogungDaegung.daegung}</span>
                   <span className="slim-badge-navy">
                     {hwMansion.isZunkong ? hwMansion.mansion : `${hwMansion.mansion}수`}
                   </span>

@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { getHwanggeuk28Mansion, getHwanggeukDate, getDayGanZhi, getKoreanTime, getJeolguk, getSogungDaegung, getMansionGanjiMap, SIXTY_GANJI } from "@/lib/calendarData";
+import { getHwanggeuk28Mansion, getHwanggeukDate, getDayGanZhi, getKoreanTime, getJeolguk, getSogungDaegung, getMansionGanjiMap, SIXTY_GANJI, getHwanggeukHourGanZhi } from "@/lib/calendarData";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { JeolgukCircularChart } from "@/components/JeolgukCircularChart";
@@ -38,6 +38,7 @@ export default function MansionChart() {
   const todayMansion = getHwanggeuk28Mansion(todayHwDate.year, todayHwDate.month, todayHwDate.day);
   const todayJeolguk = getJeolguk(todayHwDate.year, todayHwDate.month, todayHwDate.day);
   const todaySogungDaegung = getSogungDaegung(currentTime);
+  const todayHourGanZhi = getHwanggeukHourGanZhi(today.getFullYear(), today.getMonth() + 1, today.getDate(), today.getHours(), today.getMinutes());
   
   const todayGanZhiIndex = SIXTY_GANJI.indexOf(todayGanZhi);
   
@@ -134,7 +135,7 @@ export default function MansionChart() {
           <div className="text-center">
             <div className="text-sm text-muted-foreground">오늘의 황극력</div>
             <div className="text-lg font-bold" data-testid="text-today-ganzhi">
-              {todayHwDate.yearGanZhi}年 {todayHwDate.monthGanZhi}月 {todayGanZhi}日
+              {todayHwDate.yearGanZhi}年 {todayHwDate.monthGanZhi}月 {todayGanZhi}日 {todayHourGanZhi}時
             </div>
             <div className="flex items-center justify-center gap-2 mt-3 flex-wrap">
               <Badge 

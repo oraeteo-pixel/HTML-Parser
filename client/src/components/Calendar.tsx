@@ -333,7 +333,7 @@ export function Calendar() {
                   {liveJeolguk.name}
                 </span>
                 <span className="text-gray-500 dark:text-gray-400">
-                  {liveSogungDaegung.sogung},{liveSogungDaegung.daegung}
+                  &lt;소궁,대궁&gt;{liveSogungDaegung.sogung},{liveSogungDaegung.daegung}
                 </span>
                 <span className="slim-badge-navy">
                   {hwMansion.isZunkong ? hwMansion.mansion : `${hwMansion.mansion}수 ${hwMansion.general}`}

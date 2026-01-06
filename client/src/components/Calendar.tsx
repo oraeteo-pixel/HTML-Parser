@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { format, getDay, isSameDay } from "date-fns";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useLocation } from "wouter";
 import { Button } from "./ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "./ui/dialog";
@@ -46,6 +47,7 @@ function isTodayKorean(date: Date): boolean {
 export function Calendar() {
   const today = getKoreanTime();
   const todayHw = getHwanggeukDate(today.getFullYear(), today.getMonth() + 1, today.getDate());
+  const [, navigate] = useLocation();
   
   const [calType, setCalType] = useState<"hw" | "df">("hw");
   const [hwYear, setHwYear] = useState(todayHw.year);
@@ -256,8 +258,8 @@ export function Calendar() {
   };
 
   const handleDayClick = (solarDate: Date) => {
-    setSelectedDay(solarDate);
-    setShowDayDetail(true);
+    const dayGanji = getDayGanZhi(solarDate.getFullYear(), solarDate.getMonth() + 1, solarDate.getDate());
+    navigate(`/madang/${encodeURIComponent(dayGanji)}`);
   };
 
   const years = useMemo(() => {

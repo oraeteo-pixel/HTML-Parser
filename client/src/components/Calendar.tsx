@@ -269,8 +269,8 @@ export function Calendar() {
   const months = Array.from({ length: 12 }, (_, i) => i + 1);
 
   return (
-    <div className="bg-white dark:bg-card border border-border" data-testid="calendar">
-      <div className="p-2 space-y-2">
+    <div data-testid="calendar">
+      <div className="space-y-2 mb-2">
         <div className="flex gap-2">
           <Button 
             size="sm"
@@ -419,7 +419,8 @@ export function Calendar() {
         </div>
       </div>
 
-      <div className="grid grid-cols-7 bg-gray-100 dark:bg-gray-800 text-center font-bold text-sm border-t border-border">
+      <div className="bg-white dark:bg-card border border-border">
+        <div className="grid grid-cols-7 bg-gray-100 dark:bg-gray-800 text-center font-bold text-sm">
         {WEEKDAYS.map((day, i) => (
           <div 
             key={day} 
@@ -514,6 +515,7 @@ export function Calendar() {
             );
           })
         )}
+        </div>
       </div>
 
       <Dialog open={showDayDetail} onOpenChange={setShowDayDetail}>

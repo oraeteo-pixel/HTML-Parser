@@ -192,6 +192,14 @@ export function Calendar() {
     return getSogungDaegung(currentTime);
   }, [currentTime]);
   
+  const liveSeoncheonData = useMemo(() => {
+    return getCalendarDayData(
+      currentTime.getFullYear(),
+      currentTime.getMonth() + 1,
+      currentTime.getDate()
+    );
+  }, [currentTime]);
+  
   const jeolguk = getJeolguk(
     displayData.hwanggeuk.year,
     displayData.hwanggeuk.month,
@@ -365,36 +373,42 @@ export function Calendar() {
               <div className="sm:hidden flex flex-col gap-0.5">
                 <div className="flex items-center gap-1 text-sm whitespace-nowrap">
                   <span className="font-medium text-gray-700 dark:text-gray-300">
-                    {liveHwanggeuk.year}.{liveHwanggeuk.month}.{liveHwanggeuk.day}
+                    {currentTime.getFullYear()}.{currentTime.getMonth() + 1}.{currentTime.getDate()}
                   </span>
                   <span className="text-gray-600 dark:text-gray-400">
                     {WEEKDAYS_HANJA[currentTime.getDay()]}
                   </span>
                   <span className="text-gray-500 dark:text-gray-400">
-                    {displayData.yearGanZhi}年 {displayData.monthGanZhi}月 {displayData.dayGanZhi}日 {liveSeoncheonHourGanZhi}時
+                    (음력 {liveSeoncheonData.lunarMonth}.{liveSeoncheonData.lunarDay})
+                  </span>
+                  <span className="text-gray-500 dark:text-gray-400">
+                    {liveSeoncheonData.yearGanZhi}年 {liveSeoncheonData.monthGanZhi}月 {liveSeoncheonData.dayGanZhi}日 {liveSeoncheonHourGanZhi}時
                   </span>
                 </div>
                 <div className="flex items-center gap-1 text-sm whitespace-nowrap">
-                  <span className="font-medium text-gray-700 dark:text-gray-300">{displayData.currentTerm.hanja}</span>
-                  <span className="slim-badge-navy">{displayData.currentTerm.general}</span>
+                  <span className="font-medium text-gray-700 dark:text-gray-300">{liveSeoncheonData.currentTerm.hanja}</span>
+                  <span className="slim-badge-navy">{liveSeoncheonData.currentTerm.general}</span>
                 </div>
               </div>
               {/* PC: 1 line */}
               <div className="hidden sm:flex items-center justify-between gap-2">
                 <div className="flex items-center gap-1 text-sm">
                   <span className="font-medium text-gray-700 dark:text-gray-300">
-                    {liveHwanggeuk.year}.{liveHwanggeuk.month}.{liveHwanggeuk.day}
+                    {currentTime.getFullYear()}.{currentTime.getMonth() + 1}.{currentTime.getDate()}
                   </span>
                   <span className="text-gray-600 dark:text-gray-400">
                     {WEEKDAYS_HANJA[currentTime.getDay()]}
                   </span>
                   <span className="text-gray-500 dark:text-gray-400">
-                    ({displayData.yearGanZhi}年 {displayData.monthGanZhi}月 {displayData.dayGanZhi}日)
+                    (음력 {liveSeoncheonData.lunarMonth}.{liveSeoncheonData.lunarDay})
+                  </span>
+                  <span className="text-gray-500 dark:text-gray-400">
+                    ({liveSeoncheonData.yearGanZhi}年 {liveSeoncheonData.monthGanZhi}月 {liveSeoncheonData.dayGanZhi}日)
                   </span>
                   <span className="text-gray-500 dark:text-gray-400">현재</span>
                   <span className="font-medium text-gray-700 dark:text-gray-300">{liveSeoncheonHourGanZhi}時</span>
-                  <span className="font-medium text-gray-700 dark:text-gray-300">{displayData.currentTerm.hanja}</span>
-                  <span className="slim-badge-navy">{displayData.currentTerm.general}</span>
+                  <span className="font-medium text-gray-700 dark:text-gray-300">{liveSeoncheonData.currentTerm.hanja}</span>
+                  <span className="slim-badge-navy">{liveSeoncheonData.currentTerm.general}</span>
                 </div>
               </div>
             </>
@@ -564,7 +578,7 @@ export function Calendar() {
           </span>
         ) : (
           <span>
-            {displayData.yearGanZhi}年 {displayData.monthGanZhi}月 {displayData.dayGanZhi}日 {liveSeoncheonHourGanZhi}時
+            {liveSeoncheonData.yearGanZhi}年 {liveSeoncheonData.monthGanZhi}月 {liveSeoncheonData.dayGanZhi}日 {liveSeoncheonHourGanZhi}時
           </span>
         )}
       </div>

@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { format, getDay, isSameDay } from "date-fns";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Download } from "lucide-react";
 import { useLocation } from "wouter";
 import { Button } from "./ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
@@ -718,6 +718,31 @@ export function Calendar() {
           </div>
         </div>
       )}
+      
+      {/* Download Section */}
+      <div className="mt-6 p-4 bg-card border border-border rounded-lg">
+        <h3 className="font-bold text-sm mb-3">자료 다운로드</h3>
+        <div className="flex flex-wrap gap-2">
+          <a 
+            href="/황극력_철학.txt" 
+            download="황극력_철학.txt"
+            className="inline-flex items-center gap-1 px-3 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:opacity-90"
+            data-testid="link-download-philosophy"
+          >
+            <Download className="w-4 h-4" />
+            황극력 철학
+          </a>
+          <a 
+            href="/황극력_달력_2026.xlsx" 
+            download="황극력_달력_2026.xlsx"
+            className="inline-flex items-center gap-1 px-3 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:opacity-90"
+            data-testid="link-download-excel"
+          >
+            <Download className="w-4 h-4" />
+            2026년 달력 (Excel)
+          </a>
+        </div>
+      </div>
     </div>
   );
 }

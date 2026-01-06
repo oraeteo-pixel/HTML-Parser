@@ -720,7 +720,7 @@ function calculateDaegungAndPosition(koreanTime: Date): { daegung: number; posit
   
   // Position 계산: 대궁사이클(9반일 = 4.5일)마다 2→3→...→10 순환
   const daegungCycleNum = Math.floor(totalHalfDays / 9);
-  const positionOffset = 7; // position=9가 1월 7일에 오도록 보정
+  const positionOffset = 3; // position=9가 1월 7일에 오도록 보정
   const positionIndex = ((daegungCycleNum + positionOffset) % 9 + 9) % 9;
   const position = positionIndex + 2; // 2~10
   

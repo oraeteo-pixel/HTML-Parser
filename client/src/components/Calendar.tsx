@@ -322,7 +322,7 @@ export function Calendar() {
                   {liveJeolguk.name}
                 </span>
                 <span className="hidden sm:inline text-gray-500 dark:text-gray-400">
-                  {liveSogungDaegung.sogung},{liveSogungDaegung.daegung}
+                  &lt;소궁,대궁&gt;{liveSogungDaegung.sogung},{liveSogungDaegung.daegung}
                 </span>
                 <span className="hidden sm:inline slim-badge-navy">
                   {hwMansion.isZunkong ? hwMansion.mansion : `${hwMansion.mansion}수 ${hwMansion.general}`}
@@ -426,12 +426,12 @@ export function Calendar() {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-card border border-border">
+      <div className="bg-white dark:bg-card border-t border-l border-border">
         <div className="grid grid-cols-7 bg-gray-100 dark:bg-gray-800 text-center font-bold text-sm">
         {WEEKDAYS.map((day, i) => (
           <div 
             key={day} 
-            className={`py-2 border-b border-r last:border-r-0 border-border ${i === 0 ? "text-red-500" : i === 6 ? "text-blue-500" : ""}`}
+            className={`py-2 border-b border-r border-border ${i === 0 ? "text-red-500" : i === 6 ? "text-blue-500" : ""}`}
           >
             {day}
           </div>

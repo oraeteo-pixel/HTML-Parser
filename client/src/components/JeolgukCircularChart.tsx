@@ -137,8 +137,7 @@ export function JeolgukCircularChart({ date }: JeolgukCircularChartProps) {
       <div className="flex justify-center overflow-x-auto">
         <svg 
           viewBox={`0 0 ${size} ${size}`} 
-          className="w-full"
-          style={{ maxWidth: "720px", minWidth: "360px" }}
+          className="w-full max-w-[320px] sm:max-w-[720px]"
         >
           {/* Background */}
           <circle cx={center} cy={center} r={outerRing + 8} fill="#f8f4ec" className="dark:fill-slate-800" />
@@ -358,22 +357,6 @@ export function JeolgukCircularChart({ date }: JeolgukCircularChartProps) {
         </svg>
       </div>
       
-      <div className="text-center mt-4 text-base text-muted-foreground">
-        24방: 정해무 자리축 신인임 묘진진 계사갑 오감미 을신병 유손술
-      </div>
-      
-      {/* Today's info */}
-      <div className="flex items-center justify-center gap-3 mt-4 flex-wrap">
-        <span className="text-base px-3 py-1.5 rounded bg-[hsl(215_50%_35%)] text-white font-medium">
-          오늘: {todayGanZhi}
-        </span>
-        <span className="text-base px-3 py-1.5 rounded bg-slate-200 dark:bg-slate-700 font-medium">
-          천간: {todayStem}
-        </span>
-        <span className="text-base px-3 py-1.5 rounded bg-slate-200 dark:bg-slate-700 font-medium">
-          {todayJeolguk.name}
-        </span>
-      </div>
     </div>
   );
 }

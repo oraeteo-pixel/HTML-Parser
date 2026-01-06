@@ -134,20 +134,17 @@ export default function MansionChart() {
               
               {rowIndex === 3 ? (
                 <div className="col-span-7 row-span-1 flex items-center justify-center">
-                  <Card className="p-4 text-center w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900/30 dark:to-slate-800/30 border-[hsl(var(--orae-navy))]/20">
-                    <div className="font-bold text-xl orae-navy">曜雲殿</div>
-                    <Badge variant="outline" className="text-xs border-slate-500 text-slate-600 dark:text-slate-400 mt-1">星宿 尊空</Badge>
-                    <div className="text-xs text-muted-foreground mt-2">
-                      闘以內脈制之 / 闘以外將軍制之
-                    </div>
-                    <div className="flex gap-2 flex-wrap justify-center mt-3">
+                  <Card className="p-2 text-center w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-900/30 dark:to-slate-800/30 border-[hsl(var(--orae-navy))]/20">
+                    <div className="font-bold text-base orae-navy">曜雲殿</div>
+                    <Badge variant="outline" className="text-[8px] px-1 py-0 border-slate-500 text-slate-600 dark:text-slate-400">星宿 尊空</Badge>
+                    <div className="flex gap-1 flex-wrap justify-center mt-1">
                       {CENTER_GANJI.map((g, i) => {
                         const isCurrentGanji = todayGanZhi === g;
                         const dayOffset = getGanjiDayOffset(g);
                         return (
                           <Badge 
                             key={i} 
-                            className={isCurrentGanji ? "badge-navy" : ""}
+                            className={`text-[9px] px-1 py-0 ${isCurrentGanji ? "badge-navy" : ""}`}
                             variant={isCurrentGanji ? "default" : "secondary"}
                             title={isCurrentGanji ? "오늘" : `${dayOffset}일 후`}
                           >
@@ -176,18 +173,6 @@ export default function MansionChart() {
           ))}
           <div className="col-span-1"></div>
         </div>
-
-        <Card className="p-4 mt-4">
-          <h3 className="font-bold text-sm mb-2 orae-navy">28宿 순환 설명</h3>
-          <div className="text-xs text-muted-foreground space-y-1">
-            <p><span className="font-medium">동방(東方) 7수:</span> 角亢氐房心尾箕</p>
-            <p><span className="font-medium">남방(南方) 7수:</span> 軫翼張星柳鬼井</p>
-            <p><span className="font-medium">서방(西方) 7수:</span> 參觜畢昴胃婁奎</p>
-            <p><span className="font-medium">북방(北方) 7수:</span> 斗牛女虛危室壁</p>
-            <p><span className="font-medium text-slate-600 dark:text-slate-400">尊空 (존공):</span> 星, 尾, 昴, 女</p>
-            <p><span className="font-medium orae-navy">中央 曜雲殿:</span> 己酉, 庚戌, 己卯, 庚辰</p>
-          </div>
-        </Card>
 
         {/* 24 Jeolguk Circular Chart */}
         <JeolgukCircularChart date={today} />

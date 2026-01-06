@@ -147,7 +147,9 @@ export default function MansionChart() {
                 {todayJeolguk.name}절국
               </Badge>
               <Badge className="badge-navy">
-                소궁 {todaySogungDaegung.sogung} / 대궁 {todaySogungDaegung.daegung}
+                {todaySogungDaegung.isZungung 
+                  ? "존궁" 
+                  : `소궁 ${todaySogungDaegung.sogung} / 대궁 ${todaySogungDaegung.daegung}`}
               </Badge>
             </div>
           </div>

@@ -339,7 +339,7 @@ export function Calendar() {
                 </div>
                 <div className="flex items-center gap-1 text-sm whitespace-nowrap">
                   <span className="font-medium text-gray-700 dark:text-gray-300">{liveJeolguk.name}</span>
-                  <span className="text-gray-500 dark:text-gray-400">&lt;소궁,대궁&gt;{liveSogungDaegung.sogung},{liveSogungDaegung.daegung}</span>
+                  <span className="text-gray-500 dark:text-gray-400">&lt;소궁,대궁&gt;{liveSogungDaegung.isZungung ? "존궁" : `${liveSogungDaegung.sogung},${liveSogungDaegung.daegung}`}</span>
                   <span className="slim-badge-navy">
                     {hwMansion.isZunkong ? hwMansion.mansion : `${hwMansion.mansion}수`}
                   </span>
@@ -358,7 +358,7 @@ export function Calendar() {
                     ({liveHwanggeuk.yearGanZhi}年 {liveHwanggeuk.monthGanZhi}月 {liveDayGanZhi}日 {liveHourGanZhi}時)
                   </span>
                   <span className="font-medium text-gray-700 dark:text-gray-300">{liveJeolguk.name}</span>
-                  <span className="text-gray-500 dark:text-gray-400">&lt;소궁,대궁&gt;{liveSogungDaegung.sogung},{liveSogungDaegung.daegung}</span>
+                  <span className="text-gray-500 dark:text-gray-400">&lt;소궁,대궁&gt;{liveSogungDaegung.isZungung ? "존궁" : `${liveSogungDaegung.sogung},${liveSogungDaegung.daegung}`}</span>
                   <span className="slim-badge-navy">
                     {hwMansion.isZunkong ? hwMansion.mansion : `${hwMansion.mansion}수 ${hwMansion.general}`}
                   </span>
@@ -622,7 +622,7 @@ export function Calendar() {
                 </div>
                 <div className="info-card">
                   <div className="text-muted-foreground text-xs mb-1 uppercase tracking-wide">소궁 · 대궁</div>
-                  <div className="font-bold text-fluid-lg">{liveSogungDaegung.sogung} · {liveSogungDaegung.daegung}</div>
+                  <div className="font-bold text-fluid-lg">{liveSogungDaegung.isZungung ? "존궁" : `${liveSogungDaegung.sogung} · ${liveSogungDaegung.daegung}`}</div>
                 </div>
                 <div className="info-card col-span-2">
                   <div className="text-muted-foreground text-xs mb-1 uppercase tracking-wide">28수</div>

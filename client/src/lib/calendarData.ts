@@ -670,39 +670,21 @@ export function getJeolguk(hwYear: number, hwMonth: number, hwDay: number): {
   return { name, periodType: "", sogung, daegung };
 }
 
-const TIME_DIV_HHMM: [number, number][] = [
-  [0, 20],
-  [21, 140],
-  [141, 300],
-  [301, 420],
-  [421, 540],
-  [541, 700],
-  [701, 820],
-  [821, 940],
-  [941, 1100],
-  [1101, 1220],
-  [1221, 1340],
-  [1341, 1500],
-  [1501, 1620],
-  [1621, 1740],
-  [1741, 1900],
-  [1901, 2020],
-  [2021, 2140],
-  [2141, 2300]
+// 9단계 순환 패턴 (낙서 기반)
+const SOGUNG_CYCLES: number[][] = [
+  [2, 3, 4, 5, 6, 7, 8, 9, 10],      // 대궁사이클 1 (기본)
+  [3, 4, 7, 2, 6, 10, 5, 8, 9],     // 대궁사이클 2
+  [4, 7, 10, 3, 6, 9, 2, 5, 8],     // 대궁사이클 3
+  [5, 2, 3, 8, 6, 4, 9, 10, 7],     // 대궁사이클 4
+  [6, 6, 6, 6, 6, 6, 6, 6, 6],      // 대궁사이클 5 (중궁)
+  [7, 10, 9, 4, 6, 8, 3, 2, 5],     // 대궁사이클 6
+  [8, 9, 2, 7, 6, 5, 10, 3, 4],     // 대궁사이클 7
+  [9, 2, 5, 8, 6, 4, 7, 10, 3],     // 대궁사이클 8
+  [10, 7, 8, 3, 6, 9, 4, 5, 2],     // 대궁사이클 9
 ];
 
-function calculateSogung(slotIndex: number, daysFromEpoch: number): number {
-  const groupIndex = Math.floor(slotIndex / 3);
-  const positionInGroup = slotIndex % 3;
-  
-  const sogungOffset = 8;
-  const baseSogung = ((daysFromEpoch + sogungOffset) % 9 + 9) % 9;
-  
-  const groupStart = (baseSogung + groupIndex) % 9;
-  const sogungValue = (groupStart - positionInGroup * 3 + 27) % 9;
-  
-  return sogungValue + 2;
-}
+// 대궁도 같은 패턴을 따름
+const DAEGUNG_CYCLES = SOGUNG_CYCLES;
 
 export function getSogungDaegung(date: Date): {
   sogung: number;
@@ -710,64 +692,90 @@ export function getSogungDaegung(date: Date): {
   timeSlot: number;
   isAM: boolean;
   remainingMinutes: number;
+  isZungung: boolean;
 } {
   const hours = date.getHours();
   const minutes = date.getMinutes();
-  const timeHHMM = hours * 100 + minutes;
   
-  let timeSlot = 0;
+  // 황극력 연도의 1월 1일 전날 밤 23시가 시작점
+  // 현재 연도의 황극력 시작일 계산 (양력 4월 20일 23:00)
+  const year = date.getFullYear();
+  const hwYearStart = new Date(year, 3, 20, 23, 0, 0); // 4월 20일 23:00
   
-  if (timeHHMM > 2300) {
-    timeSlot = 1;
-  } else {
-    for (let t = 0; t < TIME_DIV_HHMM.length; t++) {
-      if (timeHHMM >= TIME_DIV_HHMM[t][0] && timeHHMM <= TIME_DIV_HHMM[t][1]) {
-        timeSlot = t + 1;
-        break;
-      }
-    }
-    if (timeSlot === 0) {
-      for (let t = TIME_DIV_HHMM.length - 1; t >= 0; t--) {
-        if (timeHHMM > TIME_DIV_HHMM[t][1]) {
-          timeSlot = t + 2;
-          break;
-        }
-      }
-    }
+  // 만약 현재 날짜가 4월 20일 23시 이전이면, 전년도 황극력 기준
+  let epochDate = hwYearStart;
+  if (date < hwYearStart) {
+    epochDate = new Date(year - 1, 3, 20, 23, 0, 0);
   }
   
-  if (timeSlot > 18) timeSlot = 18;
-  if (timeSlot < 1) timeSlot = 1;
+  // 시작점부터 현재까지 경과한 분 계산
+  const minutesFromEpoch = Math.floor((date.getTime() - epochDate.getTime()) / (1000 * 60));
   
+  // 364.5일 = 524,880분 (81 x 81 x 80분)
+  // 존궁: 364.5일 이후 1.5일 (2160분)
+  const totalCycleMinutes = 81 * 81 * 80; // 524,880분
+  const zungungMinutes = 1.5 * 24 * 60;   // 2160분
+  const yearMinutes = totalCycleMinutes + zungungMinutes; // 527,040분
+  
+  // 연 내 위치
+  const minutesInYear = ((minutesFromEpoch % yearMinutes) + yearMinutes) % yearMinutes;
+  
+  // 존궁 체크 (364.5일 이후)
+  if (minutesInYear >= totalCycleMinutes) {
+    const currentMinutesOfDay = hours * 60 + minutes;
+    return {
+      sogung: 0,
+      daegung: 0,
+      timeSlot: 0,
+      isAM: hours < 11,
+      remainingMinutes: 80 - (currentMinutesOfDay % 80),
+      isZungung: true
+    };
+  }
+  
+  // 81 x 81 순환 내 위치
+  const sogungPeriod = 80; // 1 소궁 = 80분
+  const daegungPeriod = 9 * 80; // 1 대궁 = 9 소궁 = 720분 (12시간)
+  const daegungCyclePeriod = 9 * daegungPeriod; // 1 대궁사이클 = 9 대궁 = 4.5일
+  const superCyclePeriod = 9 * daegungCyclePeriod; // 9 대궁사이클 = 40.5일
+  
+  // 각 레벨의 인덱스 계산
+  const superCycleIndex = Math.floor(minutesInYear / superCyclePeriod) % 9; // 대대궁 (0-8)
+  const daegungCycleIndex = Math.floor((minutesInYear % superCyclePeriod) / daegungCyclePeriod) % 9; // 대궁사이클 (0-8)
+  const daegungIndex = Math.floor((minutesInYear % daegungCyclePeriod) / daegungPeriod) % 9; // 대궁 (0-8)
+  const sogungIndex = Math.floor((minutesInYear % daegungPeriod) / sogungPeriod) % 9; // 소궁 (0-8)
+  
+  // 대궁 값 계산: 대대궁 패턴에서 대궁사이클 위치의 값
+  const daegungPattern = DAEGUNG_CYCLES[superCycleIndex];
+  const daegung = daegungPattern[daegungCycleIndex];
+  
+  // 소궁 값 계산: 대궁사이클 패턴에서 소궁 위치의 값
+  // 대궁사이클은 대궁 값에서 시작하는 패턴 사용
+  const sogungPatternIndex = (daegung - 2) % 9; // 대궁 값에 해당하는 패턴 (2->0, 3->1, ...)
+  const sogungPattern = SOGUNG_CYCLES[sogungPatternIndex];
+  const sogung = sogungPattern[sogungIndex];
+  
+  // 시간 슬롯 계산 (1-18)
+  const totalMinutesOfDay = hours * 60 + minutes;
+  let adjustedMinutes = totalMinutesOfDay;
+  if (hours < 23) {
+    adjustedMinutes = totalMinutesOfDay + 60; // 23시 시작 기준 조정
+  }
+  const timeSlot = Math.floor(((adjustedMinutes + 60) % 1440) / 80) + 1;
   const isAM = timeSlot <= 9;
   
-  let adjustedDate = new Date(date);
-  if (hours >= 23) {
-    adjustedDate.setDate(adjustedDate.getDate() + 1);
-  }
+  // 남은 시간 계산
+  const currentPeriodStart = Math.floor(minutesInYear / sogungPeriod) * sogungPeriod;
+  const remainingMinutes = sogungPeriod - (minutesInYear - currentPeriodStart);
   
-  const hwDate = getHwanggeukDate(adjustedDate.getFullYear(), adjustedDate.getMonth() + 1, adjustedDate.getDate());
-  const daysFromEpoch = (hwDate.year - HW_EPOCH_YEAR) * HW_DAYS_PER_YEAR + 
-    HW_MONTH_DAYS.slice(0, hwDate.month - 1).reduce((a, b) => a + b, 0) + hwDate.day - 1;
-  
-  const slotIndex = isAM ? (timeSlot - 1) : (timeSlot - 10);
-  
-  const baseSogung = ((daysFromEpoch + 7) % 9 + 9) % 9 + 2;
-  const baseDaegung = ((daysFromEpoch + 1) % 9 + 9) % 9 + 2;
-  
-  const sogungShift = Math.floor(slotIndex / 3);
-  const sogung = ((baseSogung - 2 + sogungShift) % 9 + 9) % 9 + 2;
-  
-  const daegungShift = isAM ? 0 : 4;
-  const daegung = ((baseDaegung - 2 + daegungShift) % 9 + 9) % 9 + 2;
-  
-  const currentSlotIdx = Math.max(0, timeSlot - 1);
-  const slotEndHHMM = TIME_DIV_HHMM[Math.min(currentSlotIdx, 17)][1];
-  const slotEndMinutes = Math.floor(slotEndHHMM / 100) * 60 + (slotEndHHMM % 100);
-  const currentMinutes = hours * 60 + minutes;
-  const remainingMinutes = Math.max(0, slotEndMinutes - currentMinutes);
-  
-  return { sogung, daegung, timeSlot, isAM, remainingMinutes };
+  return { 
+    sogung, 
+    daegung, 
+    timeSlot: Math.min(18, Math.max(1, timeSlot)), 
+    isAM, 
+    remainingMinutes: Math.max(0, Math.min(80, remainingMinutes)),
+    isZungung: false
+  };
 }
 
 export function getWeekdayHanja(dayOfWeek: number): string {

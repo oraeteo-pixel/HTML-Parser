@@ -306,7 +306,7 @@ export function Calendar() {
         >
           {calType === "hw" ? (
             <div className="flex flex-col gap-0 sm:flex-row sm:items-center sm:justify-between sm:gap-2">
-              <div className="flex items-center gap-1 flex-wrap text-sm">
+              <div className="flex items-center gap-1 flex-nowrap text-sm whitespace-nowrap overflow-x-auto">
                 <span className="font-medium text-gray-700 dark:text-gray-300">
                   {displayYear}.{displayMonth}.{displayDay}
                 </span>
@@ -314,7 +314,7 @@ export function Calendar() {
                   {WEEKDAYS_HANJA[displayDate.getDay()]}
                 </span>
                 <span className="text-gray-500 dark:text-gray-400">
-                  ({liveHwanggeuk.yearGanZhi}年 {liveHwanggeuk.monthGanZhi}月 {liveDayGanZhi}日)
+                  {liveHwanggeuk.yearGanZhi}年{liveHwanggeuk.monthGanZhi}月{liveDayGanZhi}日
                 </span>
                 <span className="font-medium text-gray-700 dark:text-gray-300">
                   {liveJeolguk.name}

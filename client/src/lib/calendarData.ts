@@ -670,20 +670,6 @@ export function getJeolguk(hwYear: number, hwMonth: number, hwDay: number): {
   return { name, periodType: "", sogung, daegung };
 }
 
-// 숫자를 한자로 변환 (2-10)
-const NUMBER_TO_HANJA: { [key: number]: string } = {
-  2: "二", 3: "三", 4: "四", 5: "五", 6: "六", 7: "七", 8: "八", 9: "九", 10: "十"
-};
-
-export function numberToHanja(num: number): string {
-  return NUMBER_TO_HANJA[num] || String(num);
-}
-
-// 소궁/대궁 한자 표기 (예: 五地四)
-export function getSogungDaegungHanja(sogung: number, daegung: number): string {
-  return `${numberToHanja(sogung)}地${numberToHanja(daegung)}`;
-}
-
 // 9단계 순환 패턴 (낙서 기반)
 const SOGUNG_CYCLES: number[][] = [
   [2, 3, 4, 5, 6, 7, 8, 9, 10],      // 대궁사이클 1 (기본)

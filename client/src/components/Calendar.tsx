@@ -57,6 +57,7 @@ export function Calendar() {
   const [solarMonth, setSolarMonth] = useState(today.getMonth() + 1);
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
   const [showDayDetail, setShowDayDetail] = useState(false);
+  const [showTalisman, setShowTalisman] = useState(false);
 
   const hwMonthData = useMemo(() => {
     if (calType === "hw") {
@@ -633,19 +634,37 @@ export function Calendar() {
                 </div>
                 <div className="info-card col-span-2">
                   <div className="text-muted-foreground text-xs mb-1 uppercase tracking-wide">28宿</div>
-                  <div className="flex items-center gap-3">
-                    {!hwMansion.isZunkong && (
-                      <img 
-                        src={`/img/28j_jinjun.jpg`} 
-                        alt={hwMansion.general} 
-                        className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded"
-                      />
-                    )}
-                    <div>
-                      <div className="font-bold text-fluid-lg">
-                        {hwMansion.isZunkong ? "존궁" : `${hwMansion.mansion}, ${hwMansion.general}`}
+                  <div 
+                    className="cursor-pointer hover-elevate rounded-md p-2 -m-2 transition-all"
+                    onClick={() => setShowTalisman(!showTalisman)}
+                    onMouseEnter={() => setShowTalisman(true)}
+                    onMouseLeave={() => setShowTalisman(false)}
+                    data-testid="button-toggle-talisman"
+                  >
+                    <div className="flex items-center gap-3">
+                      {!hwMansion.isZunkong && (
+                        <img 
+                          src={`/img/28j_jinjun.jpg`} 
+                          alt={hwMansion.general} 
+                          className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded"
+                        />
+                      )}
+                      <div>
+                        <div className="font-bold text-fluid-lg">
+                          {hwMansion.isZunkong ? "존궁" : `${hwMansion.mansion}, ${hwMansion.general}`}
+                        </div>
+                        <div className="text-xs text-muted-foreground">클릭하여 부적 보기</div>
                       </div>
                     </div>
+                    {showTalisman && !hwMansion.isZunkong && (
+                      <div className="mt-3 flex justify-center">
+                        <img 
+                          src={`/img/talisman/example_talisman.png`}
+                          alt={`${hwMansion.mansion} 부적`}
+                          className="max-w-[120px] max-h-[160px] object-contain border border-border rounded shadow-md bg-white"
+                        />
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="info-card">

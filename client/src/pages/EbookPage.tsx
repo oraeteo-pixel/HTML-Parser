@@ -3,7 +3,7 @@ import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { RichEditor, MediaDisplay } from "@/components/RichEditor";
+import { RichEditor, MediaDisplay, type MediaItem } from "@/components/RichEditor";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -12,13 +12,6 @@ import { BookOpen, Plus, ChevronDown, ChevronUp } from "lucide-react";
 import type { Post } from "@shared/schema";
 
 type PostWithAuthor = Post & { author: string };
-
-interface MediaItem {
-  type: "image" | "video" | "file" | "youtube";
-  url: string;
-  name?: string;
-  thumbnailUrl?: string;
-}
 
 export default function EbookPage() {
   const { user } = useAuth();
@@ -78,10 +71,12 @@ export default function EbookPage() {
     const items: MediaItem[] = [];
     if (post.mediaUrls) {
       post.mediaUrls.forEach(url => {
+        const fileName = url.split("/").pop() || "";
         const type = url.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? "image" 
-          : url.match(/\.(mp4|webm|mov)$/i) ? "video" 
+          : url.match(/\.(mp4|webm|mov)$/i) ? "video"
+          : url.match(/\.pdf$/i) ? "pdf"
           : "file";
-        items.push({ type, url, name: url.split("/").pop() });
+        items.push({ type, url, name: fileName });
       });
     }
     if (post.youtubeUrls) {

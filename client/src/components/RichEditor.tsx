@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { useUpload } from "@/hooks/use-upload";
 import { useToast } from "@/hooks/use-toast";
+import { PdfViewer } from "@/components/PdfViewer";
 import { 
   ImagePlus, 
   Video, 
@@ -15,11 +16,13 @@ import {
   Loader2,
   Upload,
   Link as LinkIcon,
-  AlertCircle
+  AlertCircle,
+  FileText,
+  Download
 } from "lucide-react";
 
-interface MediaItem {
-  type: "image" | "video" | "file" | "youtube";
+export interface MediaItem {
+  type: "image" | "video" | "file" | "youtube" | "pdf";
   url: string;
   name?: string;
   thumbnailUrl?: string;
@@ -439,16 +442,28 @@ export function MediaDisplay({ items }: { items: MediaItem[] }) {
               />
             </div>
           )}
+          {item.type === "pdf" && (
+            <PdfViewer url={item.url} fileName={item.name} />
+          )}
           {item.type === "file" && (
-            <a 
-              href={item.url} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 text-primary hover:underline"
-            >
-              <FileUp className="h-4 w-4" />
-              {item.name}
-            </a>
+            <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-md">
+              <FileText className="h-6 w-6 text-muted-foreground" />
+              <div className="flex-1 min-w-0">
+                <p className="font-medium truncate">{item.name}</p>
+                <p className="text-sm text-muted-foreground">파일을 다운로드하여 열어주세요</p>
+              </div>
+              <Button asChild size="sm" variant="outline">
+                <a 
+                  href={item.url} 
+                  download={item.name}
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                >
+                  <Download className="h-4 w-4 mr-1" />
+                  다운로드
+                </a>
+              </Button>
+            </div>
           )}
         </div>
       ))}

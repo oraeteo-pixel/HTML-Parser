@@ -561,6 +561,13 @@ const HW_28_GENERALS = [
   "邳肜", "銚期", "劉植", "耿純", "藏宮", "馬武", "劉隆"
 ];
 
+const HW_28_DESCRIPTIONS = [
+  "日月之位", "天地之間", "瑞化之造", "珀雨之順", "寵露之功", "玲霜之心", "玉雪之契",
+  "熱薰之序", "寒冷之節", "陰氣之理", "陽氣之理", "走獸之迷", "飛禽之殊", "人生之貴",
+  "沙石之極", "岩岸之顯", "澤地之幽", "山岳之脉", "江水之精", "四季之土", "三冬之水",
+  "三秋之金", "三夏之火", "三春之木", "煙霧之化", "風雲之墟", "河漢之邊", "星辰之道"
+];
+
 const HW_28_ZUNKOG_MANSIONS = ["星", "尾", "昴", "女"];
 
 export function getHwanggeukDayGanZhi(hwYear: number, hwMonth: number, hwDay: number): string {
@@ -578,6 +585,7 @@ export function getHwanggeukDayGanZhi(hwYear: number, hwMonth: number, hwDay: nu
 export function getHwanggeuk28Mansion(hwYear: number, hwMonth: number, hwDay: number): { 
   mansion: string; 
   general: string;
+  description: string;
   isZunkong: boolean;
 } {
   const dayGanZhi = getHwanggeukDayGanZhi(hwYear, hwMonth, hwDay);
@@ -588,6 +596,7 @@ export function getHwanggeuk28Mansion(hwYear: number, hwMonth: number, hwDay: nu
     return { 
       mansion: "中, 星宿尊空", 
       general: "-",
+      description: "尊空",
       isZunkong: true
     };
   }
@@ -595,8 +604,9 @@ export function getHwanggeuk28Mansion(hwYear: number, hwMonth: number, hwDay: nu
   const mansionIndex = mapping as number;
   const mansion = HW_28_MANSIONS[mansionIndex];
   const general = HW_28_GENERALS[mansionIndex];
+  const description = HW_28_DESCRIPTIONS[mansionIndex];
   
-  return { mansion, general, isZunkong: false };
+  return { mansion, general, description, isZunkong: false };
 }
 
 export function getHwanggeukPosition(hwYear: number, hwMonth: number, hwDay: number): string {

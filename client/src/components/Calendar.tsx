@@ -657,12 +657,16 @@ export function Calendar() {
                       </div>
                     </div>
                     {showTalisman && !hwMansion.isZunkong && (
-                      <div className="mt-3 flex justify-center">
+                      <div className="mt-3 flex flex-col items-center">
                         <img 
                           src={`/img/talisman/example_talisman.png`}
                           alt={`${hwMansion.mansion} 부적`}
                           className="max-w-[120px] max-h-[160px] object-contain border border-border rounded shadow-md bg-white"
                         />
+                        <div className="mt-2 text-center text-sm">
+                          <div className="font-bold">{hwMansion.mansion}, {hwMansion.general}</div>
+                          <div className="text-muted-foreground">{hwMansion.description}</div>
+                        </div>
                       </div>
                     )}
                   </div>

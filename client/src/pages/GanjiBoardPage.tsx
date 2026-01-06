@@ -3,7 +3,7 @@ import { TopBar } from "@/components/TopBar";
 import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { RichEditor, MediaDisplay } from "@/components/RichEditor";
+import { RichEditor, MediaDisplay, type MediaItem } from "@/components/RichEditor";
 import { MessageSquare, ArrowLeft, Plus, ChevronDown, ChevronUp } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useRoute, Link } from "wouter";
@@ -13,13 +13,6 @@ import { useToast } from "@/hooks/use-toast";
 import type { Post } from "@shared/schema";
 
 type PostWithAuthor = Post & { author: string };
-
-interface MediaItem {
-  type: "image" | "video" | "file" | "youtube";
-  url: string;
-  name?: string;
-  thumbnailUrl?: string;
-}
 
 export default function GanjiBoardPage() {
   const [, params] = useRoute("/madang/:ganji");
@@ -84,11 +77,29 @@ export default function GanjiBoardPage() {
   const parseMediaItems = (post: PostWithAuthor): MediaItem[] => {
     const items: MediaItem[] = [];
     if (post.mediaUrls) {
-      post.mediaUrls.forEach(url => {
-        const type = url.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? "image" 
-          : url.match(/\.(mp4|webm|mov)$/i) ? "video" 
-          : "file";
-        items.push({ type, url, name: url.split("/").pop() });
+      post.mediaUrls.forEach(fullUrl => {
+        // Parse type and name from query params if present
+        const [baseUrl, queryString] = fullUrl.split("?");
+        const params = new URLSearchParams(queryString || "");
+        const typeParam = params.get("type");
+        const nameParam = params.get("name");
+        
+        let type: "image" | "video" | "pdf" | "file";
+        if (typeParam && ["image", "video", "pdf", "file"].includes(typeParam)) {
+          type = typeParam as "image" | "video" | "pdf" | "file";
+        } else if (baseUrl.includes("/objects/")) {
+          // Object storage URLs without type param - default to image (most common)
+          type = "image";
+        } else {
+          // Fallback to extension-based detection
+          type = baseUrl.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? "image" 
+            : baseUrl.match(/\.(mp4|webm|mov)$/i) ? "video"
+            : baseUrl.match(/\.pdf$/i) ? "pdf"
+            : "file";
+        }
+        
+        const fileName = nameParam || baseUrl.split("/").pop() || "";
+        items.push({ type, url: fullUrl, name: fileName });
       });
     }
     if (post.youtubeUrls) {

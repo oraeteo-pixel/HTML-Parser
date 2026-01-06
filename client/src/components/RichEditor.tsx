@@ -79,9 +79,11 @@ export function RichEditor({
   const { uploadFile, isUploading, progress, error } = useUpload({
     onSuccess: (response) => {
       const fileType = getFileType(response.metadata.contentType);
+      // Append type and name as query params for later parsing when displaying
+      const urlWithType = `${response.objectPath}?type=${fileType}&name=${encodeURIComponent(response.metadata.name)}`;
       const newItem: MediaItem = {
         type: fileType,
-        url: response.objectPath,
+        url: urlWithType,
         name: response.metadata.name
       };
       onMediaItemsChange([...mediaItems, newItem]);

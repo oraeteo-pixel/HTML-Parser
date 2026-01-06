@@ -70,13 +70,29 @@ export default function EbookPage() {
   const parseMediaItems = (post: PostWithAuthor): MediaItem[] => {
     const items: MediaItem[] = [];
     if (post.mediaUrls) {
-      post.mediaUrls.forEach(url => {
-        const fileName = url.split("/").pop() || "";
-        const type = url.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? "image" 
-          : url.match(/\.(mp4|webm|mov)$/i) ? "video"
-          : url.match(/\.pdf$/i) ? "pdf"
-          : "file";
-        items.push({ type, url, name: fileName });
+      post.mediaUrls.forEach(fullUrl => {
+        // Parse type and name from query params if present
+        const [baseUrl, queryString] = fullUrl.split("?");
+        const params = new URLSearchParams(queryString || "");
+        const typeParam = params.get("type");
+        const nameParam = params.get("name");
+        
+        let type: "image" | "video" | "pdf" | "file";
+        if (typeParam && ["image", "video", "pdf", "file"].includes(typeParam)) {
+          type = typeParam as "image" | "video" | "pdf" | "file";
+        } else if (baseUrl.includes("/objects/")) {
+          // Object storage URLs without type param - default to image (most common)
+          type = "image";
+        } else {
+          // Fallback to extension-based detection
+          type = baseUrl.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? "image" 
+            : baseUrl.match(/\.(mp4|webm|mov)$/i) ? "video"
+            : baseUrl.match(/\.pdf$/i) ? "pdf"
+            : "file";
+        }
+        
+        const fileName = nameParam || baseUrl.split("/").pop() || "";
+        items.push({ type, url: fullUrl, name: fileName });
       });
     }
     if (post.youtubeUrls) {

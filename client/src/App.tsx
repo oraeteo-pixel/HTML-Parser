@@ -1,10 +1,9 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, Redirect } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
-import Home from "@/pages/Home";
 import Square from "@/pages/Square";
 import MapPage from "@/pages/MapPage";
 import Madang from "@/pages/Madang";
@@ -18,7 +17,7 @@ import CommunityPage from "@/pages/CommunityPage";
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Home} />
+      <Route path="/">{() => <Redirect to="/calendar" />}</Route>
       <Route path="/square" component={Square} />
       <Route path="/map" component={MapPage} />
       <Route path="/madang" component={Madang} />

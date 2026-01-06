@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { useUpload } from "@/hooks/use-upload";
 import { useToast } from "@/hooks/use-toast";
 import { PdfViewer } from "@/components/PdfViewer";
+import { ImageLightbox, VideoPlayer, ClickableImage } from "@/components/MediaViewer";
 import { 
   ImagePlus, 
   Video, 
@@ -411,63 +412,86 @@ export function RichEditor({
 }
 
 export function MediaDisplay({ items }: { items: MediaItem[] }) {
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+
   if (!items || items.length === 0) return null;
 
+  const images = items
+    .filter(item => item.type === "image")
+    .map(item => ({ src: item.url, alt: item.name }));
+
+  const safeIndex = Math.min(lightboxIndex, Math.max(0, images.length - 1));
+
+  const openLightbox = (imageUrl: string) => {
+    const index = images.findIndex(img => img.src === imageUrl);
+    setLightboxIndex(index >= 0 ? index : 0);
+    setLightboxOpen(true);
+  };
+
   return (
-    <div className="space-y-4">
-      {items.map((item, index) => (
-        <div key={index}>
-          {item.type === "image" && (
-            <img 
-              src={item.url} 
-              alt={item.name || "uploaded image"} 
-              className="max-w-full rounded-lg"
-            />
-          )}
-          {item.type === "video" && (
-            <video 
-              src={item.url} 
-              controls 
-              className="max-w-full rounded-lg"
-            />
-          )}
-          {item.type === "youtube" && (
-            <div className="aspect-video rounded-lg overflow-hidden">
-              <iframe
-                width="100%"
-                height="100%"
-                src={`https://www.youtube.com/embed/${item.url}`}
-                title="YouTube video"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
+    <>
+      <div className="space-y-4">
+        {items.map((item, index) => (
+          <div key={index}>
+            {item.type === "image" && (
+              <ClickableImage 
+                src={item.url} 
+                alt={item.name || "uploaded image"} 
+                onClick={() => openLightbox(item.url)}
+                testId={`clickable-image-${index}`}
               />
-            </div>
-          )}
-          {item.type === "pdf" && (
-            <PdfViewer url={item.url} fileName={item.name} />
-          )}
-          {item.type === "file" && (
-            <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-md">
-              <FileText className="h-6 w-6 text-muted-foreground" />
-              <div className="flex-1 min-w-0">
-                <p className="font-medium truncate">{item.name}</p>
-                <p className="text-sm text-muted-foreground">파일을 다운로드하여 열어주세요</p>
+            )}
+            {item.type === "video" && (
+              <VideoPlayer src={item.url} />
+            )}
+            {item.type === "youtube" && (
+              <div className="aspect-video rounded-lg overflow-hidden">
+                <iframe
+                  width="100%"
+                  height="100%"
+                  src={`https://www.youtube.com/embed/${item.url}`}
+                  title="YouTube video"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
               </div>
-              <Button asChild size="sm" variant="outline">
-                <a 
-                  href={item.url} 
-                  download={item.name}
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                >
-                  <Download className="h-4 w-4 mr-1" />
-                  다운로드
-                </a>
-              </Button>
-            </div>
-          )}
-        </div>
-      ))}
-    </div>
+            )}
+            {item.type === "pdf" && (
+              <PdfViewer url={item.url} fileName={item.name} />
+            )}
+            {item.type === "file" && (
+              <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-md">
+                <FileText className="h-6 w-6 text-muted-foreground" />
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium truncate">{item.name}</p>
+                  <p className="text-sm text-muted-foreground">파일을 다운로드하여 열어주세요</p>
+                </div>
+                <Button asChild size="sm" variant="outline">
+                  <a 
+                    href={item.url} 
+                    download={item.name}
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                  >
+                    <Download className="h-4 w-4 mr-1" />
+                    다운로드
+                  </a>
+                </Button>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      {images.length > 0 && (
+        <ImageLightbox 
+          images={images}
+          initialIndex={safeIndex}
+          open={lightboxOpen}
+          onOpenChange={setLightboxOpen}
+        />
+      )}
+    </>
   );
 }

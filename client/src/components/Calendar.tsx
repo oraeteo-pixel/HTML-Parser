@@ -632,7 +632,7 @@ export function Calendar() {
                   )}
                 </div>
                 <div className="info-card col-span-2">
-                  <div className="text-muted-foreground text-xs mb-1 uppercase tracking-wide">28수</div>
+                  <div className="text-muted-foreground text-xs mb-1 uppercase tracking-wide">28宿</div>
                   <div className="flex items-center gap-3">
                     {!hwMansion.isZunkong && (
                       <img 
@@ -642,8 +642,9 @@ export function Calendar() {
                       />
                     )}
                     <div>
-                      <div className="font-bold text-fluid-lg">{hwMansion.mansion}{hwMansion.isZunkong ? "" : "수"}</div>
-                      <div className="text-muted-foreground text-sm">{hwMansion.general !== "-" ? hwMansion.general : ""}</div>
+                      <div className="font-bold text-fluid-lg">
+                        {hwMansion.isZunkong ? "존궁" : `${hwMansion.mansion}, ${hwMansion.general}`}
+                      </div>
                     </div>
                   </div>
                 </div>

@@ -302,7 +302,7 @@ export function Calendar() {
               ? "text-white border-0" 
               : "bg-white dark:bg-card text-foreground border border-border"
             }
-            style={calType === "hw" ? { backgroundColor: 'hsl(210 20% 50%)' } : {}}
+            style={calType === "hw" ? { backgroundColor: 'hsl(210 20% 40%)' } : {}}
           >
             황극력
           </Button>
@@ -314,7 +314,7 @@ export function Calendar() {
               ? "text-white border-0" 
               : "bg-white dark:bg-card text-foreground border border-border"
             }
-            style={calType === "df" ? { backgroundColor: 'hsl(210 20% 50%)' } : {}}
+            style={calType === "df" ? { backgroundColor: 'hsl(210 20% 40%)' } : {}}
           >
             선천력
           </Button>
@@ -442,7 +442,7 @@ export function Calendar() {
             size="sm" 
             onClick={goToday}
             className="mx-2 sm:mx-3 text-white border-0 h-5 sm:h-8 text-xs sm:text-sm px-2 sm:px-3"
-            style={{ backgroundColor: 'hsl(210 20% 50%)' }}
+            style={{ backgroundColor: 'hsl(210 20% 40%)' }}
             data-testid="button-today"
           >
             오늘

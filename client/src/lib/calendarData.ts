@@ -785,6 +785,29 @@ export function getWeekdayHanja(dayOfWeek: number): string {
 
 const SOGUNG_DAEGUNG_HANJA = ["", "", "二", "三", "四", "五", "六", "七", "八", "九", "十"];
 
+// 81궁 명칭 매핑: [소궁][대궁] = 명칭
+// 소궁: 2-10, 대궁: 2-10 (각각 인덱스 0-8에 해당)
+const EIGHTY_ONE_PALACE_NAMES: { [key: string]: string } = {
+  // 대궁 2 (二之X)
+  "2-2": "元化", "2-3": "順化", "2-4": "遂化", "2-5": "履化", "2-6": "寧化", "2-7": "敷化", "2-8": "順化", "2-9": "恒化", "2-10": "始化",
+  // 대궁 3 (三之X)
+  "3-2": "元和", "3-3": "順和", "3-4": "遂和", "3-5": "履和", "3-6": "寧和", "3-7": "敷和", "3-8": "順和", "3-9": "恒和", "3-10": "始和",
+  // 대궁 4 (四之X)
+  "4-2": "元盛", "4-3": "順盛", "4-4": "遂盛", "4-5": "履盛", "4-6": "寧盛", "4-7": "敷盛", "4-8": "順盛", "4-9": "恒盛", "4-10": "始盛",
+  // 대궁 5 (五之X)
+  "5-2": "元平", "5-3": "順平", "5-4": "遂平", "5-5": "履平", "5-6": "寧平", "5-7": "敷平", "5-8": "順平", "5-9": "恒平", "5-10": "始平",
+  // 대궁 6 (六之X)
+  "6-2": "元寧", "6-3": "順寧", "6-4": "遂寧", "6-5": "履寧", "6-6": "寧寧", "6-7": "敷寧", "6-8": "順寧", "6-9": "恒寧", "6-10": "始寧",
+  // 대궁 7 (七之X)
+  "7-2": "元康", "7-3": "順康", "7-4": "遂康", "7-5": "履康", "7-6": "寧康", "7-7": "敷康", "7-8": "順康", "7-9": "恒康", "7-10": "始康",
+  // 대궁 8 (八之X)
+  "8-2": "元泰", "8-3": "順泰", "8-4": "遂泰", "8-5": "履泰", "8-6": "寧泰", "8-7": "敷泰", "8-8": "順泰", "8-9": "恒泰", "8-10": "始泰",
+  // 대궁 9 (九之X)
+  "9-2": "元熙", "9-3": "順熙", "9-4": "遂熙", "9-5": "履熙", "9-6": "寧熙", "9-7": "敷熙", "9-8": "順熙", "9-9": "恒熙", "9-10": "始熙",
+  // 대궁 10 (十之X)
+  "10-2": "元興", "10-3": "順興", "10-4": "遂興", "10-5": "履興", "10-6": "寧興", "10-7": "敷興", "10-8": "順興", "10-9": "恒興", "10-10": "始興"
+};
+
 export function numberToSogungHanja(num: number): string {
   if (num >= 2 && num <= 10) {
     return SOGUNG_DAEGUNG_HANJA[num];
@@ -794,6 +817,11 @@ export function numberToSogungHanja(num: number): string {
 
 export function formatSogungDaegungHanja(sogung: number, daegung: number): string {
   return `${numberToSogungHanja(sogung)}之${numberToSogungHanja(daegung)}`;
+}
+
+export function get81PalaceName(sogung: number, daegung: number): string {
+  const key = `${sogung}-${daegung}`;
+  return EIGHTY_ONE_PALACE_NAMES[key] || "";
 }
 
 export function getHwanggeukYearGanZhi(hwYear: number): string {

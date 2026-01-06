@@ -922,19 +922,21 @@ const SIXTY_FOUR_HEXAGRAMS: { [key: string]: { hanja: string; korean: string; fu
 };
 
 // 소궁/대궁에서 64괘 명칭 가져오기
+// 소궁 = 상괘(위), 대궁 = 하괘(아래)
 export function get64HexagramName(sogung: number, daegung: number): { hanja: string; korean: string; fullName: string; lowerTrigram: string; upperTrigram: string } | null {
   // 중궁(6)이면 64괘에 해당하지 않음
   if (sogung === 6 || daegung === 6) {
     return null;
   }
   
-  const key = `${sogung}-${daegung}`;
+  // 키: 하괘(대궁)-상괘(소궁) 순서
+  const key = `${daegung}-${sogung}`;
   const hexagram = SIXTY_FOUR_HEXAGRAMS[key];
   
   if (!hexagram) return null;
   
-  const lowerTrigram = NUMBER_TO_TRIGRAM[sogung];
-  const upperTrigram = NUMBER_TO_TRIGRAM[daegung];
+  const upperTrigram = NUMBER_TO_TRIGRAM[sogung];  // 소궁 = 상괘
+  const lowerTrigram = NUMBER_TO_TRIGRAM[daegung]; // 대궁 = 하괘
   
   return {
     ...hexagram,

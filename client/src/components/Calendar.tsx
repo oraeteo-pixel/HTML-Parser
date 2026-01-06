@@ -330,7 +330,7 @@ export function Calendar() {
                 </span>
               </div>
               <span className="slim-badge-navy">
-                {hwMansion.mansion}, {hwMansion.general}
+                {hwMansion.isZunkong ? hwMansion.mansion : `${hwMansion.mansion}수 ${hwMansion.general}`}
               </span>
             </div>
           ) : (

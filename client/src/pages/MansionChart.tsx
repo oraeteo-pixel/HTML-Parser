@@ -54,35 +54,42 @@ export default function MansionChart() {
   const renderMansionCell = (mansion: string, isToday: boolean) => {
     const isZunkong = ZUNKONG_MANSIONS.includes(mansion);
     const ganjiList = mansionGanjiMap[mansion] || [];
+    const outerGanji = ganjiList[0] || "";
+    const innerGanji = ganjiList[1] || "";
+    const isOuterCurrent = todayGanZhi === outerGanji;
+    const isInnerCurrent = todayGanZhi === innerGanji;
+    const outerOffset = getGanjiDayOffset(outerGanji);
+    const innerOffset = getGanjiDayOffset(innerGanji);
     
     return (
       <div 
         className={`
-          p-1.5 rounded-md text-center min-h-[90px] flex flex-col transition-all
+          p-1 rounded-md text-center min-h-[90px] flex flex-col transition-all
           ${isToday 
             ? 'ring-2 ring-[hsl(var(--orae-navy))] bg-gradient-to-br from-slate-100 to-slate-50 dark:from-slate-800/40 dark:to-slate-700/20' 
             : 'bg-[var(--ganji-surface)] hover-elevate'}
         `}
         data-testid={`mansion-cell-${mansion}`}
       >
-        <div className="font-bold text-base orae-navy">{mansion}</div>
-        <div className="text-[9px] text-muted-foreground">{MANSION_GENERALS[mansion]}</div>
-        {isZunkong && <Badge variant="outline" className="text-[7px] px-1 py-0 mx-auto mt-0.5 border-slate-500 text-slate-600 dark:text-slate-400">尊空</Badge>}
-        <div className="text-[7px] text-muted-foreground mt-auto flex flex-wrap justify-center gap-[1px] leading-tight">
-          {ganjiList.map((g, i) => {
-            const dayOffset = getGanjiDayOffset(g);
-            const isCurrentGanji = todayGanZhi === g;
-            return (
-              <span 
-                key={i} 
-                className={`${isCurrentGanji ? "font-bold orae-navy" : ""}`}
-                title={isCurrentGanji ? "오늘" : `${dayOffset}일 후`}
-              >
-                {g}
-              </span>
-            );
-          })}
-        </div>
+        {outerGanji && (
+          <div 
+            className={`text-[8px] ${isOuterCurrent ? "font-bold orae-navy" : "text-muted-foreground"}`}
+            title={isOuterCurrent ? "오늘" : `${outerOffset}일 후`}
+          >
+            {outerGanji}
+          </div>
+        )}
+        <div className="font-bold text-base orae-navy flex-1 flex items-center justify-center">{mansion}</div>
+        <div className="text-[8px] text-muted-foreground">{MANSION_GENERALS[mansion]}</div>
+        {isZunkong && <Badge variant="outline" className="text-[6px] px-0.5 py-0 mx-auto border-slate-500 text-slate-600 dark:text-slate-400">尊空</Badge>}
+        {innerGanji && (
+          <div 
+            className={`text-[8px] ${isInnerCurrent ? "font-bold orae-navy" : "text-muted-foreground"}`}
+            title={isInnerCurrent ? "오늘" : `${innerOffset}일 후`}
+          >
+            {innerGanji}
+          </div>
+        )}
       </div>
     );
   };

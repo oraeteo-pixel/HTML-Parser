@@ -269,7 +269,7 @@ export function Calendar() {
   const months = Array.from({ length: 12 }, (_, i) => i + 1);
 
   return (
-    <div className="bg-white dark:bg-card sm:border sm:border-border sm:rounded-md" data-testid="calendar">
+    <div className="bg-white dark:bg-card border border-border" data-testid="calendar">
       <div className="p-2 space-y-2">
         <div className="flex gap-2">
           <Button 
@@ -300,24 +300,24 @@ export function Calendar() {
 
         <div 
           id="calDate" 
-          className="info-card cursor-pointer hover:shadow-sm transition-all"
+          className="info-card cursor-pointer hover:shadow-md transition-all"
           data-testid="calendar-info"
           onClick={() => setShowDayDetail(true)}
         >
           {calType === "hw" ? (
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               <div className="ganji-title">
                 {liveHwanggeuk.yearGanZhi}年 {liveHwanggeuk.monthGanZhi}月 {liveDayGanZhi}日 {liveHourGanZhi}時
               </div>
-              <div className="flex flex-wrap items-center gap-1.5 text-sm">
+              <div className="flex flex-wrap items-center gap-2">
                 <span className="badge-navy">
                   {liveJeolguk.name}
                 </span>
-                <span className="text-muted-foreground">
+                <span className="text-fluid-sm text-muted-foreground">
                   소궁 {liveSogungDaegung.sogung} · 대궁 {liveSogungDaegung.daegung}
                 </span>
               </div>
-              <div className="flex gap-1.5 flex-wrap">
+              <div className="flex gap-2 flex-wrap">
                 <span className="badge-navy">
                   {hwMansion.mansion}{hwMansion.isZunkong ? "" : "수"}
                 </span>
@@ -327,18 +327,18 @@ export function Calendar() {
               </div>
             </div>
           ) : (
-            <div className="space-y-1.5">
+            <div className="space-y-2">
               <div className="ganji-title">
                 {displayData.yearGanZhi}年 {displayData.monthGanZhi}月 {displayData.dayGanZhi}日 {liveSeoncheonHourGanZhi}時
               </div>
-              <div className="text-sm text-muted-foreground">
+              <div className="text-fluid-sm text-muted-foreground">
                 {displayYear}.{displayMonth}.{displayDay} {WEEKDAYS_HANJA[displayDate.getDay()]} · 음력 {displayData.lunarMonth}.{displayData.lunarDay}
               </div>
-              <div className="flex gap-1.5 flex-wrap items-center">
+              <div className="flex gap-2 flex-wrap">
                 <span className="badge-navy">
                   {displayData.currentTerm.hanja}
                 </span>
-                <span className="text-sm text-muted-foreground">
+                <span className="text-fluid-sm text-muted-foreground">
                   {displayData.currentTerm.general}
                 </span>
               </div>

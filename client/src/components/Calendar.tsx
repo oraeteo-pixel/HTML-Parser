@@ -343,7 +343,7 @@ export function Calendar() {
                   <span className="font-medium text-gray-700 dark:text-gray-300">{liveJeolguk.name}</span>
                   <span className="text-gray-500 dark:text-gray-400">&lt;소궁,대궁&gt;{liveSogungDaegung.isZungung ? "존궁" : `${liveSogungDaegung.sogung},${liveSogungDaegung.daegung}`}</span>
                   <span className="slim-badge-navy">
-                    {hwMansion.isZunkong ? hwMansion.mansion : `${hwMansion.mansion}수`}
+                    {hwMansion.mansion}
                   </span>
                 </div>
               </div>
@@ -362,7 +362,7 @@ export function Calendar() {
                   <span className="font-medium text-gray-700 dark:text-gray-300">{liveJeolguk.name}</span>
                   <span className="text-gray-500 dark:text-gray-400">&lt;소궁,대궁&gt;{liveSogungDaegung.isZungung ? "존궁" : `${liveSogungDaegung.sogung},${liveSogungDaegung.daegung}`}</span>
                   <span className="slim-badge-navy">
-                    {hwMansion.isZunkong ? hwMansion.mansion : `${hwMansion.mansion}수 ${hwMansion.general}`}
+                    {hwMansion.isZunkong ? hwMansion.mansion : `${hwMansion.mansion}, ${hwMansion.general}`}
                   </span>
                 </div>
               </div>

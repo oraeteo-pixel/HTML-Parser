@@ -813,13 +813,13 @@ export function getSogungDaegung(date: Date): {
   const daegungCycleNum = Math.floor(adjustedHalfDays / 9) % 9;
   const position = daegungCycleNum + 2;
   
-  // 시간 슬롯 계산 (1-18): 11시부터 시작해서 80분씩
+  // 시간 슬롯 계산 (1-18): 23시부터 시작해서 80분씩
   const totalMinutesOfDay = hours * 60 + minutes;
-  // 11시(660분)를 0분으로 변환
-  let minutesSince1100 = totalMinutesOfDay - (11 * 60);
-  if (minutesSince1100 < 0) minutesSince1100 += 1440; // 전날로 감
-  const timeSlot = Math.floor(minutesSince1100 / 80) + 1;
-  const isAM = hours >= 11 && hours < 23;
+  // 23시(1380분)를 0분으로 변환
+  let minutesSince2300 = totalMinutesOfDay - (23 * 60);
+  if (minutesSince2300 < 0) minutesSince2300 += 1440; // 23시 이전이면 전날 23시부터 계산
+  const timeSlot = Math.floor(minutesSince2300 / 80) + 1;
+  const isAM = timeSlot <= 9; // 슬롯 1-9: 23:00~10:59 (오전), 슬롯 10-18: 11:00~22:59 (오후)
   
   // 오전/오후에 따른 소궁 슬롯 (0-8)
   const sogungSlot = (timeSlot - 1) % 9;
@@ -830,7 +830,7 @@ export function getSogungDaegung(date: Date): {
   const sogung = pattern ? pattern.slots[sogungSlot] || daegung : daegung;
   
   // 남은 시간 계산
-  const remainingMinutes = sogungPeriod - (minutesSince1100 % sogungPeriod);
+  const remainingMinutes = sogungPeriod - (minutesSince2300 % sogungPeriod);
   
   return { 
     sogung, 

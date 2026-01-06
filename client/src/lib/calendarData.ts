@@ -716,14 +716,16 @@ export function getSogungDaegung(date: Date): {
   remainingMinutes: number;
   isZungung: boolean;
 } {
-  const hours = date.getHours();
-  const minutes = date.getMinutes();
+  // 한국 시간으로 변환 (UTC+9)
+  const koreanTime = getKoreanTime(date);
+  const hours = koreanTime.getHours();
+  const minutes = koreanTime.getMinutes();
   
   // 황극력 날짜는 23:00에 변경됨
   // 현재 시간이 23:00 이후면 다음 날(황극력 기준)
-  let hwDate = new Date(date);
+  let hwDate = new Date(koreanTime);
   if (hours >= 23) {
-    hwDate = new Date(date.getTime() + 24 * 60 * 60 * 1000);
+    hwDate = new Date(koreanTime.getTime() + 24 * 60 * 60 * 1000);
   }
   
   const month = hwDate.getMonth() + 1;

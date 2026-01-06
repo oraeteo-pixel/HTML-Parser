@@ -685,19 +685,22 @@ const SOGUNG_PATTERNS: Record<number, number[]> = {
 };
 
 // 황극력 81궁 계산 공식
-// 시작점: 황극력 연초 전날 밤 23:00 (양력 4월 20일 23:00)
+// 1년 = 366일 = 732 반일 (오전/오후)
 // 대궁: 12시간(반일)마다 2→3→4→5→6→7→8→9→10 순환
-// Position: 대궁사이클(4.5일 = 9반일)마다 2→3→...→10 순환
+// Position: 대궁사이클(9반일 = 4.5일)마다 2→3→...→10 순환
+// 철학적 배경: 하도(天) + 낙서(地) → 황극(人), 낙서+황극=11, position쌍 합=12
 
-function calculateDaegungAndPosition(koreanTime: Date): { daegung: number; position: number } {
+function calculateDaegungAndPosition(koreanTime: Date): { daegung: number; position: number; halfDayOfYear: number } {
   // 황극력 연초 시작점 (양력 4월 20일 23:00 KST)
   const year = koreanTime.getFullYear();
   const month = koreanTime.getMonth() + 1;
+  const day = koreanTime.getDate();
+  const hours = koreanTime.getHours();
   
   // 현재 황극력 연도의 시작점 결정
   // 4월 20일 23:00 이전이면 전년도 황극력
   let epochYear = year;
-  if (month < 4 || (month === 4 && koreanTime.getDate() < 21)) {
+  if (month < 4 || (month === 4 && day < 21) || (month === 4 && day === 20 && hours < 23)) {
     epochYear = year - 1;
   }
   
@@ -707,24 +710,25 @@ function calculateDaegungAndPosition(koreanTime: Date): { daegung: number; posit
   // 시작점부터 현재까지 경과한 분 계산
   const minutesFromEpoch = Math.floor((koreanTime.getTime() - epochDate.getTime()) / (1000 * 60));
   
-  // 반일(12시간 = 720분) 수 계산
+  // 반일(12시간 = 720분) 수 계산 - 732 반일 중 몇 번째인지
   const halfDayPeriod = 720; // 12시간 = 720분
   const totalHalfDays = Math.floor(minutesFromEpoch / halfDayPeriod);
+  const halfDayOfYear = (totalHalfDays % 732) + 1; // 1~732
   
   // 대궁 계산: 반일마다 2→3→4→5→6→7→8→9→10 순환
-  // 오프셋 조정: 1월 7일 오전에 대궁=7이 되도록 보정
-  // 2026년 1월 7일 00:30 기준으로 역산
-  const calibrationOffset = 5; // 실제 데이터에 맞춰 조정
+  // (반일번호 - 1) % 9 + 2 = 대궁
+  // 오프셋: 1월 7일 오전에 대궁=7이 되도록 보정
+  const calibrationOffset = 5;
   const daegungIndex = ((totalHalfDays + calibrationOffset) % 9 + 9) % 9;
   const daegung = daegungIndex + 2; // 2~10
   
   // Position 계산: 대궁사이클(9반일 = 4.5일)마다 2→3→...→10 순환
   const daegungCycleNum = Math.floor(totalHalfDays / 9);
-  const positionOffset = 3; // position=9가 1월 7일에 오도록 보정
+  const positionOffset = 3;
   const positionIndex = ((daegungCycleNum + positionOffset) % 9 + 9) % 9;
   const position = positionIndex + 2; // 2~10
   
-  return { daegung, position };
+  return { daegung, position, halfDayOfYear };
 }
 
 export function getSogungDaegung(date: Date): {
@@ -751,7 +755,8 @@ export function getSogungDaegung(date: Date): {
   const sogungSlot = (timeSlot - 1) % 9;
   
   // 대궁과 position 계산 (공식 사용)
-  const { daegung, position } = calculateDaegungAndPosition(koreanTime);
+  // 732 반일 중 몇 번째인지로 대궁 결정
+  const { daegung, position, halfDayOfYear } = calculateDaegungAndPosition(koreanTime);
   
   // 소궁 조회 (position별 패턴에서)
   const pattern = SOGUNG_PATTERNS[position];

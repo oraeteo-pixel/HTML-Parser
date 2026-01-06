@@ -737,11 +737,11 @@ export function getSogungDaegung(date: Date): {
   const sogungPeriod = 80; // 1 소궁 = 80분
   const daegungPeriod = 9 * 80; // 1 대궁 = 9 소궁 = 720분 (12시간)
   
-  // 오프셋 조정: 황극력 원화 시작점 맞추기 위해 4 반일(2일) 오프셋 적용
-  const halfDayOffset = 4;
+  // 오프셋 조정: 황극력 원화 시작점 맞추기 위해 12 반일(6일) 오프셋 적용
+  const halfDayOffset = 12;
   
   // 전체 반일(half-day) 수 계산 (오프셋 적용)
-  const totalHalfDays = Math.floor(minutesInYear / daegungPeriod) - halfDayOffset;
+  const totalHalfDays = Math.floor(minutesInYear / daegungPeriod) + halfDayOffset;
   const adjustedHalfDays = ((totalHalfDays % 81) + 81) % 81; // 81 반일 = 1 대궁사이클 완료 × 9
   
   // 대궁 = 반일 인덱스 % 9 + 2 (2~10 순환)

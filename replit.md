@@ -4,6 +4,26 @@
 
 This is a Korean-language community calendar web application ("오리알터닷컴") built with a full-stack TypeScript architecture. The app features a traditional East Asian calendar system displaying Heavenly Stems, Earthly Branches, Twenty-Eight Mansions, and other traditional calendar elements alongside a modern community posting system with user authentication.
 
+## 프로젝트 철학 (Project Philosophy)
+
+### 문명과 역법의 기원
+- **60갑자의 기원**: 10간(天干) + 12지(地支) = 60주기 → 메소포타미아 60진법과 동일 원리
+- **문명 전파**: 천문(天文)과 지리(地理)를 이해한 지도자들이 이동하며 문명 창조
+- **이동 원리**: 지구 세차운동(26,000년 주기), 태양·별의 기운, 기후 패턴에 따라 이동
+
+### 천지인(天地人) 삼원과 시대 전환
+| 시대 | 중심 | 원리 | 역법 |
+|------|------|------|------|
+| 과거 | 天 (하늘) | 하도(河圖) | 천문 중심 역법 |
+| 현재 | 地 (땅) | 낙서(洛書) | 지리 중심 역법 |
+| **미래** | **人 (인간)** | **황극(皇極)** | **인간 중심 역법** |
+
+### 황극력의 의미
+- 과거: 천문·지리를 따르기만 하던 시대
+- 미래: **인간이 스스로 운명을 경영하는 시대**
+- 황극력 = 새로운 문명 패러다임의 표현
+- 이 앱(오리알터닷컴)은 그 정수를 담아내는 것이 목표
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.

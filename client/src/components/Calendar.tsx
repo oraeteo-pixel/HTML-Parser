@@ -353,8 +353,11 @@ export function Calendar() {
           ) : (
             <div className="flex flex-col gap-0 sm:flex-row sm:items-center sm:justify-between sm:gap-2">
               <div className="flex items-center gap-1 text-sm">
-                <span className="sm:hidden text-gray-500 dark:text-gray-400">
-                  황극력 {liveHwanggeuk.year}年 {liveHwanggeuk.month}月 {liveHwanggeuk.day}日
+                <span className="sm:hidden font-medium text-gray-700 dark:text-gray-300">
+                  {liveHwanggeuk.year}.{liveHwanggeuk.month}.{liveHwanggeuk.day}
+                </span>
+                <span className="sm:hidden text-gray-600 dark:text-gray-400">
+                  {WEEKDAYS_HANJA[currentTime.getDay()]}
                 </span>
                 <span className="hidden sm:inline font-medium text-gray-700 dark:text-gray-300">
                   {displayYear}.{displayMonth}.{displayDay}

@@ -329,7 +329,7 @@ export function Calendar() {
                   {liveHourGanZhi}時
                 </span>
               </div>
-              <span className="slim-badge-orange">
+              <span className="slim-badge-navy">
                 {hwMansion.mansion}, {hwMansion.general}
               </span>
             </div>
@@ -355,15 +355,15 @@ export function Calendar() {
                   {liveSeoncheonHourGanZhi}時
                 </span>
               </div>
-              <span className="slim-badge-orange">
+              <span className="slim-badge-navy">
                 {displayData.currentTerm.general}
               </span>
             </div>
           )}
         </div>
 
-        <div className="flex items-center justify-center gap-1 flex-wrap">
-          <Button variant="ghost" size="icon" onClick={handlePrevYear} data-testid="button-prev-year">
+        <div className="flex items-center justify-center gap-0.5 sm:gap-1 flex-wrap">
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handlePrevYear} data-testid="button-prev-year">
             <ChevronLeft className="h-4 w-4" />
           </Button>
           
@@ -371,7 +371,7 @@ export function Calendar() {
             value={String(calType === "hw" ? hwYear : solarYear)} 
             onValueChange={(v) => { setSelectedDay(null); calType === "hw" ? setHwYear(Number(v)) : setSolarYear(Number(v)); }}
           >
-            <SelectTrigger className="w-[100px]" data-testid="select-year">
+            <SelectTrigger className="w-[72px] sm:w-[100px] h-8 text-xs sm:text-sm" data-testid="select-year">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -381,21 +381,21 @@ export function Calendar() {
             </SelectContent>
           </Select>
 
-          <Button variant="ghost" size="icon" onClick={handleNextYear} data-testid="button-next-year">
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleNextYear} data-testid="button-next-year">
             <ChevronRight className="h-4 w-4" />
           </Button>
 
           <Button 
             size="sm" 
             onClick={goToday}
-            className="mx-2 text-white border-0"
+            className="mx-1 sm:mx-2 text-white border-0 h-8 text-xs sm:text-sm px-2 sm:px-3"
             style={{ backgroundColor: 'hsl(215 50% 35%)' }}
             data-testid="button-today"
           >
             오늘
           </Button>
 
-          <Button variant="ghost" size="icon" onClick={handlePrevMonth} data-testid="button-prev-month">
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handlePrevMonth} data-testid="button-prev-month">
             <ChevronLeft className="h-4 w-4" />
           </Button>
 
@@ -403,7 +403,7 @@ export function Calendar() {
             value={String(calType === "hw" ? hwMonth : solarMonth)} 
             onValueChange={(v) => { setSelectedDay(null); calType === "hw" ? setHwMonth(Number(v)) : setSolarMonth(Number(v)); }}
           >
-            <SelectTrigger className="w-[80px]" data-testid="select-month">
+            <SelectTrigger className="w-[60px] sm:w-[80px] h-8 text-xs sm:text-sm" data-testid="select-month">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -413,7 +413,7 @@ export function Calendar() {
             </SelectContent>
           </Select>
 
-          <Button variant="ghost" size="icon" onClick={handleNextMonth} data-testid="button-next-month">
+          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={handleNextMonth} data-testid="button-next-month">
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>

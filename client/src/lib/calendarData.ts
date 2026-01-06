@@ -684,28 +684,47 @@ const SOGUNG_PATTERNS: Record<number, number[]> = {
   10: [10, 9, 8, 7, 6, 5, 4, 3, 2],  // X之十
 };
 
-// 2025년 乙巳年 Excel 기반 날짜별 대궁 데이터 (양력 월-일 -> 대궁)
-// 황극력은 양력 4월 21일 시작, 23:00에 날짜 변경
-// 대궁은 오전/오후에 따라 다를 수 있음 - 기본값은 오전 대궁
-const DAEGUNG_DATA_2025: Record<string, number> = {
-  // 2026년 1월 (乙巳年 9월) - 수정된 값
-  "1-7": 7,  // 1월 7일 오전 대궁 = 7
-  "1-8": 9, "1-9": 6, "1-10": 3, "1-11": 5, "1-12": 10, "1-13": 4, "1-14": 8,
-  "1-15": 2, "1-16": 5, "1-17": 2, "1-18": 6, "1-19": 10, "1-20": 4, "1-21": 5,
-  "1-22": 9, "1-23": 3, "1-24": 7, "1-25": 5, "1-26": 2, "1-27": 6, "1-28": 10,
-  "1-29": 4, "1-30": 5, "1-31": 9,
-};
+// 황극력 81궁 계산 공식
+// 시작점: 황극력 연초 전날 밤 23:00 (양력 4월 20일 23:00)
+// 대궁: 12시간(반일)마다 2→3→4→5→6→7→8→9→10 순환
+// Position: 대궁사이클(4.5일 = 9반일)마다 2→3→...→10 순환
 
-// 24절국 position 데이터 (양력 날짜 범위 -> position)
-// 翕흡 七之九 = position 9 (1월 7일 포함)
-function getJeolgukPosition(month: number, day: number): number {
-  // 간단한 매핑 - 실제로는 Excel 데이터에서 추출해야 함
-  // 1월 7일은 翕흡 七之九 = position 9
-  if (month === 1 && day >= 7 && day <= 15) return 9;
-  if (month === 1 && day >= 16 && day <= 24) return 10;
-  if (month === 1 && day >= 1 && day <= 6) return 9;
-  // 기본값
-  return 9;
+function calculateDaegungAndPosition(koreanTime: Date): { daegung: number; position: number } {
+  // 황극력 연초 시작점 (양력 4월 20일 23:00 KST)
+  const year = koreanTime.getFullYear();
+  const month = koreanTime.getMonth() + 1;
+  
+  // 현재 황극력 연도의 시작점 결정
+  // 4월 20일 23:00 이전이면 전년도 황극력
+  let epochYear = year;
+  if (month < 4 || (month === 4 && koreanTime.getDate() < 21)) {
+    epochYear = year - 1;
+  }
+  
+  // 시작점: 해당 황극력 연도의 4월 20일 23:00
+  const epochDate = new Date(epochYear, 3, 20, 23, 0, 0);
+  
+  // 시작점부터 현재까지 경과한 분 계산
+  const minutesFromEpoch = Math.floor((koreanTime.getTime() - epochDate.getTime()) / (1000 * 60));
+  
+  // 반일(12시간 = 720분) 수 계산
+  const halfDayPeriod = 720; // 12시간 = 720분
+  const totalHalfDays = Math.floor(minutesFromEpoch / halfDayPeriod);
+  
+  // 대궁 계산: 반일마다 2→3→4→5→6→7→8→9→10 순환
+  // 오프셋 조정: 1월 7일 오전에 대궁=7이 되도록 보정
+  // 2026년 1월 7일 00:30 기준으로 역산
+  const calibrationOffset = 5; // 실제 데이터에 맞춰 조정
+  const daegungIndex = ((totalHalfDays + calibrationOffset) % 9 + 9) % 9;
+  const daegung = daegungIndex + 2; // 2~10
+  
+  // Position 계산: 대궁사이클(9반일 = 4.5일)마다 2→3→...→10 순환
+  const daegungCycleNum = Math.floor(totalHalfDays / 9);
+  const positionOffset = 7; // position=9가 1월 7일에 오도록 보정
+  const positionIndex = ((daegungCycleNum + positionOffset) % 9 + 9) % 9;
+  const position = positionIndex + 2; // 2~10
+  
+  return { daegung, position };
 }
 
 export function getSogungDaegung(date: Date): {
@@ -721,16 +740,6 @@ export function getSogungDaegung(date: Date): {
   const hours = koreanTime.getHours();
   const minutes = koreanTime.getMinutes();
   
-  // 황극력 날짜는 23:00에 변경됨
-  // 현재 시간이 23:00 이후면 다음 날(황극력 기준)
-  let hwDate = new Date(koreanTime);
-  if (hours >= 23) {
-    hwDate = new Date(koreanTime.getTime() + 24 * 60 * 60 * 1000);
-  }
-  
-  const month = hwDate.getMonth() + 1;
-  const day = hwDate.getDate();
-  
   // 시간 슬롯 계산 (1-18): 23시부터 시작해서 80분씩
   const totalMinutesOfDay = hours * 60 + minutes;
   let minutesSince2300 = totalMinutesOfDay - (23 * 60);
@@ -741,18 +750,8 @@ export function getSogungDaegung(date: Date): {
   // 오전/오후에 따른 소궁 슬롯 (0-8)
   const sogungSlot = (timeSlot - 1) % 9;
   
-  // 대궁 조회 (Excel 데이터 기반)
-  const dateKey = `${month}-${day}`;
-  let daegung = DAEGUNG_DATA_2025[dateKey];
-  
-  // 데이터가 없으면 기본 계산
-  if (!daegung) {
-    const daysFromEpoch = getHwanggeukDaysFromEpoch(hwDate.getFullYear(), month, day);
-    daegung = ((Math.floor(Math.abs(daysFromEpoch) / 9) % 9)) + 2;
-  }
-  
-  // position 조회 (24절국 기반)
-  const position = getJeolgukPosition(month, day);
+  // 대궁과 position 계산 (공식 사용)
+  const { daegung, position } = calculateDaegungAndPosition(koreanTime);
   
   // 소궁 조회 (position별 패턴에서)
   const pattern = SOGUNG_PATTERNS[position];

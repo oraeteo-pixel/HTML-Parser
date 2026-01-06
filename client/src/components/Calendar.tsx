@@ -22,6 +22,7 @@ import {
   getSogungDaegung,
   formatSogungDaegungHanja,
   get81PalaceName,
+  get64HexagramName,
   getWeekdayHanja,
   hwanggeukToSolar,
   getKoreanTime,
@@ -342,7 +343,7 @@ export function Calendar() {
                 </div>
                 <div className="flex items-center gap-1.5 text-base whitespace-nowrap">
                   <span className="font-bold text-gray-700 dark:text-gray-200">{liveJeolguk.name}</span>
-                  <span className="font-semibold text-gray-600 dark:text-gray-300">&lt;소궁,대궁&gt;{liveSogungDaegung.isZungung ? "존궁" : `${liveSogungDaegung.sogung},${liveSogungDaegung.daegung}`}</span>
+                  <span className="font-semibold text-gray-600 dark:text-gray-300">&lt;소궁,대궁&gt;{liveSogungDaegung.isZungung ? "존궁" : `${liveSogungDaegung.sogung},${liveSogungDaegung.daegung}`}{(() => { const hex = get64HexagramName(liveSogungDaegung.sogung, liveSogungDaegung.daegung); return hex ? ` ${hex.fullName}` : ""; })()}</span>
                   <span className="slim-badge-navy">
                     {hwMansion.mansion}
                   </span>
@@ -361,7 +362,7 @@ export function Calendar() {
                     ({liveHwanggeuk.yearGanZhi}年 {liveHwanggeuk.monthGanZhi}月 {liveDayGanZhi}日 {liveHourGanZhi}時)
                   </span>
                   <span className="font-bold text-gray-700 dark:text-gray-200">{liveJeolguk.name}</span>
-                  <span className="font-semibold text-gray-600 dark:text-gray-300">&lt;소궁,대궁&gt;{liveSogungDaegung.isZungung ? "존궁" : `${liveSogungDaegung.sogung},${liveSogungDaegung.daegung}`}</span>
+                  <span className="font-semibold text-gray-600 dark:text-gray-300">&lt;소궁,대궁&gt;{liveSogungDaegung.isZungung ? "존궁" : `${liveSogungDaegung.sogung},${liveSogungDaegung.daegung}`}{(() => { const hex = get64HexagramName(liveSogungDaegung.sogung, liveSogungDaegung.daegung); return hex ? ` ${hex.fullName}` : ""; })()}</span>
                   <span className="slim-badge-navy">
                     {hwMansion.isZunkong ? hwMansion.mansion : `${hwMansion.mansion}, ${hwMansion.general}`}
                   </span>

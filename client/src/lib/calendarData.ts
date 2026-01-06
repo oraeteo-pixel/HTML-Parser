@@ -799,8 +799,8 @@ export function getSogungDaegung(date: Date): {
   const sogungPeriod = 80; // 1 소궁 = 80분
   const daegungPeriod = 9 * 80; // 1 대궁 = 9 소궁 = 720분 (12시간)
   
-  // 오프셋 조정: 황극력 원화 시작점 맞추기 위해 14 반일(7일) 오프셋 적용
-  const halfDayOffset = 14;
+  // 오프셋 조정: 황극력 원화 시작점 맞추기 위해 18 반일(9일) 오프셋 적용
+  const halfDayOffset = 18;
   
   // 전체 반일(half-day) 수 계산 (오프셋 적용)
   const totalHalfDays = Math.floor(minutesInYear / daegungPeriod) + halfDayOffset;
@@ -813,25 +813,24 @@ export function getSogungDaegung(date: Date): {
   const daegungCycleNum = Math.floor(adjustedHalfDays / 9) % 9;
   const position = daegungCycleNum + 2;
   
-  // 현재 반일 내 소궁 슬롯 (0-8)
-  const minutesInHalfDay = minutesInYear % daegungPeriod;
-  const rawSogungSlot = Math.floor(minutesInHalfDay / sogungPeriod);
+  // 시간 슬롯 계산 (1-18): 11시부터 시작해서 80분씩
+  const totalMinutesOfDay = hours * 60 + minutes;
+  // 11시(660분)를 0분으로 변환
+  let minutesSince1100 = totalMinutesOfDay - (11 * 60);
+  if (minutesSince1100 < 0) minutesSince1100 += 1440; // 전날로 감
+  const timeSlot = Math.floor(minutesSince1100 / 80) + 1;
+  const isAM = hours >= 11 && hours < 23;
+  
+  // 오전/오후에 따른 소궁 슬롯 (0-8)
+  const sogungSlot = (timeSlot - 1) % 9;
   
   // PALACE_PATTERNS에서 소궁 값 조회
   const patternKey = `${daegung}-${position}`;
   const pattern = PALACE_PATTERNS[patternKey];
-  const sogung = pattern ? pattern.slots[rawSogungSlot] || daegung : daegung;
-  
-  // 시간 슬롯 계산 (1-18): 23시부터 시작해서 80분씩
-  const totalMinutesOfDay = hours * 60 + minutes;
-  // 23시를 0분으로 변환
-  let minutesSince2300 = totalMinutesOfDay - (23 * 60);
-  if (minutesSince2300 < 0) minutesSince2300 += 1440; // 다음날로 넘어감
-  const timeSlot = Math.floor(minutesSince2300 / 80) + 1;
-  const isAM = timeSlot <= 9;
+  const sogung = pattern ? pattern.slots[sogungSlot] || daegung : daegung;
   
   // 남은 시간 계산
-  const remainingMinutes = sogungPeriod - (minutesInHalfDay % sogungPeriod);
+  const remainingMinutes = sogungPeriod - (minutesSince1100 % sogungPeriod);
   
   return { 
     sogung, 

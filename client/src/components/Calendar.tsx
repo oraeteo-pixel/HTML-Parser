@@ -305,7 +305,7 @@ export function Calendar() {
           onClick={() => setShowDayDetail(true)}
         >
           {calType === "hw" ? (
-            <div className="flex flex-col gap-0.5 sm:gap-0">
+            <div className="flex flex-col gap-0 sm:flex-row sm:items-center sm:justify-between sm:gap-2">
               <div className="flex items-center gap-1 flex-wrap text-sm">
                 <span className="font-medium text-gray-700 dark:text-gray-300">
                   {displayYear}.{displayMonth}.{displayDay}
@@ -319,8 +319,8 @@ export function Calendar() {
                 <span className="font-medium text-gray-700 dark:text-gray-300">
                   {liveJeolguk.name}
                 </span>
-                <span className="hidden sm:inline text-gray-500 dark:text-gray-400">
-                  &lt;소궁,대궁&gt;{liveSogungDaegung.sogung},{liveSogungDaegung.daegung}
+                <span className="text-gray-500 dark:text-gray-400">
+                  {liveSogungDaegung.sogung},{liveSogungDaegung.daegung}
                 </span>
                 <span className="hidden sm:inline text-gray-500 dark:text-gray-400">
                   현재시각
@@ -328,20 +328,10 @@ export function Calendar() {
                 <span className="hidden sm:inline font-medium text-gray-700 dark:text-gray-300">
                   {liveHourGanZhi}時
                 </span>
-                <span className="hidden sm:inline slim-badge-navy">
-                  {hwMansion.isZunkong ? hwMansion.mansion : `${hwMansion.mansion}수 ${hwMansion.general}`}
-                </span>
               </div>
-              <div className="flex sm:hidden items-center gap-1 flex-wrap text-sm">
-                <span className="text-gray-500 dark:text-gray-400">
-                  &lt;소궁,대궁&gt;{liveSogungDaegung.sogung},{liveSogungDaegung.daegung}
-                </span>
-                <span className="text-gray-500 dark:text-gray-400">
-                  현재시각
-                </span>
-                <span className="font-medium text-gray-700 dark:text-gray-300">
-                  {liveHourGanZhi}時
-                </span>
+              <div className="flex items-center gap-1 text-sm">
+                <span className="sm:hidden text-gray-500 dark:text-gray-400">현재</span>
+                <span className="sm:hidden font-medium text-gray-700 dark:text-gray-300">{liveHourGanZhi}時</span>
                 <span className="slim-badge-navy">
                   {hwMansion.isZunkong ? hwMansion.mansion : `${hwMansion.mansion}수 ${hwMansion.general}`}
                 </span>

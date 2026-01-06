@@ -10,6 +10,7 @@ export interface IStorage {
   createPost(post: InsertPost): Promise<Post>;
   getPosts(): Promise<(Post & { author: string })[]>;
   getPostsByGanji(ganji: string): Promise<(Post & { author: string })[]>;
+  getPostsBySection(section: string): Promise<(Post & { author: string })[]>;
   getLatestPostsByGanji(): Promise<{ ganji: string; posts: (Post & { author: string })[] }[]>;
 }
 
@@ -41,7 +42,9 @@ export class DatabaseStorage implements IStorage {
       content: posts.content,
       authorId: posts.authorId,
       ganji: posts.ganji,
+      section: posts.section,
       mediaUrls: posts.mediaUrls,
+      youtubeUrls: posts.youtubeUrls,
       createdAt: posts.createdAt,
       author: users.nickname
     })
@@ -59,13 +62,36 @@ export class DatabaseStorage implements IStorage {
       content: posts.content,
       authorId: posts.authorId,
       ganji: posts.ganji,
+      section: posts.section,
       mediaUrls: posts.mediaUrls,
+      youtubeUrls: posts.youtubeUrls,
       createdAt: posts.createdAt,
       author: users.nickname
     })
     .from(posts)
     .innerJoin(users, eq(posts.authorId, users.id))
     .where(eq(posts.ganji, ganji))
+    .orderBy(desc(posts.createdAt));
+    
+    return result;
+  }
+
+  async getPostsBySection(section: string): Promise<(Post & { author: string })[]> {
+    const result = await db.select({
+      id: posts.id,
+      title: posts.title,
+      content: posts.content,
+      authorId: posts.authorId,
+      ganji: posts.ganji,
+      section: posts.section,
+      mediaUrls: posts.mediaUrls,
+      youtubeUrls: posts.youtubeUrls,
+      createdAt: posts.createdAt,
+      author: users.nickname
+    })
+    .from(posts)
+    .innerJoin(users, eq(posts.authorId, users.id))
+    .where(eq(posts.section, section))
     .orderBy(desc(posts.createdAt));
     
     return result;
@@ -78,7 +104,9 @@ export class DatabaseStorage implements IStorage {
       content: posts.content,
       authorId: posts.authorId,
       ganji: posts.ganji,
+      section: posts.section,
       mediaUrls: posts.mediaUrls,
+      youtubeUrls: posts.youtubeUrls,
       createdAt: posts.createdAt,
       author: users.nickname
     })

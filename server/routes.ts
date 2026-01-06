@@ -37,6 +37,13 @@ export async function registerRoutes(
     res.json(grouped);
   });
 
+  // Get posts by section (ebook, madang, etc.)
+  app.get("/api/posts/section/:section", async (req, res) => {
+    const { section } = req.params;
+    const posts = await storage.getPostsBySection(section);
+    res.json(posts);
+  });
+
   // Create Post
   app.post(api.posts.create.path, async (req, res) => {
     if (!req.isAuthenticated()) {

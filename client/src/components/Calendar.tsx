@@ -334,12 +334,12 @@ export function Calendar() {
                     {WEEKDAYS_HANJA[currentTime.getDay()]}
                   </span>
                   <span className="text-gray-500 dark:text-gray-400">
-                    ({liveHwanggeuk.yearGanZhi}年 {liveHwanggeuk.monthGanZhi}月 {liveDayGanZhi}日 {liveHourGanZhi}時)
+                    {liveHwanggeuk.yearGanZhi} {liveHwanggeuk.monthGanZhi} {liveDayGanZhi} {liveHourGanZhi}
                   </span>
                 </div>
                 <div className="flex items-center gap-1 text-sm whitespace-nowrap">
                   <span className="font-medium text-gray-700 dark:text-gray-300">{liveJeolguk.name}</span>
-                  <span className="text-gray-500 dark:text-gray-400">&lt;소궁,대궁&gt;{liveSogungDaegung.sogung},{liveSogungDaegung.daegung}</span>
+                  <span className="text-gray-500 dark:text-gray-400">&lt;{liveSogungDaegung.sogung},{liveSogungDaegung.daegung}&gt;</span>
                   <span className="slim-badge-navy">
                     {hwMansion.isZunkong ? hwMansion.mansion : `${hwMansion.mansion}수`}
                   </span>
@@ -377,10 +377,10 @@ export function Calendar() {
                     {WEEKDAYS_HANJA[currentTime.getDay()]}
                   </span>
                   <span className="text-gray-500 dark:text-gray-400">
-                    (음력 {liveSeoncheonData.lunarMonth}.{liveSeoncheonData.lunarDay})
+                    (음{liveSeoncheonData.lunarMonth}.{liveSeoncheonData.lunarDay})
                   </span>
                   <span className="text-gray-500 dark:text-gray-400">
-                    ({liveSeoncheonData.yearGanZhi}年 {liveSeoncheonData.monthGanZhi}月 {liveSeoncheonData.dayGanZhi}日 {liveSeoncheonHourGanZhi}時)
+                    {liveSeoncheonData.yearGanZhi} {liveSeoncheonData.monthGanZhi} {liveSeoncheonData.dayGanZhi} {liveSeoncheonHourGanZhi}
                   </span>
                 </div>
                 <div className="flex items-center gap-1 text-sm whitespace-nowrap">

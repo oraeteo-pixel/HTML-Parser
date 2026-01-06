@@ -300,48 +300,64 @@ export function Calendar() {
 
         <div 
           id="calDate" 
-          className="info-card cursor-pointer hover:shadow-md transition-all"
+          className="slim-info-bar cursor-pointer"
           data-testid="calendar-info"
           onClick={() => setShowDayDetail(true)}
         >
           {calType === "hw" ? (
-            <div className="space-y-2">
-              <div className="ganji-title">
-                {liveHwanggeuk.yearGanZhi}年 {liveHwanggeuk.monthGanZhi}月 {liveDayGanZhi}日 {liveHourGanZhi}時
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="badge-navy">
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <div className="flex items-center gap-1 flex-wrap text-sm">
+                <span className="font-medium text-gray-700 dark:text-gray-300">
+                  {displayYear}.{displayMonth}.{displayDay}
+                </span>
+                <span className="text-gray-600 dark:text-gray-400">
+                  {WEEKDAYS_HANJA[displayDate.getDay()]}
+                </span>
+                <span className="text-gray-500 dark:text-gray-400">
+                  ({liveHwanggeuk.yearGanZhi}年 {liveHwanggeuk.monthGanZhi}月 {liveDayGanZhi}日)
+                </span>
+                <span className="font-medium text-gray-700 dark:text-gray-300">
                   {liveJeolguk.name}
                 </span>
-                <span className="text-fluid-sm text-muted-foreground">
-                  소궁 {liveSogungDaegung.sogung} · 대궁 {liveSogungDaegung.daegung}
+                <span className="text-gray-500 dark:text-gray-400">
+                  &lt;소궁,대궁&gt;{liveSogungDaegung.sogung},{liveSogungDaegung.daegung}
+                </span>
+                <span className="text-gray-500 dark:text-gray-400">
+                  현재시각
+                </span>
+                <span className="font-medium text-gray-700 dark:text-gray-300">
+                  {liveHourGanZhi}時
                 </span>
               </div>
-              <div className="flex gap-2 flex-wrap">
-                <span className="badge-navy">
-                  {hwMansion.mansion}{hwMansion.isZunkong ? "" : "수"}
-                </span>
-                <span className="badge-slate">
-                  {trigram.trigram}
-                </span>
-              </div>
+              <span className="slim-badge-orange">
+                {hwMansion.mansion}, {hwMansion.general}
+              </span>
             </div>
           ) : (
-            <div className="space-y-2">
-              <div className="ganji-title">
-                {displayData.yearGanZhi}年 {displayData.monthGanZhi}月 {displayData.dayGanZhi}日 {liveSeoncheonHourGanZhi}時
-              </div>
-              <div className="text-fluid-sm text-muted-foreground">
-                {displayYear}.{displayMonth}.{displayDay} {WEEKDAYS_HANJA[displayDate.getDay()]} · 음력 {displayData.lunarMonth}.{displayData.lunarDay}
-              </div>
-              <div className="flex gap-2 flex-wrap">
-                <span className="badge-navy">
+            <div className="flex items-center justify-between gap-2 flex-wrap">
+              <div className="flex items-center gap-1 flex-wrap text-sm">
+                <span className="font-medium text-gray-700 dark:text-gray-300">
+                  {displayYear}.{displayMonth}.{displayDay}
+                </span>
+                <span className="text-gray-600 dark:text-gray-400">
+                  {WEEKDAYS_HANJA[displayDate.getDay()]}
+                </span>
+                <span className="text-gray-500 dark:text-gray-400">
+                  ({displayData.yearGanZhi}年 {displayData.monthGanZhi}月 {displayData.dayGanZhi}日)
+                </span>
+                <span className="font-medium text-gray-700 dark:text-gray-300">
                   {displayData.currentTerm.hanja}
                 </span>
-                <span className="text-fluid-sm text-muted-foreground">
-                  {displayData.currentTerm.general}
+                <span className="text-gray-500 dark:text-gray-400">
+                  현재시각
+                </span>
+                <span className="font-medium text-gray-700 dark:text-gray-300">
+                  {liveSeoncheonHourGanZhi}時
                 </span>
               </div>
+              <span className="slim-badge-orange">
+                {displayData.currentTerm.general}
+              </span>
             </div>
           )}
         </div>

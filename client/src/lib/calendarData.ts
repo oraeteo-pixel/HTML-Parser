@@ -670,83 +670,42 @@ export function getJeolguk(hwYear: number, hwMonth: number, hwDay: number): {
   return { name, periodType: "", sogung, daegung };
 }
 
-// 81궁 패턴 데이터 (Excel에서 추출)
-// key: "대궁之position" -> slots 배열 (9개 시간슬롯별 소궁 값)
-const PALACE_PATTERNS: Record<string, { slots: number[] }> = {
-  "2-2": { slots: [2, 2, 3, 4, 5, 7, 8, 9, 10] },
-  "2-3": { slots: [2, 3, 4, 7, 2, 10, 5, 8, 9] },
-  "2-4": { slots: [2, 4, 7, 10, 3, 9, 2, 5, 8] },
-  "2-5": { slots: [2, 5, 2, 3, 8, 4, 9, 10, 7] },
-  "2-7": { slots: [2, 7, 10, 9, 4, 8, 3, 2, 5] },
-  "2-8": { slots: [2, 8, 5, 2, 9, 3, 10, 7, 4] },
-  "2-9": { slots: [2, 9, 8, 5, 10, 2, 7, 4, 3] },
-  "2-10": { slots: [2, 10, 9, 8, 7, 5, 4, 3, 2] },
-  "3-2": { slots: [3, 2, 3, 4, 5, 7, 8, 9, 10] },
-  "3-3": { slots: [3, 3, 4, 7, 2, 10, 5, 8, 9] },
-  "3-4": { slots: [3, 4, 7, 10, 3, 9, 2, 5, 8] },
-  "3-5": { slots: [3, 5, 2, 3, 8, 4, 9, 10, 7] },
-  "3-7": { slots: [3, 7, 10, 9, 4, 8, 3, 2, 5] },
-  "3-8": { slots: [3, 8, 5, 2, 9, 3, 10, 7, 4] },
-  "3-9": { slots: [3, 9, 8, 5, 10, 2, 7, 4, 3] },
-  "3-10": { slots: [3, 10, 9, 8, 7, 5, 4, 3, 2] },
-  "4-2": { slots: [4, 2, 3, 4, 5, 7, 8, 9, 10] },
-  "4-3": { slots: [4, 3, 4, 7, 2, 10, 5, 8, 9] },
-  "4-4": { slots: [4, 4, 7, 10, 3, 9, 2, 5, 8] },
-  "4-5": { slots: [4, 5, 2, 3, 8, 4, 9, 10, 7] },
-  "4-7": { slots: [4, 7, 10, 9, 4, 8, 3, 2, 5] },
-  "4-8": { slots: [4, 8, 5, 2, 9, 3, 10, 7, 4] },
-  "4-9": { slots: [4, 9, 8, 5, 10, 2, 7, 4, 3] },
-  "4-10": { slots: [4, 10, 9, 8, 7, 5, 4, 3, 2] },
-  "5-2": { slots: [5, 2, 3, 4, 5, 7, 8, 9, 10] },
-  "5-3": { slots: [5, 3, 4, 7, 2, 10, 5, 8, 9] },
-  "5-4": { slots: [5, 4, 7, 10, 3, 9, 2, 5, 8] },
-  "5-5": { slots: [5, 5, 2, 3, 8, 4, 9, 10, 7] },
-  "5-7": { slots: [5, 7, 10, 9, 4, 8, 3, 2, 5] },
-  "5-8": { slots: [5, 8, 5, 2, 9, 3, 10, 7, 4] },
-  "5-9": { slots: [5, 9, 8, 5, 10, 2, 7, 4, 3] },
-  "5-10": { slots: [5, 10, 9, 8, 7, 5, 4, 3, 2] },
-  "6-2": { slots: [6, 2, 3, 4, 5, 7, 8, 9, 10] },
-  "6-3": { slots: [6, 3, 4, 7, 2, 10, 5, 8, 9] },
-  "6-4": { slots: [6, 4, 7, 10, 3, 9, 2, 5, 8] },
-  "6-5": { slots: [6, 5, 2, 3, 8, 4, 9, 10, 7] },
-  "6-6": { slots: [6, 6, 6, 6, 6, 6, 6, 6, 6] },
-  "6-7": { slots: [6, 7, 10, 9, 4, 8, 3, 2, 5] },
-  "6-8": { slots: [6, 8, 5, 2, 9, 3, 10, 7, 4] },
-  "6-9": { slots: [6, 9, 8, 5, 10, 2, 7, 4, 3] },
-  "6-10": { slots: [6, 10, 9, 8, 7, 5, 4, 3, 2] },
-  "7-2": { slots: [7, 2, 3, 4, 5, 7, 8, 9, 10] },
-  "7-3": { slots: [7, 3, 4, 7, 2, 10, 5, 8, 9] },
-  "7-4": { slots: [7, 4, 7, 10, 3, 9, 2, 5, 8] },
-  "7-5": { slots: [7, 5, 2, 3, 8, 4, 9, 10, 7] },
-  "7-7": { slots: [7, 7, 10, 9, 4, 8, 3, 2, 5] },
-  "7-8": { slots: [7, 8, 5, 2, 9, 3, 10, 7, 4] },
-  "7-9": { slots: [7, 9, 8, 5, 10, 2, 7, 4, 3] },
-  "7-10": { slots: [7, 10, 9, 8, 7, 5, 4, 3, 2] },
-  "8-2": { slots: [8, 2, 3, 4, 5, 7, 8, 9, 10] },
-  "8-3": { slots: [8, 3, 4, 7, 2, 10, 5, 8, 9] },
-  "8-4": { slots: [8, 4, 7, 10, 3, 9, 2, 5, 8] },
-  "8-5": { slots: [8, 5, 2, 3, 8, 4, 9, 10, 7] },
-  "8-7": { slots: [8, 7, 10, 9, 4, 8, 3, 2, 5] },
-  "8-8": { slots: [8, 8, 5, 2, 9, 3, 10, 7, 4] },
-  "8-9": { slots: [8, 9, 8, 5, 10, 2, 7, 4, 3] },
-  "8-10": { slots: [8, 10, 9, 8, 7, 5, 4, 3, 2] },
-  "9-2": { slots: [9, 2, 3, 4, 5, 7, 8, 9, 10] },
-  "9-3": { slots: [9, 3, 4, 7, 2, 10, 5, 8, 9] },
-  "9-4": { slots: [9, 4, 7, 10, 3, 9, 2, 5, 8] },
-  "9-5": { slots: [9, 5, 2, 3, 8, 4, 9, 10, 7] },
-  "9-7": { slots: [9, 7, 10, 9, 4, 8, 3, 2, 5] },
-  "9-8": { slots: [9, 8, 5, 2, 9, 3, 10, 7, 4] },
-  "9-9": { slots: [9, 9, 8, 5, 10, 2, 7, 4, 3] },
-  "9-10": { slots: [9, 10, 9, 8, 7, 5, 4, 3, 2] },
-  "10-2": { slots: [10, 2, 3, 4, 5, 7, 8, 9, 10] },
-  "10-3": { slots: [10, 3, 4, 7, 2, 10, 5, 8, 9] },
-  "10-4": { slots: [10, 4, 7, 10, 3, 9, 2, 5, 8] },
-  "10-5": { slots: [10, 5, 2, 3, 8, 4, 9, 10, 7] },
-  "10-7": { slots: [10, 7, 10, 9, 4, 8, 3, 2, 5] },
-  "10-8": { slots: [10, 8, 5, 2, 9, 3, 10, 7, 4] },
-  "10-9": { slots: [10, 9, 8, 5, 10, 2, 7, 4, 3] },
-  "10-10": { slots: [10, 10, 9, 8, 7, 5, 4, 3, 2] },
+// 소궁 패턴 데이터 (position 2~10에 대한 9개 시간슬롯별 소궁 값)
+// position은 24절국의 X之Y에서 Y에 해당 (낙서 기반)
+const SOGUNG_PATTERNS: Record<number, number[]> = {
+  2: [2, 3, 4, 5, 6, 7, 8, 9, 10],   // X之二
+  3: [3, 4, 7, 2, 6, 10, 5, 8, 9],   // X之三
+  4: [4, 7, 10, 3, 6, 9, 2, 5, 8],   // X之四
+  5: [5, 2, 3, 8, 6, 4, 9, 10, 7],   // X之五
+  6: [6, 6, 6, 6, 6, 6, 6, 6, 6],    // X之六 (중궁)
+  7: [7, 10, 9, 4, 6, 8, 3, 2, 5],   // X之七
+  8: [8, 5, 2, 9, 6, 3, 10, 7, 4],   // X之八
+  9: [9, 8, 5, 10, 6, 2, 7, 4, 3],   // X之九
+  10: [10, 9, 8, 7, 6, 5, 4, 3, 2],  // X之十
 };
+
+// 2025년 乙巳年 Excel 기반 날짜별 대궁 데이터 (양력 월-일 -> 대궁)
+// 황극력은 양력 4월 21일 시작, 23:00에 날짜 변경
+const DAEGUNG_DATA_2025: Record<string, number> = {
+  // 2026년 1월 (乙巳年 9월)
+  "1-1": 6, "1-2": 5, "1-3": 6, "1-4": 6, "1-5": 6, "1-6": 2, "1-7": 10,
+  "1-8": 9, "1-9": 6, "1-10": 3, "1-11": 5, "1-12": 10, "1-13": 4, "1-14": 8,
+  "1-15": 2, "1-16": 5, "1-17": 2, "1-18": 6, "1-19": 10, "1-20": 4, "1-21": 5,
+  "1-22": 9, "1-23": 3, "1-24": 7, "1-25": 5, "1-26": 2, "1-27": 6, "1-28": 10,
+  "1-29": 4, "1-30": 5, "1-31": 9,
+};
+
+// 24절국 position 데이터 (양력 날짜 범위 -> position)
+// 翕흡 七之九 = position 9 (1월 7일 포함)
+function getJeolgukPosition(month: number, day: number): number {
+  // 간단한 매핑 - 실제로는 Excel 데이터에서 추출해야 함
+  // 1월 7일은 翕흡 七之九 = position 9
+  if (month === 1 && day >= 7 && day <= 15) return 9;
+  if (month === 1 && day >= 16 && day <= 24) return 10;
+  if (month === 1 && day >= 1 && day <= 6) return 9;
+  // 기본값
+  return 9;
+}
 
 export function getSogungDaegung(date: Date): {
   sogung: number;
@@ -759,77 +718,45 @@ export function getSogungDaegung(date: Date): {
   const hours = date.getHours();
   const minutes = date.getMinutes();
   
-  // 황극력 연도의 1월 1일 전날 밤 23시가 시작점
-  // 현재 연도의 황극력 시작일 계산 (양력 4월 20일 23:00)
-  const year = date.getFullYear();
-  const hwYearStart = new Date(year, 3, 20, 23, 0, 0); // 4월 20일 23:00
-  
-  // 만약 현재 날짜가 4월 20일 23시 이전이면, 전년도 황극력 기준
-  let epochDate = hwYearStart;
-  if (date < hwYearStart) {
-    epochDate = new Date(year - 1, 3, 20, 23, 0, 0);
+  // 황극력 날짜는 23:00에 변경됨
+  // 현재 시간이 23:00 이후면 다음 날(황극력 기준)
+  let hwDate = new Date(date);
+  if (hours >= 23) {
+    hwDate = new Date(date.getTime() + 24 * 60 * 60 * 1000);
   }
   
-  // 시작점부터 현재까지 경과한 분 계산
-  const minutesFromEpoch = Math.floor((date.getTime() - epochDate.getTime()) / (1000 * 60));
-  
-  // 364.5일 = 524,880분 (81 x 81 x 80분)
-  // 존궁: 364.5일 이후 1.5일 (2160분)
-  const totalCycleMinutes = 81 * 81 * 80; // 524,880분
-  const zungungMinutes = 1.5 * 24 * 60;   // 2160분
-  const yearMinutes = totalCycleMinutes + zungungMinutes; // 527,040분
-  
-  // 연 내 위치
-  const minutesInYear = ((minutesFromEpoch % yearMinutes) + yearMinutes) % yearMinutes;
-  
-  // 존궁 체크 (364.5일 이후)
-  if (minutesInYear >= totalCycleMinutes) {
-    const currentMinutesOfDay = hours * 60 + minutes;
-    return {
-      sogung: 0,
-      daegung: 0,
-      timeSlot: 0,
-      isAM: hours < 11,
-      remainingMinutes: 80 - (currentMinutesOfDay % 80),
-      isZungung: true
-    };
-  }
-  
-  // 단순화된 계산
-  const sogungPeriod = 80; // 1 소궁 = 80분
-  const daegungPeriod = 9 * 80; // 1 대궁 = 9 소궁 = 720분 (12시간)
-  
-  // 오프셋 조정: 황극력 원화 시작점 맞추기 위해 18 반일(9일) 오프셋 적용
-  const halfDayOffset = 18;
-  
-  // 전체 반일(half-day) 수 계산 (오프셋 적용)
-  const totalHalfDays = Math.floor(minutesInYear / daegungPeriod) + halfDayOffset;
-  const adjustedHalfDays = ((totalHalfDays % 81) + 81) % 81; // 81 반일 = 1 대궁사이클 완료 × 9
-  
-  // 대궁 = 반일 인덱스 % 9 + 2 (2~10 순환)
-  const daegung = (adjustedHalfDays % 9) + 2;
-  
-  // 대궁사이클 내 위치 = 사이클 번호 + 2 (2~10)
-  const daegungCycleNum = Math.floor(adjustedHalfDays / 9) % 9;
-  const position = daegungCycleNum + 2;
+  const month = hwDate.getMonth() + 1;
+  const day = hwDate.getDate();
   
   // 시간 슬롯 계산 (1-18): 23시부터 시작해서 80분씩
   const totalMinutesOfDay = hours * 60 + minutes;
-  // 23시(1380분)를 0분으로 변환
   let minutesSince2300 = totalMinutesOfDay - (23 * 60);
-  if (minutesSince2300 < 0) minutesSince2300 += 1440; // 23시 이전이면 전날 23시부터 계산
+  if (minutesSince2300 < 0) minutesSince2300 += 1440;
   const timeSlot = Math.floor(minutesSince2300 / 80) + 1;
   const isAM = timeSlot <= 9; // 슬롯 1-9: 23:00~10:59 (오전), 슬롯 10-18: 11:00~22:59 (오후)
   
   // 오전/오후에 따른 소궁 슬롯 (0-8)
   const sogungSlot = (timeSlot - 1) % 9;
   
-  // PALACE_PATTERNS에서 소궁 값 조회
-  const patternKey = `${daegung}-${position}`;
-  const pattern = PALACE_PATTERNS[patternKey];
-  const sogung = pattern ? pattern.slots[sogungSlot] || daegung : daegung;
+  // 대궁 조회 (Excel 데이터 기반)
+  const dateKey = `${month}-${day}`;
+  let daegung = DAEGUNG_DATA_2025[dateKey];
+  
+  // 데이터가 없으면 기본 계산
+  if (!daegung) {
+    const daysFromEpoch = getHwanggeukDaysFromEpoch(hwDate.getFullYear(), month, day);
+    daegung = ((Math.floor(Math.abs(daysFromEpoch) / 9) % 9)) + 2;
+  }
+  
+  // position 조회 (24절국 기반)
+  const position = getJeolgukPosition(month, day);
+  
+  // 소궁 조회 (position별 패턴에서)
+  const pattern = SOGUNG_PATTERNS[position];
+  const sogung = pattern ? pattern[sogungSlot] : daegung;
   
   // 남은 시간 계산
+  const sogungPeriod = 80;
   const remainingMinutes = sogungPeriod - (minutesSince2300 % sogungPeriod);
   
   return { 

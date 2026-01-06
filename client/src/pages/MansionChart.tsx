@@ -144,7 +144,7 @@ export default function MansionChart() {
                 {todayMansion.mansion}{todayMansion.isZunkong ? "" : "宿"}
               </Badge>
               <Badge className="badge-slate">
-                {todayJeolguk.name}절국
+                {todayJeolguk.name}
               </Badge>
               <Badge className="badge-navy">
                 {todaySogungDaegung.isZungung 

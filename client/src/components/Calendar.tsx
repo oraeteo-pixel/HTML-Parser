@@ -621,7 +621,7 @@ export function Calendar() {
                   <div className="font-bold text-fluid-lg">{trigram.trigram}</div>
                 </div>
                 <div className="info-card">
-                  <div className="text-muted-foreground text-xs mb-1 uppercase tracking-wide">절국</div>
+                  <div className="text-muted-foreground text-xs mb-1 uppercase tracking-wide">節局</div>
                   <div className="font-bold text-fluid-lg">{jeolguk.name}</div>
                 </div>
                 <div className="info-card">

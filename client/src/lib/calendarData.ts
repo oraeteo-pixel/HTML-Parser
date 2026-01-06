@@ -654,7 +654,7 @@ export function getJeolguk(hwYear: number, hwMonth: number, hwDay: number): {
   
   if (hwYear < JEOLGUK_START_YEAR) {
     const normalizedDays = ((daysFromHwEpoch % 24) + 24) % 24;
-    const name = JEOLGUK_NAMES[normalizedDays] + "절국";
+    const name = JEOLGUK_NAMES[normalizedDays] + "節局";
     return { name, periodType: "", sogung, daegung };
   }
   
@@ -675,7 +675,7 @@ export function getJeolguk(hwYear: number, hwMonth: number, hwDay: number): {
   const totalPeriods = yearOffset * 24 + periodIndex;
   
   const jeolgukIndex = ((totalPeriods % 24) + 24) % 24;
-  const name = JEOLGUK_NAMES[jeolgukIndex] + "절국";
+  const name = JEOLGUK_NAMES[jeolgukIndex] + "節局";
   
   return { name, periodType: "", sogung, daegung };
 }

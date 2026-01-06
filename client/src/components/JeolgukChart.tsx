@@ -88,7 +88,7 @@ export function JeolgukChart({ date }: JeolgukChartProps) {
   
   // Calculate current jeolguk index based on the returned jeolguk name
   const currentJeolgukIndex = useMemo(() => {
-    const jeolgukName = todayJeolguk.name.replace("절국", "");
+    const jeolgukName = todayJeolguk.name.replace("節局", "");
     for (let i = 0; i < JEOLGUK_NAMES.length; i++) {
       if (jeolgukName.includes(JEOLGUK_NAMES[i].korean) || jeolgukName.includes(JEOLGUK_NAMES[i].hanja)) {
         return i;
@@ -234,7 +234,7 @@ export function JeolgukChart({ date }: JeolgukChartProps) {
 
       {/* Legend */}
       <div className="mt-4 text-xs text-muted-foreground space-y-1">
-        <p><span className="font-medium orae-navy">절국 순환:</span> 원화 → 중화 → ... → 성화 (24절국)</p>
+        <p><span className="font-medium orae-navy">節局 順環:</span> 元和 → 中化 → ... → 性化 (24節局)</p>
         <p><span className="font-medium">방위:</span> 북(子), 동북(丑寅), 동(卯), 동남(辰巳), 남(午), 서남(未申), 서(酉), 서북(戌亥)</p>
       </div>
     </Card>

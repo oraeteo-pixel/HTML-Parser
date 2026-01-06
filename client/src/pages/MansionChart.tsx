@@ -51,7 +51,7 @@ export default function MansionChart() {
     return diff;
   };
   
-  const renderMansionCell = (mansion: string, isToday: boolean) => {
+  const renderMansionCell = (mansion: string, isToday: boolean, layout: "horizontal" | "vertical" = "horizontal") => {
     const isZunkong = ZUNKONG_MANSIONS.includes(mansion);
     const ganjiList = mansionGanjiMap[mansion] || [];
     const outerGanji = ganjiList[0] || "";
@@ -71,27 +71,53 @@ export default function MansionChart() {
         `}
         data-testid={`mansion-cell-${mansion}`}
       >
-        <div className="flex items-center justify-center gap-0.5 flex-1">
-          {outerGanji && (
-            <span 
-              className={`text-[7px] ${isOuterCurrent ? "font-bold orae-navy" : "text-muted-foreground"}`}
-              title={isOuterCurrent ? "오늘" : `${outerOffset}일 후`}
-            >
-              {outerGanji}
-            </span>
-          )}
-          <span className="font-bold text-base orae-navy">{mansion}</span>
-          {innerGanji && (
-            <span 
-              className={`text-[7px] ${isInnerCurrent ? "font-bold orae-navy" : "text-muted-foreground"}`}
-              title={isInnerCurrent ? "오늘" : `${innerOffset}일 후`}
-            >
-              {innerGanji}
-            </span>
-          )}
-        </div>
-        <div className="text-[8px] text-muted-foreground">{MANSION_GENERALS[mansion]}</div>
-        {isZunkong && <Badge variant="outline" className="text-[6px] px-0.5 py-0 mx-auto border-slate-500 text-slate-600 dark:text-slate-400">尊空</Badge>}
+        {layout === "vertical" ? (
+          <>
+            {outerGanji && (
+              <div 
+                className={`text-[7px] ${isOuterCurrent ? "font-bold orae-navy" : "text-muted-foreground"}`}
+                title={isOuterCurrent ? "오늘" : `${outerOffset}일 후`}
+              >
+                {outerGanji}
+              </div>
+            )}
+            <div className="font-bold text-base orae-navy flex-1 flex items-center justify-center">{mansion}</div>
+            <div className="text-[8px] text-muted-foreground">{MANSION_GENERALS[mansion]}</div>
+            {isZunkong && <Badge variant="outline" className="text-[6px] px-0.5 py-0 mx-auto border-slate-500 text-slate-600 dark:text-slate-400">尊空</Badge>}
+            {innerGanji && (
+              <div 
+                className={`text-[7px] ${isInnerCurrent ? "font-bold orae-navy" : "text-muted-foreground"}`}
+                title={isInnerCurrent ? "오늘" : `${innerOffset}일 후`}
+              >
+                {innerGanji}
+              </div>
+            )}
+          </>
+        ) : (
+          <>
+            <div className="flex items-center justify-center gap-0.5 flex-1">
+              {outerGanji && (
+                <span 
+                  className={`text-[7px] ${isOuterCurrent ? "font-bold orae-navy" : "text-muted-foreground"}`}
+                  title={isOuterCurrent ? "오늘" : `${outerOffset}일 후`}
+                >
+                  {outerGanji}
+                </span>
+              )}
+              <span className="font-bold text-base orae-navy">{mansion}</span>
+              {innerGanji && (
+                <span 
+                  className={`text-[7px] ${isInnerCurrent ? "font-bold orae-navy" : "text-muted-foreground"}`}
+                  title={isInnerCurrent ? "오늘" : `${innerOffset}일 후`}
+                >
+                  {innerGanji}
+                </span>
+              )}
+            </div>
+            <div className="text-[8px] text-muted-foreground">{MANSION_GENERALS[mansion]}</div>
+            {isZunkong && <Badge variant="outline" className="text-[6px] px-0.5 py-0 mx-auto border-slate-500 text-slate-600 dark:text-slate-400">尊空</Badge>}
+          </>
+        )}
       </div>
     );
   };
@@ -130,7 +156,7 @@ export default function MansionChart() {
           <div className="col-span-1"></div>
           {TOP_ROW.map((mansion, i) => (
             <div key={`top-${i}`} className="col-span-1">
-              {renderMansionCell(mansion, !todayMansion.isZunkong && todayMansion.mansion === mansion)}
+              {renderMansionCell(mansion, !todayMansion.isZunkong && todayMansion.mansion === mansion, "vertical")}
             </div>
           ))}
           <div className="col-span-1"></div>
@@ -177,7 +203,7 @@ export default function MansionChart() {
           <div className="col-span-1"></div>
           {BOTTOM_ROW.map((mansion, i) => (
             <div key={`bottom-${i}`} className="col-span-1">
-              {renderMansionCell(mansion, !todayMansion.isZunkong && todayMansion.mansion === mansion)}
+              {renderMansionCell(mansion, !todayMansion.isZunkong && todayMansion.mansion === mansion, "vertical")}
             </div>
           ))}
           <div className="col-span-1"></div>

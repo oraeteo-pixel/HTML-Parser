@@ -353,17 +353,20 @@ export function Calendar() {
           ) : (
             <div className="flex flex-col gap-0 sm:flex-row sm:items-center sm:justify-between sm:gap-2">
               <div className="flex items-center gap-1 text-sm">
+                <span className="sm:hidden text-gray-500 dark:text-gray-400">
+                  황극력 {liveHwanggeuk.year}年 {liveHwanggeuk.month}月 {liveHwanggeuk.day}日
+                </span>
                 <span className="hidden sm:inline font-medium text-gray-700 dark:text-gray-300">
                   {displayYear}.{displayMonth}.{displayDay}
                 </span>
                 <span className="hidden sm:inline text-gray-600 dark:text-gray-400">
                   {WEEKDAYS_HANJA[displayDate.getDay()]}
                 </span>
-                <span className="text-gray-500 dark:text-gray-400">
+                <span className="hidden sm:inline text-gray-500 dark:text-gray-400">
                   ({displayData.yearGanZhi}年 {displayData.monthGanZhi}月 {displayData.dayGanZhi}日)
                 </span>
-                <span className="text-gray-500 dark:text-gray-400">현재</span>
-                <span className="font-medium text-gray-700 dark:text-gray-300">{liveSeoncheonHourGanZhi}時</span>
+                <span className="hidden sm:inline text-gray-500 dark:text-gray-400">현재</span>
+                <span className="hidden sm:inline font-medium text-gray-700 dark:text-gray-300">{liveSeoncheonHourGanZhi}時</span>
                 <span className="hidden sm:inline font-medium text-gray-700 dark:text-gray-300">
                   {displayData.currentTerm.hanja}
                 </span>
@@ -372,6 +375,8 @@ export function Calendar() {
                 </span>
               </div>
               <div className="flex sm:hidden items-center gap-1 text-sm">
+                <span className="text-gray-500 dark:text-gray-400">현재</span>
+                <span className="font-medium text-gray-700 dark:text-gray-300">{liveSeoncheonHourGanZhi}時</span>
                 <span className="font-medium text-gray-700 dark:text-gray-300">
                   {displayData.currentTerm.hanja}
                 </span>
@@ -516,8 +521,8 @@ export function Calendar() {
                   <span className={`day-number ${isSun ? "sunday" : isSat ? "saturday" : ""}`}>
                     {solarDay}
                   </span>
-                  <span className="solar-day text-orange-500">
-                    {dayData.hwanggeuk.day}
+                  <span className="solar-day text-purple-500">
+                    {dayData.lunarDay}{dayData.isLeapMonth ? "윤" : ""}
                   </span>
                 </div>
                 
@@ -537,6 +542,18 @@ export function Calendar() {
           })
         )}
         </div>
+      </div>
+
+      <div className="mt-3 py-2 px-3 text-center text-sm text-muted-foreground border-t border-border">
+        {calType === "hw" ? (
+          <span>
+            황극력 {liveHwanggeuk.yearGanZhi}年 {liveHwanggeuk.monthGanZhi}月 {liveDayGanZhi}日 {liveHourGanZhi}時
+          </span>
+        ) : (
+          <span>
+            선천력 {displayData.yearGanZhi}年 {displayData.monthGanZhi}月 {displayData.dayGanZhi}日 {liveSeoncheonHourGanZhi}時
+          </span>
+        )}
       </div>
 
       {showDayDetail && (

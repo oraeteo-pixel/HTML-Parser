@@ -64,7 +64,7 @@ export const api = {
     create: {
       method: 'POST' as const,
       path: '/api/posts',
-      input: insertPostSchema,
+      input: insertPostSchema.omit({ authorId: true }),
       responses: {
         201: z.custom<typeof posts.$inferSelect>(),
         401: errorSchemas.validation,

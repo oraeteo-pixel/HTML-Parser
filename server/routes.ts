@@ -24,6 +24,19 @@ export async function registerRoutes(
     res.json(posts);
   });
 
+  // Get posts by ganji
+  app.get("/api/posts/ganji/:ganji", async (req, res) => {
+    const { ganji } = req.params;
+    const posts = await storage.getPostsByGanji(ganji);
+    res.json(posts);
+  });
+
+  // Get latest posts grouped by ganji
+  app.get("/api/madang/latest", async (req, res) => {
+    const grouped = await storage.getLatestPostsByGanji();
+    res.json(grouped);
+  });
+
   // Create Post
   app.post(api.posts.create.path, async (req, res) => {
     if (!req.isAuthenticated()) {

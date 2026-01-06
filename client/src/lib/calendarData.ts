@@ -733,40 +733,37 @@ export function getSogungDaegung(date: Date): {
     };
   }
   
-  // 81 x 81 순환 내 위치
+  // 단순화된 계산
   const sogungPeriod = 80; // 1 소궁 = 80분
   const daegungPeriod = 9 * 80; // 1 대궁 = 9 소궁 = 720분 (12시간)
-  const daegungCyclePeriod = 9 * daegungPeriod; // 1 대궁사이클 = 9 대궁 = 4.5일
-  const superCyclePeriod = 9 * daegungCyclePeriod; // 9 대궁사이클 = 40.5일
   
-  // 각 레벨의 인덱스 계산
-  const superCycleIndex = Math.floor(minutesInYear / superCyclePeriod) % 9; // 대대궁 (0-8)
-  const daegungCycleIndex = Math.floor((minutesInYear % superCyclePeriod) / daegungCyclePeriod) % 9; // 대궁사이클 (0-8)
-  const daegungIndex = Math.floor((minutesInYear % daegungCyclePeriod) / daegungPeriod) % 9; // 대궁 (0-8)
-  const sogungIndex = Math.floor((minutesInYear % daegungPeriod) / sogungPeriod) % 9; // 소궁 (0-8)
+  // 전체 반일(half-day) 수 계산
+  const totalHalfDays = Math.floor(minutesInYear / daegungPeriod);
   
-  // 대궁 값 계산: 대대궁 패턴에서 대궁사이클 위치의 값
-  const daegungPattern = DAEGUNG_CYCLES[superCycleIndex];
-  const daegung = daegungPattern[daegungCycleIndex];
+  // 대궁 = 반일 인덱스 % 9 + 2 (2~10 순환)
+  const daegung = (totalHalfDays % 9) + 2;
   
-  // 소궁 값 계산: 대궁사이클 패턴에서 소궁 위치의 값
-  // 대궁사이클은 대궁 값에서 시작하는 패턴 사용
-  const sogungPatternIndex = (daegung - 2) % 9; // 대궁 값에 해당하는 패턴 (2->0, 3->1, ...)
-  const sogungPattern = SOGUNG_CYCLES[sogungPatternIndex];
-  const sogung = sogungPattern[sogungIndex];
+  // 대궁사이클 = 9 반일마다 1사이클 (4.5일)
+  const daegungCycle = Math.floor(totalHalfDays / 9) % 9;
   
-  // 시간 슬롯 계산 (1-18)
+  // 현재 반일 내 소궁 슬롯 (0-8)
+  const minutesInHalfDay = minutesInYear % daegungPeriod;
+  const sogungSlot = Math.floor(minutesInHalfDay / sogungPeriod);
+  
+  // 소궁 패턴 선택: 대궁사이클에 따라 결정
+  const sogungPattern = SOGUNG_CYCLES[daegungCycle];
+  const sogung = sogungPattern[sogungSlot];
+  
+  // 시간 슬롯 계산 (1-18): 23시부터 시작해서 80분씩
   const totalMinutesOfDay = hours * 60 + minutes;
-  let adjustedMinutes = totalMinutesOfDay;
-  if (hours < 23) {
-    adjustedMinutes = totalMinutesOfDay + 60; // 23시 시작 기준 조정
-  }
-  const timeSlot = Math.floor(((adjustedMinutes + 60) % 1440) / 80) + 1;
+  // 23시를 0분으로 변환
+  let minutesSince2300 = totalMinutesOfDay - (23 * 60);
+  if (minutesSince2300 < 0) minutesSince2300 += 1440; // 다음날로 넘어감
+  const timeSlot = Math.floor(minutesSince2300 / 80) + 1;
   const isAM = timeSlot <= 9;
   
   // 남은 시간 계산
-  const currentPeriodStart = Math.floor(minutesInYear / sogungPeriod) * sogungPeriod;
-  const remainingMinutes = sogungPeriod - (minutesInYear - currentPeriodStart);
+  const remainingMinutes = sogungPeriod - (minutesInHalfDay % sogungPeriod);
   
   return { 
     sogung, 

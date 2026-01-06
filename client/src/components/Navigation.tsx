@@ -1,4 +1,4 @@
-import { Map, User, Star, BookOpen, ShoppingBag, CalendarDays, Users } from "lucide-react";
+import { User, Star, BookOpen, CalendarDays, Users } from "lucide-react";
 import { Link } from "wouter";
 import { useState } from "react";
 import logoImage from "@assets/image_1767628183426.png";
@@ -22,8 +22,6 @@ export function Navigation() {
     { icon: Star, label: "28su", korLabel: "28수", href: "/28su" },
     { icon: Users, label: "Community", korLabel: "커뮤니티", href: "/community" },
     { icon: BookOpen, label: "Ebook", korLabel: "전자책", href: "/ebook" },
-    { icon: ShoppingBag, label: "Store", korLabel: "문구몰", href: "/store" },
-    { icon: Map, label: "Map", korLabel: "지도", href: "/map" },
   ];
 
   return (

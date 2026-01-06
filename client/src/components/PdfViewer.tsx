@@ -20,6 +20,7 @@ export function PdfViewer({ url, fileName }: PdfViewerProps) {
 
   function onDocumentLoadSuccess({ numPages }: { numPages: number }) {
     setNumPages(numPages);
+    setPageNumber(1);
     setLoading(false);
     setError(null);
   }

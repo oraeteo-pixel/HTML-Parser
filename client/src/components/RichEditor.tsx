@@ -96,9 +96,10 @@ export function RichEditor({
     }
   });
 
-  const getFileType = (contentType: string): "image" | "video" | "file" => {
+  const getFileType = (contentType: string): "image" | "video" | "file" | "pdf" => {
     if (contentType.startsWith("image/")) return "image";
     if (contentType.startsWith("video/")) return "video";
+    if (contentType === "application/pdf") return "pdf";
     return "file";
   };
 

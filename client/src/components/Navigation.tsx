@@ -40,7 +40,7 @@ export function Navigation() {
                 className="flex flex-col items-center gap-0 group cursor-pointer"
                 data-testid={`nav-${item.label.toLowerCase()}`}
               >
-                <item.icon className="h-8 w-8 orae-navy group-hover:opacity-70 transition-opacity" />
+                <item.icon className="h-8 w-8 group-hover:opacity-70 transition-opacity" style={{ color: 'hsl(210 20% 50%)' }} />
               </Link>
             ))}
             
@@ -48,10 +48,10 @@ export function Navigation() {
               <Popover>
                 <PopoverTrigger asChild>
                   <button 
-                    className="flex flex-col items-center gap-0 group cursor-pointer p-1 rounded-md bg-[hsl(var(--orae-navy))]/20"
+                    className="flex flex-col items-center gap-0 group cursor-pointer p-1 rounded-md bg-[hsl(210_20%_50%)]/20"
                     data-testid="nav-user"
                   >
-                    <User className="h-8 w-8 orae-navy group-hover:opacity-70 transition-opacity" />
+                    <User className="h-8 w-8 group-hover:opacity-70 transition-opacity" style={{ color: 'hsl(210 20% 50%)' }} />
                   </button>
                 </PopoverTrigger>
                 <PopoverContent className="w-48 p-2">
@@ -75,7 +75,7 @@ export function Navigation() {
                 data-testid="nav-user"
                 onClick={() => setAuthOpen(true)}
               >
-                <User className="h-8 w-8 orae-navy group-hover:opacity-70 transition-opacity" />
+                <User className="h-8 w-8 group-hover:opacity-70 transition-opacity" style={{ color: 'hsl(210 20% 50%)' }} />
               </button>
             )}
           </div>

@@ -499,6 +499,9 @@ export function Calendar() {
             const cellPosition = getHwanggeukPosition(hwDate.year, hwDate.month, hwDate.day);
             const cellTrigram = get8Trigram(solarDate.getFullYear(), solarDate.getMonth() + 1, solarDate.getDate());
             
+            const cellDate = new Date(solarDate.getFullYear(), solarDate.getMonth(), solarDate.getDate(), 12, 0, 0);
+            const cellSogungDaegung = getSogungDaegung(cellDate);
+            
             return (
               <div 
                 key={`hw-${hwDay}`} 
@@ -523,6 +526,9 @@ export function Calendar() {
                   <div className="trigram-text">{cellTrigram.trigram}</div>
                   <div className="mansion-info">{cellMansion.mansion},{cellMansion.general}</div>
                   <div className="position-text">{cellPosition}</div>
+                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                    {cellSogungDaegung.isZungung ? "존궁" : `${cellSogungDaegung.sogung}지${cellSogungDaegung.daegung}`}
+                  </div>
                 </div>
               </div>
             );

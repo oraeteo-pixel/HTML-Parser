@@ -7,7 +7,7 @@ export default function CalendarPage() {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <main className="max-w-[990px] mx-auto px-2 py-4" data-testid="calendar-main">
+      <main className="max-w-[990px] mx-auto px-0 sm:px-2 py-2 sm:py-4" data-testid="calendar-main">
         <Calendar />
       </main>
       

@@ -161,3 +161,18 @@ The `shared/` directory contains code used by both frontend and backend:
 - **숫자 화살표 연결**: 1→2→3→4→5→6→7→8→9→10 순서로 낙서(洛書) 패턴 표시
 - **24방 배치**: 亥가 12시 방향, 寅申巳亥가 사방위(90°간격)에 정확히 위치
 - **24절국 회전**: 元和(원화)가 酉(유)방에 오도록 1칸 회전
+
+### 리치 에디터 및 콘텐츠 관리 시스템 (2026-01-06)
+- **RichEditor 컴포넌트**: `client/src/components/RichEditor.tsx`
+  - 드래그 앤 드롭 파일 업로드
+  - 이미지/동영상/파일 업로드 버튼
+  - YouTube URL 임베드 (유튜브 링크 또는 영상 ID 지원)
+  - 파일별 에러 처리 및 토스트 알림
+  - 업로드 중 제출 버튼 비활성화
+- **Object Storage 연동**:
+  - Presigned URL 방식으로 Google Cloud Storage 직접 업로드
+  - public/private 디렉토리 지원
+- **콘텐츠 섹션**:
+  - posts 테이블에 section 필드 추가 (ebook/madang 구분)
+  - youtubeUrls 필드 추가 (YouTube 영상 ID 배열)
+  - `/api/posts/section/:section` 엔드포인트 추가

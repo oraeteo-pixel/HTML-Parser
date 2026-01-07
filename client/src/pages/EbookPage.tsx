@@ -3,15 +3,23 @@ import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { RichEditor, MediaDisplay, type MediaItem } from "@/components/RichEditor";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { RichEditor, type MediaItem } from "@/components/RichEditor";
+import { PdfViewer } from "@/components/PdfViewer";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { BookOpen, Plus, ChevronDown, ChevronUp } from "lucide-react";
+import { BookOpen, Plus, FileText, Download, X, Eye } from "lucide-react";
 import type { Post } from "@shared/schema";
 
 type PostWithAuthor = Post & { author: string };
+
+interface EbookFile {
+  type: "pdf" | "file";
+  url: string;
+  name: string;
+}
 
 export default function EbookPage() {
   const { user } = useAuth();
@@ -20,7 +28,7 @@ export default function EbookPage() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
-  const [expandedPost, setExpandedPost] = useState<number | null>(null);
+  const [viewingEbook, setViewingEbook] = useState<{ post: PostWithAuthor; file: EbookFile } | null>(null);
 
   const { data: posts, isLoading } = useQuery<PostWithAuthor[]>({
     queryKey: ["/api/posts/section", "ebook"],
@@ -67,44 +75,30 @@ export default function EbookPage() {
     return `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`;
   };
 
-  const parseMediaItems = (post: PostWithAuthor): MediaItem[] => {
-    const items: MediaItem[] = [];
-    if (post.mediaUrls) {
-      post.mediaUrls.forEach(fullUrl => {
-        // Parse type and name from query params if present
-        const [baseUrl, queryString] = fullUrl.split("?");
-        const params = new URLSearchParams(queryString || "");
-        const typeParam = params.get("type");
-        const nameParam = params.get("name");
-        
-        let type: "image" | "video" | "pdf" | "file";
-        if (typeParam && ["image", "video", "pdf", "file"].includes(typeParam)) {
-          type = typeParam as "image" | "video" | "pdf" | "file";
-        } else if (baseUrl.includes("/objects/")) {
-          // Object storage URLs without type param - default to image (most common)
-          type = "image";
-        } else {
-          // Fallback to extension-based detection
-          type = baseUrl.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? "image" 
-            : baseUrl.match(/\.(mp4|webm|mov)$/i) ? "video"
-            : baseUrl.match(/\.pdf$/i) ? "pdf"
-            : "file";
-        }
-        
-        const fileName = nameParam || baseUrl.split("/").pop() || "";
-        items.push({ type, url: fullUrl, name: fileName });
-      });
+  const parseEbookFile = (post: PostWithAuthor): EbookFile | null => {
+    if (!post.mediaUrls || post.mediaUrls.length === 0) return null;
+    
+    const fullUrl = post.mediaUrls[0];
+    const [baseUrl, queryString] = fullUrl.split("?");
+    const params = new URLSearchParams(queryString || "");
+    const typeParam = params.get("type");
+    const nameParam = params.get("name");
+    
+    const isPdf = typeParam === "pdf" || baseUrl.toLowerCase().endsWith(".pdf") || 
+                  nameParam?.toLowerCase().endsWith(".pdf");
+    
+    return {
+      type: isPdf ? "pdf" : "file",
+      url: fullUrl,
+      name: nameParam || baseUrl.split("/").pop() || "파일"
+    };
+  };
+
+  const openEbookViewer = (post: PostWithAuthor) => {
+    const file = parseEbookFile(post);
+    if (file) {
+      setViewingEbook({ post, file });
     }
-    if (post.youtubeUrls) {
-      post.youtubeUrls.forEach(videoId => {
-        items.push({ 
-          type: "youtube", 
-          url: videoId,
-          thumbnailUrl: `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`
-        });
-      });
-    }
-    return items;
   };
 
   return (
@@ -145,7 +139,7 @@ export default function EbookPage() {
               onSubmit={handleSubmit}
               isSubmitting={createPost.isPending}
               submitText="전자책 등록"
-              placeholder="전자책 내용을 입력하세요. 이미지, 동영상, 파일을 드래그하여 추가할 수 있습니다."
+              placeholder="전자책 설명을 입력하세요. PDF 파일을 드래그하여 추가할 수 있습니다."
             />
           </div>
         )}
@@ -165,47 +159,95 @@ export default function EbookPage() {
             )}
           </Card>
         ) : (
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {posts.map((post) => {
-              const postMediaItems = parseMediaItems(post);
-              const isExpanded = expandedPost === post.id;
+              const file = parseEbookFile(post);
               
               return (
-                <Card key={post.id} data-testid={`ebook-${post.id}`}>
-                  <CardHeader 
-                    className="cursor-pointer hover-elevate"
-                    onClick={() => setExpandedPost(isExpanded ? null : post.id)}
-                  >
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex-1 min-w-0">
-                        <CardTitle className="text-lg truncate">{post.title}</CardTitle>
-                        <p className="text-sm text-muted-foreground">
-                          {post.author} · {formatDate(post.createdAt)}
-                        </p>
+                <Card 
+                  key={post.id} 
+                  className="hover-elevate cursor-pointer overflow-hidden"
+                  onClick={() => openEbookViewer(post)}
+                  data-testid={`ebook-${post.id}`}
+                >
+                  <div className="aspect-[3/4] bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center">
+                    {file?.type === "pdf" ? (
+                      <div className="text-center p-4">
+                        <FileText className="h-16 w-16 mx-auto mb-2 orae-navy opacity-70" />
+                        <span className="text-xs px-2 py-1 rounded bg-red-500 text-white font-medium">PDF</span>
                       </div>
-                      <Button variant="ghost" size="icon">
-                        {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                      </Button>
-                    </div>
+                    ) : (
+                      <div className="text-center p-4">
+                        <BookOpen className="h-16 w-16 mx-auto mb-2 orae-navy opacity-70" />
+                        {file && (
+                          <span className="text-xs px-2 py-1 rounded bg-slate-500 text-white font-medium">
+                            {file.name.split('.').pop()?.toUpperCase() || "FILE"}
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  <CardHeader className="p-3">
+                    <CardTitle className="text-base line-clamp-2">{post.title}</CardTitle>
+                    <p className="text-xs text-muted-foreground">
+                      {post.author} · {formatDate(post.createdAt)}
+                    </p>
                   </CardHeader>
-                  {isExpanded && (
-                    <CardContent>
-                      <div className="prose prose-sm dark:prose-invert max-w-none mb-4">
-                        {post.content.split("\n").map((paragraph, i) => (
-                          <p key={i}>{paragraph}</p>
-                        ))}
-                      </div>
-                      {postMediaItems.length > 0 && (
-                        <MediaDisplay items={postMediaItems} />
-                      )}
-                    </CardContent>
-                  )}
                 </Card>
               );
             })}
           </div>
         )}
       </main>
+
+      <Dialog open={!!viewingEbook} onOpenChange={(open) => !open && setViewingEbook(null)}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col">
+          <DialogHeader className="flex-shrink-0">
+            <DialogTitle className="flex items-center justify-between gap-2 pr-8">
+              <span className="truncate">{viewingEbook?.post.title}</span>
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="flex-1 overflow-auto">
+            {viewingEbook?.file.type === "pdf" ? (
+              <PdfViewer 
+                url={viewingEbook.file.url} 
+                fileName={viewingEbook.file.name} 
+              />
+            ) : viewingEbook?.file ? (
+              <div className="text-center py-12">
+                <FileText className="h-24 w-24 mx-auto mb-4 text-muted-foreground" />
+                <h3 className="text-lg font-medium mb-2">{viewingEbook.file.name}</h3>
+                <p className="text-muted-foreground mb-6">
+                  이 파일 형식은 브라우저에서 직접 볼 수 없습니다.
+                </p>
+                <Button asChild>
+                  <a 
+                    href={viewingEbook.file.url} 
+                    download={viewingEbook.file.name}
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    다운로드
+                  </a>
+                </Button>
+              </div>
+            ) : null}
+            
+            {viewingEbook?.post.content && (
+              <div className="mt-4 p-4 border-t">
+                <h4 className="text-sm font-medium mb-2">설명</h4>
+                <div className="prose prose-sm dark:prose-invert max-w-none">
+                  {viewingEbook.post.content.split("\n").map((paragraph, i) => (
+                    <p key={i}>{paragraph}</p>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
       
       <Footer />
     </div>

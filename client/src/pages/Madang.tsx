@@ -321,156 +321,158 @@ export default function Madang() {
             <p className="text-muted-foreground">검색 결과가 없습니다.</p>
           </Card>
         ) : (
-          <div className="space-y-4">
-            {filteredPosts.map((post) => {
-              const postMediaItems = parseMediaItems(post);
-              const isExpanded = expandedPost === post.id;
-              
-              const firstImage = postMediaItems.find(item => item.type === "image");
-              const firstYoutube = postMediaItems.find(item => item.type === "youtube");
-              const thumbnailUrl = firstImage?.url || (firstYoutube ? `https://img.youtube.com/vi/${firstYoutube.url}/mqdefault.jpg` : null);
-              
-              return (
-                <Card key={post.id} data-testid={`post-${post.id}`}>
-                  <CardHeader 
-                    className="cursor-pointer hover-elevate"
-                    onClick={() => setExpandedPost(isExpanded ? null : post.id)}
-                  >
-                    <div className="flex gap-3">
-                      {thumbnailUrl && (
-                        <div className="flex-shrink-0 w-20 h-20 rounded overflow-hidden bg-slate-100 dark:bg-slate-800">
-                          <img 
-                            src={thumbnailUrl} 
-                            alt="" 
-                            className="w-full h-full object-cover"
-                          />
+          <Card className="overflow-hidden">
+            <table className="w-full text-sm border-collapse">
+              <thead>
+                <tr className="border-b bg-muted/50">
+                  <th className="text-left p-1.5 font-medium border-r w-10"></th>
+                  <th className="text-left p-1.5 font-medium border-r">제목</th>
+                  <th className="text-left p-1.5 font-medium border-r hidden sm:table-cell w-20">작성자</th>
+                  <th className="text-left p-1.5 font-medium hidden md:table-cell w-20">날짜</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredPosts.map((post, index) => {
+                  const postMediaItems = parseMediaItems(post);
+                  const isExpanded = expandedPost === post.id;
+                  const isLast = index === filteredPosts.length - 1;
+                  
+                  return (
+                    <tr 
+                      key={post.id}
+                      className={`${!isLast && !isExpanded ? 'border-b' : ''} hover-elevate cursor-pointer`}
+                      onClick={() => setExpandedPost(isExpanded ? null : post.id)}
+                      data-testid={`post-${post.id}`}
+                    >
+                      <td className="p-1.5 border-r text-center align-top">
+                        {post.ganji ? (
+                          <button
+                            className="px-1 py-0.5 rounded text-white text-[10px] font-normal cursor-pointer hover:opacity-80"
+                            style={{ backgroundColor: 'hsl(215 50% 35%)' }}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setFilterGanji(post.ganji);
+                            }}
+                            data-testid={`filter-ganji-${post.ganji}`}
+                          >
+                            {post.ganji}
+                          </button>
+                        ) : (
+                          <span className="text-muted-foreground text-xs">-</span>
+                        )}
+                      </td>
+                      <td className="p-1.5 border-r">
+                        <div className="flex items-center gap-1">
+                          <span className="font-medium line-clamp-1">{post.title}</span>
+                          {postMediaItems.length > 0 && (
+                            <span className="text-primary text-xs flex-shrink-0">[{postMediaItems.length}]</span>
+                          )}
+                          {isExpanded ? <ChevronUp className="h-3 w-3 flex-shrink-0 text-muted-foreground" /> : <ChevronDown className="h-3 w-3 flex-shrink-0 text-muted-foreground" />}
                         </div>
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-start justify-between gap-2">
-                          <CardTitle className="text-lg line-clamp-1 flex items-center gap-2 flex-wrap">
-                            {post.title}
-                            {post.ganji && (
-                              <button
-                                className="px-1.5 py-0.5 rounded text-white text-xs font-normal cursor-pointer hover:opacity-80"
-                                style={{ backgroundColor: 'hsl(215 50% 35%)' }}
+                        <span className="sm:hidden text-xs text-muted-foreground">{post.author}</span>
+                        {isExpanded && (
+                          <div className="mt-3 border-t pt-3" onClick={(e) => e.stopPropagation()}>
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3">
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <button className="font-medium hover:underline cursor-pointer">
+                                    {post.author}
+                                  </button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-2" align="start">
+                                  <div className="flex flex-col gap-1">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="justify-start"
+                                      onClick={() => setFilterAuthor(post.author)}
+                                    >
+                                      이 작성자의 글만 보기
+                                    </Button>
+                                    {post.authorEmail && (
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="justify-start"
+                                        onClick={() => {
+                                          window.location.href = `mailto:${post.authorEmail}?subject=[오리알터] ${post.author}님께`;
+                                        }}
+                                      >
+                                        <Mail className="h-4 w-4 mr-2" />
+                                        이메일 보내기
+                                      </Button>
+                                    )}
+                                  </div>
+                                </PopoverContent>
+                              </Popover>
+                              <span>·</span>
+                              <span>{formatDate(post.createdAt)}</span>
+                            </div>
+                            <div className="prose prose-sm dark:prose-invert max-w-none mb-3">
+                              {post.content.split("\n").map((paragraph, i) => (
+                                <p key={i}>{paragraph}</p>
+                              ))}
+                            </div>
+                            {postMediaItems.length > 0 && (
+                              <MediaDisplay items={postMediaItems} />
+                            )}
+                            <CommentSection postId={post.id} user={user} />
+                          </div>
+                        )}
+                      </td>
+                      <td className="p-1.5 border-r hidden sm:table-cell align-top">
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <button
+                              className="text-xs hover:underline cursor-pointer"
+                              onClick={(e) => e.stopPropagation()}
+                              data-testid={`author-${post.id}`}
+                            >
+                              {post.author}
+                            </button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-2" align="start">
+                            <div className="flex flex-col gap-1">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                className="justify-start"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  setFilterGanji(post.ganji);
+                                  setFilterAuthor(post.author);
                                 }}
-                                data-testid={`filter-ganji-${post.ganji}`}
+                                data-testid={`filter-author-${post.id}`}
                               >
-                                {post.ganji}
-                              </button>
-                            )}
-                          </CardTitle>
-                          <Button variant="ghost" size="icon" className="flex-shrink-0">
-                            {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                          </Button>
-                        </div>
-                        <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
-                          {post.content}
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1 flex-wrap">
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <button
-                                className="font-medium hover:underline cursor-pointer"
-                                onClick={(e) => e.stopPropagation()}
-                                data-testid={`author-${post.id}`}
-                              >
-                                {post.author}
-                              </button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-2" align="start">
-                              <div className="flex flex-col gap-2">
+                                이 작성자의 글만 보기
+                              </Button>
+                              {post.authorEmail && (
                                 <Button
                                   variant="ghost"
                                   size="sm"
                                   className="justify-start"
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    setFilterAuthor(post.author);
+                                    window.location.href = `mailto:${post.authorEmail}?subject=[오리알터] ${post.author}님께`;
                                   }}
-                                  data-testid={`filter-author-${post.id}`}
+                                  data-testid={`email-author-${post.id}`}
                                 >
-                                  이 작성자의 글만 보기
+                                  <Mail className="h-4 w-4 mr-2" />
+                                  이메일 보내기
                                 </Button>
-                                {post.authorEmail && (
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="justify-start"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      window.location.href = `mailto:${post.authorEmail}?subject=[오리알터] ${post.author}님께`;
-                                    }}
-                                    data-testid={`email-author-${post.id}`}
-                                  >
-                                    <Mail className="h-4 w-4 mr-2" />
-                                    이메일 보내기
-                                  </Button>
-                                )}
-                              </div>
-                            </PopoverContent>
-                          </Popover>
-                          <span> · {formatDate(post.createdAt)}</span>
-                          {postMediaItems.length > 0 && (
-                            <span className="text-primary ml-2">첨부 {postMediaItems.length}개</span>
-                          )}
-                        </p>
-                      </div>
-                    </div>
-                  </CardHeader>
-                  {isExpanded && (
-                    <CardContent className="border-t pt-4">
-                      <div className="mb-4">
-                        <h2 className="text-xl font-bold mb-2">{post.title}</h2>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <button className="font-medium hover:underline cursor-pointer">
-                                {post.author}
-                              </button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-2" align="start">
-                              <div className="flex flex-col gap-1">
-                                {post.authorEmail && (
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="justify-start"
-                                    onClick={() => {
-                                      window.location.href = `mailto:${post.authorEmail}?subject=[오리알터] ${post.author}님께`;
-                                    }}
-                                  >
-                                    <Mail className="h-4 w-4 mr-2" />
-                                    이메일 보내기
-                                  </Button>
-                                )}
-                              </div>
-                            </PopoverContent>
-                          </Popover>
-                          <span>·</span>
-                          <span>{formatDate(post.createdAt)}</span>
-                        </div>
-                      </div>
-                      <div className="prose prose-sm dark:prose-invert max-w-none mb-4">
-                        {post.content.split("\n").map((paragraph, i) => (
-                          <p key={i}>{paragraph}</p>
-                        ))}
-                      </div>
-                      {postMediaItems.length > 0 && (
-                        <MediaDisplay items={postMediaItems} />
-                      )}
-                      
-                      <CommentSection postId={post.id} user={user} />
-                    </CardContent>
-                  )}
-                </Card>
-              );
-            })}
-          </div>
+                              )}
+                            </div>
+                          </PopoverContent>
+                        </Popover>
+                      </td>
+                      <td className="p-1.5 text-xs text-muted-foreground hidden md:table-cell whitespace-nowrap align-top">
+                        {formatDate(post.createdAt)}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </Card>
         )}
       </main>
     </div>

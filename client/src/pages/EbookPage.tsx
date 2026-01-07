@@ -203,57 +203,84 @@ export default function EbookPage() {
             )}
           </Card>
         ) : (
-          <Card className="overflow-hidden">
-            <table className="w-full text-sm border-collapse">
-              <thead>
-                <tr className="border-b bg-muted/50">
-                  <th className="text-left p-1.5 font-medium border-r">형식</th>
-                  <th className="text-left p-1.5 font-medium border-r">제목</th>
-                  <th className="text-left p-1.5 font-medium border-r hidden sm:table-cell">작성자</th>
-                  <th className="text-left p-1.5 font-medium hidden md:table-cell">날짜</th>
-                </tr>
-              </thead>
-              <tbody>
-                {posts.map((post, index) => {
-                  const data = parseEbookData(post);
-                  const isLast = index === posts.length - 1;
-                  
-                  return (
-                    <tr 
-                      key={post.id}
-                      className={`${!isLast ? 'border-b' : ''} ${hasContent(data) ? 'hover-elevate cursor-pointer' : 'opacity-70'}`}
-                      onClick={() => hasContent(data) && openEbookViewer(post)}
-                      data-testid={`ebook-${post.id}`}
-                    >
-                      <td className="p-1.5 border-r w-12 text-center">
-                        {data.file?.type === "pdf" ? (
-                          <span className="text-[10px] px-1 py-0.5 rounded bg-red-500 text-white font-medium">PDF</span>
-                        ) : data.youtubeVideos.length > 0 ? (
-                          <Play className="h-3.5 w-3.5 text-red-600 mx-auto" />
-                        ) : data.file ? (
-                          <span className="text-[10px] px-1 py-0.5 rounded bg-slate-500 text-white font-medium">
-                            {data.file.name.split('.').pop()?.toUpperCase().slice(0, 4) || "FILE"}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {posts.map((post) => {
+              const data = parseEbookData(post);
+              
+              return (
+                <Card 
+                  key={post.id} 
+                  className={`overflow-hidden ${hasContent(data) ? 'hover-elevate cursor-pointer' : 'opacity-70'}`}
+                  onClick={() => hasContent(data) && openEbookViewer(post)}
+                  data-testid={`ebook-${post.id}`}
+                >
+                  <div className="aspect-[3/4] bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center relative overflow-hidden">
+                    {data.coverImage ? (
+                      <img 
+                        src={data.coverImage} 
+                        alt={post.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : data.youtubeVideos.length > 0 ? (
+                      <div className="w-full h-full relative">
+                        <img 
+                          src={`https://img.youtube.com/vi/${data.youtubeVideos[0]}/maxresdefault.jpg`}
+                          alt={post.title}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.src = `https://img.youtube.com/vi/${data.youtubeVideos[0]}/hqdefault.jpg`;
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                          <div className="w-16 h-16 rounded-full bg-red-600 flex items-center justify-center">
+                            <Play className="h-8 w-8 text-white ml-1" />
+                          </div>
+                        </div>
+                      </div>
+                    ) : data.file?.type === "pdf" ? (
+                      <div className="text-center p-4">
+                        <FileText className="h-16 w-16 mx-auto mb-2 orae-navy opacity-70" />
+                        <span className="text-xs px-2 py-1 rounded bg-red-500 text-white font-medium">PDF</span>
+                      </div>
+                    ) : (
+                      <div className="text-center p-4">
+                        <BookOpen className="h-16 w-16 mx-auto mb-2 orae-navy opacity-70" />
+                        {data.file && (
+                          <span className="text-xs px-2 py-1 rounded bg-slate-500 text-white font-medium">
+                            {data.file.name.split('.').pop()?.toUpperCase() || "FILE"}
                           </span>
-                        ) : (
-                          <FileText className="h-3.5 w-3.5 text-muted-foreground mx-auto" />
                         )}
-                      </td>
-                      <td className="p-1.5 border-r">
-                        <span className="line-clamp-1 font-medium">{post.title}</span>
-                        <span className="sm:hidden text-xs text-muted-foreground block">{post.author}</span>
-                      </td>
-                      <td className="p-1.5 border-r hidden sm:table-cell">
-                        <Popover>
-                          <PopoverTrigger asChild>
-                            <button
-                              className="text-xs hover:underline cursor-pointer"
-                              onClick={(e) => e.stopPropagation()}
-                              data-testid={`ebook-author-${post.id}`}
-                            >
-                              {post.author}
-                            </button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-2" align="start">
+                      </div>
+                    )}
+                    {data.coverImage && data.file?.type === "pdf" && (
+                      <span className="absolute bottom-2 right-2 text-xs px-2 py-1 rounded bg-red-500 text-white font-medium shadow">PDF</span>
+                    )}
+                    {data.coverImage && data.youtubeVideos.length > 0 && !data.file && (
+                      <span className="absolute bottom-2 right-2 text-xs px-2 py-1 rounded bg-red-600 text-white font-medium shadow flex items-center gap-1">
+                        <Play className="h-3 w-3" /> YouTube
+                      </span>
+                    )}
+                  </div>
+                  <CardHeader className="p-3">
+                    <CardTitle className="text-base line-clamp-2">{post.title}</CardTitle>
+                    {post.content && (
+                      <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
+                        {post.content}
+                      </p>
+                    )}
+                    <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1 flex-wrap">
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <button
+                            className="font-medium hover:underline cursor-pointer"
+                            onClick={(e) => e.stopPropagation()}
+                            data-testid={`ebook-author-${post.id}`}
+                          >
+                            {post.author}
+                          </button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-2" align="start">
+                          <div className="flex flex-col gap-2">
                             {post.authorEmail && (
                               <Button
                                 variant="ghost"
@@ -269,18 +296,16 @@ export default function EbookPage() {
                                 이메일 보내기
                               </Button>
                             )}
-                          </PopoverContent>
-                        </Popover>
-                      </td>
-                      <td className="p-1.5 text-xs text-muted-foreground hidden md:table-cell whitespace-nowrap">
-                        {formatDate(post.createdAt)}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </Card>
+                          </div>
+                        </PopoverContent>
+                      </Popover>
+                      <span> · {formatDate(post.createdAt)}</span>
+                    </p>
+                  </CardHeader>
+                </Card>
+              );
+            })}
+          </div>
         )}
       </main>
 

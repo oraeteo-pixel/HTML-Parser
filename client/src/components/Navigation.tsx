@@ -15,7 +15,7 @@ export function Navigation() {
   const menuItems = [
     { icon: CalendarDays, label: "Calendar", korLabel: "달력", href: "/calendar" },
     { icon: Star, label: "28su", korLabel: "28수", href: "/28su" },
-    { icon: Users, label: "Community", korLabel: "커뮤니티", href: "/community" },
+    { icon: Users, label: "Community", korLabel: "마당", href: "/madang" },
     { icon: BookOpen, label: "Ebook", korLabel: "전자책", href: "/ebook" },
   ];
 

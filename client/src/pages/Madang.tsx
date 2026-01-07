@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useSearch } from "wouter";
+import { getDayGanZhi } from "@/lib/calendarData";
 import type { Post } from "@shared/schema";
 
 type PostWithAuthor = Post & { author: string };
@@ -20,10 +21,16 @@ export default function Madang() {
   const params = new URLSearchParams(searchString);
   const ganjiFromUrl = params.get("ganji");
   
+  // Get today's ganji
+  const todayGanji = useMemo(() => {
+    const today = new Date();
+    return getDayGanZhi(today.getFullYear(), today.getMonth() + 1, today.getDate());
+  }, []);
+  
   const [showEditor, setShowEditor] = useState(false);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [ganji, setGanji] = useState(ganjiFromUrl || "");
+  const [ganji, setGanji] = useState(ganjiFromUrl || todayGanji);
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [expandedPost, setExpandedPost] = useState<number | null>(null);
   
@@ -47,7 +54,7 @@ export default function Madang() {
       queryClient.invalidateQueries({ queryKey: ["/api/posts/section/madang"] });
       setTitle("");
       setContent("");
-      setGanji("");
+      setGanji(todayGanji);
       setMediaItems([]);
       setShowEditor(false);
       toast({ title: "글이 작성되었습니다." });

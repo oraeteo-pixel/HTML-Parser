@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -71,10 +71,25 @@ export function RichEditor({
   const [showYoutubeInput, setShowYoutubeInput] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [uploadingCount, setUploadingCount] = useState(0);
+  const [pendingUploads, setPendingUploads] = useState<MediaItem[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
   const videoInputRef = useRef<HTMLInputElement>(null);
+  const mediaItemsRef = useRef(mediaItems);
   const { toast } = useToast();
+
+  // Keep ref in sync with mediaItems prop
+  useEffect(() => {
+    mediaItemsRef.current = mediaItems;
+  }, [mediaItems]);
+
+  // Process pending uploads
+  useEffect(() => {
+    if (pendingUploads.length > 0) {
+      onMediaItemsChange([...mediaItemsRef.current, ...pendingUploads]);
+      setPendingUploads([]);
+    }
+  }, [pendingUploads, onMediaItemsChange]);
 
   const { uploadFile, isUploading, progress, error } = useUpload({
     onSuccess: (response) => {
@@ -86,7 +101,8 @@ export function RichEditor({
         url: urlWithType,
         name: response.metadata.name
       };
-      onMediaItemsChange([...mediaItems, newItem]);
+      // Use state update to avoid stale closure issues
+      setPendingUploads(prev => [...prev, newItem]);
       setUploadError(null);
     },
     onError: (err) => {

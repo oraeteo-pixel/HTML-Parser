@@ -72,8 +72,42 @@ export function registerObjectStorageRoutes(app: Express): void {
    */
   app.get("/objects/:objectPath(*)", async (req, res) => {
     try {
-      const objectFile = await objectStorageService.getObjectEntityFile(req.path);
-      await objectStorageService.downloadObject(objectFile, res);
+      // Extract the base path without query string
+      const fullPath = req.path;
+      const objectFile = await objectStorageService.getObjectEntityFile(fullPath);
+      
+      // Get content type hint from query params (set during upload)
+      const typeHint = req.query.type as string | undefined;
+      const nameHint = req.query.name as string | undefined;
+      
+      // Map type hints to MIME types
+      let contentTypeOverride: string | undefined;
+      if (typeHint === "video") {
+        // Infer video type from name if available
+        if (nameHint?.toLowerCase().endsWith(".mp4")) {
+          contentTypeOverride = "video/mp4";
+        } else if (nameHint?.toLowerCase().endsWith(".webm")) {
+          contentTypeOverride = "video/webm";
+        } else if (nameHint?.toLowerCase().endsWith(".mov")) {
+          contentTypeOverride = "video/quicktime";
+        } else {
+          contentTypeOverride = "video/mp4"; // Default to mp4
+        }
+      } else if (typeHint === "image") {
+        if (nameHint?.toLowerCase().endsWith(".png")) {
+          contentTypeOverride = "image/png";
+        } else if (nameHint?.toLowerCase().endsWith(".gif")) {
+          contentTypeOverride = "image/gif";
+        } else if (nameHint?.toLowerCase().endsWith(".webp")) {
+          contentTypeOverride = "image/webp";
+        } else {
+          contentTypeOverride = "image/jpeg";
+        }
+      } else if (typeHint === "pdf") {
+        contentTypeOverride = "application/pdf";
+      }
+      
+      await objectStorageService.downloadObject(objectFile, res, 3600, contentTypeOverride);
     } catch (error) {
       console.error("Error serving object:", error);
       if (error instanceof ObjectNotFoundError) {

@@ -95,16 +95,20 @@ export class ObjectStorageService {
   }
 
   // Downloads an object to the response.
-  async downloadObject(file: File, res: Response, cacheTtlSec: number = 3600) {
+  async downloadObject(file: File, res: Response, cacheTtlSec: number = 3600, contentTypeOverride?: string) {
     try {
       // Get file metadata
       const [metadata] = await file.getMetadata();
       // Get the ACL policy for the object.
       const aclPolicy = await getObjectAclPolicy(file);
       const isPublic = aclPolicy?.visibility === "public";
+      
+      // Use override if provided, otherwise use metadata, fallback to octet-stream
+      const contentType = contentTypeOverride || metadata.contentType || "application/octet-stream";
+      
       // Set appropriate headers
       res.set({
-        "Content-Type": metadata.contentType || "application/octet-stream",
+        "Content-Type": contentType,
         "Content-Length": metadata.size,
         "Cache-Control": `${
           isPublic ? "public" : "private"

@@ -7,10 +7,10 @@ export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   
   createPost(post: InsertPost): Promise<Post>;
-  getPosts(): Promise<(Post & { author: string })[]>;
-  getPostsByGanji(ganji: string): Promise<(Post & { author: string })[]>;
-  getPostsBySection(section: string): Promise<(Post & { author: string })[]>;
-  getLatestPostsByGanji(): Promise<{ ganji: string; posts: (Post & { author: string })[] }[]>;
+  getPosts(): Promise<(Post & { author: string; authorEmail: string | null })[]>;
+  getPostsByGanji(ganji: string): Promise<(Post & { author: string; authorEmail: string | null })[]>;
+  getPostsBySection(section: string): Promise<(Post & { author: string; authorEmail: string | null })[]>;
+  getLatestPostsByGanji(): Promise<{ ganji: string; posts: (Post & { author: string; authorEmail: string | null })[] }[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -24,7 +24,7 @@ export class DatabaseStorage implements IStorage {
     return newPost;
   }
 
-  async getPosts(): Promise<(Post & { author: string })[]> {
+  async getPosts(): Promise<(Post & { author: string; authorEmail: string | null })[]> {
     const result = await db.select({
       id: posts.id,
       title: posts.title,
@@ -35,7 +35,8 @@ export class DatabaseStorage implements IStorage {
       mediaUrls: posts.mediaUrls,
       youtubeUrls: posts.youtubeUrls,
       createdAt: posts.createdAt,
-      author: sql<string>`COALESCE(${users.firstName} || ' ' || ${users.lastName}, ${users.email}, 'Unknown')`
+      author: sql<string>`COALESCE(${users.firstName} || ' ' || ${users.lastName}, ${users.email}, 'Unknown')`,
+      authorEmail: users.email
     })
     .from(posts)
     .leftJoin(users, eq(posts.authorId, users.id))
@@ -44,7 +45,7 @@ export class DatabaseStorage implements IStorage {
     return result;
   }
 
-  async getPostsByGanji(ganji: string): Promise<(Post & { author: string })[]> {
+  async getPostsByGanji(ganji: string): Promise<(Post & { author: string; authorEmail: string | null })[]> {
     const result = await db.select({
       id: posts.id,
       title: posts.title,
@@ -55,7 +56,8 @@ export class DatabaseStorage implements IStorage {
       mediaUrls: posts.mediaUrls,
       youtubeUrls: posts.youtubeUrls,
       createdAt: posts.createdAt,
-      author: sql<string>`COALESCE(${users.firstName} || ' ' || ${users.lastName}, ${users.email}, 'Unknown')`
+      author: sql<string>`COALESCE(${users.firstName} || ' ' || ${users.lastName}, ${users.email}, 'Unknown')`,
+      authorEmail: users.email
     })
     .from(posts)
     .leftJoin(users, eq(posts.authorId, users.id))
@@ -65,7 +67,7 @@ export class DatabaseStorage implements IStorage {
     return result;
   }
 
-  async getPostsBySection(section: string): Promise<(Post & { author: string })[]> {
+  async getPostsBySection(section: string): Promise<(Post & { author: string; authorEmail: string | null })[]> {
     const result = await db.select({
       id: posts.id,
       title: posts.title,
@@ -76,7 +78,8 @@ export class DatabaseStorage implements IStorage {
       mediaUrls: posts.mediaUrls,
       youtubeUrls: posts.youtubeUrls,
       createdAt: posts.createdAt,
-      author: sql<string>`COALESCE(${users.firstName} || ' ' || ${users.lastName}, ${users.email}, 'Unknown')`
+      author: sql<string>`COALESCE(${users.firstName} || ' ' || ${users.lastName}, ${users.email}, 'Unknown')`,
+      authorEmail: users.email
     })
     .from(posts)
     .leftJoin(users, eq(posts.authorId, users.id))
@@ -86,7 +89,7 @@ export class DatabaseStorage implements IStorage {
     return result;
   }
 
-  async getLatestPostsByGanji(): Promise<{ ganji: string; posts: (Post & { author: string })[] }[]> {
+  async getLatestPostsByGanji(): Promise<{ ganji: string; posts: (Post & { author: string; authorEmail: string | null })[] }[]> {
     const allPosts = await db.select({
       id: posts.id,
       title: posts.title,
@@ -97,14 +100,15 @@ export class DatabaseStorage implements IStorage {
       mediaUrls: posts.mediaUrls,
       youtubeUrls: posts.youtubeUrls,
       createdAt: posts.createdAt,
-      author: sql<string>`COALESCE(${users.firstName} || ' ' || ${users.lastName}, ${users.email}, 'Unknown')`
+      author: sql<string>`COALESCE(${users.firstName} || ' ' || ${users.lastName}, ${users.email}, 'Unknown')`,
+      authorEmail: users.email
     })
     .from(posts)
     .leftJoin(users, eq(posts.authorId, users.id))
     .orderBy(desc(posts.createdAt))
     .limit(100);
     
-    const grouped = new Map<string, (Post & { author: string })[]>();
+    const grouped = new Map<string, (Post & { author: string; authorEmail: string | null })[]>();
     for (const post of allPosts) {
       const key = post.ganji || "general";
       if (!grouped.has(key)) {

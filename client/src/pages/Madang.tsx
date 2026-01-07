@@ -3,7 +3,8 @@ import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RichEditor, MediaDisplay, type MediaItem } from "@/components/RichEditor";
-import { MessageSquare, Plus, ChevronDown, ChevronUp, X } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { MessageSquare, Plus, ChevronDown, ChevronUp, X, Mail } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -12,7 +13,7 @@ import { useSearch } from "wouter";
 import { getDayGanZhi } from "@/lib/calendarData";
 import type { Post } from "@shared/schema";
 
-type PostWithAuthor = Post & { author: string };
+type PostWithAuthor = Post & { author: string; authorEmail: string | null };
 
 export default function Madang() {
   const { user } = useAuth();
@@ -293,17 +294,49 @@ export default function Madang() {
                         <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
                           {post.content}
                         </p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          <button
-                            className="font-medium hover:underline cursor-pointer"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setFilterAuthor(post.author);
-                            }}
-                            data-testid={`filter-author-${post.id}`}
-                          >
-                            {post.author}
-                          </button>
+                        <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1 flex-wrap">
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <button
+                                className="font-medium hover:underline cursor-pointer"
+                                onClick={(e) => e.stopPropagation()}
+                                data-testid={`author-${post.id}`}
+                              >
+                                {post.author}
+                              </button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-2" align="start">
+                              <div className="flex flex-col gap-2">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="justify-start"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setFilterAuthor(post.author);
+                                  }}
+                                  data-testid={`filter-author-${post.id}`}
+                                >
+                                  이 작성자의 글만 보기
+                                </Button>
+                                {post.authorEmail && (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="justify-start"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      window.location.href = `mailto:${post.authorEmail}?subject=[오리알터] ${post.author}님께`;
+                                    }}
+                                    data-testid={`email-author-${post.id}`}
+                                  >
+                                    <Mail className="h-4 w-4 mr-2" />
+                                    이메일 보내기
+                                  </Button>
+                                )}
+                              </div>
+                            </PopoverContent>
+                          </Popover>
                           <span> · {formatDate(post.createdAt)}</span>
                           {postMediaItems.length > 0 && (
                             <span className="text-primary ml-2">첨부 {postMediaItems.length}개</span>

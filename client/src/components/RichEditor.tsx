@@ -130,18 +130,25 @@ export function RichEditor({
     
     const results: { success: boolean; name: string; error?: string }[] = [];
     
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      try {
-        await uploadFile(file);
-        results.push({ success: true, name: file.name });
-      } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : "업로드 실패";
-        results.push({ success: false, name: file.name, error: errorMessage });
+    try {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        try {
+          const result = await uploadFile(file);
+          if (result) {
+            results.push({ success: true, name: file.name });
+          } else {
+            results.push({ success: false, name: file.name, error: "업로드 실패" });
+          }
+        } catch (err) {
+          const errorMessage = err instanceof Error ? err.message : "업로드 실패";
+          results.push({ success: false, name: file.name, error: errorMessage });
+        }
       }
+    } finally {
+      // Always reset uploading count
+      setUploadingCount(0);
     }
-    
-    setUploadingCount(0);
     
     const failedUploads = results.filter(r => !r.success);
     if (failedUploads.length > 0) {

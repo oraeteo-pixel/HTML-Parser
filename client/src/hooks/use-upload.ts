@@ -89,16 +89,26 @@ export function useUpload(options: UseUploadOptions = {}) {
    */
   const uploadToPresignedUrl = useCallback(
     async (file: File, uploadURL: string): Promise<void> => {
-      const response = await fetch(uploadURL, {
-        method: "PUT",
-        body: file,
-        headers: {
-          "Content-Type": file.type || "application/octet-stream",
-        },
-      });
+      try {
+        const response = await fetch(uploadURL, {
+          method: "PUT",
+          body: file,
+          headers: {
+            "Content-Type": file.type || "application/octet-stream",
+          },
+        });
 
-      if (!response.ok) {
-        throw new Error("Failed to upload file to storage");
+        if (!response.ok) {
+          console.error("Upload failed with status:", response.status);
+          throw new Error("Failed to upload file to storage");
+        }
+      } catch (err) {
+        console.error("Upload error:", err);
+        // Check if it's a CORS or network error
+        if (err instanceof TypeError && err.message.includes("Failed to fetch")) {
+          throw new Error("네트워크 오류 또는 CORS 문제가 발생했습니다.");
+        }
+        throw err;
       }
     },
     []

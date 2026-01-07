@@ -45,7 +45,7 @@ export function PdfViewer({ url, fileName }: PdfViewerProps) {
 
   return (
     <div className="h-[80vh] w-full border rounded-md overflow-hidden">
-      <Worker workerUrl={`https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js`}>
+      <Worker workerUrl={`https://unpkg.com/pdfjs-dist@2.16.105/build/pdf.worker.min.js`}>
         <Viewer
           fileUrl={url}
           plugins={[defaultLayoutPluginInstance]}

@@ -55,7 +55,7 @@ export function Navigation() {
               <Popover>
                 <PopoverTrigger asChild>
                   <button 
-                    className="flex flex-col items-center gap-0 group cursor-pointer p-1 rounded-md bg-[hsl(210_20%_30%)]/20"
+                    className="flex flex-col items-center gap-0 group cursor-pointer p-1.5 rounded-full bg-green-500/20 ring-2 ring-green-500"
                     data-testid="nav-user"
                   >
                     {user.profileImageUrl ? (
@@ -65,7 +65,7 @@ export function Navigation() {
                         className="h-8 w-8 rounded-full"
                       />
                     ) : (
-                      <User className="h-8 w-8 group-hover:opacity-70 transition-opacity" style={{ color: 'hsl(210 20% 30%)' }} />
+                      <User className="h-8 w-8 group-hover:opacity-70 transition-opacity text-green-600" />
                     )}
                   </button>
                 </PopoverTrigger>

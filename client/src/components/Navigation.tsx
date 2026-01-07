@@ -59,13 +59,14 @@ export function Navigation() {
               <Link 
                 key={item.label}
                 href={item.href}
-                className="flex flex-col items-center gap-0 group cursor-pointer relative"
+                className="flex flex-col items-center gap-0 group cursor-pointer"
                 data-testid={`nav-${item.label.toLowerCase()}`}
               >
-                <item.icon className="h-6 w-6 sm:h-8 sm:w-8 group-hover:opacity-70 transition-opacity" style={{ color: 'hsl(210 20% 30%)' }} strokeWidth={2} />
-                {item.hasUserContent && (
-                  <span className="absolute -top-0.5 -right-0.5 h-2 w-2 sm:h-2.5 sm:w-2.5 bg-primary rounded-full" />
-                )}
+                <item.icon 
+                  className={`h-6 w-6 sm:h-8 sm:w-8 group-hover:opacity-70 transition-opacity ${item.hasUserContent ? 'text-primary' : ''}`}
+                  style={item.hasUserContent ? undefined : { color: 'hsl(210 20% 30%)' }} 
+                  strokeWidth={2} 
+                />
               </Link>
             ))}
             

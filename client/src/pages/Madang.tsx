@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useSearch } from "wouter";
 import type { Post } from "@shared/schema";
 
 type PostWithAuthor = Post & { author: string };
@@ -15,25 +16,38 @@ type PostWithAuthor = Post & { author: string };
 export default function Madang() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const searchString = useSearch();
+  const params = new URLSearchParams(searchString);
+  const ganjiFromUrl = params.get("ganji");
   
   const [showEditor, setShowEditor] = useState(false);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [ganji, setGanji] = useState(ganjiFromUrl || "");
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [expandedPost, setExpandedPost] = useState<number | null>(null);
+  
+  // Auto-open editor when coming from calendar with ganji
+  useEffect(() => {
+    if (ganjiFromUrl && user) {
+      setGanji(ganjiFromUrl);
+      setShowEditor(true);
+    }
+  }, [ganjiFromUrl, user]);
 
   const { data: posts, isLoading } = useQuery<PostWithAuthor[]>({
     queryKey: ["/api/posts/section/madang"],
   });
 
   const createPost = useMutation({
-    mutationFn: async (data: { title: string; content: string; section: string; mediaUrls?: string[]; youtubeUrls?: string[] }) => {
+    mutationFn: async (data: { title: string; content: string; section: string; ganji?: string; mediaUrls?: string[]; youtubeUrls?: string[] }) => {
       return apiRequest("POST", "/api/posts", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/posts/section/madang"] });
       setTitle("");
       setContent("");
+      setGanji("");
       setMediaItems([]);
       setShowEditor(false);
       toast({ title: "글이 작성되었습니다." });
@@ -55,6 +69,7 @@ export default function Madang() {
       title, 
       content, 
       section: "madang",
+      ganji: ganji || undefined,
       mediaUrls: mediaUrls.length > 0 ? mediaUrls : undefined,
       youtubeUrls: youtubeUrls.length > 0 ? youtubeUrls : undefined
     });
@@ -131,6 +146,14 @@ export default function Madang() {
 
         {showEditor && user && (
           <div className="mb-4">
+            {ganji && (
+              <div className="mb-2 flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">간지:</span>
+                <span className="px-2 py-1 rounded text-white text-sm font-medium" style={{ backgroundColor: 'hsl(215 50% 35%)' }}>
+                  {ganji}
+                </span>
+              </div>
+            )}
             <RichEditor
               title={title}
               content={content}

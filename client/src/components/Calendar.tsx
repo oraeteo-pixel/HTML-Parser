@@ -279,7 +279,7 @@ export function Calendar() {
 
   const handleDayClick = (solarDate: Date) => {
     const dayGanji = getDayGanZhi(solarDate.getFullYear(), solarDate.getMonth() + 1, solarDate.getDate());
-    navigate(`/madang/${encodeURIComponent(dayGanji)}`);
+    navigate(`/madang?ganji=${encodeURIComponent(dayGanji)}`);
   };
 
   const years = useMemo(() => {

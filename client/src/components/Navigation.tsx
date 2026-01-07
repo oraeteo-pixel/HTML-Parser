@@ -31,12 +31,12 @@ export function Navigation() {
   return (
     <div className="bg-white dark:bg-card border-b border-border sticky top-0 z-50" style={{ boxShadow: "0 0 15px #ccc" }}>
       <div className="max-w-[990px] mx-auto px-2">
-        <div className="h-[70px] flex items-center justify-between relative">
+        <div className="h-[50px] sm:h-[70px] flex items-center justify-between relative">
           <Link href="/calendar" className="flex items-center gap-1 hover:opacity-80 transition-opacity" data-testid="link-logo">
-            <img src={logoImage} alt="ORAE Logo" className="h-10 w-10" />
+            <img src={logoImage} alt="ORAE Logo" className="h-7 w-7 sm:h-10 sm:w-10" />
           </Link>
 
-          <div className="flex gap-4 items-end pb-1">
+          <div className="flex gap-2 sm:gap-4 items-end pb-1">
             {menuItems.map((item) => (
               <Link 
                 key={item.label}
@@ -44,13 +44,13 @@ export function Navigation() {
                 className="flex flex-col items-center gap-0 group cursor-pointer"
                 data-testid={`nav-${item.label.toLowerCase()}`}
               >
-                <item.icon className="h-8 w-8 group-hover:opacity-70 transition-opacity" style={{ color: 'hsl(210 20% 30%)' }} />
+                <item.icon className="h-5 w-5 sm:h-8 sm:w-8 group-hover:opacity-70 transition-opacity" style={{ color: 'hsl(210 20% 30%)' }} />
               </Link>
             ))}
             
             {isLoading ? (
               <div className="p-1">
-                <Loader2 className="h-8 w-8 animate-spin" style={{ color: 'hsl(210 20% 30%)' }} />
+                <Loader2 className="h-5 w-5 sm:h-8 sm:w-8 animate-spin" style={{ color: 'hsl(210 20% 30%)' }} />
               </div>
             ) : isAuthenticated && user ? (
               <>
@@ -60,7 +60,7 @@ export function Navigation() {
                     className="flex flex-col items-center gap-0 group cursor-pointer"
                     data-testid="nav-write"
                   >
-                    <PenSquare className="h-8 w-8 group-hover:opacity-70 transition-opacity text-primary" strokeWidth={1.5} />
+                    <PenSquare className="h-5 w-5 sm:h-8 sm:w-8 group-hover:opacity-70 transition-opacity text-primary" strokeWidth={1.5} />
                   </button>
                 </PopoverTrigger>
                 <PopoverContent className="w-40 p-2">
@@ -98,10 +98,10 @@ export function Navigation() {
                       <img 
                         src={user.profileImageUrl} 
                         alt="" 
-                        className="h-8 w-8 rounded-full"
+                        className="h-5 w-5 sm:h-8 sm:w-8 rounded-full"
                       />
                     ) : (
-                      <User className="h-8 w-8 group-hover:opacity-70 transition-opacity text-primary" strokeWidth={2.5} />
+                      <User className="h-5 w-5 sm:h-8 sm:w-8 group-hover:opacity-70 transition-opacity text-primary" strokeWidth={2.5} />
                     )}
                   </button>
                 </PopoverTrigger>
@@ -135,7 +135,7 @@ export function Navigation() {
                 data-testid="nav-user"
                 onClick={handleLogin}
               >
-                <User className="h-8 w-8 group-hover:opacity-70 transition-opacity" style={{ color: 'hsl(210 20% 30%)' }} />
+                <User className="h-5 w-5 sm:h-8 sm:w-8 group-hover:opacity-70 transition-opacity" style={{ color: 'hsl(210 20% 30%)' }} />
               </button>
             )}
           </div>

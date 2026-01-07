@@ -1,5 +1,5 @@
-import { User, Star, BookOpen, CalendarDays, Users, LogIn, LogOut, Loader2 } from "lucide-react";
-import { Link } from "wouter";
+import { User, Star, BookOpen, CalendarDays, Users, LogOut, Loader2, PenSquare } from "lucide-react";
+import { Link, useLocation } from "wouter";
 import logoImage from "@assets/image_1767628183426.png";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,7 @@ import {
 
 export function Navigation() {
   const { user, isLoading, isAuthenticated, logout, isLoggingOut } = useAuth();
+  const [, setLocation] = useLocation();
   
   const menuItems = [
     { icon: CalendarDays, label: "Calendar", korLabel: "달력", href: "/calendar" },
@@ -52,6 +53,41 @@ export function Navigation() {
                 <Loader2 className="h-8 w-8 animate-spin" style={{ color: 'hsl(210 20% 30%)' }} />
               </div>
             ) : isAuthenticated && user ? (
+              <>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <button 
+                    className="flex flex-col items-center gap-0 group cursor-pointer"
+                    data-testid="nav-write"
+                  >
+                    <PenSquare className="h-8 w-8 group-hover:opacity-70 transition-opacity text-primary" strokeWidth={1.5} />
+                  </button>
+                </PopoverTrigger>
+                <PopoverContent className="w-40 p-2">
+                  <div className="space-y-1">
+                    <Button 
+                      variant="ghost"
+                      size="sm"
+                      className="w-full justify-start"
+                      onClick={() => setLocation("/madang?write=true")}
+                      data-testid="button-write-madang"
+                    >
+                      <Users className="h-4 w-4 mr-2" />
+                      마당에 글쓰기
+                    </Button>
+                    <Button 
+                      variant="ghost"
+                      size="sm"
+                      className="w-full justify-start"
+                      onClick={() => setLocation("/ebook?write=true")}
+                      data-testid="button-write-ebook"
+                    >
+                      <BookOpen className="h-4 w-4 mr-2" />
+                      전자책 올리기
+                    </Button>
+                  </div>
+                </PopoverContent>
+              </Popover>
               <Popover>
                 <PopoverTrigger asChild>
                   <button 
@@ -92,6 +128,7 @@ export function Navigation() {
                   </div>
                 </PopoverContent>
               </Popover>
+              </>
             ) : (
               <button 
                 className="flex flex-col items-center gap-0 group cursor-pointer"

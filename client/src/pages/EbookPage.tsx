@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,6 +11,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import { useSearch } from "wouter";
 import { BookOpen, Plus, FileText, Download, Play, Mail } from "lucide-react";
 import type { Post } from "@shared/schema";
 
@@ -31,11 +32,22 @@ interface EbookData {
 export default function EbookPage() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const searchString = useSearch();
+  const params = new URLSearchParams(searchString);
+  const writeMode = params.get("write") === "true";
+  
   const [showEditor, setShowEditor] = useState(false);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [viewingEbook, setViewingEbook] = useState<{ post: PostWithAuthor; data: EbookData } | null>(null);
+
+  // Auto-open editor when write=true
+  useEffect(() => {
+    if (user && writeMode) {
+      setShowEditor(true);
+    }
+  }, [writeMode, user]);
 
   const { data: posts, isLoading } = useQuery<PostWithAuthor[]>({
     queryKey: ["/api/posts/section", "ebook"],

@@ -21,6 +21,7 @@ export default function Madang() {
   const searchString = useSearch();
   const params = new URLSearchParams(searchString);
   const ganjiFromUrl = params.get("ganji");
+  const writeMode = params.get("write") === "true";
   
   // Get today's ganji
   const todayGanji = useMemo(() => {
@@ -37,13 +38,13 @@ export default function Madang() {
   const [filterGanji, setFilterGanji] = useState<string | null>(null);
   const [filterAuthor, setFilterAuthor] = useState<string | null>(null);
   
-  // Auto-open editor when coming from calendar with ganji
+  // Auto-open editor when coming from calendar with ganji or when write=true
   useEffect(() => {
-    if (ganjiFromUrl && user) {
-      setGanji(ganjiFromUrl);
+    if (user && (ganjiFromUrl || writeMode)) {
+      if (ganjiFromUrl) setGanji(ganjiFromUrl);
       setShowEditor(true);
     }
-  }, [ganjiFromUrl, user]);
+  }, [ganjiFromUrl, writeMode, user]);
 
   const { data: posts, isLoading } = useQuery<PostWithAuthor[]>({
     queryKey: ["/api/posts/section/madang"],

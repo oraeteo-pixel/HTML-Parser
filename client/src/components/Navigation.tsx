@@ -1,12 +1,8 @@
-import { User, Star, BookOpen, CalendarDays, Users } from "lucide-react";
+import { User, Star, BookOpen, CalendarDays, Users, LogIn, LogOut, Loader2 } from "lucide-react";
 import { Link } from "wouter";
-import { useState } from "react";
 import logoImage from "@assets/image_1767628183426.png";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import { AuthForms } from "@/components/AuthForms";
 import {
   Popover,
   PopoverContent,
@@ -14,8 +10,7 @@ import {
 } from "@/components/ui/popover";
 
 export function Navigation() {
-  const { user, logout } = useAuth();
-  const [authOpen, setAuthOpen] = useState(false);
+  const { user, isLoading, isAuthenticated, logout, isLoggingOut } = useAuth();
   
   const menuItems = [
     { icon: CalendarDays, label: "Calendar", korLabel: "달력", href: "/calendar" },
@@ -23,6 +18,14 @@ export function Navigation() {
     { icon: Users, label: "Community", korLabel: "커뮤니티", href: "/community" },
     { icon: BookOpen, label: "Ebook", korLabel: "전자책", href: "/ebook" },
   ];
+
+  const handleLogin = () => {
+    window.location.href = "/api/login";
+  };
+
+  const handleLogout = () => {
+    logout();
+  };
 
   return (
     <div className="bg-white dark:bg-card border-b border-border sticky top-0 z-50" style={{ boxShadow: "0 0 15px #ccc" }}>
@@ -44,26 +47,46 @@ export function Navigation() {
               </Link>
             ))}
             
-            {user ? (
+            {isLoading ? (
+              <div className="p-1">
+                <Loader2 className="h-8 w-8 animate-spin" style={{ color: 'hsl(210 20% 30%)' }} />
+              </div>
+            ) : isAuthenticated && user ? (
               <Popover>
                 <PopoverTrigger asChild>
                   <button 
                     className="flex flex-col items-center gap-0 group cursor-pointer p-1 rounded-md bg-[hsl(210_20%_30%)]/20"
                     data-testid="nav-user"
                   >
-                    <User className="h-8 w-8 group-hover:opacity-70 transition-opacity" style={{ color: 'hsl(210 20% 30%)' }} />
+                    {user.profileImageUrl ? (
+                      <img 
+                        src={user.profileImageUrl} 
+                        alt="" 
+                        className="h-8 w-8 rounded-full"
+                      />
+                    ) : (
+                      <User className="h-8 w-8 group-hover:opacity-70 transition-opacity" style={{ color: 'hsl(210 20% 30%)' }} />
+                    )}
                   </button>
                 </PopoverTrigger>
                 <PopoverContent className="w-48 p-2">
                   <div className="space-y-2">
-                    <p className="text-sm font-medium text-center">{user.nickname}</p>
+                    <p className="text-sm font-medium text-center">
+                      {user.firstName || user.email || "User"}
+                    </p>
                     <Button 
                       variant="outline"
                       size="sm"
                       className="w-full"
-                      onClick={() => logout.mutate()}
+                      onClick={handleLogout}
+                      disabled={isLoggingOut}
                       data-testid="button-logout"
                     >
+                      {isLoggingOut ? (
+                        <Loader2 className="h-4 w-4 animate-spin mr-1" />
+                      ) : (
+                        <LogOut className="h-4 w-4 mr-1" />
+                      )}
                       로그아웃
                     </Button>
                   </div>
@@ -73,7 +96,7 @@ export function Navigation() {
               <button 
                 className="flex flex-col items-center gap-0 group cursor-pointer"
                 data-testid="nav-user"
-                onClick={() => setAuthOpen(true)}
+                onClick={handleLogin}
               >
                 <User className="h-8 w-8 group-hover:opacity-70 transition-opacity" style={{ color: 'hsl(210 20% 30%)' }} />
               </button>
@@ -81,16 +104,6 @@ export function Navigation() {
           </div>
         </div>
       </div>
-      
-      <Dialog open={authOpen} onOpenChange={setAuthOpen}>
-        <DialogContent className="sm:max-w-md bg-card border-border">
-          <VisuallyHidden>
-            <DialogTitle>로그인 / 회원가입</DialogTitle>
-            <DialogDescription>ORAE 회원 인증</DialogDescription>
-          </VisuallyHidden>
-          <AuthForms onSuccess={() => setAuthOpen(false)} />
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

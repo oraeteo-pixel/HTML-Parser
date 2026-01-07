@@ -1,7 +1,5 @@
 import { z } from 'zod';
-import { insertUserSchema, insertPostSchema, users, posts, type InsertUser } from './schema';
-
-export type { InsertUser };
+import { insertPostSchema, posts } from './schema';
 
 export const errorSchemas = {
   validation: z.object({
@@ -17,44 +15,6 @@ export const errorSchemas = {
 };
 
 export const api = {
-  auth: {
-    register: {
-      method: 'POST' as const,
-      path: '/api/auth/register',
-      input: insertUserSchema,
-      responses: {
-        201: z.custom<typeof users.$inferSelect>(),
-        400: errorSchemas.validation,
-      },
-    },
-    login: {
-      method: 'POST' as const,
-      path: '/api/auth/login',
-      input: z.object({
-        username: z.string(),
-        password: z.string(),
-      }),
-      responses: {
-        200: z.custom<typeof users.$inferSelect>(),
-        401: z.object({ message: z.string() }),
-      },
-    },
-    logout: {
-      method: 'POST' as const,
-      path: '/api/auth/logout',
-      responses: {
-        200: z.void(),
-      },
-    },
-    me: {
-      method: 'GET' as const,
-      path: '/api/auth/me',
-      responses: {
-        200: z.custom<typeof users.$inferSelect>(),
-        401: z.void(),
-      },
-    },
-  },
   posts: {
     list: {
       method: 'GET' as const,

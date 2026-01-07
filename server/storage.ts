@@ -1,11 +1,10 @@
-import { users, posts, type User, type InsertUser, type Post, type InsertPost } from "@shared/schema";
+import { users, posts, type User, type Post } from "@shared/schema";
+import type { InsertPost } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, isNull, sql } from "drizzle-orm";
+import { eq, desc, sql } from "drizzle-orm";
 
 export interface IStorage {
-  getUser(id: number): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  getUser(id: string): Promise<User | undefined>;
   
   createPost(post: InsertPost): Promise<Post>;
   getPosts(): Promise<(Post & { author: string })[]>;
@@ -15,18 +14,8 @@ export interface IStorage {
 }
 
 export class DatabaseStorage implements IStorage {
-  async getUser(id: number): Promise<User | undefined> {
+  async getUser(id: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
-    return user;
-  }
-
-  async getUserByUsername(username: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.username, username));
-    return user;
-  }
-
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const [user] = await db.insert(users).values(insertUser).returning();
     return user;
   }
 
@@ -46,10 +35,10 @@ export class DatabaseStorage implements IStorage {
       mediaUrls: posts.mediaUrls,
       youtubeUrls: posts.youtubeUrls,
       createdAt: posts.createdAt,
-      author: users.nickname
+      author: sql<string>`COALESCE(${users.firstName} || ' ' || ${users.lastName}, ${users.email}, 'Unknown')`
     })
     .from(posts)
-    .innerJoin(users, eq(posts.authorId, users.id))
+    .leftJoin(users, eq(posts.authorId, users.id))
     .orderBy(desc(posts.createdAt));
     
     return result;
@@ -66,10 +55,10 @@ export class DatabaseStorage implements IStorage {
       mediaUrls: posts.mediaUrls,
       youtubeUrls: posts.youtubeUrls,
       createdAt: posts.createdAt,
-      author: users.nickname
+      author: sql<string>`COALESCE(${users.firstName} || ' ' || ${users.lastName}, ${users.email}, 'Unknown')`
     })
     .from(posts)
-    .innerJoin(users, eq(posts.authorId, users.id))
+    .leftJoin(users, eq(posts.authorId, users.id))
     .where(eq(posts.ganji, ganji))
     .orderBy(desc(posts.createdAt));
     
@@ -87,10 +76,10 @@ export class DatabaseStorage implements IStorage {
       mediaUrls: posts.mediaUrls,
       youtubeUrls: posts.youtubeUrls,
       createdAt: posts.createdAt,
-      author: users.nickname
+      author: sql<string>`COALESCE(${users.firstName} || ' ' || ${users.lastName}, ${users.email}, 'Unknown')`
     })
     .from(posts)
-    .innerJoin(users, eq(posts.authorId, users.id))
+    .leftJoin(users, eq(posts.authorId, users.id))
     .where(eq(posts.section, section))
     .orderBy(desc(posts.createdAt));
     
@@ -108,10 +97,10 @@ export class DatabaseStorage implements IStorage {
       mediaUrls: posts.mediaUrls,
       youtubeUrls: posts.youtubeUrls,
       createdAt: posts.createdAt,
-      author: users.nickname
+      author: sql<string>`COALESCE(${users.firstName} || ' ' || ${users.lastName}, ${users.email}, 'Unknown')`
     })
     .from(posts)
-    .innerJoin(users, eq(posts.authorId, users.id))
+    .leftJoin(users, eq(posts.authorId, users.id))
     .orderBy(desc(posts.createdAt))
     .limit(100);
     

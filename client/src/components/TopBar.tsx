@@ -1,20 +1,23 @@
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
-import { AuthForms } from "@/components/AuthForms";
-import { useState } from "react";
 import { format } from "date-fns";
-import { Calendar, LogIn, UserCircle, LogOut } from "lucide-react";
+import { Calendar, LogIn, UserCircle, LogOut, Loader2 } from "lucide-react";
 
 export function TopBar() {
-  const { user, logout } = useAuth();
-  const [authOpen, setAuthOpen] = useState(false);
+  const { user, isLoading, isAuthenticated, logout, isLoggingOut } = useAuth();
   
   const today = new Date();
   const dateStr = format(today, "yyyy.M.d");
   const dayNames = ["日", "月", "火", "水", "木", "金", "土"];
   const dayName = dayNames[today.getDay()];
+  
+  const handleLogin = () => {
+    window.location.href = "/api/login";
+  };
+
+  const handleLogout = () => {
+    logout();
+  };
   
   return (
     <div 
@@ -32,44 +35,51 @@ export function TopBar() {
         </div>
 
         <div className="flex items-center gap-2">
-          {user ? (
+          {isLoading ? (
+            <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+          ) : isAuthenticated && user ? (
             <div className="flex items-center gap-2">
               <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-accent/10">
-                <UserCircle className="h-4 w-4 text-accent" />
-                <span className="text-sm font-medium text-accent">{user.nickname}</span>
+                {user.profileImageUrl ? (
+                  <img 
+                    src={user.profileImageUrl} 
+                    alt="" 
+                    className="w-5 h-5 rounded-full"
+                  />
+                ) : (
+                  <UserCircle className="h-4 w-4 text-accent" />
+                )}
+                <span className="text-sm font-medium text-accent">
+                  {user.firstName || user.email || "User"}
+                </span>
               </div>
               <Button 
                 variant="ghost"
                 size="sm"
-                onClick={() => logout.mutate()}
+                onClick={handleLogout}
+                disabled={isLoggingOut}
                 className="text-muted-foreground hover:text-foreground"
                 data-testid="button-logout"
               >
-                <LogOut className="h-4 w-4 mr-1" />
+                {isLoggingOut ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <LogOut className="h-4 w-4 mr-1" />
+                )}
                 로그아웃
               </Button>
             </div>
           ) : (
-            <Dialog open={authOpen} onOpenChange={setAuthOpen}>
-              <DialogTrigger asChild>
-                <Button 
-                  variant="default" 
-                  size="sm"
-                  className="gap-1.5"
-                  data-testid="button-login"
-                >
-                  <LogIn className="h-4 w-4" />
-                  로그인
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-[400px] bg-card border-border p-6">
-                <VisuallyHidden>
-                  <DialogTitle>로그인 / 회원가입</DialogTitle>
-                  <DialogDescription>오리알터닷컴 회원 인증</DialogDescription>
-                </VisuallyHidden>
-                <AuthForms onSuccess={() => setAuthOpen(false)} />
-              </DialogContent>
-            </Dialog>
+            <Button 
+              variant="default" 
+              size="sm"
+              onClick={handleLogin}
+              className="gap-1.5"
+              data-testid="button-login"
+            >
+              <LogIn className="h-4 w-4" />
+              로그인
+            </Button>
           )}
         </div>
       </div>

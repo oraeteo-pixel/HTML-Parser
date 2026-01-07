@@ -17,10 +17,6 @@ async function fetchUser(): Promise<User | null> {
   return response.json();
 }
 
-async function logout(): Promise<void> {
-  window.location.href = "/api/logout";
-}
-
 export function useAuth() {
   const queryClient = useQueryClient();
   const { data: user, isLoading } = useQuery<User | null>({
@@ -31,7 +27,9 @@ export function useAuth() {
   });
 
   const logoutMutation = useMutation({
-    mutationFn: logout,
+    mutationFn: async () => {
+      window.location.href = "/api/logout";
+    },
     onSuccess: () => {
       queryClient.setQueryData(["/api/auth/user"], null);
     },

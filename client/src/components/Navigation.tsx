@@ -65,14 +65,14 @@ export function Navigation() {
                 <item.icon 
                   className={`h-6 w-6 sm:h-8 sm:w-8 group-hover:opacity-70 transition-opacity ${item.hasUserContent ? 'text-primary' : ''}`}
                   style={item.hasUserContent ? undefined : { color: 'hsl(210 20% 30%)' }} 
-                  strokeWidth={2} 
+                  strokeWidth={2.5} 
                 />
               </Link>
             ))}
             
             {isLoading ? (
               <div className="p-1">
-                <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin" style={{ color: 'hsl(210 20% 30%)' }} strokeWidth={2} />
+                <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin" style={{ color: 'hsl(210 20% 30%)' }} strokeWidth={2.5} />
               </div>
             ) : isAuthenticated && user ? (
               <>
@@ -82,7 +82,7 @@ export function Navigation() {
                     className="flex flex-col items-center gap-0 group cursor-pointer"
                     data-testid="nav-write"
                   >
-                    <PenSquare className="h-6 w-6 sm:h-8 sm:w-8 group-hover:opacity-70 transition-opacity text-primary" strokeWidth={2} />
+                    <PenSquare className="h-6 w-6 sm:h-8 sm:w-8 group-hover:opacity-70 transition-opacity text-primary" strokeWidth={2.5} />
                   </button>
                 </PopoverTrigger>
                 <PopoverContent className="w-40 p-2">
@@ -157,7 +157,7 @@ export function Navigation() {
                 data-testid="nav-user"
                 onClick={handleLogin}
               >
-                <User className="h-6 w-6 sm:h-8 sm:w-8 group-hover:opacity-70 transition-opacity" style={{ color: 'hsl(210 20% 30%)' }} strokeWidth={2} />
+                <User className="h-6 w-6 sm:h-8 sm:w-8 group-hover:opacity-70 transition-opacity" style={{ color: 'hsl(210 20% 30%)' }} strokeWidth={2.5} />
               </button>
             )}
           </div>

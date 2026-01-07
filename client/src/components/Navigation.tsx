@@ -1,5 +1,6 @@
 import { User, Star, BookOpen, CalendarDays, Users, LogOut, Loader2, PenSquare } from "lucide-react";
 import { Link, useLocation } from "wouter";
+import { useQuery } from "@tanstack/react-query";
 import logoImage from "@assets/image_1767628183426.png";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
@@ -8,16 +9,33 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import type { Post } from "@shared/schema";
+
+type PostWithAuthor = Post & { author: string };
 
 export function Navigation() {
   const { user, isLoading, isAuthenticated, logout, isLoggingOut } = useAuth();
   const [, setLocation] = useLocation();
   
+  const { data: madangPosts } = useQuery<PostWithAuthor[]>({
+    queryKey: ["/api/posts/section/madang"],
+    enabled: isAuthenticated,
+  });
+  
+  const { data: ebookPosts } = useQuery<PostWithAuthor[]>({
+    queryKey: ["/api/posts/section", "ebook"],
+    queryFn: () => fetch("/api/posts/section/ebook").then(res => res.json()),
+    enabled: isAuthenticated,
+  });
+  
+  const userHasMadangPosts = madangPosts?.some(post => post.authorId === user?.id);
+  const userHasEbookPosts = ebookPosts?.some(post => post.authorId === user?.id);
+  
   const menuItems = [
-    { icon: CalendarDays, label: "Calendar", korLabel: "달력", href: "/calendar" },
-    { icon: Star, label: "28su", korLabel: "28수", href: "/28su" },
-    { icon: Users, label: "Community", korLabel: "마당", href: "/madang" },
-    { icon: BookOpen, label: "Ebook", korLabel: "전자책", href: "/ebook" },
+    { icon: CalendarDays, label: "Calendar", korLabel: "달력", href: "/calendar", hasUserContent: false },
+    { icon: Star, label: "28su", korLabel: "28수", href: "/28su", hasUserContent: false },
+    { icon: Users, label: "Community", korLabel: "마당", href: "/madang", hasUserContent: userHasMadangPosts },
+    { icon: BookOpen, label: "Ebook", korLabel: "전자책", href: "/ebook", hasUserContent: userHasEbookPosts },
   ];
 
   const handleLogin = () => {
@@ -36,21 +54,24 @@ export function Navigation() {
             <img src={logoImage} alt="ORAE Logo" className="h-8 w-8 sm:h-10 sm:w-10" />
           </Link>
 
-          <div className="flex gap-3 sm:gap-4 items-end pb-1">
+          <div className="flex gap-2 sm:gap-4 items-end pb-1">
             {menuItems.map((item) => (
               <Link 
                 key={item.label}
                 href={item.href}
-                className="flex flex-col items-center gap-0 group cursor-pointer"
+                className="flex flex-col items-center gap-0 group cursor-pointer relative"
                 data-testid={`nav-${item.label.toLowerCase()}`}
               >
-                <item.icon className="h-6 w-6 sm:h-8 sm:w-8 group-hover:opacity-70 transition-opacity" style={{ color: 'hsl(210 20% 30%)' }} />
+                <item.icon className="h-6 w-6 sm:h-8 sm:w-8 group-hover:opacity-70 transition-opacity" style={{ color: 'hsl(210 20% 30%)' }} strokeWidth={2} />
+                {item.hasUserContent && (
+                  <span className="absolute -top-0.5 -right-0.5 h-2 w-2 sm:h-2.5 sm:w-2.5 bg-primary rounded-full" />
+                )}
               </Link>
             ))}
             
             {isLoading ? (
               <div className="p-1">
-                <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin" style={{ color: 'hsl(210 20% 30%)' }} />
+                <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin" style={{ color: 'hsl(210 20% 30%)' }} strokeWidth={2} />
               </div>
             ) : isAuthenticated && user ? (
               <>
@@ -60,7 +81,7 @@ export function Navigation() {
                     className="flex flex-col items-center gap-0 group cursor-pointer"
                     data-testid="nav-write"
                   >
-                    <PenSquare className="h-6 w-6 sm:h-8 sm:w-8 group-hover:opacity-70 transition-opacity text-primary" strokeWidth={1.5} />
+                    <PenSquare className="h-6 w-6 sm:h-8 sm:w-8 group-hover:opacity-70 transition-opacity text-primary" strokeWidth={2} />
                   </button>
                 </PopoverTrigger>
                 <PopoverContent className="w-40 p-2">
@@ -135,7 +156,7 @@ export function Navigation() {
                 data-testid="nav-user"
                 onClick={handleLogin}
               >
-                <User className="h-6 w-6 sm:h-8 sm:w-8 group-hover:opacity-70 transition-opacity" style={{ color: 'hsl(210 20% 30%)' }} />
+                <User className="h-6 w-6 sm:h-8 sm:w-8 group-hover:opacity-70 transition-opacity" style={{ color: 'hsl(210 20% 30%)' }} strokeWidth={2} />
               </button>
             )}
           </div>

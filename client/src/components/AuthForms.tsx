@@ -5,9 +5,8 @@ import { insertUserSchema } from "@shared/schema";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, Users, LogIn, Undo } from "lucide-react";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Loader2, User, Lock, UserPlus, LogIn, ArrowLeft, Mail } from "lucide-react";
 import { z } from "zod";
 
 const loginSchema = z.object({
@@ -17,7 +16,7 @@ const loginSchema = z.object({
 
 export function AuthForms({ onSuccess }: { onSuccess: () => void }) {
   const { login, register } = useAuth();
-  const [activeTab, setActiveTab] = useState("login");
+  const [mode, setMode] = useState<"login" | "register">("login");
 
   const loginForm = useForm({
     resolver: zodResolver(loginSchema),
@@ -41,7 +40,7 @@ export function AuthForms({ onSuccess }: { onSuccess: () => void }) {
   const onRegister = async (data: z.infer<typeof insertUserSchema>) => {
     try {
       await register.mutateAsync(data);
-      setActiveTab("login");
+      setMode("login");
       loginForm.setValue("username", data.username);
       loginForm.setFocus("password");
     } catch (e) {
@@ -50,132 +49,160 @@ export function AuthForms({ onSuccess }: { onSuccess: () => void }) {
   };
 
   return (
-    <div className="p-2" data-testid="auth-forms">
-      <div className="mb-6 text-center">
-        <h2 className="text-2xl font-bold text-primary">
-          <Users className="inline-block mr-2 h-6 w-6" />
-          회원
-        </h2>
-      </div>
-
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-2 mb-4">
-          <TabsTrigger value="login" data-testid="tab-login">로그인</TabsTrigger>
-          <TabsTrigger value="register" data-testid="tab-register">회원가입</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="login" className="space-y-4">
-          <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-4">
-            <div className="space-y-2">
-              <Input 
-                placeholder="회원별명" 
-                {...loginForm.register("username")} 
-                className="bg-white"
-                data-testid="input-login-username"
-              />
-              {loginForm.formState.errors.username && (
-                <p className="text-xs text-destructive">{loginForm.formState.errors.username.message}</p>
-              )}
+    <div data-testid="auth-forms" className="w-full">
+      {mode === "login" ? (
+        <div className="space-y-6">
+          <div className="text-center space-y-2">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-2">
+              <User className="h-8 w-8 text-primary" />
             </div>
-            <div className="space-y-2">
-              <Input 
-                type="password" 
-                placeholder="비밀번호"
-                {...loginForm.register("password")} 
-                className="bg-white"
-                data-testid="input-login-password"
-              />
-              {loginForm.formState.errors.password && (
-                <p className="text-xs text-destructive">{loginForm.formState.errors.password.message}</p>
-              )}
-            </div>
-            <div className="flex gap-2">
-              <Button 
-                type="button" 
-                variant="secondary" 
-                size="sm"
-                className="flex-1"
-              >
-                비번 찾기
-              </Button>
-              <Button 
-                type="submit" 
-                className="flex-1" 
-                disabled={login.isPending}
-                data-testid="button-login-submit"
-              >
-                {login.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                <LogIn className="mr-2 h-4 w-4" />
-                로그인
-              </Button>
-            </div>
-          </form>
-        </TabsContent>
-
-        <TabsContent value="register" className="space-y-4">
-          <div className="text-sm text-muted-foreground mb-2">
-            <Users className="inline-block mr-1 h-4 w-4" />
-            오리알터닷컴 회원가입
+            <h2 className="text-xl font-bold text-foreground">로그인</h2>
+            <p className="text-sm text-muted-foreground">오리알터닷컴에 오신 것을 환영합니다</p>
           </div>
-          <form onSubmit={registerForm.handleSubmit(onRegister)} className="space-y-3">
-            <div>
-              <Input 
-                placeholder="회원별명을 입력하세요. (한글, 영문, 숫자)"
-                {...registerForm.register("nickname")} 
-                className="bg-white text-sm"
-                data-testid="input-register-nickname"
-              />
-              {registerForm.formState.errors.nickname && (
-                <p className="text-xs text-destructive mt-1">{registerForm.formState.errors.nickname.message}</p>
+
+          <form onSubmit={loginForm.handleSubmit(onLogin)} className="space-y-4">
+            <div className="space-y-3">
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input 
+                  placeholder="아이디" 
+                  {...loginForm.register("username")} 
+                  className="pl-10 h-11 bg-background border-input"
+                  data-testid="input-login-username"
+                />
+              </div>
+              {loginForm.formState.errors.username && (
+                <p className="text-xs text-destructive pl-1">{loginForm.formState.errors.username.message}</p>
+              )}
+
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input 
+                  type="password" 
+                  placeholder="비밀번호"
+                  {...loginForm.register("password")} 
+                  className="pl-10 h-11 bg-background border-input"
+                  data-testid="input-login-password"
+                />
+              </div>
+              {loginForm.formState.errors.password && (
+                <p className="text-xs text-destructive pl-1">{loginForm.formState.errors.password.message}</p>
               )}
             </div>
-            <div>
-              <Input 
-                placeholder="아이디를 입력하세요."
-                {...registerForm.register("username")} 
-                className="bg-white text-sm"
-                data-testid="input-register-username"
-              />
-              {registerForm.formState.errors.username && (
-                <p className="text-xs text-destructive mt-1">{registerForm.formState.errors.username.message}</p>
+
+            <Button 
+              type="submit" 
+              className="w-full h-11" 
+              disabled={login.isPending}
+              data-testid="button-login-submit"
+            >
+              {login.isPending ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <LogIn className="mr-2 h-4 w-4" />
               )}
-            </div>
-            <div>
-              <Input 
-                type="password" 
-                placeholder="비밀번호를 입력하세요."
-                {...registerForm.register("password")} 
-                className="bg-white text-sm"
-                data-testid="input-register-password"
-              />
-              {registerForm.formState.errors.password && (
-                <p className="text-xs text-destructive mt-1">{registerForm.formState.errors.password.message}</p>
-              )}
-            </div>
-            <div className="flex gap-2 pt-2">
-              <Button 
-                type="button" 
-                variant="secondary"
-                onClick={() => setActiveTab("login")}
-                className="flex-1"
+              로그인
+            </Button>
+
+            <div className="flex items-center justify-center gap-4 pt-2">
+              <button 
+                type="button"
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                data-testid="button-find-password"
               >
-                <Undo className="mr-2 h-4 w-4" />
-                가입취소
-              </Button>
-              <Button 
-                type="submit" 
-                className="flex-1" 
-                disabled={register.isPending}
-                data-testid="button-register-submit"
+                비밀번호 찾기
+              </button>
+              <span className="text-muted-foreground">|</span>
+              <button 
+                type="button"
+                onClick={() => setMode("register")}
+                className="text-sm text-primary hover:text-primary/80 font-medium transition-colors"
+                data-testid="button-go-register"
               >
-                {register.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                <Users className="mr-2 h-4 w-4" />
-                회원가입하기
-              </Button>
+                회원가입
+              </button>
             </div>
           </form>
-        </TabsContent>
-      </Tabs>
+        </div>
+      ) : (
+        <div className="space-y-6">
+          <div className="text-center space-y-2">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-accent/10 mb-2">
+              <UserPlus className="h-8 w-8 text-accent" />
+            </div>
+            <h2 className="text-xl font-bold text-foreground">회원가입</h2>
+            <p className="text-sm text-muted-foreground">오리알터닷컴 회원이 되어주세요</p>
+          </div>
+
+          <form onSubmit={registerForm.handleSubmit(onRegister)} className="space-y-4">
+            <div className="space-y-3">
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input 
+                  placeholder="별명 (표시될 이름)"
+                  {...registerForm.register("nickname")} 
+                  className="pl-10 h-11 bg-background border-input"
+                  data-testid="input-register-nickname"
+                />
+              </div>
+              {registerForm.formState.errors.nickname && (
+                <p className="text-xs text-destructive pl-1">{registerForm.formState.errors.nickname.message}</p>
+              )}
+
+              <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input 
+                  placeholder="아이디"
+                  {...registerForm.register("username")} 
+                  className="pl-10 h-11 bg-background border-input"
+                  data-testid="input-register-username"
+                />
+              </div>
+              {registerForm.formState.errors.username && (
+                <p className="text-xs text-destructive pl-1">{registerForm.formState.errors.username.message}</p>
+              )}
+
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input 
+                  type="password" 
+                  placeholder="비밀번호"
+                  {...registerForm.register("password")} 
+                  className="pl-10 h-11 bg-background border-input"
+                  data-testid="input-register-password"
+                />
+              </div>
+              {registerForm.formState.errors.password && (
+                <p className="text-xs text-destructive pl-1">{registerForm.formState.errors.password.message}</p>
+              )}
+            </div>
+
+            <Button 
+              type="submit" 
+              className="w-full h-11 bg-accent hover:bg-accent/90" 
+              disabled={register.isPending}
+              data-testid="button-register-submit"
+            >
+              {register.isPending ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <UserPlus className="mr-2 h-4 w-4" />
+              )}
+              회원가입
+            </Button>
+
+            <button 
+              type="button"
+              onClick={() => setMode("login")}
+              className="w-full flex items-center justify-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors pt-2"
+              data-testid="button-back-to-login"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              로그인으로 돌아가기
+            </button>
+          </form>
+        </div>
+      )}
     </div>
   );
 }

@@ -122,28 +122,36 @@ export function useUpload(options: UseUploadOptions = {}) {
    */
   const uploadFile = useCallback(
     async (file: File): Promise<UploadResponse | null> => {
+      console.log("[useUpload] Starting upload for:", file.name);
       setIsUploading(true);
       setError(null);
       setProgress(0);
 
       try {
         // Step 1: Request presigned URL (send metadata as JSON)
+        console.log("[useUpload] Step 1: Requesting presigned URL");
         setProgress(10);
         const uploadResponse = await requestUploadUrl(file);
+        console.log("[useUpload] Got presigned URL:", uploadResponse.objectPath);
 
         // Step 2: Upload file directly to presigned URL
+        console.log("[useUpload] Step 2: Uploading to presigned URL");
         setProgress(30);
         await uploadToPresignedUrl(file, uploadResponse.uploadURL);
+        console.log("[useUpload] Upload to storage complete");
 
         setProgress(100);
+        console.log("[useUpload] Calling onSuccess callback");
         options.onSuccess?.(uploadResponse);
         return uploadResponse;
       } catch (err) {
+        console.error("[useUpload] Error:", err);
         const error = err instanceof Error ? err : new Error("Upload failed");
         setError(error);
         options.onError?.(error);
         return null;
       } finally {
+        console.log("[useUpload] Setting isUploading to false");
         setIsUploading(false);
       }
     },

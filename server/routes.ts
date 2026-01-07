@@ -70,5 +70,54 @@ export async function registerRoutes(
     }
   });
 
+  // === Comments Routes ===
+  
+  // Get comments for a post
+  app.get("/api/posts/:postId/comments", async (req, res) => {
+    const postId = parseInt(req.params.postId);
+    if (isNaN(postId)) {
+      return res.status(400).json({ message: "Invalid post ID" });
+    }
+    const comments = await storage.getCommentsByPostId(postId);
+    res.json(comments);
+  });
+
+  // Create comment (protected)
+  app.post("/api/posts/:postId/comments", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      const postId = parseInt(req.params.postId);
+      if (isNaN(postId)) {
+        return res.status(400).json({ message: "Invalid post ID" });
+      }
+      
+      const contentSchema = z.object({
+        content: z.string().min(1, "답글 내용을 입력해 주세요."),
+      });
+      
+      const parsed = contentSchema.parse(req.body);
+      
+      const comment = await storage.createComment({
+        postId,
+        content: parsed.content,
+        authorId: userId,
+      });
+      
+      res.status(201).json(comment);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        return res.status(400).json({
+          message: err.errors[0].message,
+          field: err.errors[0].path.join('.'),
+        });
+      }
+      throw err;
+    }
+  });
+
   return httpServer;
 }

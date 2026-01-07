@@ -4,16 +4,103 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RichEditor, MediaDisplay, type MediaItem } from "@/components/RichEditor";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { MessageSquare, ChevronDown, ChevronUp, X, Mail } from "lucide-react";
+import { MessageSquare, ChevronDown, ChevronUp, X, Mail, Send } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useSearch } from "wouter";
 import { getDayGanZhi } from "@/lib/calendarData";
-import type { Post } from "@shared/schema";
+import type { Post, Comment } from "@shared/schema";
 
 type PostWithAuthor = Post & { author: string; authorEmail: string | null };
+type CommentWithAuthor = Comment & { author: string; authorEmail: string | null };
+
+function CommentSection({ postId, user }: { postId: number; user: any }) {
+  const [commentText, setCommentText] = useState("");
+  const { toast } = useToast();
+  
+  const { data: comments, isLoading } = useQuery<CommentWithAuthor[]>({
+    queryKey: ["/api/posts", postId, "comments"],
+    queryFn: () => fetch(`/api/posts/${postId}/comments`).then(res => res.json()),
+  });
+
+  const createComment = useMutation({
+    mutationFn: async (content: string) => {
+      return apiRequest("POST", `/api/posts/${postId}/comments`, { content });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/posts", postId, "comments"] });
+      setCommentText("");
+      toast({ title: "답글이 작성되었습니다." });
+    },
+    onError: () => {
+      toast({ title: "답글 작성에 실패했습니다.", variant: "destructive" });
+    },
+  });
+
+  const handleSubmitComment = () => {
+    if (commentText.trim()) {
+      createComment.mutate(commentText.trim());
+    }
+  };
+
+  const formatDate = (date: Date | null) => {
+    if (!date) return "";
+    const d = new Date(date);
+    return `${d.getMonth() + 1}.${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+  };
+
+  return (
+    <div className="border-t pt-4 mt-4">
+      <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
+        <MessageSquare className="h-4 w-4" />
+        답글 {comments?.length || 0}
+      </h3>
+      
+      {isLoading ? (
+        <p className="text-sm text-muted-foreground">로딩 중...</p>
+      ) : comments && comments.length > 0 ? (
+        <div className="space-y-3 mb-4">
+          {comments.map((comment) => (
+            <div key={comment.id} className="bg-muted/50 rounded-md p-3">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-sm font-medium">{comment.author}</span>
+                <span className="text-xs text-muted-foreground">{formatDate(comment.createdAt)}</span>
+              </div>
+              <p className="text-sm">{comment.content}</p>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-sm text-muted-foreground mb-4">아직 답글이 없습니다.</p>
+      )}
+      
+      {user ? (
+        <div className="flex gap-2">
+          <Textarea
+            value={commentText}
+            onChange={(e) => setCommentText(e.target.value)}
+            placeholder="답글을 입력하세요..."
+            className="min-h-[60px] text-sm"
+            data-testid={`input-comment-${postId}`}
+          />
+          <Button
+            size="icon"
+            onClick={handleSubmitComment}
+            disabled={!commentText.trim() || createComment.isPending}
+            data-testid={`button-submit-comment-${postId}`}
+          >
+            <Send className="h-4 w-4" />
+          </Button>
+        </div>
+      ) : (
+        <p className="text-sm text-muted-foreground">답글을 작성하려면 로그인해 주세요.</p>
+      )}
+    </div>
+  );
+}
 
 export default function Madang() {
   const { user } = useAuth();
@@ -336,7 +423,38 @@ export default function Madang() {
                     </div>
                   </CardHeader>
                   {isExpanded && (
-                    <CardContent>
+                    <CardContent className="border-t pt-4">
+                      <div className="mb-4">
+                        <h2 className="text-xl font-bold mb-2">{post.title}</h2>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <button className="font-medium hover:underline cursor-pointer">
+                                {post.author}
+                              </button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-2" align="start">
+                              <div className="flex flex-col gap-1">
+                                {post.authorEmail && (
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="justify-start"
+                                    onClick={() => {
+                                      window.location.href = `mailto:${post.authorEmail}?subject=[오리알터] ${post.author}님께`;
+                                    }}
+                                  >
+                                    <Mail className="h-4 w-4 mr-2" />
+                                    이메일 보내기
+                                  </Button>
+                                )}
+                              </div>
+                            </PopoverContent>
+                          </Popover>
+                          <span>·</span>
+                          <span>{formatDate(post.createdAt)}</span>
+                        </div>
+                      </div>
                       <div className="prose prose-sm dark:prose-invert max-w-none mb-4">
                         {post.content.split("\n").map((paragraph, i) => (
                           <p key={i}>{paragraph}</p>
@@ -345,6 +463,8 @@ export default function Madang() {
                       {postMediaItems.length > 0 && (
                         <MediaDisplay items={postMediaItems} />
                       )}
+                      
+                      <CommentSection postId={post.id} user={user} />
                     </CardContent>
                   )}
                 </Card>

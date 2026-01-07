@@ -1,5 +1,5 @@
-import { users, posts, type User, type Post } from "@shared/schema";
-import type { InsertPost } from "@shared/schema";
+import { users, posts, comments, type User, type Post, type Comment } from "@shared/schema";
+import type { InsertPost, InsertComment } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, sql } from "drizzle-orm";
 
@@ -11,6 +11,9 @@ export interface IStorage {
   getPostsByGanji(ganji: string): Promise<(Post & { author: string; authorEmail: string | null })[]>;
   getPostsBySection(section: string): Promise<(Post & { author: string; authorEmail: string | null })[]>;
   getLatestPostsByGanji(): Promise<{ ganji: string; posts: (Post & { author: string; authorEmail: string | null })[] }[]>;
+  
+  createComment(comment: InsertComment): Promise<Comment>;
+  getCommentsByPostId(postId: number): Promise<(Comment & { author: string; authorEmail: string | null })[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -118,6 +121,29 @@ export class DatabaseStorage implements IStorage {
     }
     
     return Array.from(grouped.entries()).map(([ganji, posts]) => ({ ganji, posts }));
+  }
+
+  async createComment(comment: InsertComment): Promise<Comment> {
+    const [newComment] = await db.insert(comments).values(comment).returning();
+    return newComment;
+  }
+
+  async getCommentsByPostId(postId: number): Promise<(Comment & { author: string; authorEmail: string | null })[]> {
+    const result = await db.select({
+      id: comments.id,
+      postId: comments.postId,
+      content: comments.content,
+      authorId: comments.authorId,
+      createdAt: comments.createdAt,
+      author: sql<string>`COALESCE(${users.firstName} || ' ' || ${users.lastName}, ${users.email}, 'Unknown')`,
+      authorEmail: users.email
+    })
+    .from(comments)
+    .leftJoin(users, eq(comments.authorId, users.id))
+    .where(eq(comments.postId, postId))
+    .orderBy(comments.createdAt);
+    
+    return result;
   }
 }
 

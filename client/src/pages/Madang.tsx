@@ -1,10 +1,9 @@
 import { useState } from "react";
-import { TopBar } from "@/components/TopBar";
 import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RichEditor, MediaDisplay, type MediaItem } from "@/components/RichEditor";
-import { MessageSquare, Clock, Plus, ChevronDown, ChevronUp } from "lucide-react";
+import { MessageSquare, Plus, ChevronDown, ChevronUp } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -106,25 +105,29 @@ export default function Madang() {
 
   return (
     <div className="min-h-screen bg-background">
-      <TopBar />
       <Navigation />
       
-      <main className="max-w-[990px] mx-auto px-2 py-6">
-        <div className="flex items-center justify-between gap-2 mb-4 flex-wrap">
-          <h1 className="text-xl font-bold flex items-center gap-2">
-            <MessageSquare className="h-5 w-5" />
-            마당
-          </h1>
-          {user && (
-            <Button 
-              onClick={() => setShowEditor(!showEditor)}
-              data-testid="button-new-post"
-            >
-              <Plus className="h-4 w-4 mr-2" />
-              새 글 작성
-            </Button>
-          )}
-        </div>
+      <main className="max-w-[990px] mx-auto px-2 py-4" data-testid="madang-main">
+        <Card className="p-4 mb-4 bg-gradient-to-r from-slate-50/50 to-slate-100/50 dark:from-slate-900/20 dark:to-slate-800/20">
+          <div className="flex items-center justify-between gap-2 flex-wrap">
+            <div className="flex items-center gap-3">
+              <MessageSquare className="h-8 w-8 orae-navy" />
+              <div>
+                <h1 className="text-xl font-bold orae-navy" data-testid="text-madang-title">마당</h1>
+                <p className="text-sm text-muted-foreground">오리알터닷컴 커뮤니티</p>
+              </div>
+            </div>
+            {user && (
+              <Button 
+                onClick={() => setShowEditor(!showEditor)}
+                data-testid="button-new-post"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                새 글 작성
+              </Button>
+            )}
+          </div>
+        </Card>
 
         {showEditor && user && (
           <div className="mb-4">
@@ -143,82 +146,71 @@ export default function Madang() {
           </div>
         )}
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Clock className="h-5 w-5" />
-              최신 글
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <p className="text-muted-foreground">로딩 중...</p>
-            ) : !posts || posts.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                <MessageSquare className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                <p>아직 작성된 글이 없습니다.</p>
-                {user ? (
-                  <p className="text-sm">첫 번째 글을 작성해 보세요!</p>
-                ) : (
-                  <p className="text-sm">글을 작성하려면 로그인해 주세요.</p>
-                )}
-              </div>
+        {isLoading ? (
+          <Card className="p-8 text-center">
+            <p className="text-muted-foreground">로딩 중...</p>
+          </Card>
+        ) : !posts || posts.length === 0 ? (
+          <Card className="p-8 text-center" data-testid="card-madang-empty">
+            <MessageSquare className="h-16 w-16 mx-auto mb-4 orae-navy opacity-50" />
+            <p className="text-muted-foreground mb-2">아직 작성된 글이 없습니다.</p>
+            {user ? (
+              <p className="text-sm text-muted-foreground">첫 번째 글을 작성해 보세요!</p>
             ) : (
-              <div className="space-y-3">
-                {posts.map((post) => {
-                  const postMediaItems = parseMediaItems(post);
-                  const isExpanded = expandedPost === post.id;
-                  
-                  return (
-                    <div 
-                      key={post.id} 
-                      className="border rounded-md overflow-hidden"
-                      data-testid={`post-${post.id}`}
-                    >
-                      <div 
-                        className="p-3 hover-elevate cursor-pointer"
-                        onClick={() => setExpandedPost(isExpanded ? null : post.id)}
-                      >
-                        <div className="flex items-center justify-between gap-2">
-                          <div className="flex-1 min-w-0">
-                            <h3 className="font-medium truncate">{post.title}</h3>
-                            <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1 flex-wrap">
-                              <span className="font-medium">{post.author}</span>
-                              <span>{formatDate(post.createdAt)}</span>
-                              {post.ganji && (
-                                <span className="px-1.5 py-0.5 rounded text-white text-xs" style={{ backgroundColor: 'hsl(215 50% 35%)' }}>
-                                  {post.ganji}
-                                </span>
-                              )}
-                              {postMediaItems.length > 0 && (
-                                <span className="text-primary">
-                                  첨부 {postMediaItems.length}개
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                          {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                        </div>
-                      </div>
-                      {isExpanded && (
-                        <div className="px-3 pb-3 border-t pt-3">
-                          <div className="prose prose-sm dark:prose-invert max-w-none mb-4">
-                            {post.content.split("\n").map((paragraph, i) => (
-                              <p key={i}>{paragraph}</p>
-                            ))}
-                          </div>
-                          {postMediaItems.length > 0 && (
-                            <MediaDisplay items={postMediaItems} />
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
+              <p className="text-sm text-muted-foreground">글을 작성하려면 로그인해 주세요.</p>
             )}
-          </CardContent>
-        </Card>
+          </Card>
+        ) : (
+          <div className="space-y-4">
+            {posts.map((post) => {
+              const postMediaItems = parseMediaItems(post);
+              const isExpanded = expandedPost === post.id;
+              
+              return (
+                <Card key={post.id} data-testid={`post-${post.id}`}>
+                  <CardHeader 
+                    className="cursor-pointer hover-elevate"
+                    onClick={() => setExpandedPost(isExpanded ? null : post.id)}
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex-1 min-w-0">
+                        <CardTitle className="text-lg truncate flex items-center gap-2 flex-wrap">
+                          {post.title}
+                          {post.ganji && (
+                            <span className="px-1.5 py-0.5 rounded text-white text-xs font-normal" style={{ backgroundColor: 'hsl(215 50% 35%)' }}>
+                              {post.ganji}
+                            </span>
+                          )}
+                        </CardTitle>
+                        <p className="text-sm text-muted-foreground">
+                          {post.author} · {formatDate(post.createdAt)}
+                          {postMediaItems.length > 0 && (
+                            <span className="text-primary ml-2">첨부 {postMediaItems.length}개</span>
+                          )}
+                        </p>
+                      </div>
+                      <Button variant="ghost" size="icon">
+                        {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                      </Button>
+                    </div>
+                  </CardHeader>
+                  {isExpanded && (
+                    <CardContent>
+                      <div className="prose prose-sm dark:prose-invert max-w-none mb-4">
+                        {post.content.split("\n").map((paragraph, i) => (
+                          <p key={i}>{paragraph}</p>
+                        ))}
+                      </div>
+                      {postMediaItems.length > 0 && (
+                        <MediaDisplay items={postMediaItems} />
+                      )}
+                    </CardContent>
+                  )}
+                </Card>
+              );
+            })}
+          </div>
+        )}
       </main>
     </div>
   );

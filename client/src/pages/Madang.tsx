@@ -248,31 +248,52 @@ export default function Madang() {
               const postMediaItems = parseMediaItems(post);
               const isExpanded = expandedPost === post.id;
               
+              const firstImage = postMediaItems.find(item => item.type === "image");
+              const firstYoutube = postMediaItems.find(item => item.type === "youtube");
+              const thumbnailUrl = firstImage?.url || (firstYoutube ? `https://img.youtube.com/vi/${firstYoutube.url}/mqdefault.jpg` : null);
+              
               return (
                 <Card key={post.id} data-testid={`post-${post.id}`}>
                   <CardHeader 
                     className="cursor-pointer hover-elevate"
                     onClick={() => setExpandedPost(isExpanded ? null : post.id)}
                   >
-                    <div className="flex items-center justify-between gap-2">
+                    <div className="flex gap-3">
+                      {thumbnailUrl && (
+                        <div className="flex-shrink-0 w-20 h-20 rounded overflow-hidden bg-slate-100 dark:bg-slate-800">
+                          <img 
+                            src={thumbnailUrl} 
+                            alt="" 
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
                       <div className="flex-1 min-w-0">
-                        <CardTitle className="text-lg truncate flex items-center gap-2 flex-wrap">
-                          {post.title}
-                          {post.ganji && (
-                            <button
-                              className="px-1.5 py-0.5 rounded text-white text-xs font-normal cursor-pointer hover:opacity-80"
-                              style={{ backgroundColor: 'hsl(215 50% 35%)' }}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setFilterGanji(post.ganji);
-                              }}
-                              data-testid={`filter-ganji-${post.ganji}`}
-                            >
-                              {post.ganji}
-                            </button>
-                          )}
-                        </CardTitle>
-                        <p className="text-sm text-muted-foreground">
+                        <div className="flex items-start justify-between gap-2">
+                          <CardTitle className="text-lg line-clamp-1 flex items-center gap-2 flex-wrap">
+                            {post.title}
+                            {post.ganji && (
+                              <button
+                                className="px-1.5 py-0.5 rounded text-white text-xs font-normal cursor-pointer hover:opacity-80"
+                                style={{ backgroundColor: 'hsl(215 50% 35%)' }}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setFilterGanji(post.ganji);
+                                }}
+                                data-testid={`filter-ganji-${post.ganji}`}
+                              >
+                                {post.ganji}
+                              </button>
+                            )}
+                          </CardTitle>
+                          <Button variant="ghost" size="icon" className="flex-shrink-0">
+                            {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                          </Button>
+                        </div>
+                        <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
+                          {post.content}
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
                           <button
                             className="font-medium hover:underline cursor-pointer"
                             onClick={(e) => {
@@ -289,9 +310,6 @@ export default function Madang() {
                           )}
                         </p>
                       </div>
-                      <Button variant="ghost" size="icon">
-                        {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-                      </Button>
                     </div>
                   </CardHeader>
                   {isExpanded && (

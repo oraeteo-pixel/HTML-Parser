@@ -261,7 +261,12 @@ export default function EbookPage() {
                   </div>
                   <CardHeader className="p-3">
                     <CardTitle className="text-base line-clamp-2">{post.title}</CardTitle>
-                    <p className="text-xs text-muted-foreground">
+                    {post.content && (
+                      <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
+                        {post.content}
+                      </p>
+                    )}
+                    <p className="text-xs text-muted-foreground mt-1">
                       {post.author} · {formatDate(post.createdAt)}
                     </p>
                   </CardHeader>

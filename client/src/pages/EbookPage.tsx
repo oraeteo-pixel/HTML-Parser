@@ -129,6 +129,18 @@ export default function EbookPage() {
 
         {showEditor && user && (
           <div className="mb-4">
+            <Card className="p-3 mb-3 bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800">
+              <div className="flex items-start gap-2">
+                <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+                <div className="text-sm">
+                  <p className="font-medium text-blue-800 dark:text-blue-300">PDF 파일 권장</p>
+                  <p className="text-blue-700 dark:text-blue-400">
+                    웹에서 바로 읽으려면 PDF 형식으로 업로드해 주세요. 
+                    한글(HWP) 파일은 "파일 → 다른 이름으로 저장 → PDF"로 변환할 수 있습니다.
+                  </p>
+                </div>
+              </div>
+            </Card>
             <RichEditor
               title={title}
               content={content}

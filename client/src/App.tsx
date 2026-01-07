@@ -10,6 +10,7 @@ import Madang from "@/pages/Madang";
 import UserPage from "@/pages/UserPage";
 import MansionChart from "@/pages/MansionChart";
 import EbookPage from "@/pages/EbookPage";
+import EbookViewerPage from "@/pages/EbookViewerPage";
 import StorePage from "@/pages/StorePage";
 import CalendarPage from "@/pages/CalendarPage";
 import CommunityPage from "@/pages/CommunityPage";
@@ -24,6 +25,7 @@ function Router() {
       <Route path="/user" component={UserPage} />
       <Route path="/28su" component={MansionChart} />
       <Route path="/ebook" component={EbookPage} />
+      <Route path="/ebook/:id" component={EbookViewerPage} />
       <Route path="/store" component={StorePage} />
       <Route path="/calendar" component={CalendarPage} />
       <Route path="/community" component={CommunityPage} />

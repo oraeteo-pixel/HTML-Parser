@@ -11,7 +11,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { useSearch } from "wouter";
+import { useSearch, useLocation } from "wouter";
 import { BookOpen, FileText, Download, Play, Mail } from "lucide-react";
 import type { Post } from "@shared/schema";
 
@@ -132,10 +132,12 @@ export default function EbookPage() {
     return { file, coverImage, youtubeVideos };
   };
 
+  const [, setLocation] = useLocation();
+
   const openEbookViewer = (post: PostWithAuthor) => {
     const data = parseEbookData(post);
     if (data.file || data.youtubeVideos.length > 0) {
-      setViewingEbook({ post, data });
+      setLocation(`/ebook/${post.id}`);
     }
   };
 
@@ -147,7 +149,7 @@ export default function EbookPage() {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <main className="max-w-[990px] mx-auto px-2 py-4" data-testid="ebook-main">
+      <main className="max-w-[990px] mx-auto px-0 sm:px-2 py-4" data-testid="ebook-main">
         <Card className="p-4 mb-4 bg-gradient-to-r from-slate-50/50 to-slate-100/50 dark:from-slate-900/20 dark:to-slate-800/20">
           <div className="flex items-center gap-3">
             <BookOpen className="h-8 w-8 orae-navy" />
@@ -203,18 +205,18 @@ export default function EbookPage() {
             )}
           </Card>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-1.5 sm:gap-2">
             {posts.map((post) => {
               const data = parseEbookData(post);
               
               return (
                 <Card 
                   key={post.id} 
-                  className={`overflow-hidden ${hasContent(data) ? 'hover-elevate cursor-pointer' : 'opacity-70'}`}
+                  className={`overflow-hidden rounded-none sm:rounded-md ${hasContent(data) ? 'hover-elevate cursor-pointer' : 'opacity-70'}`}
                   onClick={() => hasContent(data) && openEbookViewer(post)}
                   data-testid={`ebook-${post.id}`}
                 >
-                  <div className="aspect-[3/4] bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center relative overflow-hidden">
+                  <div className="aspect-[4/5] bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center relative overflow-hidden">
                     {data.coverImage ? (
                       <img 
                         src={data.coverImage} 

@@ -1,11 +1,9 @@
 import { TopBar } from "@/components/TopBar";
 import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Grid, MessageSquare, Clock } from "lucide-react";
+import { MessageSquare, Clock } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
-import { SIXTY_GANJI } from "@/lib/calendarData";
 import type { Post } from "@shared/schema";
 
 type PostWithAuthor = Post & { author: string };
@@ -28,33 +26,6 @@ export default function Madang() {
       <Navigation />
       
       <main className="max-w-[990px] mx-auto px-2 py-6">
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Grid className="h-5 w-5" />
-              60갑자 마당
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-muted-foreground mb-4">60갑자별 커뮤니티 게시판입니다. 각 갑자를 클릭하여 해당 게시판으로 이동하세요.</p>
-            
-            <div className="grid grid-cols-6 sm:grid-cols-10 gap-1">
-              {SIXTY_GANJI.map((ganji) => (
-                <Link key={ganji} href={`/madang/${ganji}`}>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
-                    className="w-full text-xs font-medium"
-                    data-testid={`ganji-button-${ganji}`}
-                  >
-                    {ganji}
-                  </Button>
-                </Link>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">

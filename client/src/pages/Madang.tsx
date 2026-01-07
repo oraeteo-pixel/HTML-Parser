@@ -3,7 +3,7 @@ import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RichEditor, MediaDisplay, type MediaItem } from "@/components/RichEditor";
-import { MessageSquare, Plus, ChevronDown, ChevronUp } from "lucide-react";
+import { MessageSquare, Plus, ChevronDown, ChevronUp, X } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -33,6 +33,8 @@ export default function Madang() {
   const [ganji, setGanji] = useState(ganjiFromUrl || todayGanji);
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [expandedPost, setExpandedPost] = useState<number | null>(null);
+  const [filterGanji, setFilterGanji] = useState<string | null>(null);
+  const [filterAuthor, setFilterAuthor] = useState<string | null>(null);
   
   // Auto-open editor when coming from calendar with ganji
   useEffect(() => {
@@ -45,6 +47,21 @@ export default function Madang() {
   const { data: posts, isLoading } = useQuery<PostWithAuthor[]>({
     queryKey: ["/api/posts/section/madang"],
   });
+
+  // Filter posts based on selected ganji or author
+  const filteredPosts = useMemo(() => {
+    if (!posts) return [];
+    return posts.filter(post => {
+      if (filterGanji && post.ganji !== filterGanji) return false;
+      if (filterAuthor && post.author !== filterAuthor) return false;
+      return true;
+    });
+  }, [posts, filterGanji, filterAuthor]);
+
+  const clearFilters = () => {
+    setFilterGanji(null);
+    setFilterAuthor(null);
+  };
 
   const createPost = useMutation({
     mutationFn: async (data: { title: string; content: string; section: string; ganji?: string; mediaUrls?: string[]; youtubeUrls?: string[] }) => {
@@ -176,6 +193,37 @@ export default function Madang() {
           </div>
         )}
 
+        {(filterGanji || filterAuthor) && (
+          <Card className="p-3 mb-4 flex items-center gap-2 flex-wrap">
+            <span className="text-sm text-muted-foreground">필터:</span>
+            {filterGanji && (
+              <Button 
+                variant="secondary" 
+                size="sm" 
+                onClick={() => setFilterGanji(null)}
+                className="gap-1"
+              >
+                간지: {filterGanji}
+                <X className="h-3 w-3" />
+              </Button>
+            )}
+            {filterAuthor && (
+              <Button 
+                variant="secondary" 
+                size="sm" 
+                onClick={() => setFilterAuthor(null)}
+                className="gap-1"
+              >
+                작성자: {filterAuthor}
+                <X className="h-3 w-3" />
+              </Button>
+            )}
+            <Button variant="ghost" size="sm" onClick={clearFilters}>
+              전체 보기
+            </Button>
+          </Card>
+        )}
+
         {isLoading ? (
           <Card className="p-8 text-center">
             <p className="text-muted-foreground">로딩 중...</p>
@@ -190,9 +238,13 @@ export default function Madang() {
               <p className="text-sm text-muted-foreground">글을 작성하려면 로그인해 주세요.</p>
             )}
           </Card>
+        ) : filteredPosts.length === 0 ? (
+          <Card className="p-8 text-center">
+            <p className="text-muted-foreground">검색 결과가 없습니다.</p>
+          </Card>
         ) : (
           <div className="space-y-4">
-            {posts.map((post) => {
+            {filteredPosts.map((post) => {
               const postMediaItems = parseMediaItems(post);
               const isExpanded = expandedPost === post.id;
               
@@ -207,13 +259,31 @@ export default function Madang() {
                         <CardTitle className="text-lg truncate flex items-center gap-2 flex-wrap">
                           {post.title}
                           {post.ganji && (
-                            <span className="px-1.5 py-0.5 rounded text-white text-xs font-normal" style={{ backgroundColor: 'hsl(215 50% 35%)' }}>
+                            <button
+                              className="px-1.5 py-0.5 rounded text-white text-xs font-normal cursor-pointer hover:opacity-80"
+                              style={{ backgroundColor: 'hsl(215 50% 35%)' }}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setFilterGanji(post.ganji);
+                              }}
+                              data-testid={`filter-ganji-${post.ganji}`}
+                            >
                               {post.ganji}
-                            </span>
+                            </button>
                           )}
                         </CardTitle>
                         <p className="text-sm text-muted-foreground">
-                          {post.author} · {formatDate(post.createdAt)}
+                          <button
+                            className="font-medium hover:underline cursor-pointer"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setFilterAuthor(post.author);
+                            }}
+                            data-testid={`filter-author-${post.id}`}
+                          >
+                            {post.author}
+                          </button>
+                          <span> · {formatDate(post.createdAt)}</span>
                           {postMediaItems.length > 0 && (
                             <span className="text-primary ml-2">첨부 {postMediaItems.length}개</span>
                           )}

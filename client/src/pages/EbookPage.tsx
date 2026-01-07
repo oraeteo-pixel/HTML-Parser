@@ -10,7 +10,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { BookOpen, Plus, FileText, Download, X, Eye } from "lucide-react";
+import { BookOpen, Plus, FileText, Download, Play } from "lucide-react";
 import type { Post } from "@shared/schema";
 
 type PostWithAuthor = Post & { author: string };
@@ -24,6 +24,7 @@ interface EbookFile {
 interface EbookData {
   file: EbookFile | null;
   coverImage: string | null;
+  youtubeVideos: string[];
 }
 
 export default function EbookPage() {
@@ -33,7 +34,7 @@ export default function EbookPage() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
-  const [viewingEbook, setViewingEbook] = useState<{ post: PostWithAuthor; file: EbookFile } | null>(null);
+  const [viewingEbook, setViewingEbook] = useState<{ post: PostWithAuthor; data: EbookData } | null>(null);
 
   const { data: posts, isLoading } = useQuery<PostWithAuthor[]>({
     queryKey: ["/api/posts/section", "ebook"],
@@ -81,45 +82,52 @@ export default function EbookPage() {
   };
 
   const parseEbookData = (post: PostWithAuthor): EbookData => {
-    if (!post.mediaUrls || post.mediaUrls.length === 0) {
-      return { file: null, coverImage: null };
-    }
-    
     let file: EbookFile | null = null;
     let coverImage: string | null = null;
+    const youtubeVideos: string[] = [];
     
-    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
-    
-    for (const fullUrl of post.mediaUrls) {
-      const [baseUrl, queryString] = fullUrl.split("?");
-      const params = new URLSearchParams(queryString || "");
-      const typeParam = params.get("type");
-      const nameParam = params.get("name");
-      const lowerName = (nameParam || baseUrl).toLowerCase();
+    if (post.mediaUrls && post.mediaUrls.length > 0) {
+      const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
       
-      const isImage = imageExtensions.some(ext => lowerName.endsWith(ext)) || 
-                      typeParam?.startsWith("image");
-      
-      if (isImage && !coverImage) {
-        coverImage = fullUrl;
-      } else if (!file) {
-        const isPdf = typeParam === "pdf" || lowerName.endsWith(".pdf");
-        file = {
-          type: isPdf ? "pdf" : "file",
-          url: fullUrl,
-          name: nameParam || baseUrl.split("/").pop() || "파일"
-        };
+      for (const fullUrl of post.mediaUrls) {
+        const [baseUrl, queryString] = fullUrl.split("?");
+        const params = new URLSearchParams(queryString || "");
+        const typeParam = params.get("type");
+        const nameParam = params.get("name");
+        const lowerName = (nameParam || baseUrl).toLowerCase();
+        
+        const isImage = imageExtensions.some(ext => lowerName.endsWith(ext)) || 
+                        typeParam?.startsWith("image");
+        
+        if (isImage && !coverImage) {
+          coverImage = fullUrl;
+        } else if (!file) {
+          const isPdf = typeParam === "pdf" || lowerName.endsWith(".pdf");
+          file = {
+            type: isPdf ? "pdf" : "file",
+            url: fullUrl,
+            name: nameParam || baseUrl.split("/").pop() || "파일"
+          };
+        }
       }
     }
     
-    return { file, coverImage };
+    if (post.youtubeUrls && post.youtubeUrls.length > 0) {
+      youtubeVideos.push(...post.youtubeUrls);
+    }
+    
+    return { file, coverImage, youtubeVideos };
   };
 
   const openEbookViewer = (post: PostWithAuthor) => {
-    const { file } = parseEbookData(post);
-    if (file) {
-      setViewingEbook({ post, file });
+    const data = parseEbookData(post);
+    if (data.file || data.youtubeVideos.length > 0) {
+      setViewingEbook({ post, data });
     }
+  };
+
+  const hasContent = (data: EbookData) => {
+    return data.file || data.youtubeVideos.length > 0;
   };
 
   return (
@@ -158,6 +166,7 @@ export default function EbookPage() {
                   <p className="text-blue-700 dark:text-blue-400">
                     웹에서 바로 읽으려면 PDF 형식으로 업로드해 주세요. 
                     표지 이미지(JPG, PNG)를 함께 업로드하면 책장에 표지가 표시됩니다.
+                    YouTube 영상도 추가할 수 있습니다.
                   </p>
                 </div>
               </div>
@@ -194,23 +203,39 @@ export default function EbookPage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {posts.map((post) => {
-              const { file, coverImage } = parseEbookData(post);
+              const data = parseEbookData(post);
               
               return (
                 <Card 
                   key={post.id} 
-                  className="hover-elevate cursor-pointer overflow-hidden"
-                  onClick={() => openEbookViewer(post)}
+                  className={`overflow-hidden ${hasContent(data) ? 'hover-elevate cursor-pointer' : 'opacity-70'}`}
+                  onClick={() => hasContent(data) && openEbookViewer(post)}
                   data-testid={`ebook-${post.id}`}
                 >
                   <div className="aspect-[3/4] bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center relative overflow-hidden">
-                    {coverImage ? (
+                    {data.coverImage ? (
                       <img 
-                        src={coverImage} 
+                        src={data.coverImage} 
                         alt={post.title}
                         className="w-full h-full object-cover"
                       />
-                    ) : file?.type === "pdf" ? (
+                    ) : data.youtubeVideos.length > 0 ? (
+                      <div className="w-full h-full relative">
+                        <img 
+                          src={`https://img.youtube.com/vi/${data.youtubeVideos[0]}/maxresdefault.jpg`}
+                          alt={post.title}
+                          className="w-full h-full object-cover"
+                          onError={(e) => {
+                            e.currentTarget.src = `https://img.youtube.com/vi/${data.youtubeVideos[0]}/hqdefault.jpg`;
+                          }}
+                        />
+                        <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                          <div className="w-16 h-16 rounded-full bg-red-600 flex items-center justify-center">
+                            <Play className="h-8 w-8 text-white ml-1" />
+                          </div>
+                        </div>
+                      </div>
+                    ) : data.file?.type === "pdf" ? (
                       <div className="text-center p-4">
                         <FileText className="h-16 w-16 mx-auto mb-2 orae-navy opacity-70" />
                         <span className="text-xs px-2 py-1 rounded bg-red-500 text-white font-medium">PDF</span>
@@ -218,15 +243,20 @@ export default function EbookPage() {
                     ) : (
                       <div className="text-center p-4">
                         <BookOpen className="h-16 w-16 mx-auto mb-2 orae-navy opacity-70" />
-                        {file && (
+                        {data.file && (
                           <span className="text-xs px-2 py-1 rounded bg-slate-500 text-white font-medium">
-                            {file.name.split('.').pop()?.toUpperCase() || "FILE"}
+                            {data.file.name.split('.').pop()?.toUpperCase() || "FILE"}
                           </span>
                         )}
                       </div>
                     )}
-                    {coverImage && file?.type === "pdf" && (
+                    {data.coverImage && data.file?.type === "pdf" && (
                       <span className="absolute bottom-2 right-2 text-xs px-2 py-1 rounded bg-red-500 text-white font-medium shadow">PDF</span>
+                    )}
+                    {data.coverImage && data.youtubeVideos.length > 0 && !data.file && (
+                      <span className="absolute bottom-2 right-2 text-xs px-2 py-1 rounded bg-red-600 text-white font-medium shadow flex items-center gap-1">
+                        <Play className="h-3 w-3" /> YouTube
+                      </span>
                     )}
                   </div>
                   <CardHeader className="p-3">
@@ -251,22 +281,22 @@ export default function EbookPage() {
           </DialogHeader>
           
           <div className="flex-1 overflow-auto">
-            {viewingEbook?.file.type === "pdf" ? (
+            {viewingEbook?.data.file?.type === "pdf" ? (
               <PdfViewer 
-                url={viewingEbook.file.url} 
-                fileName={viewingEbook.file.name} 
+                url={viewingEbook.data.file.url} 
+                fileName={viewingEbook.data.file.name} 
               />
-            ) : viewingEbook?.file ? (
+            ) : viewingEbook?.data.file ? (
               <div className="text-center py-12">
                 <FileText className="h-24 w-24 mx-auto mb-4 text-muted-foreground" />
-                <h3 className="text-lg font-medium mb-2">{viewingEbook.file.name}</h3>
+                <h3 className="text-lg font-medium mb-2">{viewingEbook.data.file.name}</h3>
                 <p className="text-muted-foreground mb-6">
                   이 파일 형식은 브라우저에서 직접 볼 수 없습니다.
                 </p>
                 <Button asChild>
                   <a 
-                    href={viewingEbook.file.url} 
-                    download={viewingEbook.file.name}
+                    href={viewingEbook.data.file.url} 
+                    download={viewingEbook.data.file.name}
                     target="_blank" 
                     rel="noopener noreferrer"
                   >
@@ -276,6 +306,23 @@ export default function EbookPage() {
                 </Button>
               </div>
             ) : null}
+            
+            {viewingEbook?.data.youtubeVideos && viewingEbook.data.youtubeVideos.length > 0 && (
+              <div className={viewingEbook?.data.file ? "mt-4" : ""}>
+                {viewingEbook.data.youtubeVideos.map((videoId, index) => (
+                  <div key={index} className="aspect-video rounded-lg overflow-hidden mb-4">
+                    <iframe
+                      width="100%"
+                      height="100%"
+                      src={`https://www.youtube.com/embed/${videoId}`}
+                      title={`YouTube video ${index + 1}`}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
             
             {viewingEbook?.post.content && (
               <div className="mt-4 p-4 border-t">

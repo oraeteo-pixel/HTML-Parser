@@ -1,4 +1,4 @@
-import { Viewer, Worker } from "@react-pdf-viewer/core";
+import { Viewer, Worker, SpecialZoomLevel } from "@react-pdf-viewer/core";
 import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
@@ -20,10 +20,10 @@ export function PdfViewer({ url, fileName }: PdfViewerProps) {
     toolbarPlugin: {
       fullScreenPlugin: {
         onEnterFullScreen: (zoom) => {
-          zoom(1);
+          zoom(SpecialZoomLevel.PageWidth);
         },
         onExitFullScreen: (zoom) => {
-          zoom(1);
+          zoom(SpecialZoomLevel.PageWidth);
         },
       },
     },
@@ -44,11 +44,12 @@ export function PdfViewer({ url, fileName }: PdfViewerProps) {
   }
 
   return (
-    <div className="h-[80vh] w-full border rounded-md overflow-hidden">
+    <div className="h-[85vh] w-full border rounded-md overflow-hidden">
       <Worker workerUrl={`https://unpkg.com/pdfjs-dist@2.16.105/build/pdf.worker.min.js`}>
         <Viewer
           fileUrl={url}
           plugins={[defaultLayoutPluginInstance]}
+          defaultScale={SpecialZoomLevel.PageWidth}
           renderLoader={(percentages: number) => (
             <div className="flex flex-col items-center justify-center h-full gap-2">
               <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />

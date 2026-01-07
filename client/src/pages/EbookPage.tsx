@@ -21,6 +21,11 @@ interface EbookFile {
   name: string;
 }
 
+interface EbookData {
+  file: EbookFile | null;
+  coverImage: string | null;
+}
+
 export default function EbookPage() {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -75,27 +80,43 @@ export default function EbookPage() {
     return `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()}`;
   };
 
-  const parseEbookFile = (post: PostWithAuthor): EbookFile | null => {
-    if (!post.mediaUrls || post.mediaUrls.length === 0) return null;
+  const parseEbookData = (post: PostWithAuthor): EbookData => {
+    if (!post.mediaUrls || post.mediaUrls.length === 0) {
+      return { file: null, coverImage: null };
+    }
     
-    const fullUrl = post.mediaUrls[0];
-    const [baseUrl, queryString] = fullUrl.split("?");
-    const params = new URLSearchParams(queryString || "");
-    const typeParam = params.get("type");
-    const nameParam = params.get("name");
+    let file: EbookFile | null = null;
+    let coverImage: string | null = null;
     
-    const isPdf = typeParam === "pdf" || baseUrl.toLowerCase().endsWith(".pdf") || 
-                  nameParam?.toLowerCase().endsWith(".pdf");
+    const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
     
-    return {
-      type: isPdf ? "pdf" : "file",
-      url: fullUrl,
-      name: nameParam || baseUrl.split("/").pop() || "파일"
-    };
+    for (const fullUrl of post.mediaUrls) {
+      const [baseUrl, queryString] = fullUrl.split("?");
+      const params = new URLSearchParams(queryString || "");
+      const typeParam = params.get("type");
+      const nameParam = params.get("name");
+      const lowerName = (nameParam || baseUrl).toLowerCase();
+      
+      const isImage = imageExtensions.some(ext => lowerName.endsWith(ext)) || 
+                      typeParam?.startsWith("image");
+      
+      if (isImage && !coverImage) {
+        coverImage = fullUrl;
+      } else if (!file) {
+        const isPdf = typeParam === "pdf" || lowerName.endsWith(".pdf");
+        file = {
+          type: isPdf ? "pdf" : "file",
+          url: fullUrl,
+          name: nameParam || baseUrl.split("/").pop() || "파일"
+        };
+      }
+    }
+    
+    return { file, coverImage };
   };
 
   const openEbookViewer = (post: PostWithAuthor) => {
-    const file = parseEbookFile(post);
+    const { file } = parseEbookData(post);
     if (file) {
       setViewingEbook({ post, file });
     }
@@ -133,10 +154,10 @@ export default function EbookPage() {
               <div className="flex items-start gap-2">
                 <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
                 <div className="text-sm">
-                  <p className="font-medium text-blue-800 dark:text-blue-300">PDF 파일 권장</p>
+                  <p className="font-medium text-blue-800 dark:text-blue-300">PDF 파일 + 표지 이미지 권장</p>
                   <p className="text-blue-700 dark:text-blue-400">
                     웹에서 바로 읽으려면 PDF 형식으로 업로드해 주세요. 
-                    한글(HWP) 파일은 "파일 → 다른 이름으로 저장 → PDF"로 변환할 수 있습니다.
+                    표지 이미지(JPG, PNG)를 함께 업로드하면 책장에 표지가 표시됩니다.
                   </p>
                 </div>
               </div>
@@ -151,7 +172,7 @@ export default function EbookPage() {
               onSubmit={handleSubmit}
               isSubmitting={createPost.isPending}
               submitText="전자책 등록"
-              placeholder="전자책 설명을 입력하세요. PDF 파일을 드래그하여 추가할 수 있습니다."
+              placeholder="전자책 설명을 입력하세요. PDF 파일과 표지 이미지를 함께 업로드하세요."
             />
           </div>
         )}
@@ -173,7 +194,7 @@ export default function EbookPage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {posts.map((post) => {
-              const file = parseEbookFile(post);
+              const { file, coverImage } = parseEbookData(post);
               
               return (
                 <Card 
@@ -182,8 +203,14 @@ export default function EbookPage() {
                   onClick={() => openEbookViewer(post)}
                   data-testid={`ebook-${post.id}`}
                 >
-                  <div className="aspect-[3/4] bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center">
-                    {file?.type === "pdf" ? (
+                  <div className="aspect-[3/4] bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-800 dark:to-slate-900 flex items-center justify-center relative overflow-hidden">
+                    {coverImage ? (
+                      <img 
+                        src={coverImage} 
+                        alt={post.title}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : file?.type === "pdf" ? (
                       <div className="text-center p-4">
                         <FileText className="h-16 w-16 mx-auto mb-2 orae-navy opacity-70" />
                         <span className="text-xs px-2 py-1 rounded bg-red-500 text-white font-medium">PDF</span>
@@ -197,6 +224,9 @@ export default function EbookPage() {
                           </span>
                         )}
                       </div>
+                    )}
+                    {coverImage && file?.type === "pdf" && (
+                      <span className="absolute bottom-2 right-2 text-xs px-2 py-1 rounded bg-red-500 text-white font-medium shadow">PDF</span>
                     )}
                   </div>
                   <CardHeader className="p-3">

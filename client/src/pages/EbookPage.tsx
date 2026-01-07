@@ -12,7 +12,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useSearch } from "wouter";
-import { BookOpen, Plus, FileText, Download, Play, Mail } from "lucide-react";
+import { BookOpen, FileText, Download, Play, Mail } from "lucide-react";
 import type { Post } from "@shared/schema";
 
 type PostWithAuthor = Post & { author: string; authorEmail: string | null };
@@ -149,23 +149,12 @@ export default function EbookPage() {
       
       <main className="max-w-[990px] mx-auto px-2 py-4" data-testid="ebook-main">
         <Card className="p-4 mb-4 bg-gradient-to-r from-slate-50/50 to-slate-100/50 dark:from-slate-900/20 dark:to-slate-800/20">
-          <div className="flex items-center justify-between gap-2 flex-wrap">
-            <div className="flex items-center gap-3">
-              <BookOpen className="h-8 w-8 orae-navy" />
-              <div>
-                <h1 className="text-xl font-bold orae-navy" data-testid="text-ebook-title">전자책</h1>
-                <p className="text-sm text-muted-foreground">오리알터닷컴 전자책 컬렉션</p>
-              </div>
+          <div className="flex items-center gap-3">
+            <BookOpen className="h-8 w-8 orae-navy" />
+            <div>
+              <h1 className="text-xl font-bold orae-navy" data-testid="text-ebook-title">전자책</h1>
+              <p className="text-sm text-muted-foreground">오리알터닷컴 전자책 컬렉션</p>
             </div>
-            {user && (
-              <Button 
-                onClick={() => setShowEditor(!showEditor)}
-                data-testid="button-new-ebook"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                새 전자책 등록
-              </Button>
-            )}
           </div>
         </Card>
 

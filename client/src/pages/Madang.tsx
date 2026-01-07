@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RichEditor, MediaDisplay, type MediaItem } from "@/components/RichEditor";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { MessageSquare, Plus, ChevronDown, ChevronUp, X, Mail } from "lucide-react";
+import { MessageSquare, ChevronDown, ChevronUp, X, Mail } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -150,23 +150,12 @@ export default function Madang() {
       
       <main className="max-w-[990px] mx-auto px-2 py-4" data-testid="madang-main">
         <Card className="p-4 mb-4 bg-gradient-to-r from-slate-50/50 to-slate-100/50 dark:from-slate-900/20 dark:to-slate-800/20">
-          <div className="flex items-center justify-between gap-2 flex-wrap">
-            <div className="flex items-center gap-3">
-              <MessageSquare className="h-8 w-8 orae-navy" />
-              <div>
-                <h1 className="text-xl font-bold orae-navy" data-testid="text-madang-title">마당</h1>
-                <p className="text-sm text-muted-foreground">오리알터닷컴 커뮤니티</p>
-              </div>
+          <div className="flex items-center gap-3">
+            <MessageSquare className="h-8 w-8 orae-navy" />
+            <div>
+              <h1 className="text-xl font-bold orae-navy" data-testid="text-madang-title">마당</h1>
+              <p className="text-sm text-muted-foreground">오리알터닷컴 커뮤니티</p>
             </div>
-            {user && (
-              <Button 
-                onClick={() => setShowEditor(!showEditor)}
-                data-testid="button-new-post"
-              >
-                <Plus className="h-4 w-4 mr-2" />
-                새 글 작성
-              </Button>
-            )}
           </div>
         </Card>
 

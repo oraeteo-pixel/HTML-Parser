@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { format, getDay, isSameDay } from "date-fns";
-import { ChevronLeft, ChevronRight, Download } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import { useLocation } from "wouter";
 import { Button } from "./ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
@@ -644,39 +644,36 @@ export function Calendar() {
                       if (!showTalisman) {
                         setTimeout(() => {
                           document.getElementById('talisman-display')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        }, 100);
+                        }, 150);
                       }
                     }}
                     data-testid="button-toggle-talisman"
                   >
-                    <div className="flex items-center gap-3">
-                      {!hwMansion.isZunkong && (
-                        <img 
-                          src={`/img/28j_${hwMansion.image}.jpg`} 
-                          alt={hwMansion.general} 
-                          className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded"
-                        />
-                      )}
-                      <div>
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2">
                         <div className="font-bold text-fluid-lg">
-                          {hwMansion.isZunkong ? "존궁" : `${hwMansion.mansion}, ${hwMansion.general}`}
+                          {hwMansion.isZunkong ? "존궁" : `${hwMansion.mansion}${hwMansion.general}`}
                         </div>
                         <div className="text-xs text-muted-foreground">클릭하여 부적 보기</div>
                       </div>
+                      <ChevronDown className={`w-5 h-5 text-muted-foreground transition-transform duration-300 ${showTalisman ? 'rotate-180' : ''}`} />
                     </div>
-                    {showTalisman && !hwMansion.isZunkong && (
-                      <div id="talisman-display" className="mt-3 flex flex-col items-center">
-                        <img 
-                          src={`/img/28j_${hwMansion.image}.jpg`}
-                          alt={`${hwMansion.mansion} 부적`}
-                          className="max-w-[180px] max-h-[240px] object-contain border border-border rounded shadow-md bg-white"
-                        />
-                        <div className="mt-2 text-center text-sm">
-                          <div className="font-bold">{hwMansion.mansion}, {hwMansion.general}</div>
-                          <div className="text-muted-foreground">{hwMansion.description}</div>
-                        </div>
+                  </div>
+                  <div 
+                    id="talisman-display"
+                    className={`overflow-hidden transition-all duration-300 ease-in-out ${showTalisman && !hwMansion.isZunkong ? 'max-h-[400px] opacity-100 mt-4' : 'max-h-0 opacity-0'}`}
+                  >
+                    <div className="flex flex-col items-center py-2">
+                      <img 
+                        src={`/img/28j_${hwMansion.image}.jpg`}
+                        alt={`${hwMansion.mansion} 부적`}
+                        className="max-w-[200px] max-h-[280px] object-contain border border-border rounded-lg shadow-lg bg-white"
+                      />
+                      <div className="mt-3 text-center">
+                        <div className="font-bold text-lg">{hwMansion.mansion}{hwMansion.general}</div>
+                        <div className="text-muted-foreground">{hwMansion.description}</div>
                       </div>
-                    )}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -714,30 +711,6 @@ export function Calendar() {
         </div>
       )}
       
-      {/* Download Section */}
-      <div className="mt-6 p-4 bg-card border border-border rounded-lg">
-        <h3 className="font-bold text-sm mb-3">자료 다운로드</h3>
-        <div className="flex flex-wrap gap-2">
-          <a 
-            href="/황극력_철학.txt" 
-            download="황극력_철학.txt"
-            className="inline-flex items-center gap-1 px-3 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:opacity-90"
-            data-testid="link-download-philosophy"
-          >
-            <Download className="w-4 h-4" />
-            황극력 철학
-          </a>
-          <a 
-            href="/황극력_달력_2026.xlsx" 
-            download="황극력_달력_2026.xlsx"
-            className="inline-flex items-center gap-1 px-3 py-2 text-sm bg-primary text-primary-foreground rounded-md hover:opacity-90"
-            data-testid="link-download-excel"
-          >
-            <Download className="w-4 h-4" />
-            2026년 달력 (Excel)
-          </a>
-        </div>
-      </div>
     </div>
   );
 }

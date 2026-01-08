@@ -334,7 +334,7 @@ export function Calendar() {
   const months = Array.from({ length: 12 }, (_, i) => i + 1);
 
   return (
-    <div data-testid="calendar">
+    <div ref={topInfoBarRef} data-testid="calendar">
       <div className="space-y-2 mb-2">
         <div className="flex gap-2 ml-1 sm:ml-0">
           <Button 
@@ -364,7 +364,6 @@ export function Calendar() {
         </div>
 
         <div 
-          ref={topInfoBarRef}
           id="calDate" 
           className="slim-info-bar cursor-pointer"
           data-testid="calendar-info"

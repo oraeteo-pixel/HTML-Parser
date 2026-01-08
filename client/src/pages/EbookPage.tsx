@@ -269,11 +269,11 @@ export default function EbookPage() {
             </div>
             {user && !showEditor && (
               <Button
+                size="icon"
                 onClick={() => setShowEditor(true)}
                 data-testid="button-write-ebook"
               >
-                <Plus className="h-4 w-4 mr-1" />
-                글쓰기
+                <Pencil className="h-5 w-5" />
               </Button>
             )}
           </div>

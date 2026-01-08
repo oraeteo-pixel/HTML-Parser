@@ -839,13 +839,16 @@ export function getDaegungPositionForDate(year: number, month: number, day: numb
   const amPositionCycle = Math.floor(amDaegungCycle / 9);
   const pmPositionCycle = Math.floor(pmDaegungCycle / 9);
   
+  // 양수 모듈로 함수 (음수 처리)
+  const posMod = (n: number, m: number) => ((n % m) + m) % m;
+  
   // 대궁 값 계산 (2~10 순환)
-  const daegungAM = (amDaegungCycle % 9) + 2;
-  const daegungPM = (pmDaegungCycle % 9) + 2;
+  const daegungAM = posMod(amDaegungCycle, 9) + 2;
+  const daegungPM = posMod(pmDaegungCycle, 9) + 2;
   
   // Position 값 계산 (2~10 순환)
-  const positionAM = (amPositionCycle % 9) + 2;
-  const positionPM = (pmPositionCycle % 9) + 2;
+  const positionAM = posMod(amPositionCycle, 9) + 2;
+  const positionPM = posMod(pmPositionCycle, 9) + 2;
   
   // 전환일 여부 (오전과 오후의 값이 다른 경우)
   const isTransitionDay = (daegungAM !== daegungPM) || (positionAM !== positionPM);

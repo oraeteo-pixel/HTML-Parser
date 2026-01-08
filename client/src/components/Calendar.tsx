@@ -204,6 +204,44 @@ export function Calendar() {
       currentTime.getDate()
     );
   }, [currentTime]);
+
+  // Computed values for selected day (or live if no selection)
+  const infoDate = selectedDay || currentTime;
+  const infoYear = infoDate.getFullYear();
+  const infoMonth = infoDate.getMonth() + 1;
+  const infoDay = infoDate.getDate();
+
+  const infoHwanggeuk = useMemo(() => {
+    return getHwanggeukDate(infoYear, infoMonth, infoDay);
+  }, [infoYear, infoMonth, infoDay]);
+
+  const infoDayGanZhi = useMemo(() => {
+    return getDayGanZhi(infoYear, infoMonth, infoDay);
+  }, [infoYear, infoMonth, infoDay]);
+
+  const infoHourGanZhi = useMemo(() => {
+    return getHwanggeukHourGanZhi(infoYear, infoMonth, infoDay, currentTime.getHours(), currentTime.getMinutes());
+  }, [infoYear, infoMonth, infoDay, currentTime]);
+
+  const infoSeoncheonHourGanZhi = useMemo(() => {
+    return getSeoncheonHourGanZhi(infoYear, infoMonth, infoDay, currentTime.getHours(), currentTime.getMinutes());
+  }, [infoYear, infoMonth, infoDay, currentTime]);
+
+  const infoJeolguk = useMemo(() => {
+    return getJeolguk(infoHwanggeuk.year, infoHwanggeuk.month, infoHwanggeuk.day);
+  }, [infoHwanggeuk]);
+
+  const infoSogungDaegung = useMemo(() => {
+    return getSogungDaegung(infoDate);
+  }, [infoDate]);
+
+  const infoSeoncheonData = useMemo(() => {
+    return getCalendarDayData(infoYear, infoMonth, infoDay);
+  }, [infoYear, infoMonth, infoDay]);
+
+  const infoMansion = useMemo(() => {
+    return getHwanggeuk28Mansion(infoHwanggeuk.year, infoHwanggeuk.month, infoHwanggeuk.day);
+  }, [infoHwanggeuk]);
   
   const jeolguk = getJeolguk(
     displayData.hwanggeuk.year,
@@ -279,8 +317,7 @@ export function Calendar() {
   };
 
   const handleDayClick = (solarDate: Date) => {
-    const dayGanji = getDayGanZhi(solarDate.getFullYear(), solarDate.getMonth() + 1, solarDate.getDate());
-    navigate(`/madang?ganji=${encodeURIComponent(dayGanji)}`);
+    setSelectedDay(solarDate);
   };
 
   const years = useMemo(() => {
@@ -333,24 +370,24 @@ export function Calendar() {
               <div className="sm:hidden flex flex-col gap-0.5">
                 <div className="flex items-center gap-1.5 text-base whitespace-nowrap">
                   <span className="font-bold text-gray-700 dark:text-gray-200">
-                    {liveHwanggeuk.year}.{liveHwanggeuk.month}.{liveHwanggeuk.day}
+                    {infoHwanggeuk.year}.{infoHwanggeuk.month}.{infoHwanggeuk.day}
                   </span>
                   <span className="font-semibold text-gray-600 dark:text-gray-300">
-                    {WEEKDAYS_HANJA[currentTime.getDay()]}
+                    {WEEKDAYS_HANJA[infoDate.getDay()]}
                   </span>
                   <span className="font-semibold text-gray-600 dark:text-gray-300">
-                    {liveHwanggeuk.yearGanZhi} {liveHwanggeuk.monthGanZhi} {liveDayGanZhi} {liveHourGanZhi}
+                    {infoHwanggeuk.yearGanZhi} {infoHwanggeuk.monthGanZhi} {infoDayGanZhi} {infoHourGanZhi}
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5 text-base whitespace-nowrap">
-                  <span className="font-bold text-gray-700 dark:text-gray-200">{liveJeolguk.name}</span>
-                  <span className="font-semibold text-gray-600 dark:text-gray-300">&lt;소궁,대궁&gt;{liveSogungDaegung.isZungung ? "존궁" : `${liveSogungDaegung.sogung},${liveSogungDaegung.daegung}`}{(() => { const hex = get64HexagramName(liveSogungDaegung.sogung, liveSogungDaegung.daegung); return hex ? ` ${hex.fullName}` : ""; })()}</span>
+                  <span className="font-bold text-gray-700 dark:text-gray-200">{infoJeolguk.name}</span>
+                  <span className="font-semibold text-gray-600 dark:text-gray-300">&lt;소궁,대궁&gt;{infoSogungDaegung.isZungung ? "존궁" : `${infoSogungDaegung.sogung},${infoSogungDaegung.daegung}`}{(() => { const hex = get64HexagramName(infoSogungDaegung.sogung, infoSogungDaegung.daegung); return hex ? ` ${hex.fullName}` : ""; })()}</span>
                   <button 
                     className="slim-badge-cyan cursor-pointer"
                     onClick={(e) => { e.stopPropagation(); setShowTalisman(!showTalisman); }}
                     data-testid="button-mansion-toggle"
                   >
-                    {hwMansion.isZunkong ? hwMansion.mansion : `${hwMansion.mansion}, ${hwMansion.general}`}
+                    {infoMansion.isZunkong ? infoMansion.mansion : `${infoMansion.mansion}, ${infoMansion.general}`}
                   </button>
                 </div>
               </div>
@@ -358,22 +395,22 @@ export function Calendar() {
               <div className="hidden sm:flex items-center justify-between gap-2">
                 <div className="flex items-center gap-1.5 text-base">
                   <span className="font-bold text-gray-700 dark:text-gray-200">
-                    {liveHwanggeuk.year}.{liveHwanggeuk.month}.{liveHwanggeuk.day}
+                    {infoHwanggeuk.year}.{infoHwanggeuk.month}.{infoHwanggeuk.day}
                   </span>
                   <span className="font-semibold text-gray-600 dark:text-gray-300">
-                    {WEEKDAYS_HANJA[currentTime.getDay()]}
+                    {WEEKDAYS_HANJA[infoDate.getDay()]}
                   </span>
                   <span className="font-semibold text-gray-600 dark:text-gray-300">
-                    ({liveHwanggeuk.yearGanZhi}年 {liveHwanggeuk.monthGanZhi}月 {liveDayGanZhi}日 {liveHourGanZhi}時)
+                    ({infoHwanggeuk.yearGanZhi}年 {infoHwanggeuk.monthGanZhi}月 {infoDayGanZhi}日 {infoHourGanZhi}時)
                   </span>
-                  <span className="font-bold text-gray-700 dark:text-gray-200">{liveJeolguk.name}</span>
-                  <span className="font-semibold text-gray-600 dark:text-gray-300">&lt;소궁,대궁&gt;{liveSogungDaegung.isZungung ? "존궁" : `${liveSogungDaegung.sogung},${liveSogungDaegung.daegung}`}{(() => { const hex = get64HexagramName(liveSogungDaegung.sogung, liveSogungDaegung.daegung); return hex ? ` ${hex.fullName}` : ""; })()}</span>
+                  <span className="font-bold text-gray-700 dark:text-gray-200">{infoJeolguk.name}</span>
+                  <span className="font-semibold text-gray-600 dark:text-gray-300">&lt;소궁,대궁&gt;{infoSogungDaegung.isZungung ? "존궁" : `${infoSogungDaegung.sogung},${infoSogungDaegung.daegung}`}{(() => { const hex = get64HexagramName(infoSogungDaegung.sogung, infoSogungDaegung.daegung); return hex ? ` ${hex.fullName}` : ""; })()}</span>
                   <button 
                     className="slim-badge-cyan cursor-pointer"
                     onClick={(e) => { e.stopPropagation(); setShowTalisman(!showTalisman); }}
                     data-testid="button-mansion-toggle-pc"
                   >
-                    {hwMansion.isZunkong ? hwMansion.mansion : `${hwMansion.mansion}, ${hwMansion.general}`}
+                    {infoMansion.isZunkong ? infoMansion.mansion : `${infoMansion.mansion}, ${infoMansion.general}`}
                   </button>
                 </div>
               </div>
@@ -384,40 +421,40 @@ export function Calendar() {
               <div className="sm:hidden flex flex-col gap-0.5">
                 <div className="flex items-center gap-1.5 text-base whitespace-nowrap">
                   <span className="font-bold text-gray-700 dark:text-gray-200">
-                    {currentTime.getFullYear()}.{currentTime.getMonth() + 1}.{currentTime.getDate()}
+                    {infoYear}.{infoMonth}.{infoDay}
                   </span>
                   <span className="font-semibold text-gray-600 dark:text-gray-300">
-                    {WEEKDAYS_HANJA[currentTime.getDay()]}
+                    {WEEKDAYS_HANJA[infoDate.getDay()]}
                   </span>
                   <span className="font-semibold text-gray-600 dark:text-gray-300">
-                    (음{liveSeoncheonData.lunarMonth}.{liveSeoncheonData.lunarDay})
+                    (음{infoSeoncheonData.lunarMonth}.{infoSeoncheonData.lunarDay})
                   </span>
                   <span className="font-semibold text-gray-600 dark:text-gray-300">
-                    {liveSeoncheonData.yearGanZhi} {liveSeoncheonData.monthGanZhi} {liveSeoncheonData.dayGanZhi} {liveSeoncheonHourGanZhi}
+                    {infoSeoncheonData.yearGanZhi} {infoSeoncheonData.monthGanZhi} {infoSeoncheonData.dayGanZhi} {infoSeoncheonHourGanZhi}
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5 text-base whitespace-nowrap">
-                  <span className="font-bold text-gray-700 dark:text-gray-200">{liveSeoncheonData.currentTerm.hanja}</span>
-                  <span className="slim-badge-navy">{liveSeoncheonData.currentTerm.general}</span>
+                  <span className="font-bold text-gray-700 dark:text-gray-200">{infoSeoncheonData.currentTerm.hanja}</span>
+                  <span className="slim-badge-navy">{infoSeoncheonData.currentTerm.general}</span>
                 </div>
               </div>
               {/* PC: 1 line */}
               <div className="hidden sm:flex items-center justify-between gap-2">
                 <div className="flex items-center gap-1.5 text-base">
                   <span className="font-bold text-gray-700 dark:text-gray-200">
-                    {currentTime.getFullYear()}.{currentTime.getMonth() + 1}.{currentTime.getDate()}
+                    {infoYear}.{infoMonth}.{infoDay}
                   </span>
                   <span className="font-semibold text-gray-600 dark:text-gray-300">
-                    {WEEKDAYS_HANJA[currentTime.getDay()]}
+                    {WEEKDAYS_HANJA[infoDate.getDay()]}
                   </span>
                   <span className="font-semibold text-gray-600 dark:text-gray-300">
-                    (음력 {liveSeoncheonData.lunarMonth}.{liveSeoncheonData.lunarDay})
+                    (음력 {infoSeoncheonData.lunarMonth}.{infoSeoncheonData.lunarDay})
                   </span>
                   <span className="font-semibold text-gray-600 dark:text-gray-300">
-                    ({liveSeoncheonData.yearGanZhi}年 {liveSeoncheonData.monthGanZhi}月 {liveSeoncheonData.dayGanZhi}日 {liveSeoncheonHourGanZhi}時)
+                    ({infoSeoncheonData.yearGanZhi}年 {infoSeoncheonData.monthGanZhi}月 {infoSeoncheonData.dayGanZhi}日 {infoSeoncheonHourGanZhi}時)
                   </span>
-                  <span className="font-bold text-gray-700 dark:text-gray-200">{liveSeoncheonData.currentTerm.hanja}</span>
-                  <span className="slim-badge-navy">{liveSeoncheonData.currentTerm.general}</span>
+                  <span className="font-bold text-gray-700 dark:text-gray-200">{infoSeoncheonData.currentTerm.hanja}</span>
+                  <span className="slim-badge-navy">{infoSeoncheonData.currentTerm.general}</span>
                 </div>
               </div>
             </>
@@ -425,19 +462,19 @@ export function Calendar() {
         </div>
 
         {/* Talisman slide-down - only for hwanggeuk */}
-        {calType === "hw" && !hwMansion.isZunkong && (
+        {calType === "hw" && !infoMansion.isZunkong && (
           <div 
             className={`overflow-hidden transition-all duration-300 ease-in-out bg-card border border-border rounded-lg ${showTalisman ? 'max-h-[400px] opacity-100 p-4 my-2' : 'max-h-0 opacity-0 p-0 my-0'}`}
           >
             <div className="flex flex-col items-center">
               <img 
-                src={`/img/28j_${hwMansion.image}.jpg`}
-                alt={`${hwMansion.mansion} 부적`}
+                src={`/img/28j_${infoMansion.image}.jpg`}
+                alt={`${infoMansion.mansion} 부적`}
                 className="max-w-[200px] max-h-[280px] object-contain border border-border rounded-lg shadow-lg bg-white"
               />
               <div className="mt-3 text-center">
-                <div className="font-bold text-lg">{hwMansion.mansion}{hwMansion.general}</div>
-                <div className="text-muted-foreground">{hwMansion.description}</div>
+                <div className="font-bold text-lg">{infoMansion.mansion}{infoMansion.general}</div>
+                <div className="text-muted-foreground">{infoMansion.description}</div>
               </div>
             </div>
           </div>

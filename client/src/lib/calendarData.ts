@@ -968,11 +968,59 @@ const SIXTY_FOUR_HEXAGRAMS: { [key: string]: { hanja: string; korean: string; fu
   "10-10": { hanja: "乾", korean: "건", fullName: "乾爲天" }
 };
 
+// 중궁(6) 관련 괘 명칭 (용담 팔괘: 2=坤, 3=坎, 4=兌, 5=震, 6=中, 7=巽, 8=艮, 9=離, 10=乾)
+const JUNGGUNG_TRIGRAM_NAMES: Record<number, { hanja: string; korean: string }> = {
+  2: { hanja: "坤", korean: "곤" },
+  3: { hanja: "坎", korean: "감" },
+  4: { hanja: "兌", korean: "태" },
+  5: { hanja: "震", korean: "진" },
+  6: { hanja: "中", korean: "중" },
+  7: { hanja: "巽", korean: "손" },
+  8: { hanja: "艮", korean: "간" },
+  9: { hanja: "離", korean: "리" },
+  10: { hanja: "乾", korean: "건" }
+};
+
 // 소궁/대궁에서 64괘 명칭 가져오기
 // 소궁 = 상괘(위), 대궁 = 하괘(아래)
 export function get64HexagramName(sogung: number, daegung: number): { hanja: string; korean: string; fullName: string; lowerTrigram: string; upperTrigram: string } | null {
-  // 중궁(6)이면 64괘에 해당하지 않음
-  if (sogung === 6 || daegung === 6) {
+  // 중궁(6)이 포함된 경우 특수 처리
+  // 대궁=6: X지중 (소궁之中)
+  // 소궁=6: 중지X (中之대궁)
+  if (daegung === 6 && sogung === 6) {
+    // 6,6 = 중지중
+    return {
+      hanja: "中之中",
+      korean: "중지중",
+      fullName: "中之中",
+      lowerTrigram: "中",
+      upperTrigram: "中"
+    };
+  } else if (daegung === 6) {
+    // 대궁이 중궁: X지중 (소궁之中)
+    const upper = JUNGGUNG_TRIGRAM_NAMES[sogung];
+    if (upper) {
+      return {
+        hanja: `${upper.hanja}之中`,
+        korean: `${upper.korean}지중`,
+        fullName: `${upper.hanja}之中`,
+        lowerTrigram: "中",
+        upperTrigram: upper.hanja
+      };
+    }
+    return null;
+  } else if (sogung === 6) {
+    // 소궁이 중궁: 중지X (中之대궁)
+    const lower = JUNGGUNG_TRIGRAM_NAMES[daegung];
+    if (lower) {
+      return {
+        hanja: `中之${lower.hanja}`,
+        korean: `중지${lower.korean}`,
+        fullName: `中之${lower.hanja}`,
+        lowerTrigram: lower.hanja,
+        upperTrigram: "中"
+      };
+    }
     return null;
   }
   

@@ -704,13 +704,15 @@ const SOGUNG_PATTERNS: Record<number, number[]> = {
   10: [10, 9, 8, 7, 6, 5, 4, 3, 2],  // X之十
 };
 
-// 황극력 81궁 계산 공식
+// 황극력 81궁 계산 공식 (엑셀 데이터 기반 검증 완료)
 // 1년 = 366일 = 732 반일 (오전/오후)
-// 대궁: 12시간(반일)마다 2→3→4→5→6→7→8→9→10 순환
-// Position: 대궁사이클(9반일 = 4.5일)마다 2→3→...→10 순환
-// 철학적 배경: 하도(天) + 낙서(地) → 황극(人), 낙서+황극=11, position쌍 합=12
+// 핵심 구조:
+// - X (position): 81 반일(40.5일)마다 2→3→...→10 순환, 대궁 패턴 결정
+// - Y: 9 반일(4.5일)마다 2→3→...→10 순환, 소궁 패턴 결정
+// - 대궁: SOGUNG_PATTERNS[X]를 따라 9개 값 순환
+// - 소궁: SOGUNG_PATTERNS[Y]를 따라 시간 슬롯별 값
 
-function calculateDaegungAndPosition(koreanTime: Date): { daegung: number; position: number; halfDayOfYear: number } {
+function calculateDaegungAndPosition(koreanTime: Date): { daegung: number; position: number; yValue: number; halfDayOfYear: number } {
   // 황극력 연초 시작점 (양력 4월 20일 23:00 KST)
   const year = koreanTime.getFullYear();
   const month = koreanTime.getMonth() + 1;
@@ -727,36 +729,39 @@ function calculateDaegungAndPosition(koreanTime: Date): { daegung: number; posit
   // 시작점: 해당 황극력 연도의 4월 20일 23:00 KST
   // April 20, 23:00 KST = April 20, 14:00 UTC
   // koreanTime은 UTC에 +9시간을 더한 값이므로, epochDate도 동일하게 처리
-  const epochUTC = Date.UTC(epochYear, 3, 20, 14, 0, 0); // 23:00 KST = 14:00 UTC
-  const epochDate = new Date(epochUTC + (9 * 60 * 60 * 1000)); // koreanTime과 동일한 방식으로 +9시간
+  const epochUTC = Date.UTC(epochYear, 3, 20, 14, 0, 0);
+  const epochDate = new Date(epochUTC + (9 * 60 * 60 * 1000));
   
   // 시작점부터 현재까지 경과한 분 계산
   const minutesFromEpoch = Math.floor((koreanTime.getTime() - epochDate.getTime()) / (1000 * 60));
   
-  // 반일(12시간 = 720분) 수 계산 - 732 반일 중 몇 번째인지
-  const halfDayPeriod = 720; // 12시간 = 720분
+  // 반일(12시간 = 720분) 수 계산
+  const halfDayPeriod = 720;
   const totalHalfDays = Math.floor(minutesFromEpoch / halfDayPeriod);
-  const halfDayOfYear = (totalHalfDays % 732) + 1; // 1~732
+  const halfDayOfYear = (totalHalfDays % 732) + 1;
   
-  // 대궁 계산: 반일마다 2→3→4→5→6→7→8→9→10 순환
-  // 오프셋: 소궁/대궁 정보창용
-  const calibrationOffset = -1;
-  const daegungIndex = ((totalHalfDays + calibrationOffset) % 9 + 9) % 9;
-  const daegung = daegungIndex + 2; // 2~10
-  
-  // Position 계산: 대궁사이클(9반일 = 4.5일)마다 2→3→...→10 순환
-  const daegungCycleNum = Math.floor(totalHalfDays / 9);
-  const positionOffset = 3;
-  const positionIndex = ((daegungCycleNum + positionOffset) % 9 + 9) % 9;
+  // X (position): 81 반일마다 순환 (9개 Y값 × 9개 대궁값 = 81 반일)
+  // 대궁 패턴은 SOGUNG_PATTERNS[X]를 따름
+  const positionIndex = (Math.floor(totalHalfDays / 81) % 9 + 9) % 9;
   const position = positionIndex + 2; // 2~10
   
-  return { daegung, position, halfDayOfYear };
+  // Y: 9 반일마다 순환, 소궁 패턴은 SOGUNG_PATTERNS[Y]를 따름
+  const yIndex = (Math.floor(totalHalfDays / 9) % 9 + 9) % 9;
+  const yValue = yIndex + 2; // 2~10
+  
+  // 대궁: SOGUNG_PATTERNS[X][반일 인덱스 within 9-block]
+  const daegungSlotIndex = ((totalHalfDays % 9) + 9) % 9;
+  const daegungPattern = SOGUNG_PATTERNS[position];
+  const daegung = daegungPattern ? daegungPattern[daegungSlotIndex] : 2;
+  
+  return { daegung, position, yValue, halfDayOfYear };
 }
 
 export function getSogungDaegung(date: Date): {
   sogung: number;
   daegung: number;
   position: number;
+  yValue: number;
   timeSlot: number;
   isAM: boolean;
   remainingMinutes: number;
@@ -777,12 +782,12 @@ export function getSogungDaegung(date: Date): {
   // 오전/오후에 따른 소궁 슬롯 (0-8)
   const sogungSlot = (timeSlot - 1) % 9;
   
-  // 대궁과 position 계산 (공식 사용)
-  // 732 반일 중 몇 번째인지로 대궁 결정
-  const { daegung, position, halfDayOfYear } = calculateDaegungAndPosition(koreanTime);
+  // 대궁, position, yValue 계산
+  const { daegung, position, yValue, halfDayOfYear } = calculateDaegungAndPosition(koreanTime);
   
-  // 소궁 조회 (position별 패턴에서)
-  const pattern = SOGUNG_PATTERNS[position];
+  // 소궁 조회: SOGUNG_PATTERNS[Y][시간슬롯]
+  // Y값이 소궁 패턴을 결정 (X之Y에서 Y)
+  const pattern = SOGUNG_PATTERNS[yValue];
   const sogung = pattern ? pattern[sogungSlot] : daegung;
   
   // 남은 시간 계산
@@ -793,6 +798,7 @@ export function getSogungDaegung(date: Date): {
     sogung, 
     daegung,
     position,
+    yValue,
     timeSlot: Math.min(18, Math.max(1, timeSlot)), 
     isAM, 
     remainingMinutes: Math.max(0, Math.min(80, remainingMinutes)),

@@ -269,5 +269,98 @@ export async function registerRoutes(
     res.json({ voteType: vote?.voteType || null });
   });
 
+  // === Message Routes ===
+  
+  // Get unread message count
+  app.get("/api/messages/unread-count", isAuthenticated, async (req, res) => {
+    const userId = (req.user as any)?.claims?.sub;
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const count = await storage.getUnreadCount(userId);
+    res.json({ count });
+  });
+
+  // Get received messages
+  app.get("/api/messages/received", isAuthenticated, async (req, res) => {
+    const userId = (req.user as any)?.claims?.sub;
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const messages = await storage.getReceivedMessages(userId);
+    res.json(messages);
+  });
+
+  // Get sent messages
+  app.get("/api/messages/sent", isAuthenticated, async (req, res) => {
+    const userId = (req.user as any)?.claims?.sub;
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const messages = await storage.getSentMessages(userId);
+    res.json(messages);
+  });
+
+  // Send message
+  app.post("/api/messages", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      const messageSchema = z.object({
+        receiverId: z.string().min(1, "수신자가 필요합니다."),
+        content: z.string().min(1, "내용을 입력해 주세요."),
+      });
+      
+      const parsed = messageSchema.parse(req.body);
+      
+      const message = await storage.sendMessage({
+        senderId: userId,
+        receiverId: parsed.receiverId,
+        content: parsed.content,
+      });
+      
+      res.status(201).json(message);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        return res.status(400).json({
+          message: err.errors[0].message,
+        });
+      }
+      throw err;
+    }
+  });
+
+  // Mark message as read
+  app.post("/api/messages/:id/read", isAuthenticated, async (req, res) => {
+    const userId = (req.user as any)?.claims?.sub;
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
+    const messageId = parseInt(req.params.id);
+    if (isNaN(messageId)) {
+      return res.status(400).json({ message: "Invalid message ID" });
+    }
+    
+    const success = await storage.markAsRead(messageId, userId);
+    res.json({ success });
+  });
+
+  // Get user info by ID (for messaging)
+  app.get("/api/users/:id", async (req, res) => {
+    const user = await storage.getUserById(req.params.id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.json({
+      id: user.id,
+      name: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email || 'Unknown',
+      email: user.email
+    });
+  });
+
   return httpServer;
 }

@@ -1,5 +1,5 @@
-import { users, posts, comments, postVotes, type User, type Post, type Comment, type PostVote } from "@shared/schema";
-import type { InsertPost, InsertComment, InsertPostVote } from "@shared/schema";
+import { users, posts, comments, postVotes, messages, type User, type Post, type Comment, type PostVote, type Message } from "@shared/schema";
+import type { InsertPost, InsertComment, InsertPostVote, InsertMessage } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, sql, and } from "drizzle-orm";
 
@@ -19,6 +19,13 @@ export interface IStorage {
   
   votePost(postId: number, userId: string, voteType: 'like' | 'dislike'): Promise<{ likes: number; dislikes: number }>;
   getUserVote(postId: number, userId: string): Promise<PostVote | null>;
+  
+  sendMessage(message: InsertMessage): Promise<Message>;
+  getReceivedMessages(userId: string): Promise<(Message & { senderName: string; senderEmail: string | null })[]>;
+  getSentMessages(userId: string): Promise<(Message & { receiverName: string; receiverEmail: string | null })[]>;
+  getUnreadCount(userId: string): Promise<number>;
+  markAsRead(messageId: number, userId: string): Promise<boolean>;
+  getUserById(userId: string): Promise<User | null>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -235,6 +242,68 @@ export class DatabaseStorage implements IStorage {
     await db.delete(postVotes).where(eq(postVotes.postId, postId));
     await db.delete(posts).where(eq(posts.id, postId));
     return true;
+  }
+
+  async sendMessage(message: InsertMessage): Promise<Message> {
+    const [newMessage] = await db.insert(messages).values(message).returning();
+    return newMessage;
+  }
+
+  async getReceivedMessages(userId: string): Promise<(Message & { senderName: string; senderEmail: string | null })[]> {
+    const result = await db.select({
+      id: messages.id,
+      senderId: messages.senderId,
+      receiverId: messages.receiverId,
+      content: messages.content,
+      isRead: messages.isRead,
+      createdAt: messages.createdAt,
+      senderName: sql<string>`COALESCE(${users.firstName} || ' ' || ${users.lastName}, ${users.email}, 'Unknown')`,
+      senderEmail: users.email
+    })
+    .from(messages)
+    .leftJoin(users, eq(messages.senderId, users.id))
+    .where(eq(messages.receiverId, userId))
+    .orderBy(desc(messages.createdAt));
+    
+    return result;
+  }
+
+  async getSentMessages(userId: string): Promise<(Message & { receiverName: string; receiverEmail: string | null })[]> {
+    const result = await db.select({
+      id: messages.id,
+      senderId: messages.senderId,
+      receiverId: messages.receiverId,
+      content: messages.content,
+      isRead: messages.isRead,
+      createdAt: messages.createdAt,
+      receiverName: sql<string>`COALESCE(${users.firstName} || ' ' || ${users.lastName}, ${users.email}, 'Unknown')`,
+      receiverEmail: users.email
+    })
+    .from(messages)
+    .leftJoin(users, eq(messages.receiverId, users.id))
+    .where(eq(messages.senderId, userId))
+    .orderBy(desc(messages.createdAt));
+    
+    return result;
+  }
+
+  async getUnreadCount(userId: string): Promise<number> {
+    const result = await db.select({ count: sql<number>`count(*)` })
+      .from(messages)
+      .where(and(eq(messages.receiverId, userId), eq(messages.isRead, 0)));
+    return result[0]?.count || 0;
+  }
+
+  async markAsRead(messageId: number, userId: string): Promise<boolean> {
+    const [msg] = await db.select().from(messages).where(eq(messages.id, messageId));
+    if (!msg || msg.receiverId !== userId) return false;
+    await db.update(messages).set({ isRead: 1 }).where(eq(messages.id, messageId));
+    return true;
+  }
+
+  async getUserById(userId: string): Promise<User | null> {
+    const [user] = await db.select().from(users).where(eq(users.id, userId));
+    return user || null;
   }
 }
 

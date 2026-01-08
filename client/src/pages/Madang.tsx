@@ -437,7 +437,6 @@ export default function Madang() {
                 }}
                 data-testid="button-cancel-post"
               >
-                <X className="h-4 w-4 mr-1" />
                 취소
               </Button>
             </div>
@@ -566,7 +565,6 @@ export default function Madang() {
                                     onClick={cancelEdit}
                                     data-testid="button-cancel-edit"
                                   >
-                                    <X className="h-4 w-4 mr-1" />
                                     취소
                                   </Button>
                                 </div>

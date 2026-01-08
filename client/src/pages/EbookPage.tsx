@@ -282,7 +282,6 @@ export default function EbookPage() {
                 }}
                 data-testid="button-cancel-ebook"
               >
-                <X className="h-4 w-4 mr-1" />
                 취소
               </Button>
             </div>

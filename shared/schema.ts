@@ -54,3 +54,17 @@ export const insertPostVoteSchema = createInsertSchema(postVotes).omit({ id: tru
 
 export type PostVote = typeof postVotes.$inferSelect;
 export type InsertPostVote = z.infer<typeof insertPostVoteSchema>;
+
+export const messages = pgTable("messages", {
+  id: serial("id").primaryKey(),
+  senderId: varchar("sender_id").references(() => users.id).notNull(),
+  receiverId: varchar("receiver_id").references(() => users.id).notNull(),
+  content: text("content").notNull(),
+  isRead: integer("is_read").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertMessageSchema = createInsertSchema(messages).omit({ id: true, createdAt: true, isRead: true });
+
+export type Message = typeof messages.$inferSelect;
+export type InsertMessage = z.infer<typeof insertMessageSchema>;

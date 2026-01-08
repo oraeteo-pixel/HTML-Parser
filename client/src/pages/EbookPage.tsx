@@ -4,7 +4,6 @@ import { Footer } from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { RichEditor, type MediaItem } from "@/components/RichEditor";
 import { PdfViewer } from "@/components/PdfViewer";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -12,7 +11,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useSearch, useLocation } from "wouter";
-import { BookOpen, FileText, Download, Play, Mail, X, Pencil, Trash2, Plus, MessageSquare } from "lucide-react";
+import { BookOpen, FileText, Download, Play, Pencil, MessageSquare } from "lucide-react";
 import type { Post } from "@shared/schema";
 
 type PostWithAuthor = Post & { author: string; authorEmail: string | null; commentCount?: number };
@@ -433,68 +432,6 @@ export default function EbookPage() {
                       <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
                         {post.content}
                       </p>
-                    )}
-                    <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1 flex-wrap">
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <button
-                            className="font-medium hover:underline cursor-pointer"
-                            onClick={(e) => e.stopPropagation()}
-                            data-testid={`ebook-author-${post.id}`}
-                          >
-                            {post.author}
-                          </button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-2" align="start">
-                          <div className="flex flex-col gap-2">
-                            {post.authorEmail && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="justify-start"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  window.location.href = `mailto:${post.authorEmail}?subject=[오리알터] ${post.author}님께`;
-                                }}
-                                data-testid={`ebook-email-author-${post.id}`}
-                              >
-                                <Mail className="h-4 w-4 mr-2" />
-                                이메일 보내기
-                              </Button>
-                            )}
-                          </div>
-                        </PopoverContent>
-                      </Popover>
-                      <span> · {formatDate(post.createdAt)}</span>
-                    </p>
-                    {user && (user.id === post.authorId || user.isAdmin === 1) && (
-                      <div className="flex gap-1 mt-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            startEdit(post);
-                          }}
-                          data-testid={`button-edit-ebook-${post.id}`}
-                        >
-                          <Pencil className="h-3 w-3 mr-1" />
-                          수정
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDelete(post);
-                          }}
-                          disabled={deletePost.isPending}
-                          data-testid={`button-delete-ebook-${post.id}`}
-                        >
-                          <Trash2 className="h-3 w-3 mr-1" />
-                          삭제
-                        </Button>
-                      </div>
                     )}
                   </CardHeader>
                 </Card>

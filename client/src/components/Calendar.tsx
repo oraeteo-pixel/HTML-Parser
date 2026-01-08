@@ -20,7 +20,7 @@ import {
   get8Trigram,
   getJeolguk,
   getSogungDaegung,
-  formatSogungDaegungHanja,
+  formatPositionDaegungHanja,
   get81PalaceName,
   get64HexagramName,
   getWeekdayHanja,
@@ -625,12 +625,12 @@ export function Calendar() {
                   <div className="font-bold text-fluid-lg">{jeolguk.name}</div>
                 </div>
                 <div className="info-card">
-                  <div className="text-muted-foreground text-xs mb-1 uppercase tracking-wide">소궁 · 대궁</div>
+                  <div className="text-muted-foreground text-xs mb-1 uppercase tracking-wide">81궁 (X之Y)</div>
                   <div className="font-bold text-fluid-lg">
-                    {liveSogungDaegung.isZungung ? "존궁" : formatSogungDaegungHanja(liveSogungDaegung.sogung, liveSogungDaegung.daegung)}
+                    {liveSogungDaegung.isZungung ? "존궁" : formatPositionDaegungHanja(liveSogungDaegung.position, liveSogungDaegung.daegung)}
                   </div>
                   {!liveSogungDaegung.isZungung && (
-                    <div className="text-muted-foreground text-sm">{get81PalaceName(liveSogungDaegung.sogung, liveSogungDaegung.daegung)}</div>
+                    <div className="text-muted-foreground text-sm">{get81PalaceName(liveSogungDaegung.position, liveSogungDaegung.daegung)}</div>
                   )}
                 </div>
                 <div className="info-card col-span-2">

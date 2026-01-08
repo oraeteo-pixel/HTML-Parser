@@ -744,6 +744,7 @@ function calculateDaegungAndPosition(koreanTime: Date): { daegung: number; posit
 export function getSogungDaegung(date: Date): {
   sogung: number;
   daegung: number;
+  position: number;
   timeSlot: number;
   isAM: boolean;
   remainingMinutes: number;
@@ -778,7 +779,8 @@ export function getSogungDaegung(date: Date): {
   
   return { 
     sogung, 
-    daegung, 
+    daegung,
+    position,
     timeSlot: Math.min(18, Math.max(1, timeSlot)), 
     isAM, 
     remainingMinutes: Math.max(0, Math.min(80, remainingMinutes)),
@@ -792,27 +794,29 @@ export function getWeekdayHanja(dayOfWeek: number): string {
 
 const SOGUNG_DAEGUNG_HANJA = ["", "", "二", "三", "四", "五", "六", "七", "八", "九", "十"];
 
-// 81궁 명칭 매핑: [소궁][대궁] = 명칭
-// 소궁: 2-10, 대궁: 2-10 (각각 인덱스 0-8에 해당)
+// 81궁 명칭 매핑: [position][대궁] = 명칭
+// 81궁 이름은 4.5일(대궁 기간) 동안 고정됨
+// X之Y = position之대궁 (소궁은 이름에 영향 없음)
+// position: 2-10, 대궁: 2-10 (각각 9개씩 = 81개 조합)
 const EIGHTY_ONE_PALACE_NAMES: { [key: string]: string } = {
-  // 대궁 2 (二之X)
-  "2-2": "元化", "2-3": "順化", "2-4": "遂化", "2-5": "履化", "2-6": "寧化", "2-7": "敷化", "2-8": "順化", "2-9": "恒化", "2-10": "始化",
-  // 대궁 3 (三之X)
-  "3-2": "元和", "3-3": "順和", "3-4": "遂和", "3-5": "履和", "3-6": "寧和", "3-7": "敷和", "3-8": "順和", "3-9": "恒和", "3-10": "始和",
-  // 대궁 4 (四之X)
-  "4-2": "元盛", "4-3": "順盛", "4-4": "遂盛", "4-5": "履盛", "4-6": "寧盛", "4-7": "敷盛", "4-8": "順盛", "4-9": "恒盛", "4-10": "始盛",
-  // 대궁 5 (五之X)
-  "5-2": "元平", "5-3": "順平", "5-4": "遂平", "5-5": "履平", "5-6": "寧平", "5-7": "敷平", "5-8": "順平", "5-9": "恒平", "5-10": "始平",
-  // 대궁 6 (六之X)
-  "6-2": "元寧", "6-3": "順寧", "6-4": "遂寧", "6-5": "履寧", "6-6": "寧寧", "6-7": "敷寧", "6-8": "順寧", "6-9": "恒寧", "6-10": "始寧",
-  // 대궁 7 (七之X)
-  "7-2": "元康", "7-3": "順康", "7-4": "遂康", "7-5": "履康", "7-6": "寧康", "7-7": "敷康", "7-8": "順康", "7-9": "恒康", "7-10": "始康",
-  // 대궁 8 (八之X)
-  "8-2": "元泰", "8-3": "順泰", "8-4": "遂泰", "8-5": "履泰", "8-6": "寧泰", "8-7": "敷泰", "8-8": "順泰", "8-9": "恒泰", "8-10": "始泰",
-  // 대궁 9 (九之X)
-  "9-2": "元熙", "9-3": "順熙", "9-4": "遂熙", "9-5": "履熙", "9-6": "寧熙", "9-7": "敷熙", "9-8": "順熙", "9-9": "恒熙", "9-10": "始熙",
-  // 대궁 10 (十之X)
-  "10-2": "元興", "10-3": "順興", "10-4": "遂興", "10-5": "履興", "10-6": "寧興", "10-7": "敷興", "10-8": "順興", "10-9": "恒興", "10-10": "始興"
+  // Position 2 (二之X): 대궁 2→10
+  "2-2": "原", "2-3": "潛", "2-4": "守", "2-5": "信", "2-6": "直", "2-7": "蒙", "2-8": "閑", "2-9": "須", "2-10": "厲",
+  // Position 3 (三之X): 대궁 2→10
+  "3-2": "成", "3-3": "沖", "3-4": "振", "3-5": "祈", "3-6": "常", "3-7": "柔", "3-8": "易", "3-9": "親", "3-10": "華",
+  // Position 4 (四之X): 대궁 2→10
+  "4-2": "見", "4-3": "獲", "4-4": "從", "4-5": "交", "4-6": "育", "4-7": "壯", "4-8": "興", "4-9": "欣", "4-10": "舒",
+  // Position 5 (五之X): 대궁 2→10
+  "5-2": "比", "5-3": "開", "5-4": "晉", "5-5": "公", "5-6": "益", "5-7": "章", "5-8": "盈", "5-9": "錫", "5-10": "靡",
+  // Position 6 (六之X): 대궁 2→10
+  "6-2": "庶", "6-3": "決", "6-4": "豫", "6-5": "升", "6-6": "中", "6-7": "伏", "6-8": "過", "6-9": "疑", "6-10": "寡",
+  // Position 7 (七之X): 대궁 2→10
+  "7-2": "飾", "7-3": "戾", "7-4": "虛", "7-5": "昧", "7-6": "損", "7-7": "用", "7-8": "郤", "7-9": "翕", "7-10": "遠",
+  // Position 8 (八之X): 대궁 2→10
+  "8-2": "迅", "8-3": "懼", "8-4": "除", "8-5": "弱", "8-6": "疾", "8-7": "競", "8-8": "分", "8-9": "誦", "8-10": "收",
+  // Position 9 (九之X): 대궁 2→10
+  "9-2": "實", "9-3": "賓", "9-4": "危", "9-5": "堅", "9-6": "革", "9-7": "報", "9-8": "止", "9-9": "戎", "9-10": "結",
+  // Position 10 (十之X): 대궁 2→10
+  "10-2": "養", "10-3": "遇", "10-4": "勝", "10-5": "囚", "10-6": "任", "10-7": "固", "10-8": "移", "10-9": "墮", "10-10": "終"
 };
 
 export function numberToSogungHanja(num: number): string {
@@ -822,12 +826,19 @@ export function numberToSogungHanja(num: number): string {
   return num.toString();
 }
 
+// X之Y 표기: position之대궁 (이름은 4.5일 동안 고정)
+export function formatPositionDaegungHanja(position: number, daegung: number): string {
+  return `${numberToSogungHanja(position)}之${numberToSogungHanja(daegung)}`;
+}
+
+// 이전 함수명 호환 (deprecated - formatPositionDaegungHanja 사용 권장)
 export function formatSogungDaegungHanja(sogung: number, daegung: number): string {
   return `${numberToSogungHanja(sogung)}之${numberToSogungHanja(daegung)}`;
 }
 
-export function get81PalaceName(sogung: number, daegung: number): string {
-  const key = `${sogung}-${daegung}`;
+// 81궁 이름 조회 (position과 대궁으로 결정, 소궁은 영향 없음)
+export function get81PalaceName(position: number, daegung: number): string {
+  const key = `${position}-${daegung}`;
   return EIGHTY_ONE_PALACE_NAMES[key] || "";
 }
 

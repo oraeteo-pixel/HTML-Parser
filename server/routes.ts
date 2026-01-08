@@ -316,6 +316,12 @@ export async function registerRoutes(
       
       const parsed = messageSchema.parse(req.body);
       
+      // Verify receiver exists before sending
+      const receiver = await storage.getUserById(parsed.receiverId);
+      if (!receiver) {
+        return res.status(400).json({ message: "수신자를 찾을 수 없습니다." });
+      }
+      
       const message = await storage.sendMessage({
         senderId: userId,
         receiverId: parsed.receiverId,
@@ -349,16 +355,15 @@ export async function registerRoutes(
     res.json({ success });
   });
 
-  // Get user info by ID (for messaging)
-  app.get("/api/users/:id", async (req, res) => {
+  // Get user info by ID (for messaging) - protected, only returns name
+  app.get("/api/users/:id", isAuthenticated, async (req, res) => {
     const user = await storage.getUserById(req.params.id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
     res.json({
       id: user.id,
-      name: `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.email || 'Unknown',
-      email: user.email
+      name: `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Unknown'
     });
   });
 

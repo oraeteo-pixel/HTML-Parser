@@ -215,19 +215,20 @@ export function JeolgukChart({ date }: JeolgukChartProps) {
               const isToday = ganji === todayGanZhi;
               const dayOffset = getGanjiDayOffset(ganji);
               return (
-                <div
+                <span
                   key={index}
                   className={`
-                    px-1.5 py-0.5 rounded whitespace-nowrap
+                    px-1.5 py-0.5 rounded inline-block
                     ${isToday 
                       ? 'bg-[hsl(var(--orae-navy))] text-white font-bold' 
                       : 'bg-muted/30 text-muted-foreground'}
                   `}
+                  style={{ writingMode: 'horizontal-tb' }}
                   title={isToday ? "오늘" : `${dayOffset}일 후`}
                   data-testid={`ganji-${ganji}`}
                 >
                   {ganji}
-                </div>
+                </span>
               );
             })}
           </div>

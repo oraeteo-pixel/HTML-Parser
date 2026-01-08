@@ -347,7 +347,7 @@ export default function Madang() {
                       <td className="p-1 border-r text-center align-top">
                         {post.ganji ? (
                           <button
-                            className="px-0.5 py-0 rounded text-white text-[9px] font-normal cursor-pointer hover:opacity-80"
+                            className="px-1 py-0.5 rounded text-white text-xs font-medium cursor-pointer hover:opacity-80"
                             style={{ backgroundColor: 'hsl(215 50% 35%)' }}
                             onClick={(e) => {
                               e.stopPropagation();

@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { format, getDay, isSameDay } from "date-fns";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useLocation } from "wouter";
@@ -60,6 +60,7 @@ export function Calendar() {
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
   const [showDayDetail, setShowDayDetail] = useState(false);
   const [showTalisman, setShowTalisman] = useState(false);
+  const infoBoxRef = useRef<HTMLDivElement>(null);
 
   const hwMonthData = useMemo(() => {
     if (calType === "hw") {
@@ -318,6 +319,10 @@ export function Calendar() {
 
   const handleDayClick = (solarDate: Date) => {
     setSelectedDay(solarDate);
+    setShowDayDetail(true);
+    setTimeout(() => {
+      infoBoxRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
   };
 
   const years = useMemo(() => {
@@ -651,6 +656,7 @@ export function Calendar() {
 
       {showDayDetail && (
         <div 
+          ref={infoBoxRef}
           id="day-detail-section" 
           className="mt-4 p-4 rounded-md border border-border bg-card animate-in slide-in-from-top-2 duration-200"
         >

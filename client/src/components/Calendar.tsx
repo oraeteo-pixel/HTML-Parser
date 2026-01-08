@@ -313,7 +313,14 @@ export function Calendar() {
     setHwMonth(todayHwNew.month);
     setSolarYear(today.getFullYear());
     setSolarMonth(today.getMonth() + 1);
-    setSelectedDay(null);
+    setSelectedDay(today);
+    setShowDayDetail(true);
+    setTimeout(() => {
+      const todayCell = document.querySelector('.calendar-cell.today');
+      if (todayCell) {
+        todayCell.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }, 100);
   };
 
   const handleDayClick = (solarDate: Date) => {

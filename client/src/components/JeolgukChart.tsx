@@ -206,10 +206,10 @@ export function JeolgukChart({ date }: JeolgukChartProps) {
         </div>
       </div>
 
-      {/* 60 Ganji Reference */}
-      <div className="mt-4 p-3 bg-muted/20 rounded-lg">
-        <div className="text-sm font-bold orae-navy mb-2 text-center">60甲子 순환</div>
-        <div className="grid grid-cols-10 gap-1 text-[9px] text-center">
+      {/* 60 Ganji Reference - compact horizontal layout */}
+      <div className="mt-4 p-2 bg-muted/20 rounded-lg">
+        <div className="text-xs font-bold orae-navy mb-1.5 text-center">60甲子 순환</div>
+        <div className="flex flex-wrap justify-center gap-0.5 text-[8px]">
           {SIXTY_GANJI.map((ganji, index) => {
             const isToday = ganji === todayGanZhi;
             const dayOffset = getGanjiDayOffset(ganji);
@@ -217,10 +217,10 @@ export function JeolgukChart({ date }: JeolgukChartProps) {
               <div
                 key={index}
                 className={`
-                  p-1 rounded
+                  px-1 py-0.5 rounded
                   ${isToday 
                     ? 'bg-[hsl(var(--orae-navy))] text-white font-bold' 
-                    : 'bg-muted/30'}
+                    : 'text-muted-foreground'}
                 `}
                 title={isToday ? "오늘" : `${dayOffset}일 후`}
                 data-testid={`ganji-${ganji}`}

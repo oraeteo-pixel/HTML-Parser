@@ -372,42 +372,6 @@ export default function Madang() {
                         <span className="sm:hidden text-xs text-muted-foreground">{post.author}</span>
                         {isExpanded && (
                           <div className="mt-3 border-t pt-3" onClick={(e) => e.stopPropagation()}>
-                            <div className="flex items-center gap-2 text-xs text-muted-foreground mb-3">
-                              <Popover>
-                                <PopoverTrigger asChild>
-                                  <button className="font-medium hover:underline cursor-pointer">
-                                    {post.author}
-                                  </button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-2" align="start">
-                                  <div className="flex flex-col gap-1">
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="justify-start"
-                                      onClick={() => setFilterAuthor(post.author)}
-                                    >
-                                      이 작성자의 글만 보기
-                                    </Button>
-                                    {post.authorEmail && (
-                                      <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        className="justify-start"
-                                        onClick={() => {
-                                          window.location.href = `mailto:${post.authorEmail}?subject=[오리알터] ${post.author}님께`;
-                                        }}
-                                      >
-                                        <Mail className="h-4 w-4 mr-2" />
-                                        이메일 보내기
-                                      </Button>
-                                    )}
-                                  </div>
-                                </PopoverContent>
-                              </Popover>
-                              <span>·</span>
-                              <span>{formatDate(post.createdAt)}</span>
-                            </div>
                             <div className="prose prose-sm dark:prose-invert max-w-none mb-3">
                               {post.content.split("\n").map((paragraph, i) => (
                                 <p key={i}>{paragraph}</p>

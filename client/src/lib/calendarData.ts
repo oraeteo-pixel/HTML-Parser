@@ -920,7 +920,7 @@ const SIXTY_FOUR_HEXAGRAMS: { [key: string]: { hanja: string; korean: string; fu
   "4-7": { hanja: "中孚", korean: "중부", fullName: "風澤中孚" },
   "4-8": { hanja: "損", korean: "손", fullName: "山澤損" },
   "4-9": { hanja: "睽", korean: "규", fullName: "火澤睽" },
-  "4-10": { hanja: "夬", korean: "쾌", fullName: "天澤夬" },
+  "4-10": { hanja: "履", korean: "리", fullName: "天澤履" },
   // 震 (5=雷) 하괘
   "5-2": { hanja: "復", korean: "복", fullName: "地雷復" },
   "5-3": { hanja: "屯", korean: "둔", fullName: "水雷屯" },
@@ -960,7 +960,7 @@ const SIXTY_FOUR_HEXAGRAMS: { [key: string]: { hanja: string; korean: string; fu
   // 乾 (10=天) 하괘
   "10-2": { hanja: "泰", korean: "태", fullName: "地天泰" },
   "10-3": { hanja: "需", korean: "수", fullName: "水天需" },
-  "10-4": { hanja: "履", korean: "이", fullName: "澤天履" },
+  "10-4": { hanja: "夬", korean: "쾌", fullName: "澤天夬" },
   "10-5": { hanja: "大壯", korean: "대장", fullName: "雷天大壯" },
   "10-7": { hanja: "小畜", korean: "소축", fullName: "風天小畜" },
   "10-8": { hanja: "大畜", korean: "대축", fullName: "山天大畜" },

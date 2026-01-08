@@ -704,42 +704,82 @@ const SOGUNG_PATTERNS: Record<number, number[]> = {
   10: [10, 9, 8, 7, 6, 5, 4, 3, 2],  // X之十
 };
 
-// 구궁도3.xls 기반 소궁/대궁 계산 (2014-01-01 00:20 KST epoch)
-// 핵심 발견:
-// - 12년 = 4383일 = 8766 반일이 하나의 완전한 사이클
-// - 2014년과 2026년이 동일한 패턴 (position 2, daegung 2로 시작)
-// - Position: 12년 사이클 내에서 9반일마다 2→3→...→10 순환
-// - 소궁: SOGUNG_PATTERNS[position][slotInHalfDay]
-
-const CYCLE_LENGTH_HALF_DAYS = 8766; // 12년 = 완전한 사이클
+// 구궁도3.xls 기반 소궁/대궁 계산
+// 핵심 발견 (2026-01-09 검증):
+// - 2014년과 2026년의 1월 1~10일 패턴이 완전히 동일
+// - 매년 1월 1일 AM = position 2, daegung 2로 시작
+// - 연중 반일 인덱스 기반 계산이 정확
+// - AM/PM 경계: 00:20 KST
 
 function calculateDaegungAndPosition(koreanTime: Date): { daegung: number; sogung: number; position: number; yValue: number; halfDayOfYear: number; totalSlots: number; slotInHalfDay: number } {
-  // Epoch: 2014-01-01 00:20 KST (구궁도3.xls 첫 데이터: 소궁2, 대궁2)
-  // 00:20 KST = 이전날 15:20 UTC
-  const epochUTC = Date.UTC(2013, 11, 31, 15, 20, 0); // Dec 31, 2013 15:20 UTC = Jan 1, 2014 00:20 KST
+  // 한국 시간 추출
+  const hours = koreanTime.getHours();
+  const minutes = koreanTime.getMinutes();
+  const totalMinutesOfDay = hours * 60 + minutes;
   
-  // 현재 시간까지의 총 분 계산
-  const minutesFromEpoch = Math.floor((koreanTime.getTime() - epochUTC) / (1000 * 60));
+  // 연초 기준일 계산
+  const year = koreanTime.getFullYear();
+  const yearStart = new Date(year, 0, 1);
   
-  // 총 80분 슬롯 수 계산
-  const slotPeriod = 80;
-  const totalSlots = Math.floor(minutesFromEpoch / slotPeriod);
+  // 연중 일자 (1-indexed)
+  let dayOfYear = Math.floor((koreanTime.getTime() - yearStart.getTime()) / (24 * 60 * 60 * 1000)) + 1;
   
-  // 슬롯 내 위치 (0-8)
-  const slotInHalfDay = ((totalSlots % 9) + 9) % 9;
+  // AM/PM 결정 (00:20 기준)
+  // 0시00분~0시19분 = 이전 날의 PM 마지막 슬롯 연장
+  // 0시20분~12시19분 = AM
+  // 12시20분~24시00분 = PM
+  let isAM: boolean;
+  let adjustedDayOfYear = dayOfYear;
   
-  // 반일(9슬롯) 수 계산
-  const totalHalfDays = Math.floor(totalSlots / 9);
-  const halfDayOfYear = (totalHalfDays % 732) + 1;
+  if (totalMinutesOfDay < 20) {
+    // 자정~0시20분 = 이전 날의 PM
+    isAM = false;
+    adjustedDayOfYear = dayOfYear - 1;
+    if (adjustedDayOfYear < 1) {
+      // 1월 1일 자정~0시20분 = 이전 해 마지막 날 PM
+      adjustedDayOfYear = 365; // 간단화 (윤년 무시, 어차피 다음 슬롯으로 바로 넘어감)
+    }
+  } else if (totalMinutesOfDay < 12 * 60 + 20) {
+    // AM (0시20분~12시20분)
+    isAM = true;
+  } else {
+    // PM (12시20분~24시00분)
+    isAM = false;
+  }
   
-  // 대궁 계산: 반일마다 2→3→4→5→6→7→8→9→10 순환
-  const daegung = (totalHalfDays % 9) + 2;
+  // 연중 반일 인덱스 (0-indexed)
+  // 1월 1일 AM = 0, 1월 1일 PM = 1, 1월 2일 AM = 2, ...
+  const halfDayOfYear = (adjustedDayOfYear - 1) * 2 + (isAM ? 0 : 1);
   
-  // Position 계산: 12년 사이클 내에서 9반일마다 순환
-  // totalHalfDays % 8766 = 12년 사이클 내 위치
-  const halfDayInCycle = ((totalHalfDays % CYCLE_LENGTH_HALF_DAYS) + CYCLE_LENGTH_HALF_DAYS) % CYCLE_LENGTH_HALF_DAYS;
-  const positionCycle = Math.floor(halfDayInCycle / 9);
+  // 대궁 계산: 반일 인덱스 % 9 + 2 (2→3→4→5→6→7→8→9→10 순환)
+  const daegung = (halfDayOfYear % 9) + 2;
+  
+  // Position 계산: 9반일마다 2→3→...→10 순환
+  const positionCycle = Math.floor(halfDayOfYear / 9);
   const position = (positionCycle % 9) + 2;
+  
+  // 슬롯 내 위치 계산 (80분 간격, 0-8)
+  // AM: 00:20, 01:40, 03:00, 04:20, 05:40, 07:00, 08:20, 09:40, 11:00
+  // PM: 12:20, 13:40, 15:00, 16:20, 17:40, 19:00, 20:20, 21:40, 23:00
+  let slotStartMinutes: number;
+  if (isAM) {
+    slotStartMinutes = 20; // 00:20
+  } else {
+    slotStartMinutes = 12 * 60 + 20; // 12:20
+  }
+  
+  let effectiveMinutes = totalMinutesOfDay;
+  if (totalMinutesOfDay < 20) {
+    // 이전 날 PM의 마지막 슬롯 (23:00~00:20)
+    effectiveMinutes = 23 * 60 + (totalMinutesOfDay + 60); // 가상의 23:xx로 변환
+    slotStartMinutes = 12 * 60 + 20;
+  }
+  
+  const minutesIntoHalfDay = effectiveMinutes - slotStartMinutes;
+  const slotInHalfDay = Math.max(0, Math.min(8, Math.floor(minutesIntoHalfDay / 80)));
+  
+  // 총 슬롯 수 (18슬롯/일)
+  const totalSlots = halfDayOfYear * 9 + slotInHalfDay;
   
   // 소궁 계산: SOGUNG_PATTERNS[position][slotInHalfDay]
   const pattern = SOGUNG_PATTERNS[position];

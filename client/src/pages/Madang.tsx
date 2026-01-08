@@ -565,7 +565,7 @@ export default function Madang() {
                           {postMediaItems.length > 0 && (
                             <span className="text-primary text-xs flex-shrink-0">[{postMediaItems.length}]</span>
                           )}
-                          {user && (user as any).claims?.sub === post.authorId && (
+                          {user && user.id === post.authorId && (
                             <div className="flex gap-0.5 ml-auto flex-shrink-0" onClick={(e) => e.stopPropagation()}>
                               <Button
                                 variant="ghost"
@@ -630,7 +630,7 @@ export default function Madang() {
                                 )}
                                 <div className="my-3 flex items-center justify-between flex-wrap gap-2">
                                   <VoteButtons postId={post.id} likes={post.likes || 0} dislikes={post.dislikes || 0} user={user} />
-                                  {user && (user as any).claims?.sub === post.authorId && (
+                                  {user && user.id === post.authorId && (
                                     <div className="flex gap-1">
                                       <Button
                                         variant="ghost"

@@ -459,7 +459,7 @@ export default function EbookPage() {
                       </Popover>
                       <span> · {formatDate(post.createdAt)}</span>
                     </p>
-                    {user && (user as any).claims?.sub === post.authorId && (
+                    {user && user.id === post.authorId && (
                       <div className="flex gap-1 mt-2">
                         <Button
                           variant="ghost"

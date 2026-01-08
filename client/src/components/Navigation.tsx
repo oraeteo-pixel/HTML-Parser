@@ -1,4 +1,4 @@
-import { User, Star, BookOpen, CalendarDays, Users, LogOut, Loader2, PenSquare, Mail } from "lucide-react";
+import { User, Star, BookOpen, CalendarDays, Users, LogOut, Loader2, Mail } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import logoImage from "@assets/image_1767628183426.png";
@@ -82,40 +82,6 @@ export function Navigation() {
               </div>
             ) : isAuthenticated && user ? (
               <>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <button 
-                    className="flex flex-col items-center gap-0 group cursor-pointer"
-                    data-testid="nav-write"
-                  >
-                    <PenSquare className="h-6 w-6 sm:h-8 sm:w-8 group-hover:opacity-70 transition-opacity text-primary" strokeWidth={2.5} />
-                  </button>
-                </PopoverTrigger>
-                <PopoverContent className="w-40 p-2">
-                  <div className="space-y-1">
-                    <Button 
-                      variant="ghost"
-                      size="sm"
-                      className="w-full justify-start"
-                      onClick={() => setLocation("/madang?write=true")}
-                      data-testid="button-write-madang"
-                    >
-                      <Users className="h-4 w-4 mr-2" />
-                      마당에 글쓰기
-                    </Button>
-                    <Button 
-                      variant="ghost"
-                      size="sm"
-                      className="w-full justify-start"
-                      onClick={() => setLocation("/ebook?write=true")}
-                      data-testid="button-write-ebook"
-                    >
-                      <BookOpen className="h-4 w-4 mr-2" />
-                      전자책 올리기
-                    </Button>
-                  </div>
-                </PopoverContent>
-              </Popover>
               <Link
                 href="/messages"
                 className="flex flex-col items-center gap-0 group cursor-pointer relative"

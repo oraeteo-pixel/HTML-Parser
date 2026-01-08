@@ -740,19 +740,19 @@ function calculateDaegungAndPosition(koreanTime: Date): { daegung: number; posit
   const totalHalfDays = Math.floor(minutesFromEpoch / halfDayPeriod);
   const halfDayOfYear = (totalHalfDays % 732) + 1;
   
-  // X (position): 81 반일마다 순환 (9개 Y값 × 9개 대궁값 = 81 반일)
-  // 대궁 패턴은 SOGUNG_PATTERNS[X]를 따름
-  const positionIndex = (Math.floor(totalHalfDays / 81) % 9 + 9) % 9;
+  // 대궁 계산: 반일마다 2→3→4→5→6→7→8→9→10 순환 (원래 계산 방식)
+  const calibrationOffset = -1;
+  const daegungIndex = ((totalHalfDays + calibrationOffset) % 9 + 9) % 9;
+  const daegung = daegungIndex + 2; // 2~10
+  
+  // Position 계산: 대궁사이클(9반일 = 4.5일)마다 2→3→...→10 순환
+  const daegungCycleNum = Math.floor(totalHalfDays / 9);
+  const positionOffset = 3;
+  const positionIndex = ((daegungCycleNum + positionOffset) % 9 + 9) % 9;
   const position = positionIndex + 2; // 2~10
   
-  // Y: 9 반일마다 순환, 소궁 패턴은 SOGUNG_PATTERNS[Y]를 따름
-  const yIndex = (Math.floor(totalHalfDays / 9) % 9 + 9) % 9;
-  const yValue = yIndex + 2; // 2~10
-  
-  // 대궁: SOGUNG_PATTERNS[X][반일 인덱스 within 9-block]
-  const daegungSlotIndex = ((totalHalfDays % 9) + 9) % 9;
-  const daegungPattern = SOGUNG_PATTERNS[position];
-  const daegung = daegungPattern ? daegungPattern[daegungSlotIndex] : 2;
+  // yValue = position (기존 호환성 유지)
+  const yValue = position;
   
   return { daegung, position, yValue, halfDayOfYear };
 }

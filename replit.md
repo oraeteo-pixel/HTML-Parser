@@ -155,7 +155,7 @@ The `shared/` directory contains code used by both frontend and backend:
 - **대궁 계산 공식**:
   - 반일(12시간=720분) 수 계산: `totalHalfDays = (현재시간 - 시작점) / 720분`
   - 대궁 = `(totalHalfDays + calibrationOffset) % 9 + 2` (2~10 순환)
-  - calibrationOffset = -1 (2026년 1월 9일에 소궁=8, 대궁=4 맞춤)
+  - calibrationOffset = 3 (2026년 1월 24일 오전: 소궁=9, 대궁=6 맞춤)
 - **Position(24절국) 계산 공식**:
   - 대궁사이클 수: `daegungCycleNum = totalHalfDays / 9`
   - Position = `(daegungCycleNum + positionOffset) % 9 + 2` (2~10 순환)
@@ -183,8 +183,12 @@ The `shared/` directory contains code used by both frontend and backend:
   - 소궁 싸이클: 8→5→2→9→6→3→10→7→4 (8을 앞세운 9궁 순환)
   - 오전/오후 나눠 총 9번 운행, 4.5일에 걸쳐 9궁 완전 순환
 - **소궁 계산**:
-  - 시간 슬롯: 23:20부터 80분 간격 (슬롯 1-9 오전, 10-18 오후)
+  - 시간 슬롯: 23:00부터 80분 간격 (슬롯 1-9 오전, 10-18 오후)
+  - 9차(9번째 슬롯): 09:40 ~ 11:00 (오전 마지막)
   - 소궁 = SOGUNG_PATTERNS[position][슬롯인덱스]
+- **참조 데이터**:
+  - 소궁대궁.xlsx: 81궁 상태 전환 패턴 표 (사용자 기준)
+  - 구궁도3.xls: 2014년~ 실제 날짜/시간 매핑 (시간 시작: 00:20)
 - **소궁 패턴** (position별, 낙서 기반):
   - Position 2: [2,3,4,5,6,7,8,9,10]
   - Position 3: [3,4,7,2,6,10,5,8,9]

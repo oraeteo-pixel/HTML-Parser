@@ -705,14 +705,16 @@ const SOGUNG_PATTERNS: Record<number, number[]> = {
 };
 
 // 구궁도3.xls 기반 소궁/대궁 계산 (2014-01-01 00:20 KST epoch)
-// 80분 슬롯 기반:
-// - 하루 18슬롯 (오전 9슬롯 + 오후 9슬롯)
-// - 대궁: 9슬롯(반일)마다 2→3→4→5→6→7→8→9→10 순환
-// - Position: 81슬롯(4.5일)마다 2→3→...→10 순환
-// - 소궁: SOGUNG_PATTERNS[position][슬롯%9]
+// 핵심 발견:
+// - 12년 = 4383일 = 8766 반일이 하나의 완전한 사이클
+// - 2014년과 2026년이 동일한 패턴 (position 2, daegung 2로 시작)
+// - Position: 12년 사이클 내에서 9반일마다 2→3→...→10 순환
+// - 소궁: SOGUNG_PATTERNS[position][slotInHalfDay]
 
-function calculateDaegungAndPosition(koreanTime: Date): { daegung: number; position: number; yValue: number; halfDayOfYear: number; totalSlots: number; slotInHalfDay: number } {
-  // Epoch: 2014-01-01 00:20 KST (구궁도3.xls 첫 데이터)
+const CYCLE_LENGTH_HALF_DAYS = 8766; // 12년 = 완전한 사이클
+
+function calculateDaegungAndPosition(koreanTime: Date): { daegung: number; sogung: number; position: number; yValue: number; halfDayOfYear: number; totalSlots: number; slotInHalfDay: number } {
+  // Epoch: 2014-01-01 00:20 KST (구궁도3.xls 첫 데이터: 소궁2, 대궁2)
   // 00:20 KST = 이전날 15:20 UTC
   const epochUTC = Date.UTC(2013, 11, 31, 15, 20, 0); // Dec 31, 2013 15:20 UTC = Jan 1, 2014 00:20 KST
   
@@ -730,19 +732,23 @@ function calculateDaegungAndPosition(koreanTime: Date): { daegung: number; posit
   const totalHalfDays = Math.floor(totalSlots / 9);
   const halfDayOfYear = (totalHalfDays % 732) + 1;
   
-  // 대궁 계산: 반일마다 2→3→4→...→10 순환
-  // 2014-01-01 00:20 = 대궁 2
+  // 대궁 계산: 반일마다 2→3→4→5→6→7→8→9→10 순환
   const daegung = (totalHalfDays % 9) + 2;
   
-  // Position 계산: 9반일(81슬롯)마다 2→3→...→10 순환
-  // 2014-01-01 = position 2
-  const positionCycle = Math.floor(totalHalfDays / 9);
+  // Position 계산: 12년 사이클 내에서 9반일마다 순환
+  // totalHalfDays % 8766 = 12년 사이클 내 위치
+  const halfDayInCycle = ((totalHalfDays % CYCLE_LENGTH_HALF_DAYS) + CYCLE_LENGTH_HALF_DAYS) % CYCLE_LENGTH_HALF_DAYS;
+  const positionCycle = Math.floor(halfDayInCycle / 9);
   const position = (positionCycle % 9) + 2;
+  
+  // 소궁 계산: SOGUNG_PATTERNS[position][slotInHalfDay]
+  const pattern = SOGUNG_PATTERNS[position];
+  const sogung = pattern ? pattern[slotInHalfDay] : (slotInHalfDay + 2);
   
   // yValue = position (기존 호환성 유지)
   const yValue = position;
   
-  return { daegung, position, yValue, halfDayOfYear, totalSlots, slotInHalfDay };
+  return { daegung, sogung, position, yValue, halfDayOfYear, totalSlots, slotInHalfDay };
 }
 
 export function getSogungDaegung(date: Date): {
@@ -758,26 +764,23 @@ export function getSogungDaegung(date: Date): {
   // 한국 시간으로 변환 (UTC+9)
   const koreanTime = getKoreanTime(date);
   
-  // 구궁도3.xls 기반 계산
-  const { daegung, position, yValue, totalSlots, slotInHalfDay } = calculateDaegungAndPosition(koreanTime);
+  // 구궁도3.xls 기반 계산 (12년 사이클 적용)
+  const { daegung, sogung, position, yValue, totalSlots } = calculateDaegungAndPosition(koreanTime);
   
   // 시간 슬롯 (1-18): 00:20부터 시작
   // 오전 (1-9차궁): 00:20~11:00
   // 오후 (10-18차궁): 11:00~00:20
-  const timeSlot = (totalSlots % 18) + 1;
+  const timeSlot = (((totalSlots % 18) + 18) % 18) + 1;
   const isAM = timeSlot <= 9;
   
-  // 소궁 조회: SOGUNG_PATTERNS[position][슬롯%9]
-  const sogungSlot = slotInHalfDay;
-  const pattern = SOGUNG_PATTERNS[position];
-  const sogung = pattern ? pattern[sogungSlot] : daegung;
-  
   // 남은 시간 계산 (현재 슬롯 내 경과 시간)
-  // Epoch: 2014-01-01 00:20 KST
   const epochUTC = Date.UTC(2013, 11, 31, 15, 20, 0);
   const minutesFromEpoch = Math.floor((koreanTime.getTime() - epochUTC) / (1000 * 60));
-  const minutesInSlot = minutesFromEpoch % 80;
+  const minutesInSlot = ((minutesFromEpoch % 80) + 80) % 80;
   const remainingMinutes = 80 - minutesInSlot;
+  
+  // 중궁 여부 (position 6)
+  const isZungung = position === 6;
   
   return { 
     sogung, 
@@ -787,7 +790,7 @@ export function getSogungDaegung(date: Date): {
     timeSlot: Math.min(18, Math.max(1, timeSlot)), 
     isAM, 
     remainingMinutes: Math.max(0, Math.min(80, remainingMinutes)),
-    isZungung: false
+    isZungung
   };
 }
 

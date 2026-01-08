@@ -647,7 +647,7 @@ export function Calendar() {
                     <div className="flex items-center gap-3">
                       {!hwMansion.isZunkong && (
                         <img 
-                          src={`/img/28j_jinjun.jpg`} 
+                          src={`/img/28j_${hwMansion.image}.jpg`} 
                           alt={hwMansion.general} 
                           className="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded"
                         />
@@ -662,9 +662,9 @@ export function Calendar() {
                     {showTalisman && !hwMansion.isZunkong && (
                       <div className="mt-3 flex flex-col items-center">
                         <img 
-                          src={`/img/talisman/example_talisman.png`}
+                          src={`/img/28j_${hwMansion.image}.jpg`}
                           alt={`${hwMansion.mansion} 부적`}
-                          className="max-w-[120px] max-h-[160px] object-contain border border-border rounded shadow-md bg-white"
+                          className="max-w-[180px] max-h-[240px] object-contain border border-border rounded shadow-md bg-white"
                         />
                         <div className="mt-2 text-center text-sm">
                           <div className="font-bold">{hwMansion.mansion}, {hwMansion.general}</div>

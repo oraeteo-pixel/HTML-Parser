@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { format, getDay, isSameDay } from "date-fns";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useLocation } from "wouter";
@@ -60,7 +60,6 @@ export function Calendar() {
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
   const [showDayDetail, setShowDayDetail] = useState(false);
   const [showTalisman, setShowTalisman] = useState(false);
-  const topInfoBarRef = useRef<HTMLDivElement>(null);
 
   const hwMonthData = useMemo(() => {
     if (calType === "hw") {
@@ -321,8 +320,8 @@ export function Calendar() {
     setSelectedDay(solarDate);
     setShowDayDetail(true);
     setTimeout(() => {
-      topInfoBarRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 100);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 50);
   };
 
   const years = useMemo(() => {
@@ -334,7 +333,7 @@ export function Calendar() {
   const months = Array.from({ length: 12 }, (_, i) => i + 1);
 
   return (
-    <div ref={topInfoBarRef} data-testid="calendar">
+    <div data-testid="calendar">
       <div className="space-y-2 mb-2">
         <div className="flex gap-2 ml-1 sm:ml-0">
           <Button 

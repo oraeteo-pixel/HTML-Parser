@@ -847,12 +847,12 @@ export function getDaegungPositionForDate(year: number, month: number, day: numb
   const positionAM = posMod(amPositionCycle, 9) + 2;
   const positionPM = posMod(pmPositionCycle, 9) + 2;
   
-  // 존궁 여부: 4.5일(9반일) 중 마지막 1.5일(3반일) = slot 6,7,8
-  // slot = halfDays % 9 (0-8)
-  const amSlotInCycle = posMod(amHalfDays, 9);
-  const pmSlotInCycle = posMod(pmHalfDays, 9);
-  const isJongungAM = amSlotInCycle >= 6; // slot 6,7,8 = 마지막 1.5일
-  const isJongungPM = pmSlotInCycle >= 6;
+  // 존궁 여부: 1년의 마지막 1.5일 (12월 30일 오후 ~ 12월 31일)
+  // 1년 = 365일, 마지막 1.5일 = 12월 30일 오후부터
+  const isLastDayOfYear = (month === 12 && day === 31);
+  const isSecondLastDayPM = (month === 12 && day === 30); // 30일 오후부터 존궁
+  const isJongungAM = isLastDayOfYear; // 12월 31일 오전 = 존궁
+  const isJongungPM = isLastDayOfYear || isSecondLastDayPM; // 12월 30일 오후, 31일 오후 = 존궁
   
   // 전환일 여부 (오전과 오후의 값이 다른 경우)
   const isTransitionDay = (daegungAM !== daegungPM) || (positionAM !== positionPM);

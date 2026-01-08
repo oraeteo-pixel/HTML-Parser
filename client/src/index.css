@@ -426,6 +426,31 @@
   }
 }
 
+.slim-badge-cyan {
+  background: hsl(185 70% 45%);
+  color: white;
+  font-family: var(--font-korean);
+  font-weight: 500;
+  padding: 0.2rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.7rem;
+  white-space: nowrap;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.slim-badge-cyan:hover {
+  opacity: 0.85;
+}
+
+@media (min-width: 640px) {
+  .slim-badge-cyan {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.8rem;
+  }
+}
+
 .badge-navy {
   background: linear-gradient(135deg, hsl(var(--orae-navy-dark)) 0%, hsl(var(--orae-navy)) 100%);
   color: white;

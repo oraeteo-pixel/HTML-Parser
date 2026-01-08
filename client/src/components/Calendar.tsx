@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import { format, getDay, isSameDay } from "date-fns";
-import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useLocation } from "wouter";
 import { Button } from "./ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
@@ -345,9 +345,13 @@ export function Calendar() {
                 <div className="flex items-center gap-1.5 text-base whitespace-nowrap">
                   <span className="font-bold text-gray-700 dark:text-gray-200">{liveJeolguk.name}</span>
                   <span className="font-semibold text-gray-600 dark:text-gray-300">&lt;소궁,대궁&gt;{liveSogungDaegung.isZungung ? "존궁" : `${liveSogungDaegung.sogung},${liveSogungDaegung.daegung}`}{(() => { const hex = get64HexagramName(liveSogungDaegung.sogung, liveSogungDaegung.daegung); return hex ? ` ${hex.fullName}` : ""; })()}</span>
-                  <span className="slim-badge-navy">
-                    {hwMansion.mansion}
-                  </span>
+                  <button 
+                    className="slim-badge-cyan cursor-pointer"
+                    onClick={(e) => { e.stopPropagation(); setShowTalisman(!showTalisman); }}
+                    data-testid="button-mansion-toggle"
+                  >
+                    {hwMansion.isZunkong ? hwMansion.mansion : `${hwMansion.mansion}, ${hwMansion.general}`}
+                  </button>
                 </div>
               </div>
               {/* PC: 1 line */}
@@ -364,9 +368,13 @@ export function Calendar() {
                   </span>
                   <span className="font-bold text-gray-700 dark:text-gray-200">{liveJeolguk.name}</span>
                   <span className="font-semibold text-gray-600 dark:text-gray-300">&lt;소궁,대궁&gt;{liveSogungDaegung.isZungung ? "존궁" : `${liveSogungDaegung.sogung},${liveSogungDaegung.daegung}`}{(() => { const hex = get64HexagramName(liveSogungDaegung.sogung, liveSogungDaegung.daegung); return hex ? ` ${hex.fullName}` : ""; })()}</span>
-                  <span className="slim-badge-navy">
+                  <button 
+                    className="slim-badge-cyan cursor-pointer"
+                    onClick={(e) => { e.stopPropagation(); setShowTalisman(!showTalisman); }}
+                    data-testid="button-mansion-toggle-pc"
+                  >
                     {hwMansion.isZunkong ? hwMansion.mansion : `${hwMansion.mansion}, ${hwMansion.general}`}
-                  </span>
+                  </button>
                 </div>
               </div>
             </>
@@ -415,6 +423,25 @@ export function Calendar() {
             </>
           )}
         </div>
+
+        {/* Talisman slide-down - only for hwanggeuk */}
+        {calType === "hw" && !hwMansion.isZunkong && (
+          <div 
+            className={`overflow-hidden transition-all duration-300 ease-in-out bg-card border border-border rounded-lg ${showTalisman ? 'max-h-[400px] opacity-100 p-4 my-2' : 'max-h-0 opacity-0 p-0 my-0'}`}
+          >
+            <div className="flex flex-col items-center">
+              <img 
+                src={`/img/28j_${hwMansion.image}.jpg`}
+                alt={`${hwMansion.mansion} 부적`}
+                className="max-w-[200px] max-h-[280px] object-contain border border-border rounded-lg shadow-lg bg-white"
+              />
+              <div className="mt-3 text-center">
+                <div className="font-bold text-lg">{hwMansion.mansion}{hwMansion.general}</div>
+                <div className="text-muted-foreground">{hwMansion.description}</div>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap py-0.5 sm:py-2">
           <Button variant="ghost" size="icon" className="h-5 w-5 sm:h-8 sm:w-8" onClick={handlePrevYear} data-testid="button-prev-year">
@@ -637,44 +664,12 @@ export function Calendar() {
                 </div>
                 <div className="info-card col-span-2">
                   <div className="text-muted-foreground text-xs mb-1 uppercase tracking-wide">28宿</div>
-                  <div 
-                    className="cursor-pointer hover-elevate rounded-md p-2 -m-2 transition-all"
-                    onClick={() => {
-                      setShowTalisman(!showTalisman);
-                      if (!showTalisman) {
-                        setTimeout(() => {
-                          document.getElementById('talisman-display')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        }, 150);
-                      }
-                    }}
-                    data-testid="button-toggle-talisman"
-                  >
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-2">
-                        <div className="font-bold text-fluid-lg">
-                          {hwMansion.isZunkong ? "존궁" : `${hwMansion.mansion}${hwMansion.general}`}
-                        </div>
-                        <div className="text-xs text-muted-foreground">클릭하여 부적 보기</div>
-                      </div>
-                      <ChevronDown className={`w-5 h-5 text-muted-foreground transition-transform duration-300 ${showTalisman ? 'rotate-180' : ''}`} />
-                    </div>
+                  <div className="font-bold text-fluid-lg">
+                    {hwMansion.isZunkong ? "존궁" : `${hwMansion.mansion}${hwMansion.general}`}
                   </div>
-                  <div 
-                    id="talisman-display"
-                    className={`overflow-hidden transition-all duration-300 ease-in-out ${showTalisman && !hwMansion.isZunkong ? 'max-h-[400px] opacity-100 mt-4' : 'max-h-0 opacity-0'}`}
-                  >
-                    <div className="flex flex-col items-center py-2">
-                      <img 
-                        src={`/img/28j_${hwMansion.image}.jpg`}
-                        alt={`${hwMansion.mansion} 부적`}
-                        className="max-w-[200px] max-h-[280px] object-contain border border-border rounded-lg shadow-lg bg-white"
-                      />
-                      <div className="mt-3 text-center">
-                        <div className="font-bold text-lg">{hwMansion.mansion}{hwMansion.general}</div>
-                        <div className="text-muted-foreground">{hwMansion.description}</div>
-                      </div>
-                    </div>
-                  </div>
+                  {!hwMansion.isZunkong && (
+                    <div className="text-muted-foreground text-sm">{hwMansion.description}</div>
+                  )}
                 </div>
               </div>
             ) : (

@@ -884,6 +884,21 @@ export default function Madang() {
                                   쪽지 보내기
                                 </Button>
                               )}
+                              {post.authorEmail && (
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="justify-start"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    window.location.href = `mailto:${post.authorEmail}?subject=[오리알터] ${post.author}님께`;
+                                  }}
+                                  data-testid={`email-author-${post.id}`}
+                                >
+                                  <Mail className="h-4 w-4 mr-2" />
+                                  이메일 보내기
+                                </Button>
+                              )}
                             </div>
                           </PopoverContent>
                         </Popover>

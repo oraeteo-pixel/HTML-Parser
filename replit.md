@@ -198,3 +198,16 @@ The `shared/` directory contains code used by both frontend and backend:
   - posts 테이블에 section 필드 추가 (ebook/madang 구분)
   - youtubeUrls 필드 추가 (YouTube 영상 ID 배열)
   - `/api/posts/section/:section` 엔드포인트 추가
+
+### 쪽지(메시지) 시스템 추가 (2026-01-08)
+- **messages 테이블**: senderId, receiverId, content, isRead (0/1), createdAt
+- **API 라우트**:
+  - `GET /api/messages/received`: 받은 쪽지 목록 (발신자 이름 포함)
+  - `GET /api/messages/sent`: 보낸 쪽지 목록 (수신자 이름 포함)
+  - `GET /api/messages/unread-count`: 읽지 않은 쪽지 수
+  - `POST /api/messages`: 쪽지 보내기 (receiverId, content)
+  - `POST /api/messages/:id/read`: 읽음 표시
+- **UI 컴포넌트**:
+  - Navigation.tsx에 Mail 아이콘 추가 (읽지 않은 쪽지 배지)
+  - Messages.tsx 페이지: 받은/보낸 탭, 답장 기능
+- **보안**: 모든 메시지 API는 인증 필요, 수신자 확인 후 전송

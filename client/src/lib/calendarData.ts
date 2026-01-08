@@ -741,7 +741,7 @@ function calculateDaegungAndPosition(koreanTime: Date): { daegung: number; posit
   const halfDayOfYear = (totalHalfDays % 732) + 1;
   
   // 대궁 계산: 반일마다 2→3→4→5→6→7→8→9→10 순환 (원래 계산 방식)
-  const calibrationOffset = 1;  // 2026-01-24: 사용자 엑셀 기준 대궁 6 맞춤
+  const calibrationOffset = 3;  // 2026-01-24 오전: 소궁 9, 대궁 6 맞춤
   const daegungIndex = ((totalHalfDays + calibrationOffset) % 9 + 9) % 9;
   const daegung = daegungIndex + 2; // 2~10
   

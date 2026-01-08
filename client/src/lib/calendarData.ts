@@ -735,17 +735,17 @@ function calculateDaegungAndPosition(koreanTime: Date): { daegung: number; posit
   const totalHalfDays = Math.floor(minutesFromEpoch / halfDayPeriod);
   const halfDayOfYear = (totalHalfDays % 732) + 1; // 1~732
   
-  // 대궁 계산: 반일마다 2→3→4→5→6→7→8→9→10 순환
-  // (반일번호 - 1) % 9 + 2 = 대궁
-  // 오프셋: 1월 9일에 소궁=8, 대궁=4가 되도록 보정
+  // 대궁 계산: 9반일(4.5일)마다 2→3→4→5→6→7→8→9→10 순환
+  // 각 대궁 값이 4.5일간 유지됨
   const calibrationOffset = -1;
-  const daegungIndex = ((totalHalfDays + calibrationOffset) % 9 + 9) % 9;
+  const daegungCycleNum = Math.floor(totalHalfDays / 9); // 4.5일 단위
+  const daegungIndex = ((daegungCycleNum + calibrationOffset) % 9 + 9) % 9;
   const daegung = daegungIndex + 2; // 2~10
   
-  // Position 계산: 대궁사이클(9반일 = 4.5일)마다 2→3→...→10 순환
-  const daegungCycleNum = Math.floor(totalHalfDays / 9);
+  // Position 계산: 81반일(40.5일)마다 2→3→...→10 순환
+  const positionCycleNum = Math.floor(daegungCycleNum / 9); // 40.5일 단위
   const positionOffset = 3;
-  const positionIndex = ((daegungCycleNum + positionOffset) % 9 + 9) % 9;
+  const positionIndex = ((positionCycleNum + positionOffset) % 9 + 9) % 9;
   const position = positionIndex + 2; // 2~10
   
   return { daegung, position, halfDayOfYear };
@@ -854,15 +854,17 @@ export function getDaegungPositionForDate(year: number, month: number, day: numb
   // 양수 모듈로 함수
   const posMod = (n: number, m: number) => ((n % m) + m) % m;
   
-  // 대궁 계산
-  const daegungAM = posMod(amHalfDays + calibrationOffset, 9) + 2;
-  const daegungPM = posMod(pmHalfDays + calibrationOffset, 9) + 2;
-  
-  // Position 계산
+  // 대궁 계산: 9반일(4.5일)마다 변화
   const amDaegungCycle = Math.floor(amHalfDays / 9);
   const pmDaegungCycle = Math.floor(pmHalfDays / 9);
-  const positionAM = posMod(amDaegungCycle + positionOffset, 9) + 2;
-  const positionPM = posMod(pmDaegungCycle + positionOffset, 9) + 2;
+  const daegungAM = posMod(amDaegungCycle + calibrationOffset, 9) + 2;
+  const daegungPM = posMod(pmDaegungCycle + calibrationOffset, 9) + 2;
+  
+  // Position 계산: 81반일(40.5일)마다 변화
+  const amPositionCycle = Math.floor(amDaegungCycle / 9);
+  const pmPositionCycle = Math.floor(pmDaegungCycle / 9);
+  const positionAM = posMod(amPositionCycle + positionOffset, 9) + 2;
+  const positionPM = posMod(pmPositionCycle + positionOffset, 9) + 2;
   
   // 존궁 여부: 황극력 연말 마지막 1.5일 (다음 황극력 1월 1일 직전 36시간)
   const amToNextEpoch = nextEpochDate.getTime() - amTime.getTime();

@@ -12,7 +12,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useSearch, useLocation } from "wouter";
-import { BookOpen, FileText, Download, Play, Mail, X, Pencil, Trash2 } from "lucide-react";
+import { BookOpen, FileText, Download, Play, Mail, X, Pencil, Trash2, Plus } from "lucide-react";
 import type { Post } from "@shared/schema";
 
 type PostWithAuthor = Post & { author: string; authorEmail: string | null };
@@ -259,12 +259,23 @@ export default function EbookPage() {
       
       <main className="max-w-[990px] mx-auto px-0 sm:px-2 py-4" data-testid="ebook-main">
         <Card className="p-4 mb-4 bg-gradient-to-r from-slate-50/50 to-slate-100/50 dark:from-slate-900/20 dark:to-slate-800/20">
-          <div className="flex items-center gap-3">
-            <BookOpen className="h-8 w-8 orae-navy" />
-            <div>
-              <h1 className="text-xl font-bold orae-navy" data-testid="text-ebook-title">전자책</h1>
-              <p className="text-sm text-muted-foreground">오리알터닷컴 전자책 컬렉션</p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <BookOpen className="h-8 w-8 orae-navy" />
+              <div>
+                <h1 className="text-xl font-bold orae-navy" data-testid="text-ebook-title">전자책</h1>
+                <p className="text-sm text-muted-foreground">오리알터닷컴 전자책 컬렉션</p>
+              </div>
             </div>
+            {user && !showEditor && (
+              <Button
+                onClick={() => setShowEditor(true)}
+                data-testid="button-write-ebook"
+              >
+                <Plus className="h-4 w-4 mr-1" />
+                글쓰기
+              </Button>
+            )}
           </div>
         </Card>
 

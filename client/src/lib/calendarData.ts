@@ -772,14 +772,14 @@ export function getSogungDaegung(date: Date): {
   const hours = koreanTime.getHours();
   const minutes = koreanTime.getMinutes();
   
-  // 시간 슬롯 계산 (1-18): 23:20부터 시작해서 80분씩
-  // 오전 (1-9차궁): 23:20~11:20
-  // 오후 (10-18차궁): 11:20~23:20
+  // 시간 슬롯 계산 (1-18): 23:00부터 시작해서 80분씩
+  // 오전 (1-9차궁): 23:00~11:00
+  // 오후 (10-18차궁): 11:00~23:00
   const totalMinutesOfDay = hours * 60 + minutes;
-  let minutesSince2320 = totalMinutesOfDay - (23 * 60 + 20);
-  if (minutesSince2320 < 0) minutesSince2320 += 1440;
-  const timeSlot = Math.floor(minutesSince2320 / 80) + 1;
-  const isAM = timeSlot <= 9; // 슬롯 1-9: 23:20~11:20 (오전), 슬롯 10-18: 11:20~23:20 (오후)
+  let minutesSince2300 = totalMinutesOfDay - (23 * 60);
+  if (minutesSince2300 < 0) minutesSince2300 += 1440;
+  const timeSlot = Math.floor(minutesSince2300 / 80) + 1;
+  const isAM = timeSlot <= 9; // 슬롯 1-9: 23:00~11:00 (오전), 슬롯 10-18: 11:00~23:00 (오후)
   
   // 오전/오후에 따른 소궁 슬롯 (0-8)
   const sogungSlot = (timeSlot - 1) % 9;
@@ -794,7 +794,7 @@ export function getSogungDaegung(date: Date): {
   
   // 남은 시간 계산
   const sogungPeriod = 80;
-  const remainingMinutes = sogungPeriod - (minutesSince2320 % sogungPeriod);
+  const remainingMinutes = sogungPeriod - (minutesSince2300 % sogungPeriod);
   
   return { 
     sogung, 

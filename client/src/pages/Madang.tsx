@@ -27,6 +27,7 @@ function CommentSection({ postId, user }: { postId: number; user: any }) {
   const [editingComment, setEditingComment] = useState<CommentWithAuthor | null>(null);
   const [editText, setEditText] = useState("");
   const [editMedia, setEditMedia] = useState<MediaItem[]>([]);
+  const [showRootEditor, setShowRootEditor] = useState(false);
   const { toast } = useToast();
   
   const { data: comments, isLoading } = useQuery<CommentWithAuthor[]>({
@@ -45,6 +46,7 @@ function CommentSection({ postId, user }: { postId: number; user: any }) {
       setReplyingTo(null);
       setReplyText("");
       setReplyMedia([]);
+      setShowRootEditor(false);
       toast({ title: "답글이 작성되었습니다." });
     },
     onError: () => {
@@ -277,18 +279,30 @@ function CommentSection({ postId, user }: { postId: number; user: any }) {
         <p className="text-muted-foreground mb-4">아직 답글이 없습니다.</p>
       )}
       
-      {user ? (
-        <div className="space-y-2">
+      {user && !showRootEditor && (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShowRootEditor(true)}
+          data-testid={`button-new-comment-${postId}`}
+        >
+          <Reply className="h-3 w-3 mr-1" />
+          답글 작성
+        </Button>
+      )}
+      {user && showRootEditor && (
+        <div className="space-y-2 mt-2">
           <RichEditor
             content={commentText}
             onContentChange={setCommentText}
             mediaItems={commentMedia}
             onMediaItemsChange={setCommentMedia}
             onUploadingChange={setIsUploading}
-            placeholder="답글을 입력하세요... (드래그앤드롭으로 파일 첨부 가능)"
+            placeholder="답글을 입력하세요..."
             compact
           />
-          <div className="flex justify-end">
+          <div className="flex gap-2 justify-end">
+            <Button size="sm" variant="ghost" onClick={() => { setShowRootEditor(false); setCommentText(""); setCommentMedia([]); }}>취소</Button>
             <Button
               size="sm"
               onClick={handleSubmitComment}
@@ -300,7 +314,8 @@ function CommentSection({ postId, user }: { postId: number; user: any }) {
             </Button>
           </div>
         </div>
-      ) : (
+      )}
+      {!user && (
         <p className="text-muted-foreground">답글을 작성하려면 로그인해 주세요.</p>
       )}
     </div>
@@ -722,10 +737,10 @@ export default function Madang() {
                       onClick={() => setExpandedPost(isExpanded ? null : post.id)}
                       data-testid={`post-${post.id}`}
                     >
-                      <td className="p-1 border-r text-center align-top text-sm text-muted-foreground w-10">
+                      <td className={`p-1 text-center align-top text-sm text-muted-foreground w-10 ${!isExpanded ? 'border-r' : ''}`}>
                         {postNumber}
                       </td>
-                      <td className="p-1 border-r text-center align-top">
+                      <td className={`p-1 text-center align-top ${!isExpanded ? 'border-r' : ''}`}>
                         {post.ganji ? (
                           <button
                             className="px-1 py-0.5 rounded text-white text-xs font-medium cursor-pointer hover:opacity-80"
@@ -742,7 +757,7 @@ export default function Madang() {
                           <span className="text-muted-foreground text-[9px]">-</span>
                         )}
                       </td>
-                      <td className="p-1 border-r">
+                      <td className={`p-1 ${!isExpanded ? 'border-r' : ''}`}>
                         <div className="flex items-center gap-1">
                           <span className="font-bold line-clamp-1">
                             <span className="sm:hidden">{post.title.length > 20 ? post.title.slice(0, 20) + '...' : post.title}</span>
@@ -828,7 +843,7 @@ export default function Madang() {
                           </div>
                         )}
                       </td>
-                      <td className="p-1 border-r hidden sm:table-cell align-top">
+                      <td className={`p-1 hidden sm:table-cell align-top ${!isExpanded ? 'border-r' : ''}`}>
                         <Popover>
                           <PopoverTrigger asChild>
                             <button

@@ -803,7 +803,8 @@ export function getWeekdayHanja(dayOfWeek: number): string {
 }
 
 // 특정 날짜의 대궁, position 계산 (4.5일 주기 기준)
-// 황극력 1월 1일 = 2지2(原), 4.5일 후 = 2지3(潛), ...
+// 양력 2026년 1월 1일 = 二之二(原), 4.5일 후 = 二之三(潛), ...
+// 4.5일 중 처음 3일 = 해당 궁, 마지막 1.5일 = 존궁
 // 4.5일째(전환일)는 오전=이전값, 오후=다음값
 export function getDaegungPositionForDate(year: number, month: number, day: number): { 
   daegungAM: number; 
@@ -811,15 +812,11 @@ export function getDaegungPositionForDate(year: number, month: number, day: numb
   positionAM: number; 
   positionPM: number;
   isTransitionDay: boolean;
+  isJongungAM: boolean;
+  isJongungPM: boolean;
 } {
-  // 황극력 1월 1일 기준점 (양력 4월 21일 00:00 KST)
-  // 황극력 37년(2025) 1월 1일 = 양력 2025년 4월 21일
-  const hwDate = getHwanggeukDate(year, month, day);
-  const hwYear = hwDate.year;
-  
-  // 해당 황극력 연도의 양력 시작일 계산
-  const solarEpochYear = hwYear + 1988; // 황극력 37년 = 2025년 → 1988 + 37 = 2025
-  const epochDate = new Date(solarEpochYear, 3, 21, 0, 0, 0); // 4월 21일 00:00
+  // 기준점: 양력 2026년 1월 1일 00:00 = 二之二(原) 시작
+  const epochDate = new Date(2026, 0, 1, 0, 0, 0); // 2026년 1월 1일 00:00
   
   // 현재 날짜의 오전(06:00)과 오후(18:00) 시간
   const amTime = new Date(year, month - 1, day, 6, 0, 0);
@@ -830,6 +827,9 @@ export function getDaegungPositionForDate(year: number, month: number, day: numb
   const amHalfDays = Math.floor((amTime.getTime() - epochDate.getTime()) / halfDayMs);
   const pmHalfDays = Math.floor((pmTime.getTime() - epochDate.getTime()) / halfDayMs);
   
+  // 양수 모듈로 함수 (음수 처리)
+  const posMod = (n: number, m: number) => ((n % m) + m) % m;
+  
   // 4.5일 = 9 반일
   // 대궁 사이클 (Y값): 매 9반일(4.5일)마다 변화
   const amDaegungCycle = Math.floor(amHalfDays / 9);
@@ -839,9 +839,6 @@ export function getDaegungPositionForDate(year: number, month: number, day: numb
   const amPositionCycle = Math.floor(amDaegungCycle / 9);
   const pmPositionCycle = Math.floor(pmDaegungCycle / 9);
   
-  // 양수 모듈로 함수 (음수 처리)
-  const posMod = (n: number, m: number) => ((n % m) + m) % m;
-  
   // 대궁 값 계산 (2~10 순환)
   const daegungAM = posMod(amDaegungCycle, 9) + 2;
   const daegungPM = posMod(pmDaegungCycle, 9) + 2;
@@ -850,10 +847,17 @@ export function getDaegungPositionForDate(year: number, month: number, day: numb
   const positionAM = posMod(amPositionCycle, 9) + 2;
   const positionPM = posMod(pmPositionCycle, 9) + 2;
   
+  // 존궁 여부: 4.5일(9반일) 중 마지막 1.5일(3반일) = slot 6,7,8
+  // slot = halfDays % 9 (0-8)
+  const amSlotInCycle = posMod(amHalfDays, 9);
+  const pmSlotInCycle = posMod(pmHalfDays, 9);
+  const isJongungAM = amSlotInCycle >= 6; // slot 6,7,8 = 마지막 1.5일
+  const isJongungPM = pmSlotInCycle >= 6;
+  
   // 전환일 여부 (오전과 오후의 값이 다른 경우)
   const isTransitionDay = (daegungAM !== daegungPM) || (positionAM !== positionPM);
   
-  return { daegungAM, daegungPM, positionAM, positionPM, isTransitionDay };
+  return { daegungAM, daegungPM, positionAM, positionPM, isTransitionDay, isJongungAM, isJongungPM };
 }
 
 // 특정 날짜의 81궁 이름 조회 (오전/오후 모두 반환)
@@ -879,13 +883,15 @@ export function getPositionDaegungForDate(year: number, month: number, day: numb
   nameAM: string; 
   namePM: string;
   isTransitionDay: boolean;
+  isJongungAM: boolean;
+  isJongungPM: boolean;
 } {
-  const { daegungAM, daegungPM, positionAM, positionPM, isTransitionDay } = getDaegungPositionForDate(year, month, day);
+  const { daegungAM, daegungPM, positionAM, positionPM, isTransitionDay, isJongungAM, isJongungPM } = getDaegungPositionForDate(year, month, day);
   const notationAM = formatPositionDaegungHanja(positionAM, daegungAM);
   const notationPM = formatPositionDaegungHanja(positionPM, daegungPM);
   const nameAM = get81PalaceName(positionAM, daegungAM);
   const namePM = get81PalaceName(positionPM, daegungPM);
-  return { positionAM, daegungAM, positionPM, daegungPM, notationAM, notationPM, nameAM, namePM, isTransitionDay };
+  return { positionAM, daegungAM, positionPM, daegungPM, notationAM, notationPM, nameAM, namePM, isTransitionDay, isJongungAM, isJongungPM };
 }
 
 const SOGUNG_DAEGUNG_HANJA = ["", "", "二", "三", "四", "五", "六", "七", "八", "九", "十"];

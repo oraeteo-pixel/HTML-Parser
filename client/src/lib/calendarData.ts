@@ -792,6 +792,29 @@ export function getWeekdayHanja(dayOfWeek: number): string {
   return WEEKDAYS_HANJA[dayOfWeek];
 }
 
+// 특정 날짜의 대궁, position 계산 (오전 기준, 정오 12시 사용)
+export function getDaegungPositionForDate(year: number, month: number, day: number): { daegung: number; position: number } {
+  // 해당 날짜의 정오(12:00)를 기준으로 계산 (UTC 시간으로 생성 후 한국시간으로 변환)
+  const noonDate = new Date(year, month - 1, day, 12, 0, 0);
+  const koreanTime = getKoreanTime(noonDate);
+  const { daegung, position } = calculateDaegungAndPosition(koreanTime);
+  return { daegung, position };
+}
+
+// 특정 날짜의 81궁 이름 조회
+export function get81PalaceNameForDate(year: number, month: number, day: number): string {
+  const { daegung, position } = getDaegungPositionForDate(year, month, day);
+  return get81PalaceName(position, daegung);
+}
+
+// 특정 날짜의 X之Y 표기 조회
+export function getPositionDaegungForDate(year: number, month: number, day: number): { position: number; daegung: number; notation: string; name: string } {
+  const { daegung, position } = getDaegungPositionForDate(year, month, day);
+  const notation = formatPositionDaegungHanja(position, daegung);
+  const name = get81PalaceName(position, daegung);
+  return { position, daegung, notation, name };
+}
+
 const SOGUNG_DAEGUNG_HANJA = ["", "", "二", "三", "四", "五", "六", "七", "八", "九", "十"];
 
 // 81궁 명칭 매핑: [position][대궁] = 명칭

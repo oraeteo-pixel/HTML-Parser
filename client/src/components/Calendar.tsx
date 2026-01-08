@@ -22,6 +22,7 @@ import {
   getSogungDaegung,
   formatPositionDaegungHanja,
   get81PalaceName,
+  getPositionDaegungForDate,
   get64HexagramName,
   getWeekdayHanja,
   hwanggeukToSolar,
@@ -498,8 +499,8 @@ export function Calendar() {
             const isSelected = selectedDay && isSameDay(solarDate, selectedDay);
             const hwDate = getHwanggeukDate(solarDate.getFullYear(), solarDate.getMonth() + 1, solarDate.getDate());
             const cellMansion = getHwanggeuk28Mansion(hwDate.year, hwDate.month, hwDate.day);
-            const cellPosition = getHwanggeukPosition(hwDate.year, hwDate.month, hwDate.day);
             const cellTrigram = get8Trigram(solarDate.getFullYear(), solarDate.getMonth() + 1, solarDate.getDate());
+            const cell81 = getPositionDaegungForDate(solarDate.getFullYear(), solarDate.getMonth() + 1, solarDate.getDate());
             
             return (
               <div 
@@ -524,7 +525,8 @@ export function Calendar() {
                 <div className="flex-1 flex flex-col justify-end space-y-0.5">
                   <div className="trigram-text">{cellTrigram.trigram}</div>
                   <div className="mansion-info">{cellMansion.mansion},{cellMansion.general}</div>
-                  <div className="position-text">{cellPosition}</div>
+                  <div className="palace-81-name text-xs font-bold text-amber-600 dark:text-amber-400">{cell81.name}</div>
+                  <div className="palace-81-notation text-[10px] text-muted-foreground">{cell81.notation}</div>
                 </div>
               </div>
             );

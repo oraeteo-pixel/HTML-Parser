@@ -522,7 +522,7 @@ export default function Madang() {
   const formatDate = (date: Date | null) => {
     if (!date) return "";
     const d = new Date(date);
-    return `${d.getFullYear()}.${d.getMonth() + 1}.${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+    return `${d.getMonth() + 1}.${d.getDate()}`;
   };
 
   const parseMediaItems = (post: PostWithAuthor): MediaItem[] => {
@@ -685,12 +685,12 @@ export default function Madang() {
         ) : (
           <Card className="overflow-hidden rounded-none sm:rounded-md">
             <table className="w-full border-collapse">
-              <thead>
-                <tr className="border-b bg-muted/50">
-                  <th className="text-left p-1 font-medium border-r w-12"></th>
-                  <th className="text-left p-1 font-medium border-r">제목</th>
-                  <th className="text-left p-1 font-medium border-r hidden sm:table-cell w-16">작성자</th>
-                  <th className="text-left p-1 font-medium hidden md:table-cell w-16">날짜</th>
+              <thead className="sr-only">
+                <tr>
+                  <th></th>
+                  <th></th>
+                  <th></th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>

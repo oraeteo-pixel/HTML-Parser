@@ -420,7 +420,10 @@ export default function EbookPage() {
                     )}
                   </div>
                   <CardHeader className="p-3">
-                    <CardTitle className="text-base line-clamp-2">{post.title.length > 20 ? post.title.slice(0, 20) + '...' : post.title}</CardTitle>
+                    <CardTitle className="text-base line-clamp-2">
+                      <span className="sm:hidden">{post.title.length > 20 ? post.title.slice(0, 20) + '...' : post.title}</span>
+                      <span className="hidden sm:inline">{post.title.length > 40 ? post.title.slice(0, 40) + '...' : post.title}</span>
+                    </CardTitle>
                     {post.content && (
                       <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
                         {post.content}

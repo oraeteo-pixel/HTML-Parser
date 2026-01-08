@@ -30,6 +30,7 @@ export type InsertPost = z.infer<typeof insertPostSchema>;
 export const comments = pgTable("comments", {
   id: serial("id").primaryKey(),
   postId: integer("post_id").references(() => posts.id).notNull(),
+  parentId: integer("parent_id"),
   content: text("content").notNull(),
   authorId: varchar("author_id").references(() => users.id).notNull(),
   mediaUrls: text("media_urls").array(),

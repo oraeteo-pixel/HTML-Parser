@@ -561,7 +561,10 @@ export default function Madang() {
                       </td>
                       <td className="p-1 border-r">
                         <div className="flex items-center gap-1">
-                          <span className="font-bold line-clamp-1">{post.title.length > 20 ? post.title.slice(0, 20) + '...' : post.title}</span>
+                          <span className="font-bold line-clamp-1">
+                            <span className="sm:hidden">{post.title.length > 20 ? post.title.slice(0, 20) + '...' : post.title}</span>
+                            <span className="hidden sm:inline">{post.title.length > 40 ? post.title.slice(0, 40) + '...' : post.title}</span>
+                          </span>
                           {postMediaItems.length > 0 && (
                             <span className="text-primary text-xs flex-shrink-0">[{postMediaItems.length}]</span>
                           )}

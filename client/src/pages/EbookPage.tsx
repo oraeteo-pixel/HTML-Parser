@@ -420,7 +420,7 @@ export default function EbookPage() {
                     )}
                   </div>
                   <CardHeader className="p-3">
-                    <CardTitle className="text-base line-clamp-2">{post.title}</CardTitle>
+                    <CardTitle className="text-base line-clamp-2">{post.title.length > 20 ? post.title.slice(0, 20) + '...' : post.title}</CardTitle>
                     {post.content && (
                       <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
                         {post.content}
@@ -459,7 +459,7 @@ export default function EbookPage() {
                       </Popover>
                       <span> · {formatDate(post.createdAt)}</span>
                     </p>
-                    {user && user.id === post.authorId && (
+                    {user && (user.id === post.authorId || user.isAdmin === 1) && (
                       <div className="flex gap-1 mt-2">
                         <Button
                           variant="ghost"

@@ -561,34 +561,11 @@ export default function Madang() {
                       </td>
                       <td className="p-1 border-r">
                         <div className="flex items-center gap-1">
-                          <span className="font-bold line-clamp-1">{post.title}</span>
+                          <span className="font-bold line-clamp-1">{post.title.length > 20 ? post.title.slice(0, 20) + '...' : post.title}</span>
                           {postMediaItems.length > 0 && (
                             <span className="text-primary text-xs flex-shrink-0">[{postMediaItems.length}]</span>
                           )}
-                          {user && user.id === post.authorId && (
-                            <div className="flex gap-0.5 ml-auto flex-shrink-0" onClick={(e) => e.stopPropagation()}>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-6 w-6"
-                                onClick={() => { setExpandedPost(post.id); startEdit(post); }}
-                                data-testid={`button-edit-list-${post.id}`}
-                              >
-                                <Pencil className="h-3 w-3" />
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-6 w-6 text-destructive"
-                                onClick={() => handleDelete(post)}
-                                disabled={deletePost.isPending}
-                                data-testid={`button-delete-list-${post.id}`}
-                              >
-                                <Trash2 className="h-3 w-3" />
-                              </Button>
-                            </div>
-                          )}
-                          {isExpanded ? <ChevronUp className="h-3 w-3 flex-shrink-0 text-muted-foreground" /> : <ChevronDown className="h-3 w-3 flex-shrink-0 text-muted-foreground" />}
+                          {isExpanded ? <ChevronUp className="h-3 w-3 flex-shrink-0 text-muted-foreground ml-auto" /> : <ChevronDown className="h-3 w-3 flex-shrink-0 text-muted-foreground ml-auto" />}
                         </div>
                         <span className="sm:hidden text-sm text-muted-foreground">{post.author}</span>
                         {isExpanded && (
@@ -630,7 +607,7 @@ export default function Madang() {
                                 )}
                                 <div className="my-3 flex items-center justify-between flex-wrap gap-2">
                                   <VoteButtons postId={post.id} likes={post.likes || 0} dislikes={post.dislikes || 0} user={user} />
-                                  {user && user.id === post.authorId && (
+                                  {user && (user.id === post.authorId || user.isAdmin === 1) && (
                                     <div className="flex gap-1">
                                       <Button
                                         variant="ghost"

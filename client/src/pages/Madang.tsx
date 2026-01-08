@@ -869,7 +869,7 @@ export default function Madang() {
                               >
                                 이 작성자의 글만 보기
                               </Button>
-                              {user && user.id !== post.authorId && (
+                              {user && (
                                 <Button
                                   variant="ghost"
                                   size="sm"

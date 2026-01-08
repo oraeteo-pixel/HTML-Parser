@@ -390,7 +390,7 @@ export default function EbookViewerPage() {
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-2" align="start">
                     <div className="flex flex-col gap-2">
-                      {user && user.id !== post.authorId && (
+                      {user && (
                         <Button
                           variant="ghost"
                           size="sm"

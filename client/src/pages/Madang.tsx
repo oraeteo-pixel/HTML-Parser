@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, Fragment } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -732,16 +732,16 @@ export default function Madang() {
                   const postNumber = filteredPosts.length - ((currentPage - 1) * postsPerPage + index);
                   
                   return (
-                    <tr 
-                      key={post.id}
+                    <Fragment key={post.id}>
+                    <tr
                       className={`${!isLast && !isExpanded ? 'border-b' : ''} hover-elevate cursor-pointer`}
                       onClick={() => setExpandedPost(isExpanded ? null : post.id)}
                       data-testid={`post-${post.id}`}
                     >
-                      <td className={`p-1 text-center align-top text-sm text-muted-foreground w-10 ${!isExpanded ? 'border-r' : ''}`}>
+                      <td className="p-1 text-center align-top text-sm text-muted-foreground w-10 border-r">
                         {postNumber}
                       </td>
-                      <td className={`p-1 text-center align-top ${!isExpanded ? 'border-r' : ''}`}>
+                      <td className="p-1 text-center align-top border-r">
                         {post.ganji ? (
                           <button
                             className="px-1 py-0.5 rounded text-white text-xs font-medium cursor-pointer hover:opacity-80"
@@ -758,7 +758,7 @@ export default function Madang() {
                           <span className="text-muted-foreground text-[9px]">-</span>
                         )}
                       </td>
-                      <td className={`p-1 ${!isExpanded ? 'border-r' : ''}`}>
+                      <td className="p-1 border-r">
                         <div className="flex items-center gap-1">
                           <span className="font-bold line-clamp-1">
                             <span className="sm:hidden">{post.title.length > 20 ? post.title.slice(0, 20) + '...' : post.title}</span>
@@ -775,76 +775,8 @@ export default function Madang() {
                           {isExpanded ? <ChevronUp className="h-3 w-3 flex-shrink-0 text-muted-foreground ml-auto" /> : <ChevronDown className="h-3 w-3 flex-shrink-0 text-muted-foreground ml-auto" />}
                         </div>
                         <span className="sm:hidden text-sm text-muted-foreground">{post.author}</span>
-                        {isExpanded && (
-                          <div className="mt-3 border-t pt-3" onClick={(e) => e.stopPropagation()}>
-                            {editingPost?.id === post.id ? (
-                              <div className="mb-4">
-                                <div className="flex justify-end mb-2">
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={cancelEdit}
-                                    data-testid="button-cancel-edit"
-                                  >
-                                    취소
-                                  </Button>
-                                </div>
-                                <RichEditor
-                                  title={editTitle}
-                                  content={editContent}
-                                  mediaItems={editMediaItems}
-                                  onTitleChange={setEditTitle}
-                                  onContentChange={setEditContent}
-                                  onMediaItemsChange={setEditMediaItems}
-                                  onSubmit={handleEditSubmit}
-                                  isSubmitting={updatePost.isPending}
-                                  submitText="수정 완료"
-                                  placeholder="내용을 입력하세요."
-                                />
-                              </div>
-                            ) : (
-                              <>
-                                <div className="prose prose-base dark:prose-invert max-w-none mb-3 text-base">
-                                  {post.content.split("\n").map((paragraph, i) => (
-                                    <p key={i}>{paragraph}</p>
-                                  ))}
-                                </div>
-                                {postMediaItems.length > 0 && (
-                                  <MediaDisplay items={postMediaItems} />
-                                )}
-                                <div className="my-3 flex items-center justify-between flex-wrap gap-2">
-                                  <VoteButtons postId={post.id} likes={post.likes || 0} dislikes={post.dislikes || 0} user={user} />
-                                  {user && (user.id === post.authorId || user.isAdmin === 1) && (
-                                    <div className="flex gap-1">
-                                      <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => startEdit(post)}
-                                        data-testid={`button-edit-${post.id}`}
-                                      >
-                                        <Pencil className="h-4 w-4 mr-1" />
-                                        수정
-                                      </Button>
-                                      <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => handleDelete(post)}
-                                        disabled={deletePost.isPending}
-                                        data-testid={`button-delete-${post.id}`}
-                                      >
-                                        <Trash2 className="h-4 w-4 mr-1" />
-                                        삭제
-                                      </Button>
-                                    </div>
-                                  )}
-                                </div>
-                              </>
-                            )}
-                            <CommentSection postId={post.id} user={user} />
-                          </div>
-                        )}
                       </td>
-                      <td className={`p-1 hidden sm:table-cell align-top ${!isExpanded ? 'border-r' : ''}`}>
+                      <td className="p-1 hidden sm:table-cell align-top border-r">
                         <Popover>
                           <PopoverTrigger asChild>
                             <button
@@ -907,6 +839,77 @@ export default function Madang() {
                         {formatDate(post.createdAt)}
                       </td>
                     </tr>
+                    {isExpanded && (
+                      <tr className={!isLast ? 'border-b' : ''}>
+                        <td colSpan={5} className="p-3" onClick={(e) => e.stopPropagation()}>
+                          {editingPost?.id === post.id ? (
+                            <div className="mb-4">
+                              <div className="flex justify-end mb-2">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={cancelEdit}
+                                  data-testid="button-cancel-edit"
+                                >
+                                  취소
+                                </Button>
+                              </div>
+                              <RichEditor
+                                title={editTitle}
+                                content={editContent}
+                                mediaItems={editMediaItems}
+                                onTitleChange={setEditTitle}
+                                onContentChange={setEditContent}
+                                onMediaItemsChange={setEditMediaItems}
+                                onSubmit={handleEditSubmit}
+                                isSubmitting={updatePost.isPending}
+                                submitText="수정 완료"
+                                placeholder="내용을 입력하세요."
+                              />
+                            </div>
+                          ) : (
+                            <>
+                              <div className="prose prose-base dark:prose-invert max-w-none mb-3 text-base">
+                                {post.content.split("\n").map((paragraph, i) => (
+                                  <p key={i}>{paragraph}</p>
+                                ))}
+                              </div>
+                              {postMediaItems.length > 0 && (
+                                <MediaDisplay items={postMediaItems} />
+                              )}
+                              <div className="my-3 flex items-center justify-between flex-wrap gap-2">
+                                <VoteButtons postId={post.id} likes={post.likes || 0} dislikes={post.dislikes || 0} user={user} />
+                                {user && (user.id === post.authorId || user.isAdmin === 1) && (
+                                  <div className="flex gap-1">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => startEdit(post)}
+                                      data-testid={`button-edit-${post.id}`}
+                                    >
+                                      <Pencil className="h-4 w-4 mr-1" />
+                                      수정
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => handleDelete(post)}
+                                      disabled={deletePost.isPending}
+                                      data-testid={`button-delete-${post.id}`}
+                                    >
+                                      <Trash2 className="h-4 w-4 mr-1" />
+                                      삭제
+                                    </Button>
+                                  </div>
+                                )}
+                              </div>
+                            </>
+                          )}
+                          <CommentSection postId={post.id} user={user} />
+                        </td>
+                      </tr>
+                    )}
+                    </Fragment>
                   );
                 })}
               </tbody>

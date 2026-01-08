@@ -12,10 +12,10 @@ import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useSearch, useLocation } from "wouter";
-import { BookOpen, FileText, Download, Play, Mail, X, Pencil, Trash2, Plus } from "lucide-react";
+import { BookOpen, FileText, Download, Play, Mail, X, Pencil, Trash2, Plus, MessageSquare } from "lucide-react";
 import type { Post } from "@shared/schema";
 
-type PostWithAuthor = Post & { author: string; authorEmail: string | null };
+type PostWithAuthor = Post & { author: string; authorEmail: string | null; commentCount?: number };
 
 interface EbookFile {
   type: "pdf" | "file";
@@ -420,9 +420,14 @@ export default function EbookPage() {
                     )}
                   </div>
                   <CardHeader className="p-3">
-                    <CardTitle className="text-base line-clamp-2">
+                    <CardTitle className="text-base line-clamp-2 flex items-center gap-1">
                       <span className="sm:hidden">{post.title.length > 20 ? post.title.slice(0, 20) + '...' : post.title}</span>
                       <span className="hidden sm:inline">{post.title.length > 40 ? post.title.slice(0, 40) + '...' : post.title}</span>
+                      {(post.commentCount ?? 0) > 0 && (
+                        <span className="text-muted-foreground text-xs flex-shrink-0 flex items-center gap-0.5 font-normal">
+                          <MessageSquare className="h-3 w-3" />{post.commentCount}
+                        </span>
+                      )}
                     </CardTitle>
                     {post.content && (
                       <p className="text-sm text-muted-foreground line-clamp-2 mt-1">

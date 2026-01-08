@@ -14,7 +14,7 @@ import { useSearch } from "wouter";
 import { getDayGanZhi } from "@/lib/calendarData";
 import type { Post, Comment } from "@shared/schema";
 
-type PostWithAuthor = Post & { author: string; authorEmail: string | null };
+type PostWithAuthor = Post & { author: string; authorEmail: string | null; commentCount?: number };
 type CommentWithAuthor = Comment & { author: string; authorEmail: string | null };
 
 function CommentSection({ postId, user }: { postId: number; user: any }) {
@@ -729,6 +729,11 @@ export default function Madang() {
                             <span className="sm:hidden">{post.title.length > 20 ? post.title.slice(0, 20) + '...' : post.title}</span>
                             <span className="hidden sm:inline">{post.title.length > 40 ? post.title.slice(0, 40) + '...' : post.title}</span>
                           </span>
+                          {(post.commentCount ?? 0) > 0 && (
+                            <span className="text-muted-foreground text-xs flex-shrink-0 flex items-center gap-0.5">
+                              <MessageSquare className="h-3 w-3" />{post.commentCount}
+                            </span>
+                          )}
                           {postMediaItems.length > 0 && (
                             <span className="text-primary text-xs flex-shrink-0">[{postMediaItems.length}]</span>
                           )}

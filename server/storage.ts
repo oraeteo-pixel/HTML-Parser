@@ -11,7 +11,7 @@ export interface IStorage {
   deletePost(postId: number, authorId: string): Promise<boolean>;
   getPosts(): Promise<(Post & { author: string; authorEmail: string | null })[]>;
   getPostsByGanji(ganji: string): Promise<(Post & { author: string; authorEmail: string | null })[]>;
-  getPostsBySection(section: string): Promise<(Post & { author: string; authorEmail: string | null })[]>;
+  getPostsBySection(section: string): Promise<(Post & { author: string; authorEmail: string | null; commentCount: number })[]>;
   getLatestPostsByGanji(): Promise<{ ganji: string; posts: (Post & { author: string; authorEmail: string | null })[] }[]>;
   
   createComment(comment: InsertComment): Promise<Comment>;
@@ -89,7 +89,7 @@ export class DatabaseStorage implements IStorage {
     return result;
   }
 
-  async getPostsBySection(section: string): Promise<(Post & { author: string; authorEmail: string | null })[]> {
+  async getPostsBySection(section: string): Promise<(Post & { author: string; authorEmail: string | null; commentCount: number })[]> {
     const result = await db.select({
       id: posts.id,
       title: posts.title,
@@ -103,7 +103,8 @@ export class DatabaseStorage implements IStorage {
       dislikes: posts.dislikes,
       createdAt: posts.createdAt,
       author: sql<string>`COALESCE(${users.firstName} || ' ' || ${users.lastName}, ${users.email}, 'Unknown')`,
-      authorEmail: users.email
+      authorEmail: users.email,
+      commentCount: sql<number>`(SELECT COUNT(*) FROM ${comments} WHERE ${comments.postId} = ${posts.id})`
     })
     .from(posts)
     .leftJoin(users, eq(posts.authorId, users.id))

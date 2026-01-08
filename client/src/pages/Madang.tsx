@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RichEditor, MediaDisplay, type MediaItem } from "@/components/RichEditor";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { MessageSquare, ChevronDown, ChevronUp, X, Mail, Send, ThumbsUp, ThumbsDown } from "lucide-react";
+import { MessageSquare, ChevronDown, ChevronUp, X, Mail, Send, ThumbsUp, ThumbsDown, Pencil, Trash2 } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
@@ -219,6 +219,10 @@ export default function Madang() {
   const [expandedPost, setExpandedPost] = useState<number | null>(null);
   const [filterGanji, setFilterGanji] = useState<string | null>(null);
   const [filterAuthor, setFilterAuthor] = useState<string | null>(null);
+  const [editingPost, setEditingPost] = useState<PostWithAuthor | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editContent, setEditContent] = useState("");
+  const [editMediaItems, setEditMediaItems] = useState<MediaItem[]>([]);
   
   // Auto-open editor when coming from calendar with ganji or when write=true
   useEffect(() => {
@@ -265,6 +269,37 @@ export default function Madang() {
     },
   });
 
+  const updatePost = useMutation({
+    mutationFn: async (data: { id: number; title: string; content: string; mediaUrls?: string[]; youtubeUrls?: string[] }) => {
+      return apiRequest("PUT", `/api/posts/${data.id}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/posts/section/madang"] });
+      setEditingPost(null);
+      setEditTitle("");
+      setEditContent("");
+      setEditMediaItems([]);
+      toast({ title: "글이 수정되었습니다." });
+    },
+    onError: () => {
+      toast({ title: "글 수정에 실패했습니다.", variant: "destructive" });
+    },
+  });
+
+  const deletePost = useMutation({
+    mutationFn: async (id: number) => {
+      return apiRequest("DELETE", `/api/posts/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/posts/section/madang"] });
+      setExpandedPost(null);
+      toast({ title: "글이 삭제되었습니다." });
+    },
+    onError: () => {
+      toast({ title: "글 삭제에 실패했습니다.", variant: "destructive" });
+    },
+  });
+
   const handleSubmit = () => {
     const mediaUrls = mediaItems
       .filter(item => item.type !== "youtube")
@@ -281,6 +316,43 @@ export default function Madang() {
       mediaUrls: mediaUrls.length > 0 ? mediaUrls : undefined,
       youtubeUrls: youtubeUrls.length > 0 ? youtubeUrls : undefined
     });
+  };
+
+  const handleEditSubmit = () => {
+    if (!editingPost) return;
+    const mediaUrls = editMediaItems
+      .filter(item => item.type !== "youtube")
+      .map(item => item.url);
+    const youtubeUrls = editMediaItems
+      .filter(item => item.type === "youtube")
+      .map(item => item.url);
+    updatePost.mutate({
+      id: editingPost.id,
+      title: editTitle,
+      content: editContent,
+      mediaUrls: mediaUrls.length > 0 ? mediaUrls : undefined,
+      youtubeUrls: youtubeUrls.length > 0 ? youtubeUrls : undefined
+    });
+  };
+
+  const startEdit = (post: PostWithAuthor) => {
+    setEditingPost(post);
+    setEditTitle(post.title);
+    setEditContent(post.content);
+    setEditMediaItems(parseMediaItems(post));
+  };
+
+  const cancelEdit = () => {
+    setEditingPost(null);
+    setEditTitle("");
+    setEditContent("");
+    setEditMediaItems([]);
+  };
+
+  const handleDelete = (post: PostWithAuthor) => {
+    if (window.confirm("정말 삭제하시겠습니까?")) {
+      deletePost.mutate(post.id);
+    }
   };
 
   const formatDate = (date: Date | null) => {
@@ -343,14 +415,32 @@ export default function Madang() {
 
         {showEditor && user && (
           <div className="mb-4">
-            {ganji && (
-              <div className="mb-2 flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">간지:</span>
-                <span className="px-2 py-1 rounded text-white text-sm font-medium" style={{ backgroundColor: 'hsl(215 50% 35%)' }}>
-                  {ganji}
-                </span>
+            <div className="mb-2 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                {ganji && (
+                  <>
+                    <span className="text-sm text-muted-foreground">간지:</span>
+                    <span className="px-2 py-1 rounded text-white text-sm font-medium" style={{ backgroundColor: 'hsl(215 50% 35%)' }}>
+                      {ganji}
+                    </span>
+                  </>
+                )}
               </div>
-            )}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setShowEditor(false);
+                  setTitle("");
+                  setContent("");
+                  setMediaItems([]);
+                }}
+                data-testid="button-cancel-post"
+              >
+                <X className="h-4 w-4 mr-1" />
+                취소
+              </Button>
+            </div>
             <RichEditor
               title={title}
               content={content}
@@ -467,17 +557,70 @@ export default function Madang() {
                         <span className="sm:hidden text-sm text-muted-foreground">{post.author}</span>
                         {isExpanded && (
                           <div className="mt-3 border-t pt-3" onClick={(e) => e.stopPropagation()}>
-                            <div className="prose prose-base dark:prose-invert max-w-none mb-3 text-base">
-                              {post.content.split("\n").map((paragraph, i) => (
-                                <p key={i}>{paragraph}</p>
-                              ))}
-                            </div>
-                            {postMediaItems.length > 0 && (
-                              <MediaDisplay items={postMediaItems} />
+                            {editingPost?.id === post.id ? (
+                              <div className="mb-4">
+                                <div className="flex justify-end mb-2">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={cancelEdit}
+                                    data-testid="button-cancel-edit"
+                                  >
+                                    <X className="h-4 w-4 mr-1" />
+                                    취소
+                                  </Button>
+                                </div>
+                                <RichEditor
+                                  title={editTitle}
+                                  content={editContent}
+                                  mediaItems={editMediaItems}
+                                  onTitleChange={setEditTitle}
+                                  onContentChange={setEditContent}
+                                  onMediaItemsChange={setEditMediaItems}
+                                  onSubmit={handleEditSubmit}
+                                  isSubmitting={updatePost.isPending}
+                                  submitText="수정 완료"
+                                  placeholder="내용을 입력하세요."
+                                />
+                              </div>
+                            ) : (
+                              <>
+                                <div className="prose prose-base dark:prose-invert max-w-none mb-3 text-base">
+                                  {post.content.split("\n").map((paragraph, i) => (
+                                    <p key={i}>{paragraph}</p>
+                                  ))}
+                                </div>
+                                {postMediaItems.length > 0 && (
+                                  <MediaDisplay items={postMediaItems} />
+                                )}
+                                <div className="my-3 flex items-center justify-between flex-wrap gap-2">
+                                  <VoteButtons postId={post.id} likes={post.likes || 0} dislikes={post.dislikes || 0} user={user} />
+                                  {user && (user as any).claims?.sub === post.authorId && (
+                                    <div className="flex gap-1">
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => startEdit(post)}
+                                        data-testid={`button-edit-${post.id}`}
+                                      >
+                                        <Pencil className="h-4 w-4 mr-1" />
+                                        수정
+                                      </Button>
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() => handleDelete(post)}
+                                        disabled={deletePost.isPending}
+                                        data-testid={`button-delete-${post.id}`}
+                                      >
+                                        <Trash2 className="h-4 w-4 mr-1" />
+                                        삭제
+                                      </Button>
+                                    </div>
+                                  )}
+                                </div>
+                              </>
                             )}
-                            <div className="my-3">
-                              <VoteButtons postId={post.id} likes={post.likes || 0} dislikes={post.dislikes || 0} user={user} />
-                            </div>
                             <CommentSection postId={post.id} user={user} />
                           </div>
                         )}

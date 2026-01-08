@@ -100,6 +100,70 @@ export async function registerRoutes(
     }
   });
 
+  // Update post (protected - author only)
+  app.put("/api/posts/:id", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      const postId = parseInt(req.params.id);
+      if (isNaN(postId)) {
+        return res.status(400).json({ message: "Invalid post ID" });
+      }
+      
+      const updateSchema = z.object({
+        title: z.string().min(1, "제목을 입력해 주세요."),
+        content: z.string(),
+        mediaUrls: z.array(z.string()).optional(),
+        youtubeUrls: z.array(z.string()).optional(),
+      });
+      
+      const parsed = updateSchema.parse(req.body);
+      const updatedPost = await storage.updatePost(postId, userId, parsed);
+      
+      if (!updatedPost) {
+        return res.status(403).json({ message: "수정 권한이 없습니다." });
+      }
+      
+      res.json(updatedPost);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        return res.status(400).json({
+          message: err.errors[0].message,
+          field: err.errors[0].path.join('.'),
+        });
+      }
+      throw err;
+    }
+  });
+
+  // Delete post (protected - author only)
+  app.delete("/api/posts/:id", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      const postId = parseInt(req.params.id);
+      if (isNaN(postId)) {
+        return res.status(400).json({ message: "Invalid post ID" });
+      }
+      
+      const deleted = await storage.deletePost(postId, userId);
+      
+      if (!deleted) {
+        return res.status(403).json({ message: "삭제 권한이 없습니다." });
+      }
+      
+      res.json({ success: true });
+    } catch (err) {
+      throw err;
+    }
+  });
+
   // === Comments Routes ===
   
   // Get comments for a post

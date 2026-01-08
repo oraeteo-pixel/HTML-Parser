@@ -12,7 +12,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useSearch, useLocation } from "wouter";
-import { BookOpen, FileText, Download, Play, Mail } from "lucide-react";
+import { BookOpen, FileText, Download, Play, Mail, X, Pencil, Trash2 } from "lucide-react";
 import type { Post } from "@shared/schema";
 
 type PostWithAuthor = Post & { author: string; authorEmail: string | null };
@@ -41,6 +41,10 @@ export default function EbookPage() {
   const [content, setContent] = useState("");
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [viewingEbook, setViewingEbook] = useState<{ post: PostWithAuthor; data: EbookData } | null>(null);
+  const [editingPost, setEditingPost] = useState<PostWithAuthor | null>(null);
+  const [editTitle, setEditTitle] = useState("");
+  const [editContent, setEditContent] = useState("");
+  const [editMediaItems, setEditMediaItems] = useState<MediaItem[]>([]);
 
   // Auto-open editor when write=true
   useEffect(() => {
@@ -68,6 +72,36 @@ export default function EbookPage() {
     },
     onError: () => {
       toast({ title: "등록에 실패했습니다.", variant: "destructive" });
+    },
+  });
+
+  const updatePost = useMutation({
+    mutationFn: async (data: { id: number; title: string; content: string; mediaUrls?: string[]; youtubeUrls?: string[] }) => {
+      return apiRequest("PUT", `/api/posts/${data.id}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/posts/section", "ebook"] });
+      setEditingPost(null);
+      setEditTitle("");
+      setEditContent("");
+      setEditMediaItems([]);
+      toast({ title: "전자책이 수정되었습니다." });
+    },
+    onError: () => {
+      toast({ title: "수정에 실패했습니다.", variant: "destructive" });
+    },
+  });
+
+  const deletePost = useMutation({
+    mutationFn: async (id: number) => {
+      return apiRequest("DELETE", `/api/posts/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/posts/section", "ebook"] });
+      toast({ title: "전자책이 삭제되었습니다." });
+    },
+    onError: () => {
+      toast({ title: "삭제에 실패했습니다.", variant: "destructive" });
     },
   });
 
@@ -145,6 +179,80 @@ export default function EbookPage() {
     return data.file || data.youtubeVideos.length > 0;
   };
 
+  const parseMediaItems = (post: PostWithAuthor): MediaItem[] => {
+    const items: MediaItem[] = [];
+    if (post.mediaUrls) {
+      post.mediaUrls.forEach(fullUrl => {
+        const [baseUrl, queryString] = fullUrl.split("?");
+        const params = new URLSearchParams(queryString || "");
+        const typeParam = params.get("type");
+        const nameParam = params.get("name");
+        
+        let type: "image" | "video" | "pdf" | "file";
+        if (typeParam && ["image", "video", "pdf", "file"].includes(typeParam)) {
+          type = typeParam as "image" | "video" | "pdf" | "file";
+        } else if (baseUrl.includes("/objects/")) {
+          type = "image";
+        } else {
+          type = baseUrl.match(/\.(jpg|jpeg|png|gif|webp)$/i) ? "image" 
+            : baseUrl.match(/\.(mp4|webm|mov)$/i) ? "video"
+            : baseUrl.match(/\.pdf$/i) ? "pdf"
+            : "file";
+        }
+        
+        const fileName = nameParam || baseUrl.split("/").pop() || "";
+        items.push({ type, url: fullUrl, name: fileName });
+      });
+    }
+    if (post.youtubeUrls) {
+      post.youtubeUrls.forEach(videoId => {
+        items.push({ 
+          type: "youtube", 
+          url: videoId,
+          thumbnailUrl: `https://img.youtube.com/vi/${videoId}/mqdefault.jpg`
+        });
+      });
+    }
+    return items;
+  };
+
+  const handleEditSubmit = () => {
+    if (!editingPost) return;
+    const mediaUrls = editMediaItems
+      .filter(item => item.type !== "youtube")
+      .map(item => item.url);
+    const youtubeUrls = editMediaItems
+      .filter(item => item.type === "youtube")
+      .map(item => item.url);
+    updatePost.mutate({
+      id: editingPost.id,
+      title: editTitle,
+      content: editContent,
+      mediaUrls: mediaUrls.length > 0 ? mediaUrls : undefined,
+      youtubeUrls: youtubeUrls.length > 0 ? youtubeUrls : undefined
+    });
+  };
+
+  const startEdit = (post: PostWithAuthor) => {
+    setEditingPost(post);
+    setEditTitle(post.title);
+    setEditContent(post.content);
+    setEditMediaItems(parseMediaItems(post));
+  };
+
+  const cancelEdit = () => {
+    setEditingPost(null);
+    setEditTitle("");
+    setEditContent("");
+    setEditMediaItems([]);
+  };
+
+  const handleDelete = (post: PostWithAuthor) => {
+    if (window.confirm("정말 삭제하시겠습니까?")) {
+      deletePost.mutate(post.id);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
@@ -162,6 +270,22 @@ export default function EbookPage() {
 
         {showEditor && user && (
           <div className="mb-4">
+            <div className="flex justify-end mb-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  setShowEditor(false);
+                  setTitle("");
+                  setContent("");
+                  setMediaItems([]);
+                }}
+                data-testid="button-cancel-ebook"
+              >
+                <X className="h-4 w-4 mr-1" />
+                취소
+              </Button>
+            </div>
             <Card className="p-3 mb-3 bg-blue-50 dark:bg-blue-950/30 border-blue-200 dark:border-blue-800">
               <div className="flex items-start gap-2">
                 <FileText className="h-5 w-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
@@ -188,6 +312,28 @@ export default function EbookPage() {
               placeholder="전자책 설명을 입력하세요. PDF 파일과 표지 이미지를 함께 업로드하세요."
             />
           </div>
+        )}
+
+        {editingPost && (
+          <Dialog open={!!editingPost} onOpenChange={(open) => !open && cancelEdit()}>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-auto">
+              <DialogHeader>
+                <DialogTitle>전자책 수정</DialogTitle>
+              </DialogHeader>
+              <RichEditor
+                title={editTitle}
+                content={editContent}
+                mediaItems={editMediaItems}
+                onTitleChange={setEditTitle}
+                onContentChange={setEditContent}
+                onMediaItemsChange={setEditMediaItems}
+                onSubmit={handleEditSubmit}
+                isSubmitting={updatePost.isPending}
+                submitText="수정 완료"
+                placeholder="전자책 설명을 입력하세요."
+              />
+            </DialogContent>
+          </Dialog>
         )}
 
         {isLoading ? (
@@ -303,6 +449,35 @@ export default function EbookPage() {
                       </Popover>
                       <span> · {formatDate(post.createdAt)}</span>
                     </p>
+                    {user && (user as any).claims?.sub === post.authorId && (
+                      <div className="flex gap-1 mt-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            startEdit(post);
+                          }}
+                          data-testid={`button-edit-ebook-${post.id}`}
+                        >
+                          <Pencil className="h-3 w-3 mr-1" />
+                          수정
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(post);
+                          }}
+                          disabled={deletePost.isPending}
+                          data-testid={`button-delete-ebook-${post.id}`}
+                        >
+                          <Trash2 className="h-3 w-3 mr-1" />
+                          삭제
+                        </Button>
+                      </div>
+                    )}
                   </CardHeader>
                 </Card>
               );

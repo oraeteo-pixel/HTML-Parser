@@ -7,6 +7,8 @@ export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   
   createPost(post: InsertPost): Promise<Post>;
+  updatePost(postId: number, authorId: string, data: { title: string; content: string; mediaUrls?: string[]; youtubeUrls?: string[] }): Promise<Post | null>;
+  deletePost(postId: number, authorId: string): Promise<boolean>;
   getPosts(): Promise<(Post & { author: string; authorEmail: string | null })[]>;
   getPostsByGanji(ganji: string): Promise<(Post & { author: string; authorEmail: string | null })[]>;
   getPostsBySection(section: string): Promise<(Post & { author: string; authorEmail: string | null })[]>;
@@ -205,6 +207,34 @@ export class DatabaseStorage implements IStorage {
     const [vote] = await db.select().from(postVotes)
       .where(and(eq(postVotes.postId, postId), eq(postVotes.userId, userId)));
     return vote || null;
+  }
+
+  async updatePost(postId: number, authorId: string, data: { title: string; content: string; mediaUrls?: string[]; youtubeUrls?: string[] }): Promise<Post | null> {
+    const [existingPost] = await db.select().from(posts).where(eq(posts.id, postId));
+    if (!existingPost || existingPost.authorId !== authorId) {
+      return null;
+    }
+    const [updatedPost] = await db.update(posts)
+      .set({
+        title: data.title,
+        content: data.content,
+        mediaUrls: data.mediaUrls || [],
+        youtubeUrls: data.youtubeUrls || []
+      })
+      .where(eq(posts.id, postId))
+      .returning();
+    return updatedPost;
+  }
+
+  async deletePost(postId: number, authorId: string): Promise<boolean> {
+    const [existingPost] = await db.select().from(posts).where(eq(posts.id, postId));
+    if (!existingPost || existingPost.authorId !== authorId) {
+      return false;
+    }
+    await db.delete(comments).where(eq(comments.postId, postId));
+    await db.delete(postVotes).where(eq(postVotes.postId, postId));
+    await db.delete(posts).where(eq(posts.id, postId));
+    return true;
   }
 }
 

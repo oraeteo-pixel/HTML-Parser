@@ -60,7 +60,7 @@ export function Calendar() {
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
   const [showDayDetail, setShowDayDetail] = useState(false);
   const [showTalisman, setShowTalisman] = useState(false);
-  const infoBoxRef = useRef<HTMLDivElement>(null);
+  const topInfoBarRef = useRef<HTMLDivElement>(null);
 
   const hwMonthData = useMemo(() => {
     if (calType === "hw") {
@@ -321,7 +321,7 @@ export function Calendar() {
     setSelectedDay(solarDate);
     setShowDayDetail(true);
     setTimeout(() => {
-      infoBoxRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      topInfoBarRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 100);
   };
 
@@ -364,6 +364,7 @@ export function Calendar() {
         </div>
 
         <div 
+          ref={topInfoBarRef}
           id="calDate" 
           className="slim-info-bar cursor-pointer"
           data-testid="calendar-info"
@@ -574,7 +575,7 @@ export function Calendar() {
             return (
               <div 
                 key={`hw-${hwDay}`} 
-                className={`calendar-cell group cursor-pointer ${isCurrentDay ? "today" : ""} ${isSelected ? "ring-1 ring-slate-400 dark:ring-slate-500" : ""}`}
+                className={`calendar-cell group cursor-pointer ${isCurrentDay ? "today" : ""} ${isSelected ? "ring-2 ring-blue-500 dark:ring-blue-400 bg-blue-50 dark:bg-blue-900/30" : ""}`}
                 data-testid={`calendar-day-${hwDay}`}
                 onClick={() => handleDayClick(solarDate)}
               >
@@ -611,7 +612,7 @@ export function Calendar() {
             return (
               <div 
                 key={`solar-${solarDay}`} 
-                className={`calendar-cell group cursor-pointer ${isCurrentDay ? "today" : ""} ${isSelected ? "ring-1 ring-slate-400 dark:ring-slate-500" : ""}`}
+                className={`calendar-cell group cursor-pointer ${isCurrentDay ? "today" : ""} ${isSelected ? "ring-2 ring-blue-500 dark:ring-blue-400 bg-blue-50 dark:bg-blue-900/30" : ""}`}
                 data-testid={`calendar-day-${solarDay}`}
                 onClick={() => handleDayClick(solarDate)}
               >
@@ -656,7 +657,6 @@ export function Calendar() {
 
       {showDayDetail && (
         <div 
-          ref={infoBoxRef}
           id="day-detail-section" 
           className="mt-4 p-4 rounded-md border border-border bg-card animate-in slide-in-from-top-2 duration-200"
         >

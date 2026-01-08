@@ -30,16 +30,18 @@ export interface MediaItem {
 }
 
 interface RichEditorProps {
-  title: string;
+  title?: string;
   content: string;
   mediaItems: MediaItem[];
-  onTitleChange: (title: string) => void;
+  onTitleChange?: (title: string) => void;
   onContentChange: (content: string) => void;
   onMediaItemsChange: (items: MediaItem[]) => void;
-  onSubmit: () => void;
+  onSubmit?: () => void;
   isSubmitting?: boolean;
   submitText?: string;
   placeholder?: string;
+  compact?: boolean;
+  onUploadingChange?: (isUploading: boolean) => void;
 }
 
 function extractYoutubeId(url: string): string | null {
@@ -64,7 +66,9 @@ export function RichEditor({
   onSubmit,
   isSubmitting = false,
   submitText = "저장",
-  placeholder = "내용을 입력하세요..."
+  placeholder = "내용을 입력하세요...",
+  compact = false,
+  onUploadingChange
 }: RichEditorProps) {
   const [isDragOver, setIsDragOver] = useState(false);
   const [youtubeUrl, setYoutubeUrl] = useState("");
@@ -114,6 +118,11 @@ export function RichEditor({
       });
     }
   });
+
+  // Notify parent about uploading state
+  useEffect(() => {
+    onUploadingChange?.(uploadingCount > 0 || isUploading);
+  }, [uploadingCount, isUploading, onUploadingChange]);
 
   const getFileType = (contentType: string): "image" | "video" | "file" | "pdf" => {
     if (contentType.startsWith("image/")) return "image";
@@ -203,15 +212,17 @@ export function RichEditor({
   const isCurrentlyUploading = isUploading || uploadingCount > 0;
 
   return (
-    <Card className="p-4">
-      <div className="space-y-4">
-        <Input
-          placeholder="제목"
-          value={title}
-          onChange={(e) => onTitleChange(e.target.value)}
-          className="text-lg font-semibold"
-          data-testid="input-title"
-        />
+    <Card className={compact ? "p-2" : "p-4"}>
+      <div className={compact ? "space-y-2" : "space-y-4"}>
+        {!compact && onTitleChange && (
+          <Input
+            placeholder="제목"
+            value={title || ""}
+            onChange={(e) => onTitleChange(e.target.value)}
+            className="text-lg font-semibold"
+            data-testid="input-title"
+          />
+        )}
 
         <div
           className={`relative border-2 border-dashed rounded-lg transition-colors ${
@@ -229,7 +240,7 @@ export function RichEditor({
             placeholder={placeholder}
             value={content}
             onChange={(e) => onContentChange(e.target.value)}
-            className="min-h-[200px] border-0 resize-none focus-visible:ring-0"
+            className={`${compact ? "min-h-[80px]" : "min-h-[200px]"} border-0 resize-none focus-visible:ring-0`}
             data-testid="textarea-content"
           />
           
@@ -411,25 +422,27 @@ export function RichEditor({
             </Button>
           </div>
 
-          <Button
-            onClick={onSubmit}
-            disabled={isSubmitting || isCurrentlyUploading || !title.trim() || !content.trim()}
-            data-testid="button-submit-post"
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                저장 중...
-              </>
-            ) : isCurrentlyUploading ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                업로드 중...
-              </>
-            ) : (
-              submitText
-            )}
-          </Button>
+          {!compact && onSubmit && (
+            <Button
+              onClick={onSubmit}
+              disabled={isSubmitting || isCurrentlyUploading || !(title || "").trim() || !content.trim()}
+              data-testid="button-submit-post"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  저장 중...
+                </>
+              ) : isCurrentlyUploading ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  업로드 중...
+                </>
+              ) : (
+                submitText
+              )}
+            </Button>
+          )}
         </div>
       </div>
     </Card>

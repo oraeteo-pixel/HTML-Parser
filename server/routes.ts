@@ -96,8 +96,13 @@ export async function registerRoutes(
       }
       
       const contentSchema = z.object({
-        content: z.string().min(1, "답글 내용을 입력해 주세요."),
-      });
+        content: z.string(),
+        mediaUrls: z.array(z.string()).optional(),
+        youtubeUrls: z.array(z.string()).optional(),
+      }).refine(
+        (data) => data.content.trim().length > 0 || (data.mediaUrls && data.mediaUrls.length > 0) || (data.youtubeUrls && data.youtubeUrls.length > 0),
+        { message: "답글 내용이나 미디어를 입력해 주세요." }
+      );
       
       const parsed = contentSchema.parse(req.body);
       
@@ -105,6 +110,8 @@ export async function registerRoutes(
         postId,
         content: parsed.content,
         authorId: userId,
+        mediaUrls: parsed.mediaUrls,
+        youtubeUrls: parsed.youtubeUrls,
       });
       
       res.status(201).json(comment);
@@ -117,6 +124,55 @@ export async function registerRoutes(
       }
       throw err;
     }
+  });
+
+  // === Vote Routes ===
+  
+  // Vote on a post (like/dislike)
+  app.post("/api/posts/:postId/vote", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      const postId = parseInt(req.params.postId);
+      if (isNaN(postId)) {
+        return res.status(400).json({ message: "Invalid post ID" });
+      }
+      
+      const voteSchema = z.object({
+        voteType: z.enum(["like", "dislike"]),
+      });
+      
+      const parsed = voteSchema.parse(req.body);
+      
+      const result = await storage.votePost(postId, userId, parsed.voteType);
+      res.json(result);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        return res.status(400).json({
+          message: err.errors[0].message,
+        });
+      }
+      throw err;
+    }
+  });
+
+  // Get user's vote on a post
+  app.get("/api/posts/:postId/vote", isAuthenticated, async (req, res) => {
+    const userId = (req.user as any)?.claims?.sub;
+    if (!userId) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    
+    const postId = parseInt(req.params.postId);
+    if (isNaN(postId)) {
+      return res.status(400).json({ message: "Invalid post ID" });
+    }
+    
+    const vote = await storage.getUserVote(postId, userId);
+    res.json({ voteType: vote?.voteType || null });
   });
 
   return httpServer;

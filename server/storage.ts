@@ -1,7 +1,7 @@
-import { users, posts, comments, type User, type Post, type Comment } from "@shared/schema";
-import type { InsertPost, InsertComment } from "@shared/schema";
+import { users, posts, comments, postVotes, type User, type Post, type Comment, type PostVote } from "@shared/schema";
+import type { InsertPost, InsertComment, InsertPostVote } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, sql } from "drizzle-orm";
+import { eq, desc, sql, and } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
@@ -14,6 +14,9 @@ export interface IStorage {
   
   createComment(comment: InsertComment): Promise<Comment>;
   getCommentsByPostId(postId: number): Promise<(Comment & { author: string; authorEmail: string | null })[]>;
+  
+  votePost(postId: number, userId: string, voteType: 'like' | 'dislike'): Promise<{ likes: number; dislikes: number }>;
+  getUserVote(postId: number, userId: string): Promise<PostVote | null>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -37,6 +40,8 @@ export class DatabaseStorage implements IStorage {
       section: posts.section,
       mediaUrls: posts.mediaUrls,
       youtubeUrls: posts.youtubeUrls,
+      likes: posts.likes,
+      dislikes: posts.dislikes,
       createdAt: posts.createdAt,
       author: sql<string>`COALESCE(${users.firstName} || ' ' || ${users.lastName}, ${users.email}, 'Unknown')`,
       authorEmail: users.email
@@ -58,6 +63,8 @@ export class DatabaseStorage implements IStorage {
       section: posts.section,
       mediaUrls: posts.mediaUrls,
       youtubeUrls: posts.youtubeUrls,
+      likes: posts.likes,
+      dislikes: posts.dislikes,
       createdAt: posts.createdAt,
       author: sql<string>`COALESCE(${users.firstName} || ' ' || ${users.lastName}, ${users.email}, 'Unknown')`,
       authorEmail: users.email
@@ -80,6 +87,8 @@ export class DatabaseStorage implements IStorage {
       section: posts.section,
       mediaUrls: posts.mediaUrls,
       youtubeUrls: posts.youtubeUrls,
+      likes: posts.likes,
+      dislikes: posts.dislikes,
       createdAt: posts.createdAt,
       author: sql<string>`COALESCE(${users.firstName} || ' ' || ${users.lastName}, ${users.email}, 'Unknown')`,
       authorEmail: users.email
@@ -102,6 +111,8 @@ export class DatabaseStorage implements IStorage {
       section: posts.section,
       mediaUrls: posts.mediaUrls,
       youtubeUrls: posts.youtubeUrls,
+      likes: posts.likes,
+      dislikes: posts.dislikes,
       createdAt: posts.createdAt,
       author: sql<string>`COALESCE(${users.firstName} || ' ' || ${users.lastName}, ${users.email}, 'Unknown')`,
       authorEmail: users.email
@@ -134,6 +145,8 @@ export class DatabaseStorage implements IStorage {
       postId: comments.postId,
       content: comments.content,
       authorId: comments.authorId,
+      mediaUrls: comments.mediaUrls,
+      youtubeUrls: comments.youtubeUrls,
       createdAt: comments.createdAt,
       author: sql<string>`COALESCE(${users.firstName} || ' ' || ${users.lastName}, ${users.email}, 'Unknown')`,
       authorEmail: users.email
@@ -144,6 +157,54 @@ export class DatabaseStorage implements IStorage {
     .orderBy(comments.createdAt);
     
     return result;
+  }
+
+  async votePost(postId: number, userId: string, voteType: 'like' | 'dislike'): Promise<{ likes: number; dislikes: number }> {
+    const existingVote = await db.select().from(postVotes)
+      .where(and(eq(postVotes.postId, postId), eq(postVotes.userId, userId)))
+      .limit(1);
+
+    if (existingVote.length > 0) {
+      const oldVote = existingVote[0];
+      if (oldVote.voteType === voteType) {
+        await db.delete(postVotes).where(eq(postVotes.id, oldVote.id));
+        if (voteType === 'like') {
+          await db.update(posts).set({ likes: sql`GREATEST(0, ${posts.likes} - 1)` }).where(eq(posts.id, postId));
+        } else {
+          await db.update(posts).set({ dislikes: sql`GREATEST(0, ${posts.dislikes} - 1)` }).where(eq(posts.id, postId));
+        }
+      } else {
+        await db.update(postVotes).set({ voteType }).where(eq(postVotes.id, oldVote.id));
+        if (voteType === 'like') {
+          await db.update(posts).set({ 
+            likes: sql`${posts.likes} + 1`,
+            dislikes: sql`GREATEST(0, ${posts.dislikes} - 1)`
+          }).where(eq(posts.id, postId));
+        } else {
+          await db.update(posts).set({ 
+            likes: sql`GREATEST(0, ${posts.likes} - 1)`,
+            dislikes: sql`${posts.dislikes} + 1`
+          }).where(eq(posts.id, postId));
+        }
+      }
+    } else {
+      await db.insert(postVotes).values({ postId, userId, voteType });
+      if (voteType === 'like') {
+        await db.update(posts).set({ likes: sql`${posts.likes} + 1` }).where(eq(posts.id, postId));
+      } else {
+        await db.update(posts).set({ dislikes: sql`${posts.dislikes} + 1` }).where(eq(posts.id, postId));
+      }
+    }
+
+    const [post] = await db.select({ likes: posts.likes, dislikes: posts.dislikes })
+      .from(posts).where(eq(posts.id, postId));
+    return { likes: post.likes || 0, dislikes: post.dislikes || 0 };
+  }
+
+  async getUserVote(postId: number, userId: string): Promise<PostVote | null> {
+    const [vote] = await db.select().from(postVotes)
+      .where(and(eq(postVotes.postId, postId), eq(postVotes.userId, userId)));
+    return vote || null;
   }
 }
 

@@ -17,6 +17,8 @@ export const posts = pgTable("posts", {
   section: text("section").default("madang"),
   mediaUrls: text("media_urls").array(),
   youtubeUrls: text("youtube_urls").array(),
+  likes: integer("likes").default(0),
+  dislikes: integer("dislikes").default(0),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -30,6 +32,8 @@ export const comments = pgTable("comments", {
   postId: integer("post_id").references(() => posts.id).notNull(),
   content: text("content").notNull(),
   authorId: varchar("author_id").references(() => users.id).notNull(),
+  mediaUrls: text("media_urls").array(),
+  youtubeUrls: text("youtube_urls").array(),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -37,3 +41,16 @@ export const insertCommentSchema = createInsertSchema(comments).omit({ id: true,
 
 export type Comment = typeof comments.$inferSelect;
 export type InsertComment = z.infer<typeof insertCommentSchema>;
+
+export const postVotes = pgTable("post_votes", {
+  id: serial("id").primaryKey(),
+  postId: integer("post_id").references(() => posts.id).notNull(),
+  userId: varchar("user_id").references(() => users.id).notNull(),
+  voteType: text("vote_type").notNull(), // 'like' or 'dislike'
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertPostVoteSchema = createInsertSchema(postVotes).omit({ id: true, createdAt: true });
+
+export type PostVote = typeof postVotes.$inferSelect;
+export type InsertPostVote = z.infer<typeof insertPostVoteSchema>;

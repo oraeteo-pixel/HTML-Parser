@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RichEditor, MediaDisplay, type MediaItem } from "@/components/RichEditor";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { MessageSquare, ChevronDown, ChevronUp, X, Mail, Send } from "lucide-react";
+import { MessageSquare, ChevronDown, ChevronUp, X, Mail, Send, ThumbsUp, ThumbsDown } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
@@ -19,6 +19,8 @@ type CommentWithAuthor = Comment & { author: string; authorEmail: string | null 
 
 function CommentSection({ postId, user }: { postId: number; user: any }) {
   const [commentText, setCommentText] = useState("");
+  const [commentMedia, setCommentMedia] = useState<MediaItem[]>([]);
+  const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
   
   const { data: comments, isLoading } = useQuery<CommentWithAuthor[]>({
@@ -27,12 +29,13 @@ function CommentSection({ postId, user }: { postId: number; user: any }) {
   });
 
   const createComment = useMutation({
-    mutationFn: async (content: string) => {
-      return apiRequest("POST", `/api/posts/${postId}/comments`, { content });
+    mutationFn: async (data: { content: string; mediaUrls?: string[]; youtubeUrls?: string[] }) => {
+      return apiRequest("POST", `/api/posts/${postId}/comments`, data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/posts", postId, "comments"] });
       setCommentText("");
+      setCommentMedia([]);
       toast({ title: "답글이 작성되었습니다." });
     },
     onError: () => {
@@ -41,8 +44,14 @@ function CommentSection({ postId, user }: { postId: number; user: any }) {
   });
 
   const handleSubmitComment = () => {
-    if (commentText.trim()) {
-      createComment.mutate(commentText.trim());
+    if (commentText.trim() || commentMedia.length > 0) {
+      const mediaUrls = commentMedia.filter(m => m.type !== 'youtube').map(m => m.url);
+      const youtubeUrls = commentMedia.filter(m => m.type === 'youtube').map(m => m.url);
+      createComment.mutate({
+        content: commentText.trim(),
+        mediaUrls: mediaUrls.length > 0 ? mediaUrls : undefined,
+        youtubeUrls: youtubeUrls.length > 0 ? youtubeUrls : undefined,
+      });
     }
   };
 
@@ -52,52 +61,138 @@ function CommentSection({ postId, user }: { postId: number; user: any }) {
     return `${d.getMonth() + 1}.${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
   };
 
+  const parseCommentMedia = (comment: CommentWithAuthor): MediaItem[] => {
+    const items: MediaItem[] = [];
+    if (comment.mediaUrls) {
+      comment.mediaUrls.forEach(url => {
+        if (url.match(/\.(mp4|webm|mov)$/i)) {
+          items.push({ type: 'video', url });
+        } else if (url.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+          items.push({ type: 'image', url });
+        } else {
+          items.push({ type: 'file', url, name: url.split('/').pop() || 'file' });
+        }
+      });
+    }
+    if (comment.youtubeUrls) {
+      comment.youtubeUrls.forEach(url => items.push({ type: 'youtube', url }));
+    }
+    return items;
+  };
+
   return (
     <div className="border-t pt-4 mt-4">
-      <h3 className="text-sm font-medium mb-3 flex items-center gap-2">
+      <h3 className="font-bold mb-3 flex items-center gap-2">
         <MessageSquare className="h-4 w-4" />
         답글 {comments?.length || 0}
       </h3>
       
       {isLoading ? (
-        <p className="text-sm text-muted-foreground">로딩 중...</p>
+        <p className="text-muted-foreground">로딩 중...</p>
       ) : comments && comments.length > 0 ? (
         <div className="space-y-3 mb-4">
-          {comments.map((comment) => (
-            <div key={comment.id} className="bg-muted/50 rounded-md p-3">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="text-sm font-medium">{comment.author}</span>
-                <span className="text-xs text-muted-foreground">{formatDate(comment.createdAt)}</span>
+          {comments.map((comment) => {
+            const media = parseCommentMedia(comment);
+            return (
+              <div key={comment.id} className="bg-muted/50 rounded-md p-3">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="font-bold">{comment.author}</span>
+                  <span className="text-muted-foreground">{formatDate(comment.createdAt)}</span>
+                </div>
+                <p>{comment.content}</p>
+                {media.length > 0 && (
+                  <div className="mt-2">
+                    <MediaDisplay items={media} />
+                  </div>
+                )}
               </div>
-              <p className="text-sm">{comment.content}</p>
-            </div>
-          ))}
+            );
+          })}
         </div>
       ) : (
-        <p className="text-sm text-muted-foreground mb-4">아직 답글이 없습니다.</p>
+        <p className="text-muted-foreground mb-4">아직 답글이 없습니다.</p>
       )}
       
       {user ? (
-        <div className="flex gap-2">
-          <Textarea
-            value={commentText}
-            onChange={(e) => setCommentText(e.target.value)}
-            placeholder="답글을 입력하세요..."
-            className="min-h-[60px] text-sm"
-            data-testid={`input-comment-${postId}`}
+        <div className="space-y-2">
+          <RichEditor
+            content={commentText}
+            onContentChange={setCommentText}
+            mediaItems={commentMedia}
+            onMediaItemsChange={setCommentMedia}
+            onUploadingChange={setIsUploading}
+            placeholder="답글을 입력하세요... (드래그앤드롭으로 파일 첨부 가능)"
+            compact
           />
-          <Button
-            size="icon"
-            onClick={handleSubmitComment}
-            disabled={!commentText.trim() || createComment.isPending}
-            data-testid={`button-submit-comment-${postId}`}
-          >
-            <Send className="h-4 w-4" />
-          </Button>
+          <div className="flex justify-end">
+            <Button
+              size="sm"
+              onClick={handleSubmitComment}
+              disabled={(!commentText.trim() && commentMedia.length === 0) || createComment.isPending || isUploading}
+              data-testid={`button-submit-comment-${postId}`}
+            >
+              <Send className="h-4 w-4 mr-1" />
+              답글 작성
+            </Button>
+          </div>
         </div>
       ) : (
-        <p className="text-sm text-muted-foreground">답글을 작성하려면 로그인해 주세요.</p>
+        <p className="text-muted-foreground">답글을 작성하려면 로그인해 주세요.</p>
       )}
+    </div>
+  );
+}
+
+function VoteButtons({ postId, likes, dislikes, user }: { postId: number; likes: number; dislikes: number; user: any }) {
+  const { toast } = useToast();
+  
+  const { data: userVote } = useQuery<{ voteType: 'like' | 'dislike' | null }>({
+    queryKey: ["/api/posts", postId, "vote"],
+    queryFn: () => fetch(`/api/posts/${postId}/vote`, { credentials: 'include' }).then(res => res.json()),
+    enabled: !!user,
+  });
+
+  const voteMutation = useMutation({
+    mutationFn: async (voteType: 'like' | 'dislike') => {
+      return apiRequest("POST", `/api/posts/${postId}/vote`, { voteType });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/posts", postId, "vote"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/posts/section/madang"] });
+    },
+    onError: () => {
+      toast({ title: "투표에 실패했습니다.", variant: "destructive" });
+    },
+  });
+
+  const handleVote = (voteType: 'like' | 'dislike') => {
+    if (!user) {
+      toast({ title: "로그인이 필요합니다." });
+      return;
+    }
+    voteMutation.mutate(voteType);
+  };
+
+  return (
+    <div className="flex items-center gap-3">
+      <button
+        onClick={(e) => { e.stopPropagation(); handleVote('like'); }}
+        className={`flex items-center gap-1 px-2 py-1 rounded text-xs ${userVote?.voteType === 'like' ? 'bg-blue-500 text-white' : 'bg-muted hover:bg-muted/80'}`}
+        disabled={voteMutation.isPending}
+        data-testid={`button-like-${postId}`}
+      >
+        <ThumbsUp className="h-3 w-3" />
+        <span>{likes || 0}</span>
+      </button>
+      <button
+        onClick={(e) => { e.stopPropagation(); handleVote('dislike'); }}
+        className={`flex items-center gap-1 px-2 py-1 rounded text-xs ${userVote?.voteType === 'dislike' ? 'bg-red-500 text-white' : 'bg-muted hover:bg-muted/80'}`}
+        disabled={voteMutation.isPending}
+        data-testid={`button-dislike-${postId}`}
+      >
+        <ThumbsDown className="h-3 w-3" />
+        <span>{dislikes || 0}</span>
+      </button>
     </div>
   );
 }
@@ -232,10 +327,10 @@ export default function Madang() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background" style={{ fontFamily: "'Malgun Gothic', '맑은 고딕', sans-serif" }}>
       <Navigation />
       
-      <main className="max-w-[990px] mx-auto px-0 sm:px-2 py-4" data-testid="madang-main">
+      <main className="max-w-[990px] mx-auto px-0 sm:px-2 py-4 text-[7px] sm:text-xs" data-testid="madang-main">
         <Card className="p-4 mb-4 bg-gradient-to-r from-slate-50/50 to-slate-100/50 dark:from-slate-900/20 dark:to-slate-800/20">
           <div className="flex items-center gap-3">
             <MessageSquare className="h-8 w-8 orae-navy" />
@@ -322,7 +417,7 @@ export default function Madang() {
           </Card>
         ) : (
           <Card className="overflow-hidden rounded-none sm:rounded-md">
-            <table className="w-full text-xs border-collapse">
+            <table className="w-full border-collapse">
               <thead>
                 <tr className="border-b bg-muted/50">
                   <th className="text-left p-1 font-medium border-r w-12"></th>
@@ -363,7 +458,7 @@ export default function Madang() {
                       </td>
                       <td className="p-1 border-r">
                         <div className="flex items-center gap-1">
-                          <span className="font-medium line-clamp-1">{post.title}</span>
+                          <span className="font-bold line-clamp-1">{post.title}</span>
                           {postMediaItems.length > 0 && (
                             <span className="text-primary text-xs flex-shrink-0">[{postMediaItems.length}]</span>
                           )}
@@ -380,6 +475,9 @@ export default function Madang() {
                             {postMediaItems.length > 0 && (
                               <MediaDisplay items={postMediaItems} />
                             )}
+                            <div className="my-3">
+                              <VoteButtons postId={post.id} likes={post.likes || 0} dislikes={post.dislikes || 0} user={user} />
+                            </div>
                             <CommentSection postId={post.id} user={user} />
                           </div>
                         )}

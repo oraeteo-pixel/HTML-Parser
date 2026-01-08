@@ -595,29 +595,29 @@ export function Calendar() {
                   <div className="mansion-info">{cellMansion.mansion},{cellMansion.general}</div>
                   {cell81.isTransitionDay ? (
                     <>
-                      <div className="palace-81-name text-xs font-bold text-amber-600 dark:text-amber-400">
-                        <span className="text-muted-foreground text-[9px]">오전</span>{cell81.isJongungAM ? "尊宮" : cell81.nameAM} <span className="text-muted-foreground text-[9px]">오후</span>{cell81.isJongungPM ? "尊宮" : cell81.namePM}
+                      <div className="palace-81-name font-bold text-amber-600 dark:text-amber-400">
+                        <span className="text-muted-foreground text-[7px]">午前</span>{cell81.isJongungAM ? "尊宮" : cell81.nameAM} <span className="text-muted-foreground text-[7px]">午後</span>{cell81.isJongungPM ? "尊宮" : cell81.namePM}
                       </div>
-                      <div className="palace-81-notation text-[10px] text-muted-foreground">
+                      <div className="palace-81-notation text-muted-foreground">
                         {cell81.notationAM}/{cell81.notationPM}
                       </div>
                     </>
                   ) : cell81.isJongungAM && cell81.isJongungPM ? (
                     <>
-                      <div className="palace-81-name text-xs font-bold text-amber-600 dark:text-amber-400">尊宮</div>
-                      <div className="palace-81-notation text-[10px] text-muted-foreground">{cell81.notationAM}</div>
+                      <div className="palace-81-name font-bold text-amber-600 dark:text-amber-400">尊宮</div>
+                      <div className="palace-81-notation text-muted-foreground">{cell81.notationAM}</div>
                     </>
                   ) : cell81.isJongungAM !== cell81.isJongungPM ? (
                     <>
-                      <div className="palace-81-name text-xs font-bold text-amber-600 dark:text-amber-400">
-                        <span className="text-muted-foreground text-[9px]">오전</span>{cell81.isJongungAM ? "尊宮" : cell81.nameAM} <span className="text-muted-foreground text-[9px]">오후</span>{cell81.isJongungPM ? "尊宮" : cell81.namePM}
+                      <div className="palace-81-name font-bold text-amber-600 dark:text-amber-400">
+                        <span className="text-muted-foreground text-[7px]">午前</span>{cell81.isJongungAM ? "尊宮" : cell81.nameAM} <span className="text-muted-foreground text-[7px]">午後</span>{cell81.isJongungPM ? "尊宮" : cell81.namePM}
                       </div>
-                      <div className="palace-81-notation text-[10px] text-muted-foreground">{cell81.notationAM}</div>
+                      <div className="palace-81-notation text-muted-foreground">{cell81.notationAM}</div>
                     </>
                   ) : (
                     <>
-                      <div className="palace-81-name text-xs font-bold text-amber-600 dark:text-amber-400">{cell81.nameAM}</div>
-                      <div className="palace-81-notation text-[10px] text-muted-foreground">{cell81.notationAM}</div>
+                      <div className="palace-81-name font-bold text-amber-600 dark:text-amber-400">{cell81.nameAM}</div>
+                      <div className="palace-81-notation text-muted-foreground">{cell81.notationAM}</div>
                     </>
                   )}
                 </div>

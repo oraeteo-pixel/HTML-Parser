@@ -631,6 +631,7 @@ export function Calendar() {
             const isSat = solarDate.getDay() === 6;
             const isCurrentDay = isTodayKorean(solarDate);
             const isSelected = selectedDay && isSameDay(solarDate, selectedDay);
+            const isHwanggeukEpoch = solarDate.getFullYear() === 1989 && solarDate.getMonth() === 3 && solarDate.getDate() === 21;
             
             return (
               <div 
@@ -652,7 +653,13 @@ export function Calendar() {
                   {dayData.dayGanZhi}
                 </div>
                 
-                {dayData.solarTerm && (
+                {isHwanggeukEpoch ? (
+                  <div className="flex-1 flex items-end">
+                    <span className="text-xs px-1 py-0.5 rounded bg-amber-500 text-white font-bold">
+                      황극력 원년
+                    </span>
+                  </div>
+                ) : dayData.solarTerm && (
                   <div className="flex-1 flex items-end">
                     <span className="text-xs px-1 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200">
                       {dayData.solarTerm.korean}

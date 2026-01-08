@@ -865,93 +865,96 @@ export function get81PalaceName(position: number, daegung: number): string {
   return EIGHTY_ONE_PALACE_NAMES[key] || "";
 }
 
-// 숫자 → 팔괘 매핑 (중궁 6 제외 시 8괘)
+// 용담 팔괘 매핑 (낙서 기반)
+// 2=坤, 3=坎, 4=兌, 5=震, 7=巽, 8=艮, 9=離, 10=乾, 1&6=中央
 const NUMBER_TO_TRIGRAM: { [key: number]: { name: string; korean: string; element: string; symbol: string } } = {
-  2: { name: "坤", korean: "곤", element: "地", symbol: "☷" },
-  3: { name: "艮", korean: "간", element: "山", symbol: "☶" },
-  4: { name: "坎", korean: "감", element: "水", symbol: "☵" },
-  5: { name: "震", korean: "진", element: "雷", symbol: "☳" },
-  6: { name: "中", korean: "중", element: "中", symbol: "○" }, // 중궁
-  7: { name: "巽", korean: "손", element: "風", symbol: "☴" },
-  8: { name: "離", korean: "리", element: "火", symbol: "☲" },
-  9: { name: "兌", korean: "태", element: "澤", symbol: "☱" },
-  10: { name: "乾", korean: "건", element: "天", symbol: "☰" }
+  1: { name: "中", korean: "중", element: "中", symbol: "○" },  // 중앙
+  2: { name: "坤", korean: "곤", element: "地", symbol: "☷" },  // 곤
+  3: { name: "坎", korean: "감", element: "水", symbol: "☵" },  // 감
+  4: { name: "兌", korean: "태", element: "澤", symbol: "☱" },  // 태
+  5: { name: "震", korean: "진", element: "雷", symbol: "☳" },  // 진
+  6: { name: "中", korean: "중", element: "中", symbol: "○" },  // 중앙
+  7: { name: "巽", korean: "손", element: "風", symbol: "☴" },  // 손
+  8: { name: "艮", korean: "간", element: "山", symbol: "☶" },  // 간
+  9: { name: "離", korean: "리", element: "火", symbol: "☲" },  // 리
+  10: { name: "乾", korean: "건", element: "天", symbol: "☰" }  // 건
 };
 
-// 64괘 명칭 매핑: [하괘(소궁)][상괘(대궁)] = 괘명
-// 하괘 element + 상괘 element + 괘명
+// 64괘 명칭 매핑 (용담 팔괘 기준)
+// 키: "${대궁(하괘)}-${소궁(상괘)}" = 괘명
+// 용담 팔괘: 2=坤, 3=坎, 4=兌, 5=震, 7=巽, 8=艮, 9=離, 10=乾
 const SIXTY_FOUR_HEXAGRAMS: { [key: string]: { hanja: string; korean: string; fullName: string } } = {
-  // 坤 (2) 하괘
+  // 坤 (2=地) 하괘
   "2-2": { hanja: "坤", korean: "곤", fullName: "坤爲地" },
-  "2-3": { hanja: "剝", korean: "박", fullName: "山地剝" },
-  "2-4": { hanja: "比", korean: "비", fullName: "水地比" },
+  "2-3": { hanja: "比", korean: "비", fullName: "水地比" },
+  "2-4": { hanja: "萃", korean: "췌", fullName: "澤地萃" },
   "2-5": { hanja: "豫", korean: "예", fullName: "雷地豫" },
   "2-7": { hanja: "觀", korean: "관", fullName: "風地觀" },
-  "2-8": { hanja: "晉", korean: "진", fullName: "火地晉" },
-  "2-9": { hanja: "萃", korean: "췌", fullName: "澤地萃" },
+  "2-8": { hanja: "剝", korean: "박", fullName: "山地剝" },
+  "2-9": { hanja: "晉", korean: "진", fullName: "火地晉" },
   "2-10": { hanja: "否", korean: "비", fullName: "天地否" },
-  // 艮 (3) 하괘
-  "3-2": { hanja: "謙", korean: "겸", fullName: "地山謙" },
-  "3-3": { hanja: "艮", korean: "간", fullName: "艮爲山" },
-  "3-4": { hanja: "蹇", korean: "건", fullName: "水山蹇" },
-  "3-5": { hanja: "小過", korean: "소과", fullName: "雷山小過" },
-  "3-7": { hanja: "漸", korean: "점", fullName: "風山漸" },
-  "3-8": { hanja: "旅", korean: "려", fullName: "火山旅" },
-  "3-9": { hanja: "咸", korean: "함", fullName: "澤山咸" },
-  "3-10": { hanja: "遯", korean: "돈", fullName: "天山遯" },
-  // 坎 (4) 하괘
-  "4-2": { hanja: "師", korean: "사", fullName: "地水師" },
-  "4-3": { hanja: "蒙", korean: "몽", fullName: "山水蒙" },
-  "4-4": { hanja: "坎", korean: "감", fullName: "坎爲水" },
-  "4-5": { hanja: "解", korean: "해", fullName: "雷水解" },
-  "4-7": { hanja: "渙", korean: "환", fullName: "風水渙" },
-  "4-8": { hanja: "未濟", korean: "미제", fullName: "火水未濟" },
-  "4-9": { hanja: "困", korean: "곤", fullName: "澤水困" },
-  "4-10": { hanja: "訟", korean: "송", fullName: "天水訟" },
-  // 震 (5) 하괘
+  // 坎 (3=水) 하괘
+  "3-2": { hanja: "師", korean: "사", fullName: "地水師" },
+  "3-3": { hanja: "坎", korean: "감", fullName: "坎爲水" },
+  "3-4": { hanja: "困", korean: "곤", fullName: "澤水困" },
+  "3-5": { hanja: "解", korean: "해", fullName: "雷水解" },
+  "3-7": { hanja: "渙", korean: "환", fullName: "風水渙" },
+  "3-8": { hanja: "蒙", korean: "몽", fullName: "山水蒙" },
+  "3-9": { hanja: "未濟", korean: "미제", fullName: "火水未濟" },
+  "3-10": { hanja: "訟", korean: "송", fullName: "天水訟" },
+  // 兌 (4=澤) 하괘
+  "4-2": { hanja: "臨", korean: "림", fullName: "地澤臨" },
+  "4-3": { hanja: "節", korean: "절", fullName: "水澤節" },
+  "4-4": { hanja: "兌", korean: "태", fullName: "兌爲澤" },
+  "4-5": { hanja: "歸妹", korean: "귀매", fullName: "雷澤歸妹" },
+  "4-7": { hanja: "中孚", korean: "중부", fullName: "風澤中孚" },
+  "4-8": { hanja: "損", korean: "손", fullName: "山澤損" },
+  "4-9": { hanja: "睽", korean: "규", fullName: "火澤睽" },
+  "4-10": { hanja: "夬", korean: "쾌", fullName: "天澤夬" },
+  // 震 (5=雷) 하괘
   "5-2": { hanja: "復", korean: "복", fullName: "地雷復" },
-  "5-3": { hanja: "頤", korean: "이", fullName: "山雷頤" },
-  "5-4": { hanja: "屯", korean: "둔", fullName: "水雷屯" },
+  "5-3": { hanja: "屯", korean: "둔", fullName: "水雷屯" },
+  "5-4": { hanja: "隨", korean: "수", fullName: "澤雷隨" },
   "5-5": { hanja: "震", korean: "진", fullName: "震爲雷" },
   "5-7": { hanja: "益", korean: "익", fullName: "風雷益" },
-  "5-8": { hanja: "噬嗑", korean: "서합", fullName: "火雷噬嗑" },
-  "5-9": { hanja: "隨", korean: "수", fullName: "澤雷隨" },
+  "5-8": { hanja: "頤", korean: "이", fullName: "山雷頤" },
+  "5-9": { hanja: "噬嗑", korean: "서합", fullName: "火雷噬嗑" },
   "5-10": { hanja: "無妄", korean: "무망", fullName: "天雷無妄" },
-  // 巽 (7) 하괘
+  // 巽 (7=風) 하괘
   "7-2": { hanja: "升", korean: "승", fullName: "地風升" },
-  "7-3": { hanja: "蠱", korean: "고", fullName: "山風蠱" },
-  "7-4": { hanja: "井", korean: "정", fullName: "水風井" },
+  "7-3": { hanja: "井", korean: "정", fullName: "水風井" },
+  "7-4": { hanja: "大過", korean: "대과", fullName: "澤風大過" },
   "7-5": { hanja: "恒", korean: "항", fullName: "雷風恒" },
   "7-7": { hanja: "巽", korean: "손", fullName: "巽爲風" },
-  "7-8": { hanja: "鼎", korean: "정", fullName: "火風鼎" },
-  "7-9": { hanja: "大過", korean: "대과", fullName: "澤風大過" },
+  "7-8": { hanja: "蠱", korean: "고", fullName: "山風蠱" },
+  "7-9": { hanja: "鼎", korean: "정", fullName: "火風鼎" },
   "7-10": { hanja: "姤", korean: "구", fullName: "天風姤" },
-  // 離 (8) 하괘
-  "8-2": { hanja: "明夷", korean: "명이", fullName: "地火明夷" },
-  "8-3": { hanja: "賁", korean: "비", fullName: "山火賁" },
-  "8-4": { hanja: "旣濟", korean: "기제", fullName: "水火旣濟" },
-  "8-5": { hanja: "豐", korean: "풍", fullName: "雷火豐" },
-  "8-7": { hanja: "家人", korean: "가인", fullName: "風火家人" },
-  "8-8": { hanja: "離", korean: "리", fullName: "離爲火" },
-  "8-9": { hanja: "革", korean: "혁", fullName: "澤火革" },
-  "8-10": { hanja: "同人", korean: "동인", fullName: "天火同人" },
-  // 兌 (9) 하괘
-  "9-2": { hanja: "臨", korean: "림", fullName: "地澤臨" },
-  "9-3": { hanja: "損", korean: "손", fullName: "山澤損" },
-  "9-4": { hanja: "節", korean: "절", fullName: "水澤節" },
-  "9-5": { hanja: "歸妹", korean: "귀매", fullName: "雷澤歸妹" },
-  "9-7": { hanja: "中孚", korean: "중부", fullName: "風澤中孚" },
-  "9-8": { hanja: "睽", korean: "규", fullName: "火澤睽" },
-  "9-9": { hanja: "兌", korean: "태", fullName: "兌爲澤" },
-  "9-10": { hanja: "夬", korean: "쾌", fullName: "天澤夬" },
-  // 乾 (10) 하괘
+  // 艮 (8=山) 하괘
+  "8-2": { hanja: "謙", korean: "겸", fullName: "地山謙" },
+  "8-3": { hanja: "蹇", korean: "건", fullName: "水山蹇" },
+  "8-4": { hanja: "咸", korean: "함", fullName: "澤山咸" },
+  "8-5": { hanja: "小過", korean: "소과", fullName: "雷山小過" },
+  "8-7": { hanja: "漸", korean: "점", fullName: "風山漸" },
+  "8-8": { hanja: "艮", korean: "간", fullName: "艮爲山" },
+  "8-9": { hanja: "旅", korean: "려", fullName: "火山旅" },
+  "8-10": { hanja: "遯", korean: "돈", fullName: "天山遯" },
+  // 離 (9=火) 하괘
+  "9-2": { hanja: "明夷", korean: "명이", fullName: "地火明夷" },
+  "9-3": { hanja: "旣濟", korean: "기제", fullName: "水火旣濟" },
+  "9-4": { hanja: "革", korean: "혁", fullName: "澤火革" },
+  "9-5": { hanja: "豐", korean: "풍", fullName: "雷火豐" },
+  "9-7": { hanja: "家人", korean: "가인", fullName: "風火家人" },
+  "9-8": { hanja: "賁", korean: "비", fullName: "山火賁" },
+  "9-9": { hanja: "離", korean: "리", fullName: "離爲火" },
+  "9-10": { hanja: "同人", korean: "동인", fullName: "天火同人" },
+  // 乾 (10=天) 하괘
   "10-2": { hanja: "泰", korean: "태", fullName: "地天泰" },
-  "10-3": { hanja: "大畜", korean: "대축", fullName: "山天大畜" },
-  "10-4": { hanja: "需", korean: "수", fullName: "水天需" },
+  "10-3": { hanja: "需", korean: "수", fullName: "水天需" },
+  "10-4": { hanja: "履", korean: "이", fullName: "澤天履" },
   "10-5": { hanja: "大壯", korean: "대장", fullName: "雷天大壯" },
   "10-7": { hanja: "小畜", korean: "소축", fullName: "風天小畜" },
-  "10-8": { hanja: "大有", korean: "대유", fullName: "火天大有" },
-  "10-9": { hanja: "履", korean: "이", fullName: "天澤履" },
+  "10-8": { hanja: "大畜", korean: "대축", fullName: "山天大畜" },
+  "10-9": { hanja: "大有", korean: "대유", fullName: "火天大有" },
   "10-10": { hanja: "乾", korean: "건", fullName: "乾爲天" }
 };
 

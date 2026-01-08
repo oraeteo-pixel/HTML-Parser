@@ -1,4 +1,4 @@
-import { User, Star, BookOpen, CalendarDays, Users, LogOut, Loader2, PenSquare } from "lucide-react";
+import { User, Star, BookOpen, CalendarDays, Users, LogOut, Loader2, PenSquare, Mail } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import logoImage from "@assets/image_1767628183426.png";
@@ -26,6 +26,12 @@ export function Navigation() {
     queryKey: ["/api/posts/section", "ebook"],
     queryFn: () => fetch("/api/posts/section/ebook").then(res => res.json()),
     enabled: isAuthenticated,
+  });
+  
+  const { data: unreadCount } = useQuery<{ count: number }>({
+    queryKey: ["/api/messages/unread-count"],
+    enabled: isAuthenticated,
+    refetchInterval: 30000,
   });
   
   const userHasMadangPosts = madangPosts?.some(post => post.authorId === user?.id);
@@ -110,6 +116,18 @@ export function Navigation() {
                   </div>
                 </PopoverContent>
               </Popover>
+              <Link
+                href="/messages"
+                className="flex flex-col items-center gap-0 group cursor-pointer relative"
+                data-testid="nav-messages"
+              >
+                <Mail className={`h-6 w-6 sm:h-8 sm:w-8 group-hover:opacity-70 transition-opacity ${unreadCount?.count ? 'text-primary' : ''}`} style={unreadCount?.count ? undefined : { color: 'hsl(210 20% 30%)' }} strokeWidth={2.5} />
+                {unreadCount?.count ? (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center font-medium">
+                    {unreadCount.count > 9 ? '9+' : unreadCount.count}
+                  </span>
+                ) : null}
+              </Link>
               <Popover>
                 <PopoverTrigger asChild>
                   <button 

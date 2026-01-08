@@ -14,6 +14,7 @@ import EbookViewerPage from "@/pages/EbookViewerPage";
 import StorePage from "@/pages/StorePage";
 import CalendarPage from "@/pages/CalendarPage";
 import CommunityPage from "@/pages/CommunityPage";
+import Messages from "@/pages/Messages";
 
 function Router() {
   return (
@@ -29,6 +30,7 @@ function Router() {
       <Route path="/store" component={StorePage} />
       <Route path="/calendar" component={CalendarPage} />
       <Route path="/community" component={CommunityPage} />
+      <Route path="/messages" component={Messages} />
       <Route component={NotFound} />
     </Switch>
   );

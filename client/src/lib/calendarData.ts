@@ -802,7 +802,7 @@ export function getWeekdayHanja(dayOfWeek: number): string {
 }
 
 // 특정 날짜의 대궁, position 계산 (4.5일 주기 기준)
-// calculateDaegungAndPosition과 동일한 로직 사용
+// 황극력 연도를 기준으로 계산
 // 황극력 연말 마지막 1.5일 = 존궁(尊宮)
 export function getDaegungPositionForDate(year: number, month: number, day: number): { 
   daegungAM: number; 
@@ -817,25 +817,18 @@ export function getDaegungPositionForDate(year: number, month: number, day: numb
   const amTime = new Date(year, month - 1, day, 6, 0, 0);
   const pmTime = new Date(year, month - 1, day, 18, 0, 0);
   
-  // 현재 황극력 연도의 시작점 결정 (4월 20일 23:00 기준)
-  const getEpochForTime = (time: Date) => {
-    const y = time.getFullYear();
-    const m = time.getMonth() + 1;
-    const d = time.getDate();
-    const h = time.getHours();
-    
-    let epochYear = y;
-    if (m < 4 || (m === 4 && d < 21) || (m === 4 && d === 20 && h < 23)) {
-      epochYear = y - 1;
-    }
-    return new Date(epochYear, 3, 20, 23, 0, 0);
-  };
+  // 해당 양력 날짜의 황극력 연도 확인
+  const hwDate = getHwanggeukDate(year, month, day);
+  const hwYear = hwDate.year;
   
-  const amEpoch = getEpochForTime(amTime);
-  const pmEpoch = getEpochForTime(pmTime);
+  // 해당 황극력 연도의 시작일 (hwanggeukToSolar로 정확한 양력일 계산)
+  const yearStart = hwanggeukToSolar(hwYear, 1, 1);
+  const amEpoch = new Date(yearStart.year, yearStart.month - 1, yearStart.day - 1, 23, 0, 0);
+  const pmEpoch = amEpoch;
   
   // 다음 황극력 연도 시작일 (존궁 계산용)
-  const nextEpochDate = new Date(amEpoch.getFullYear() + 1, 3, 20, 23, 0, 0);
+  const nextYearStart = hwanggeukToSolar(hwYear + 1, 1, 1);
+  const nextEpochDate = new Date(nextYearStart.year, nextYearStart.month - 1, nextYearStart.day - 1, 23, 0, 0);
   
   // 시작점부터 경과한 분 계산
   const amMinutes = Math.floor((amTime.getTime() - amEpoch.getTime()) / (1000 * 60));

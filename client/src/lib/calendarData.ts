@@ -802,12 +802,35 @@ export function getWeekdayHanja(dayOfWeek: number): string {
   return WEEKDAYS_HANJA[dayOfWeek];
 }
 
-// 특정 날짜의 대궁, position 계산 (오전 기준, 정오 12시 사용)
+// 특정 날짜의 대궁, position 계산 (4.5일 주기 기준)
+// 황극력 1월 1일 = 2지2(原), 4.5일 후 = 2지3(潛), ...
 export function getDaegungPositionForDate(year: number, month: number, day: number): { daegung: number; position: number } {
-  // 해당 날짜의 정오(12:00)를 기준으로 계산 (UTC 시간으로 생성 후 한국시간으로 변환)
-  const noonDate = new Date(year, month - 1, day, 12, 0, 0);
-  const koreanTime = getKoreanTime(noonDate);
-  const { daegung, position } = calculateDaegungAndPosition(koreanTime);
+  // 황극력 기준점: 양력 4월 21일 00:00 KST (황극력 1월 1일)
+  // 2026년 기준 황극력 1월 1일 = 양력 2025년 4월 21일
+  const hwDate = getHwanggeukDate(year, month, day);
+  const hwYear = hwDate.year;
+  
+  // 해당 황극력 연도의 시작점 (양력 4월 21일 00:00)
+  const epochYear = hwYear - 1 + (hwDate.month >= 1 ? 1 : 0);
+  // 황극력 1월 1일 = 전년도 4월 21일 or 당해년도 4월 21일
+  const actualEpochYear = hwYear === 37 ? 2025 : hwYear + 1988; // 황극력 37년 = 2025년
+  const epochDate = new Date(actualEpochYear, 3, 21, 0, 0, 0); // 4월 21일 00:00
+  
+  // 현재 날짜 (정오 기준)
+  const currentDate = new Date(year, month - 1, day, 12, 0, 0);
+  
+  // 시작점부터 경과한 일수 (4.5일 주기로 대궁 변화)
+  const daysFromEpoch = Math.floor((currentDate.getTime() - epochDate.getTime()) / (1000 * 60 * 60 * 24));
+  
+  // 4.5일 주기 계산 (반일 2개 = 1일, 9반일 = 4.5일)
+  // 대궁 사이클: 매 4.5일마다 대궁이 2→3→4→...→10→2 순환
+  const daegungCycleIndex = Math.floor(daysFromEpoch / 4.5);
+  const daegung = (daegungCycleIndex % 9) + 2; // 2~10
+  
+  // Position 사이클: 매 40.5일(9 * 4.5일)마다 position이 2→3→...→10→2 순환
+  const positionCycleIndex = Math.floor(daegungCycleIndex / 9);
+  const position = (positionCycleIndex % 9) + 2; // 2~10
+  
   return { daegung, position };
 }
 

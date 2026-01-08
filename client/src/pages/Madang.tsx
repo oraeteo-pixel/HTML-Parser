@@ -387,6 +387,8 @@ export default function Madang() {
   const [editTitle, setEditTitle] = useState("");
   const [editContent, setEditContent] = useState("");
   const [editMediaItems, setEditMediaItems] = useState<MediaItem[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const postsPerPage = 10;
   
   // Auto-open editor when coming from calendar with ganji or when write=true
   useEffect(() => {
@@ -409,6 +411,18 @@ export default function Madang() {
       return true;
     });
   }, [posts, filterGanji, filterAuthor]);
+
+  // Pagination
+  const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+  const paginatedPosts = useMemo(() => {
+    const startIndex = (currentPage - 1) * postsPerPage;
+    return filteredPosts.slice(startIndex, startIndex + postsPerPage);
+  }, [filteredPosts, currentPage, postsPerPage]);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filterGanji, filterAuthor]);
 
   const clearFilters = () => {
     setFilterGanji(null);
@@ -691,13 +705,15 @@ export default function Madang() {
                   <th></th>
                   <th></th>
                   <th></th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
-                {filteredPosts.map((post, index) => {
+                {paginatedPosts.map((post, index) => {
                   const postMediaItems = parseMediaItems(post);
                   const isExpanded = expandedPost === post.id;
-                  const isLast = index === filteredPosts.length - 1;
+                  const isLast = index === paginatedPosts.length - 1;
+                  const postNumber = filteredPosts.length - ((currentPage - 1) * postsPerPage + index);
                   
                   return (
                     <tr 
@@ -706,6 +722,9 @@ export default function Madang() {
                       onClick={() => setExpandedPost(isExpanded ? null : post.id)}
                       data-testid={`post-${post.id}`}
                     >
+                      <td className="p-1 border-r text-center align-top text-sm text-muted-foreground w-10">
+                        {postNumber}
+                      </td>
                       <td className="p-1 border-r text-center align-top">
                         {post.ganji ? (
                           <button
@@ -861,6 +880,49 @@ export default function Madang() {
                 })}
               </tbody>
             </table>
+            {totalPages > 1 && (
+              <div className="flex justify-center items-center gap-1 p-3 border-t">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(1)}
+                  disabled={currentPage === 1}
+                  data-testid="button-page-first"
+                >
+                  처음
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  data-testid="button-page-prev"
+                >
+                  이전
+                </Button>
+                <span className="px-3 text-sm text-muted-foreground">
+                  {currentPage} / {totalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  data-testid="button-page-next"
+                >
+                  다음
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(totalPages)}
+                  disabled={currentPage === totalPages}
+                  data-testid="button-page-last"
+                >
+                  마지막
+                </Button>
+              </div>
+            )}
           </Card>
         )}
       </main>

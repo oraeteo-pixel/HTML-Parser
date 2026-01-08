@@ -846,20 +846,21 @@ export function getDaegungPositionForDate(year: number, month: number, day: numb
   const amHalfDays = Math.floor(amMinutes / halfDayPeriod);
   const pmHalfDays = Math.floor(pmMinutes / halfDayPeriod);
   
-  // 보정 오프셋 (calculateDaegungAndPosition과 동일)
-  const calibrationOffset = -1;
-  const positionOffset = 3;
+  // 81궁 달력 표시용 오프셋
+  // 황극력 1월 1일 = 二之二(原)로 시작해야 함
+  const calibrationOffset = 0;  // 대궁: 1월 1일에 2부터 시작
+  const positionOffset = 0;     // Position: 1월 1일에 2부터 시작
   
   // 양수 모듈로 함수
   const posMod = (n: number, m: number) => ((n % m) + m) % m;
   
-  // 대궁 계산: 9반일(4.5일)마다 변화
+  // 대궁 계산: 9반일(4.5일)마다 변화 (2→3→4→5→6→7→8→9→10)
   const amDaegungCycle = Math.floor(amHalfDays / 9);
   const pmDaegungCycle = Math.floor(pmHalfDays / 9);
   const daegungAM = posMod(amDaegungCycle + calibrationOffset, 9) + 2;
   const daegungPM = posMod(pmDaegungCycle + calibrationOffset, 9) + 2;
   
-  // Position 계산: 81반일(40.5일)마다 변화
+  // Position 계산: 81반일(40.5일)마다 변화 (2→3→4→5→6→7→8→9→10)
   const amPositionCycle = Math.floor(amDaegungCycle / 9);
   const pmPositionCycle = Math.floor(pmDaegungCycle / 9);
   const positionAM = posMod(amPositionCycle + positionOffset, 9) + 2;

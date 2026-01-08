@@ -122,12 +122,16 @@ The `shared/` directory contains code used by both frontend and backend:
 - **시작점(Epoch)**: 황극력 연초 전날 밤 23:00 (양력 4월 20일 23:00 KST)
 - **대궁 계산 공식**:
   - 반일(12시간=720분) 수 계산: `totalHalfDays = (현재시간 - 시작점) / 720분`
-  - 대궁 = `(totalHalfDays + 5) % 9 + 2` (2~10 순환)
-  - calibrationOffset = 5 (2026년 1월 7일 오전에 대궁=7 맞춤)
+  - 대궁 = `(totalHalfDays + calibrationOffset) % 9 + 2` (2~10 순환)
+  - calibrationOffset = -1 (2026년 1월 9일에 소궁=8, 대궁=4 맞춤)
 - **Position(24절국) 계산 공식**:
   - 대궁사이클 수: `daegungCycleNum = totalHalfDays / 9`
-  - Position = `(daegungCycleNum + 3) % 9 + 2` (2~10 순환)
-  - positionOffset = 3 (2026년 1월 7일에 position=9 맞춤)
+  - Position = `(daegungCycleNum + positionOffset) % 9 + 2` (2~10 순환)
+  - positionOffset = 3
+- **X지Y 표기법**:
+  - X = position (대궁이 몇 번째 사이클인지, 2~10)
+  - Y = 소궁 (해당 사이클 내 소궁 번호, 2~10)
+  - 예: "7지8" = 7번째 대궁 사이클에서 소궁 8
 - **소궁 계산**:
   - 시간 슬롯: 23:20부터 80분 간격 (슬롯 1-9 오전, 10-18 오후)
   - 소궁 = SOGUNG_PATTERNS[position][슬롯인덱스]

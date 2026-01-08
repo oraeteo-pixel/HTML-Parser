@@ -82,8 +82,8 @@ function CommentSection({ postId, user }: { postId: number; user: any }) {
 
   return (
     <div className="border-t pt-4 mt-4">
-      <h3 className="font-bold mb-3 flex items-center gap-2">
-        <MessageSquare className="h-4 w-4" />
+      <h3 className="font-bold mb-3 flex items-center gap-2 text-base">
+        <MessageSquare className="h-5 w-5" />
         답글 {comments?.length || 0}
       </h3>
       
@@ -94,12 +94,12 @@ function CommentSection({ postId, user }: { postId: number; user: any }) {
           {comments.map((comment) => {
             const media = parseCommentMedia(comment);
             return (
-              <div key={comment.id} className="bg-muted/50 rounded-md p-3">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="font-bold">{comment.author}</span>
-                  <span className="text-muted-foreground">{formatDate(comment.createdAt)}</span>
+              <div key={comment.id} className="bg-muted/50 rounded-md p-3 text-base">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="font-bold text-base">{comment.author}</span>
+                  <span className="text-muted-foreground text-sm">{formatDate(comment.createdAt)}</span>
                 </div>
-                <p>{comment.content}</p>
+                <p className="text-base">{comment.content}</p>
                 {media.length > 0 && (
                   <div className="mt-2">
                     <MediaDisplay items={media} />
@@ -464,10 +464,10 @@ export default function Madang() {
                           )}
                           {isExpanded ? <ChevronUp className="h-3 w-3 flex-shrink-0 text-muted-foreground" /> : <ChevronDown className="h-3 w-3 flex-shrink-0 text-muted-foreground" />}
                         </div>
-                        <span className="sm:hidden text-xs text-muted-foreground">{post.author}</span>
+                        <span className="sm:hidden text-sm text-muted-foreground">{post.author}</span>
                         {isExpanded && (
                           <div className="mt-3 border-t pt-3" onClick={(e) => e.stopPropagation()}>
-                            <div className="prose prose-sm dark:prose-invert max-w-none mb-3">
+                            <div className="prose prose-base dark:prose-invert max-w-none mb-3 text-base">
                               {post.content.split("\n").map((paragraph, i) => (
                                 <p key={i}>{paragraph}</p>
                               ))}
@@ -486,7 +486,7 @@ export default function Madang() {
                         <Popover>
                           <PopoverTrigger asChild>
                             <button
-                              className="text-[10px] hover:underline cursor-pointer"
+                              className="text-sm hover:underline cursor-pointer"
                               onClick={(e) => e.stopPropagation()}
                               data-testid={`author-${post.id}`}
                             >
@@ -526,7 +526,7 @@ export default function Madang() {
                           </PopoverContent>
                         </Popover>
                       </td>
-                      <td className="p-1 text-[10px] text-muted-foreground hidden md:table-cell whitespace-nowrap align-top">
+                      <td className="p-1 text-sm text-muted-foreground hidden md:table-cell whitespace-nowrap align-top">
                         {formatDate(post.createdAt)}
                       </td>
                     </tr>

@@ -5,6 +5,27 @@ import { z } from "zod";
 import { setupAuth, registerAuthRoutes, isAuthenticated } from "./replit_integrations/auth";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
 
+// 60갑자 계산 함수 (서버사이드)
+const HEAVENLY_STEMS = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"];
+const EARTHLY_BRANCHES = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
+
+function getDayGanZhi(year: number, month: number, day: number): string {
+  const baseDate = new Date(1900, 0, 1);
+  const targetDate = new Date(year, month - 1, day);
+  const daysDiff = Math.floor((targetDate.getTime() - baseDate.getTime()) / (1000 * 60 * 60 * 24));
+  const baseIndex = 10;
+  const ganZhiIndex = (daysDiff + baseIndex) % 60;
+  const stemIndex = ganZhiIndex % 10;
+  const branchIndex = ganZhiIndex % 12;
+  return HEAVENLY_STEMS[stemIndex] + EARTHLY_BRANCHES[branchIndex];
+}
+
+function getKoreanTime(): Date {
+  const now = new Date();
+  const utc = now.getTime() + (now.getTimezoneOffset() * 60000);
+  return new Date(utc + (9 * 60 * 60000));
+}
+
 export async function registerRoutes(
   httpServer: Server,
   app: Express
@@ -52,10 +73,19 @@ export async function registerRoutes(
         return res.status(401).json({ message: "Unauthorized" });
       }
       
-      // Create post with logged-in user as author
+      // Calculate today's 60갑자 using Korean time
+      const koreanNow = getKoreanTime();
+      const todayGanji = getDayGanZhi(
+        koreanNow.getFullYear(),
+        koreanNow.getMonth() + 1,
+        koreanNow.getDate()
+      );
+      
+      // Create post with logged-in user as author and today's ganji
       const post = await storage.createPost({
         ...req.body,
         authorId: userId,
+        ganji: todayGanji,
       });
       
       res.status(201).json(post);

@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { z } from "zod";
 import { setupAuth, registerAuthRoutes, isAuthenticated } from "./replit_integrations/auth";
 import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
+import { generateCalendarExcel } from "./calendarExport";
 
 // 60갑자 계산 함수 (서버사이드)
 const HEAVENLY_STEMS = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"];
@@ -448,6 +449,23 @@ export async function registerRoutes(
       id: user.id,
       name: `${user.firstName || ''} ${user.lastName || ''}`.trim() || 'Unknown'
     });
+  });
+
+  // Download calendar data as Excel (1989-2050)
+  app.get("/api/calendar/export", async (req, res) => {
+    try {
+      const startDate = new Date(1989, 0, 1);
+      const endDate = new Date(2050, 11, 31);
+      
+      const buffer = generateCalendarExcel(startDate, endDate);
+      
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', 'attachment; filename="calendar_1989_2050.xlsx"');
+      res.send(buffer);
+    } catch (err) {
+      console.error('Excel export error:', err);
+      res.status(500).json({ message: "엑셀 생성 중 오류가 발생했습니다." });
+    }
   });
 
   return httpServer;

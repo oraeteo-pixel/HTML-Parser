@@ -104,6 +104,17 @@ The `shared/` directory contains code used by both frontend and backend:
 
 ## Recent Changes (2026-01-08)
 
+### 달력 데이터 엑셀 다운로드 기능 추가
+- **API 엔드포인트**: `GET /api/calendar/export`
+- **날짜 범위**: 1989년 1월 1일 ~ 2050년 12월 31일 (약 22,000일)
+- **포함 데이터**:
+  - 날짜, 간지, 28수, 28장
+  - 오전/오후 소궁, 대궁, 81궁 이름
+  - 오전/오후 팔괘(소궁/대궁 기반)
+- **다운로드 버튼**: 달력 페이지 우측 상단에 추가
+- **파일명**: `calendar_1989_2050.xlsx`
+- **구현 파일**: `server/calendarExport.ts`
+
 ### 81궁 계산 검증 완료
 - **검증일**: 2026-01-08
 - **두 가지 독립 시스템**:

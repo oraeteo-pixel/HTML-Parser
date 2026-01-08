@@ -254,11 +254,11 @@
 }
 
 .calendar-cell.today {
-  @apply bg-slate-50 dark:bg-slate-800/20;
+  @apply bg-gradient-to-br from-amber-200 via-amber-100 to-yellow-200 dark:from-amber-800/50 dark:via-amber-700/40 dark:to-yellow-800/50;
 }
 
 .calendar-cell.today .ganji-box {
-  @apply bg-slate-200 dark:bg-slate-700;
+  @apply bg-amber-300 dark:bg-amber-600/70;
 }
 
 .calendar-cell.inactive {

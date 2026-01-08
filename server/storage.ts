@@ -16,6 +16,9 @@ export interface IStorage {
   
   createComment(comment: InsertComment): Promise<Comment>;
   getCommentsByPostId(postId: number): Promise<(Comment & { author: string; authorEmail: string | null })[]>;
+  updateComment(commentId: number, content: string, mediaUrls?: string[], youtubeUrls?: string[]): Promise<Comment | null>;
+  deleteComment(commentId: number): Promise<boolean>;
+  getCommentById(commentId: number): Promise<Comment | null>;
   
   votePost(postId: number, userId: string, voteType: 'like' | 'dislike'): Promise<{ likes: number; dislikes: number }>;
   getUserVote(postId: number, userId: string): Promise<PostVote | null>;
@@ -152,6 +155,7 @@ export class DatabaseStorage implements IStorage {
     const result = await db.select({
       id: comments.id,
       postId: comments.postId,
+      parentId: comments.parentId,
       content: comments.content,
       authorId: comments.authorId,
       mediaUrls: comments.mediaUrls,
@@ -166,6 +170,25 @@ export class DatabaseStorage implements IStorage {
     .orderBy(comments.createdAt);
     
     return result;
+  }
+
+  async updateComment(commentId: number, content: string, mediaUrls?: string[], youtubeUrls?: string[]): Promise<Comment | null> {
+    const [updated] = await db.update(comments)
+      .set({ content, mediaUrls, youtubeUrls })
+      .where(eq(comments.id, commentId))
+      .returning();
+    return updated || null;
+  }
+
+  async deleteComment(commentId: number): Promise<boolean> {
+    await db.delete(comments).where(eq(comments.parentId, commentId));
+    const result = await db.delete(comments).where(eq(comments.id, commentId));
+    return (result.rowCount ?? 0) > 0;
+  }
+
+  async getCommentById(commentId: number): Promise<Comment | null> {
+    const [comment] = await db.select().from(comments).where(eq(comments.id, commentId)).limit(1);
+    return comment || null;
   }
 
   async votePost(postId: number, userId: string, voteType: 'like' | 'dislike'): Promise<{ likes: number; dislikes: number }> {

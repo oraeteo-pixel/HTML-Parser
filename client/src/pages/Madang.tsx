@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RichEditor, MediaDisplay, type MediaItem } from "@/components/RichEditor";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { MessageSquare, ChevronDown, ChevronUp, X, Mail, Send, ThumbsUp, ThumbsDown, Pencil, Trash2, Plus } from "lucide-react";
+import { MessageSquare, ChevronDown, ChevronUp, X, Mail, Send, ThumbsUp, ThumbsDown, Pencil, Trash2, Plus, Reply, CornerDownRight } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
@@ -21,6 +21,12 @@ function CommentSection({ postId, user }: { postId: number; user: any }) {
   const [commentText, setCommentText] = useState("");
   const [commentMedia, setCommentMedia] = useState<MediaItem[]>([]);
   const [isUploading, setIsUploading] = useState(false);
+  const [replyingTo, setReplyingTo] = useState<number | null>(null);
+  const [replyText, setReplyText] = useState("");
+  const [replyMedia, setReplyMedia] = useState<MediaItem[]>([]);
+  const [editingComment, setEditingComment] = useState<CommentWithAuthor | null>(null);
+  const [editText, setEditText] = useState("");
+  const [editMedia, setEditMedia] = useState<MediaItem[]>([]);
   const { toast } = useToast();
   
   const { data: comments, isLoading } = useQuery<CommentWithAuthor[]>({
@@ -29,17 +35,49 @@ function CommentSection({ postId, user }: { postId: number; user: any }) {
   });
 
   const createComment = useMutation({
-    mutationFn: async (data: { content: string; mediaUrls?: string[]; youtubeUrls?: string[] }) => {
+    mutationFn: async (data: { content: string; parentId?: number; mediaUrls?: string[]; youtubeUrls?: string[] }) => {
       return apiRequest("POST", `/api/posts/${postId}/comments`, data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/posts", postId, "comments"] });
       setCommentText("");
       setCommentMedia([]);
+      setReplyingTo(null);
+      setReplyText("");
+      setReplyMedia([]);
       toast({ title: "답글이 작성되었습니다." });
     },
     onError: () => {
       toast({ title: "답글 작성에 실패했습니다.", variant: "destructive" });
+    },
+  });
+
+  const updateComment = useMutation({
+    mutationFn: async (data: { id: number; content: string; mediaUrls?: string[]; youtubeUrls?: string[] }) => {
+      return apiRequest("PATCH", `/api/comments/${data.id}`, { content: data.content, mediaUrls: data.mediaUrls, youtubeUrls: data.youtubeUrls });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/posts", postId, "comments"] });
+      setEditingComment(null);
+      setEditText("");
+      setEditMedia([]);
+      toast({ title: "답글이 수정되었습니다." });
+    },
+    onError: () => {
+      toast({ title: "답글 수정에 실패했습니다.", variant: "destructive" });
+    },
+  });
+
+  const deleteComment = useMutation({
+    mutationFn: async (commentId: number) => {
+      return apiRequest("DELETE", `/api/comments/${commentId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/posts", postId, "comments"] });
+      toast({ title: "답글이 삭제되었습니다." });
+    },
+    onError: () => {
+      toast({ title: "답글 삭제에 실패했습니다.", variant: "destructive" });
     },
   });
 
@@ -52,6 +90,45 @@ function CommentSection({ postId, user }: { postId: number; user: any }) {
         mediaUrls: mediaUrls.length > 0 ? mediaUrls : undefined,
         youtubeUrls: youtubeUrls.length > 0 ? youtubeUrls : undefined,
       });
+    }
+  };
+
+  const handleSubmitReply = (parentId: number) => {
+    if (replyText.trim() || replyMedia.length > 0) {
+      const mediaUrls = replyMedia.filter(m => m.type !== 'youtube').map(m => m.url);
+      const youtubeUrls = replyMedia.filter(m => m.type === 'youtube').map(m => m.url);
+      createComment.mutate({
+        content: replyText.trim(),
+        parentId,
+        mediaUrls: mediaUrls.length > 0 ? mediaUrls : undefined,
+        youtubeUrls: youtubeUrls.length > 0 ? youtubeUrls : undefined,
+      });
+    }
+  };
+
+  const handleEditSubmit = () => {
+    if (editingComment && (editText.trim() || editMedia.length > 0)) {
+      const mediaUrls = editMedia.filter(m => m.type !== 'youtube').map(m => m.url);
+      const youtubeUrls = editMedia.filter(m => m.type === 'youtube').map(m => m.url);
+      updateComment.mutate({
+        id: editingComment.id,
+        content: editText.trim(),
+        mediaUrls: mediaUrls.length > 0 ? mediaUrls : undefined,
+        youtubeUrls: youtubeUrls.length > 0 ? youtubeUrls : undefined,
+      });
+    }
+  };
+
+  const startEdit = (comment: CommentWithAuthor) => {
+    setEditingComment(comment);
+    setEditText(comment.content);
+    setEditMedia(parseCommentMedia(comment));
+    setReplyingTo(null);
+  };
+
+  const handleDelete = (comment: CommentWithAuthor) => {
+    if (window.confirm("정말 삭제하시겠습니까?")) {
+      deleteComment.mutate(comment.id);
     }
   };
 
@@ -80,6 +157,109 @@ function CommentSection({ postId, user }: { postId: number; user: any }) {
     return items;
   };
 
+  const canEditDelete = (comment: CommentWithAuthor) => {
+    return user && (user.id === comment.authorId || user.isAdmin === 1);
+  };
+
+  const rootComments = comments?.filter(c => !c.parentId) || [];
+  const getReplies = (parentId: number) => comments?.filter(c => c.parentId === parentId) || [];
+
+  const renderComment = (comment: CommentWithAuthor, depth: number = 0) => {
+    const media = parseCommentMedia(comment);
+    const replies = getReplies(comment.id);
+    const isEditing = editingComment?.id === comment.id;
+    const isReplying = replyingTo === comment.id;
+    const maxDepth = 2;
+
+    return (
+      <div key={comment.id} className={`${depth > 0 ? 'ml-4 border-l-2 border-muted pl-3' : ''}`}>
+        <div className="bg-muted/50 rounded-md p-3 text-base">
+          <div className="flex items-center gap-2 mb-2 flex-wrap">
+            {depth > 0 && <CornerDownRight className="h-3 w-3 text-muted-foreground" />}
+            <span className="font-bold text-base">{comment.author}</span>
+            <span className="text-muted-foreground text-sm">{formatDate(comment.createdAt)}</span>
+          </div>
+          {isEditing ? (
+            <div className="space-y-2">
+              <RichEditor
+                content={editText}
+                onContentChange={setEditText}
+                mediaItems={editMedia}
+                onMediaItemsChange={setEditMedia}
+                placeholder="답글 수정..."
+                compact
+              />
+              <div className="flex gap-2 justify-end">
+                <Button size="sm" variant="ghost" onClick={() => setEditingComment(null)}>취소</Button>
+                <Button size="sm" onClick={handleEditSubmit} disabled={updateComment.isPending}>수정</Button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <p className="text-base">{comment.content}</p>
+              {media.length > 0 && (
+                <div className="mt-2">
+                  <MediaDisplay items={media} />
+                </div>
+              )}
+              {user && (
+                <div className="flex gap-1 mt-2 flex-wrap">
+                  {depth < maxDepth && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => { setReplyingTo(isReplying ? null : comment.id); setReplyText(""); setReplyMedia([]); }}
+                      data-testid={`button-reply-${comment.id}`}
+                    >
+                      <Reply className="h-3 w-3 mr-1" />
+                      답글
+                    </Button>
+                  )}
+                  {canEditDelete(comment) && (
+                    <>
+                      <Button variant="ghost" size="sm" onClick={() => startEdit(comment)} data-testid={`button-edit-comment-${comment.id}`}>
+                        <Pencil className="h-3 w-3 mr-1" />
+                        수정
+                      </Button>
+                      <Button variant="ghost" size="sm" onClick={() => handleDelete(comment)} disabled={deleteComment.isPending} data-testid={`button-delete-comment-${comment.id}`}>
+                        <Trash2 className="h-3 w-3 mr-1" />
+                        삭제
+                      </Button>
+                    </>
+                  )}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+        {isReplying && (
+          <div className="ml-4 mt-2 space-y-2">
+            <RichEditor
+              content={replyText}
+              onContentChange={setReplyText}
+              mediaItems={replyMedia}
+              onMediaItemsChange={setReplyMedia}
+              placeholder={`${comment.author}님에게 답글...`}
+              compact
+            />
+            <div className="flex gap-2 justify-end">
+              <Button size="sm" variant="ghost" onClick={() => setReplyingTo(null)}>취소</Button>
+              <Button size="sm" onClick={() => handleSubmitReply(comment.id)} disabled={(!replyText.trim() && replyMedia.length === 0) || createComment.isPending}>
+                <Send className="h-3 w-3 mr-1" />
+                답글
+              </Button>
+            </div>
+          </div>
+        )}
+        {replies.length > 0 && (
+          <div className="mt-2 space-y-2">
+            {replies.map(reply => renderComment(reply, depth + 1))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="border-t pt-4 mt-4">
       <h3 className="font-bold mb-3 flex items-center gap-2 text-base">
@@ -89,25 +269,9 @@ function CommentSection({ postId, user }: { postId: number; user: any }) {
       
       {isLoading ? (
         <p className="text-muted-foreground">로딩 중...</p>
-      ) : comments && comments.length > 0 ? (
+      ) : rootComments.length > 0 ? (
         <div className="space-y-3 mb-4">
-          {comments.map((comment) => {
-            const media = parseCommentMedia(comment);
-            return (
-              <div key={comment.id} className="bg-muted/50 rounded-md p-3 text-base">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="font-bold text-base">{comment.author}</span>
-                  <span className="text-muted-foreground text-sm">{formatDate(comment.createdAt)}</span>
-                </div>
-                <p className="text-base">{comment.content}</p>
-                {media.length > 0 && (
-                  <div className="mt-2">
-                    <MediaDisplay items={media} />
-                  </div>
-                )}
-              </div>
-            );
-          })}
+          {rootComments.map(comment => renderComment(comment))}
         </div>
       ) : (
         <p className="text-muted-foreground mb-4">아직 답글이 없습니다.</p>

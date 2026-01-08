@@ -191,6 +191,7 @@ export async function registerRoutes(
       
       const contentSchema = z.object({
         content: z.string(),
+        parentId: z.number().optional(),
         mediaUrls: z.array(z.string()).optional(),
         youtubeUrls: z.array(z.string()).optional(),
       }).refine(
@@ -200,8 +201,16 @@ export async function registerRoutes(
       
       const parsed = contentSchema.parse(req.body);
       
+      if (parsed.parentId) {
+        const parentComment = await storage.getCommentById(parsed.parentId);
+        if (!parentComment || parentComment.postId !== postId) {
+          return res.status(400).json({ message: "Invalid parent comment" });
+        }
+      }
+      
       const comment = await storage.createComment({
         postId,
+        parentId: parsed.parentId,
         content: parsed.content,
         authorId: userId,
         mediaUrls: parsed.mediaUrls,
@@ -216,6 +225,80 @@ export async function registerRoutes(
           field: err.errors[0].path.join('.'),
         });
       }
+      throw err;
+    }
+  });
+
+  // Update comment (protected)
+  app.patch("/api/comments/:id", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      const commentId = parseInt(req.params.id);
+      if (isNaN(commentId)) {
+        return res.status(400).json({ message: "Invalid comment ID" });
+      }
+      
+      const existingComment = await storage.getCommentById(commentId);
+      if (!existingComment) {
+        return res.status(404).json({ message: "Comment not found" });
+      }
+      
+      const user = await storage.getUser(userId);
+      if (existingComment.authorId !== userId && !user?.isAdmin) {
+        return res.status(403).json({ message: "수정 권한이 없습니다." });
+      }
+      
+      const updateSchema = z.object({
+        content: z.string(),
+        mediaUrls: z.array(z.string()).optional(),
+        youtubeUrls: z.array(z.string()).optional(),
+      });
+      
+      const parsed = updateSchema.parse(req.body);
+      
+      const updated = await storage.updateComment(commentId, parsed.content, parsed.mediaUrls, parsed.youtubeUrls);
+      res.json(updated);
+    } catch (err) {
+      if (err instanceof z.ZodError) {
+        return res.status(400).json({
+          message: err.errors[0].message,
+          field: err.errors[0].path.join('.'),
+        });
+      }
+      throw err;
+    }
+  });
+
+  // Delete comment (protected)
+  app.delete("/api/comments/:id", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      const commentId = parseInt(req.params.id);
+      if (isNaN(commentId)) {
+        return res.status(400).json({ message: "Invalid comment ID" });
+      }
+      
+      const existingComment = await storage.getCommentById(commentId);
+      if (!existingComment) {
+        return res.status(404).json({ message: "Comment not found" });
+      }
+      
+      const user = await storage.getUser(userId);
+      if (existingComment.authorId !== userId && !user?.isAdmin) {
+        return res.status(403).json({ message: "삭제 권한이 없습니다." });
+      }
+      
+      await storage.deleteComment(commentId);
+      res.json({ success: true });
+    } catch (err) {
       throw err;
     }
   });

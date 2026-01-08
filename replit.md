@@ -102,7 +102,21 @@ The `shared/` directory contains code used by both frontend and backend:
 - tsx for TypeScript execution (development)
 - Replit-specific plugins for development experience
 
-## Recent Changes (2026-01-07)
+## Recent Changes (2026-01-08)
+
+### 81궁 계산 검증 완료
+- **검증일**: 2026-01-08
+- **계산 로직 통일**: `getDaegungPositionForDate`와 `calculateDaegungAndPosition` 함수가 동일한 epoch 계산 방식 사용
+- **Epoch**: 양력 4월 20일 23:00 KST (황극력 연초 전날 밤)
+- **보정값**: calibrationOffset = -1, positionOffset = 3
+- **검증된 패턴** (1989년 황극력 원년 기준):
+  - 1월 1일부터 4.5일간: **原** (4.5일째 오후에 潛으로 전환)
+  - 다음 4일간: **潛**
+  - 그 다음 4.5일간: **守**
+  - 이후 信→直→蒙→閑→須→厲 순서로 각 4.5일씩
+- **선천력 1989-04-21**: "황극력 원년" 마커 표시
+
+## Changes (2026-01-07)
 
 ### 소궁/대궁 (81궁) 공식 계산 완성
 

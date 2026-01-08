@@ -639,9 +639,14 @@ export function Calendar() {
                   <div className="text-muted-foreground text-xs mb-1 uppercase tracking-wide">28宿</div>
                   <div 
                     className="cursor-pointer hover-elevate rounded-md p-2 -m-2 transition-all"
-                    onClick={() => setShowTalisman(!showTalisman)}
-                    onMouseEnter={() => setShowTalisman(true)}
-                    onMouseLeave={() => setShowTalisman(false)}
+                    onClick={() => {
+                      setShowTalisman(!showTalisman);
+                      if (!showTalisman) {
+                        setTimeout(() => {
+                          document.getElementById('talisman-display')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }, 100);
+                      }
+                    }}
                     data-testid="button-toggle-talisman"
                   >
                     <div className="flex items-center gap-3">
@@ -660,7 +665,7 @@ export function Calendar() {
                       </div>
                     </div>
                     {showTalisman && !hwMansion.isZunkong && (
-                      <div className="mt-3 flex flex-col items-center">
+                      <div id="talisman-display" className="mt-3 flex flex-col items-center">
                         <img 
                           src={`/img/28j_${hwMansion.image}.jpg`}
                           alt={`${hwMansion.mansion} 부적`}
@@ -672,19 +677,6 @@ export function Calendar() {
                         </div>
                       </div>
                     )}
-                  </div>
-                </div>
-                <div className="info-card">
-                  <div className="text-muted-foreground text-xs mb-1 uppercase tracking-wide">음력</div>
-                  <div className="font-bold text-fluid-base">
-                    {displayData.lunarMonth}월 {displayData.lunarDay}일
-                    {displayData.isLeapMonth && <span className="text-xs ml-1">(윤)</span>}
-                  </div>
-                </div>
-                <div className="info-card">
-                  <div className="text-muted-foreground text-xs mb-1 uppercase tracking-wide">양력</div>
-                  <div className="font-bold text-fluid-base">
-                    {displayYear}.{displayMonth}.{displayDay}
                   </div>
                 </div>
               </div>

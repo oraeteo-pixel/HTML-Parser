@@ -206,29 +206,31 @@ export function JeolgukChart({ date }: JeolgukChartProps) {
         </div>
       </div>
 
-      {/* 60 Ganji Reference - compact horizontal layout */}
+      {/* 60 Ganji Reference - horizontal scrollable layout */}
       <div className="mt-4 p-2 bg-muted/20 rounded-lg">
         <div className="text-xs font-bold orae-navy mb-1.5 text-center">60甲子 순환</div>
-        <div className="flex flex-wrap justify-center gap-0.5 text-[8px]">
-          {SIXTY_GANJI.map((ganji, index) => {
-            const isToday = ganji === todayGanZhi;
-            const dayOffset = getGanjiDayOffset(ganji);
-            return (
-              <div
-                key={index}
-                className={`
-                  px-1 py-0.5 rounded
-                  ${isToday 
-                    ? 'bg-[hsl(var(--orae-navy))] text-white font-bold' 
-                    : 'text-muted-foreground'}
-                `}
-                title={isToday ? "오늘" : `${dayOffset}일 후`}
-                data-testid={`ganji-${ganji}`}
-              >
-                {ganji}
-              </div>
-            );
-          })}
+        <div className="overflow-x-auto">
+          <div className="flex gap-1 text-[9px] min-w-max pb-1">
+            {SIXTY_GANJI.map((ganji, index) => {
+              const isToday = ganji === todayGanZhi;
+              const dayOffset = getGanjiDayOffset(ganji);
+              return (
+                <div
+                  key={index}
+                  className={`
+                    px-1.5 py-0.5 rounded whitespace-nowrap
+                    ${isToday 
+                      ? 'bg-[hsl(var(--orae-navy))] text-white font-bold' 
+                      : 'bg-muted/30 text-muted-foreground'}
+                  `}
+                  title={isToday ? "오늘" : `${dayOffset}일 후`}
+                  data-testid={`ganji-${ganji}`}
+                >
+                  {ganji}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
 

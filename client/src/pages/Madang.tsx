@@ -565,6 +565,29 @@ export default function Madang() {
                           {postMediaItems.length > 0 && (
                             <span className="text-primary text-xs flex-shrink-0">[{postMediaItems.length}]</span>
                           )}
+                          {user && (user as any).claims?.sub === post.authorId && (
+                            <div className="flex gap-0.5 ml-auto flex-shrink-0" onClick={(e) => e.stopPropagation()}>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-6 w-6"
+                                onClick={() => { setExpandedPost(post.id); startEdit(post); }}
+                                data-testid={`button-edit-list-${post.id}`}
+                              >
+                                <Pencil className="h-3 w-3" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-6 w-6 text-destructive"
+                                onClick={() => handleDelete(post)}
+                                disabled={deletePost.isPending}
+                                data-testid={`button-delete-list-${post.id}`}
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </Button>
+                            </div>
+                          )}
                           {isExpanded ? <ChevronUp className="h-3 w-3 flex-shrink-0 text-muted-foreground" /> : <ChevronDown className="h-3 w-3 flex-shrink-0 text-muted-foreground" />}
                         </div>
                         <span className="sm:hidden text-sm text-muted-foreground">{post.author}</span>

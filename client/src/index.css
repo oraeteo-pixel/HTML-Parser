@@ -326,25 +326,25 @@
 
 .trigram-text {
   @apply font-bold;
-  font-size: clamp(0.5rem, 2vw, 0.7rem);
+  font-size: clamp(0.65rem, 2.5vw, 0.85rem);
   color: hsl(var(--orae-navy-dark));
 }
 
 @media (min-width: 640px) {
   .trigram-text {
-    font-size: clamp(0.625rem, 2.5vw, 0.875rem);
+    font-size: clamp(0.75rem, 3vw, 1rem);
   }
 }
 
 .mansion-info {
   @apply leading-tight font-medium;
-  font-size: clamp(0.45rem, 1.5vw, 0.6rem);
+  font-size: clamp(0.55rem, 2vw, 0.7rem);
   color: hsl(var(--orae-navy));
 }
 
 @media (min-width: 640px) {
   .mansion-info {
-    font-size: clamp(0.5rem, 2vw, 0.75rem);
+    font-size: clamp(0.65rem, 2.5vw, 0.875rem);
   }
 }
 

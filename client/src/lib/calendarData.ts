@@ -802,28 +802,87 @@ export function getWeekdayHanja(dayOfWeek: number): string {
   return WEEKDAYS_HANJA[dayOfWeek];
 }
 
-// 특정 날짜의 대궁, position 계산 (오전 기준, 정오 12시 사용)
-// calculateDaegungAndPosition와 동일한 로직을 사용하여 일관성 유지
-export function getDaegungPositionForDate(year: number, month: number, day: number): { daegung: number; position: number } {
-  // 해당 날짜의 정오(12:00)를 기준으로 계산
-  const noonDate = new Date(year, month - 1, day, 12, 0, 0);
-  const koreanTime = getKoreanTime(noonDate);
-  const { daegung, position } = calculateDaegungAndPosition(koreanTime);
-  return { daegung, position };
+// 특정 날짜의 대궁, position 계산 (4.5일 주기 기준)
+// 황극력 1월 1일 = 2지2(原), 4.5일 후 = 2지3(潛), ...
+// 4.5일째(전환일)는 오전=이전값, 오후=다음값
+export function getDaegungPositionForDate(year: number, month: number, day: number): { 
+  daegungAM: number; 
+  daegungPM: number; 
+  positionAM: number; 
+  positionPM: number;
+  isTransitionDay: boolean;
+} {
+  // 황극력 1월 1일 기준점 (양력 4월 21일 00:00 KST)
+  // 황극력 37년(2025) 1월 1일 = 양력 2025년 4월 21일
+  const hwDate = getHwanggeukDate(year, month, day);
+  const hwYear = hwDate.year;
+  
+  // 해당 황극력 연도의 양력 시작일 계산
+  const solarEpochYear = hwYear + 1988; // 황극력 37년 = 2025년 → 1988 + 37 = 2025
+  const epochDate = new Date(solarEpochYear, 3, 21, 0, 0, 0); // 4월 21일 00:00
+  
+  // 현재 날짜의 오전(06:00)과 오후(18:00) 시간
+  const amTime = new Date(year, month - 1, day, 6, 0, 0);
+  const pmTime = new Date(year, month - 1, day, 18, 0, 0);
+  
+  // 시작점부터 경과한 반일(12시간) 수 계산
+  const halfDayMs = 12 * 60 * 60 * 1000;
+  const amHalfDays = Math.floor((amTime.getTime() - epochDate.getTime()) / halfDayMs);
+  const pmHalfDays = Math.floor((pmTime.getTime() - epochDate.getTime()) / halfDayMs);
+  
+  // 4.5일 = 9 반일
+  // 대궁 사이클 (Y값): 매 9반일(4.5일)마다 변화
+  const amDaegungCycle = Math.floor(amHalfDays / 9);
+  const pmDaegungCycle = Math.floor(pmHalfDays / 9);
+  
+  // Position 사이클 (X값): 매 81반일(40.5일)마다 변화
+  const amPositionCycle = Math.floor(amDaegungCycle / 9);
+  const pmPositionCycle = Math.floor(pmDaegungCycle / 9);
+  
+  // 대궁 값 계산 (2~10 순환)
+  const daegungAM = (amDaegungCycle % 9) + 2;
+  const daegungPM = (pmDaegungCycle % 9) + 2;
+  
+  // Position 값 계산 (2~10 순환)
+  const positionAM = (amPositionCycle % 9) + 2;
+  const positionPM = (pmPositionCycle % 9) + 2;
+  
+  // 전환일 여부 (오전과 오후의 값이 다른 경우)
+  const isTransitionDay = (daegungAM !== daegungPM) || (positionAM !== positionPM);
+  
+  return { daegungAM, daegungPM, positionAM, positionPM, isTransitionDay };
 }
 
-// 특정 날짜의 81궁 이름 조회
-export function get81PalaceNameForDate(year: number, month: number, day: number): string {
-  const { daegung, position } = getDaegungPositionForDate(year, month, day);
-  return get81PalaceName(position, daegung);
+// 특정 날짜의 81궁 이름 조회 (오전/오후 모두 반환)
+export function get81PalaceNameForDate(year: number, month: number, day: number): { 
+  nameAM: string; 
+  namePM: string; 
+  isTransitionDay: boolean;
+} {
+  const { daegungAM, daegungPM, positionAM, positionPM, isTransitionDay } = getDaegungPositionForDate(year, month, day);
+  const nameAM = get81PalaceName(positionAM, daegungAM);
+  const namePM = get81PalaceName(positionPM, daegungPM);
+  return { nameAM, namePM, isTransitionDay };
 }
 
-// 특정 날짜의 X之Y 표기 조회
-export function getPositionDaegungForDate(year: number, month: number, day: number): { position: number; daegung: number; notation: string; name: string } {
-  const { daegung, position } = getDaegungPositionForDate(year, month, day);
-  const notation = formatPositionDaegungHanja(position, daegung);
-  const name = get81PalaceName(position, daegung);
-  return { position, daegung, notation, name };
+// 특정 날짜의 X之Y 표기 조회 (오전/오후 모두 반환)
+export function getPositionDaegungForDate(year: number, month: number, day: number): { 
+  positionAM: number; 
+  daegungAM: number; 
+  positionPM: number;
+  daegungPM: number;
+  notationAM: string; 
+  notationPM: string;
+  nameAM: string; 
+  namePM: string;
+  isTransitionDay: boolean;
+} {
+  const { daegungAM, daegungPM, positionAM, positionPM, isTransitionDay } = getDaegungPositionForDate(year, month, day);
+  const notationAM = formatPositionDaegungHanja(positionAM, daegungAM);
+  const notationPM = formatPositionDaegungHanja(positionPM, daegungPM);
+  const nameAM = get81PalaceName(positionAM, daegungAM);
+  const namePM = get81PalaceName(positionPM, daegungPM);
+  return { positionAM, daegungAM, positionPM, daegungPM, notationAM, notationPM, nameAM, namePM, isTransitionDay };
 }
 
 const SOGUNG_DAEGUNG_HANJA = ["", "", "二", "三", "四", "五", "六", "七", "八", "九", "十"];

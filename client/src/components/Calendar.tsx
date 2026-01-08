@@ -593,8 +593,21 @@ export function Calendar() {
                 <div className="flex-1 flex flex-col justify-end space-y-0.5">
                   <div className="trigram-text">{cellTrigram.trigram}</div>
                   <div className="mansion-info">{cellMansion.mansion},{cellMansion.general}</div>
-                  <div className="palace-81-name text-xs font-bold text-amber-600 dark:text-amber-400">{cell81.name}</div>
-                  <div className="palace-81-notation text-[10px] text-muted-foreground">{cell81.notation}</div>
+                  {cell81.isTransitionDay ? (
+                    <>
+                      <div className="palace-81-name text-xs font-bold text-amber-600 dark:text-amber-400">
+                        <span className="text-muted-foreground text-[9px]">오전</span>{cell81.nameAM} <span className="text-muted-foreground text-[9px]">오후</span>{cell81.namePM}
+                      </div>
+                      <div className="palace-81-notation text-[10px] text-muted-foreground">
+                        {cell81.notationAM}/{cell81.notationPM}
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="palace-81-name text-xs font-bold text-amber-600 dark:text-amber-400">{cell81.nameAM}</div>
+                      <div className="palace-81-notation text-[10px] text-muted-foreground">{cell81.notationAM}</div>
+                    </>
+                  )}
                 </div>
               </div>
             );

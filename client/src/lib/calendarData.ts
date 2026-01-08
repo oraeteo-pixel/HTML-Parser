@@ -803,9 +803,9 @@ export function getWeekdayHanja(dayOfWeek: number): string {
 }
 
 // 특정 날짜의 대궁, position 계산 (4.5일 주기 기준)
-// 양력 2026년 1월 1일 = 二之二(原), 4.5일 후 = 二之三(潛), ...
-// 4.5일 중 처음 3일 = 해당 궁, 마지막 1.5일 = 존궁
-// 4.5일째(전환일)는 오전=이전값, 오후=다음값
+// 매년 황극력 1월 1일 = 二之二(原)으로 리셋
+// 4.5일마다 대궁(Y) 변화, 40.5일마다 Position(X) 변화
+// 황극력 연말 마지막 1.5일 = 존궁(尊宮)
 export function getDaegungPositionForDate(year: number, month: number, day: number): { 
   daegungAM: number; 
   daegungPM: number; 
@@ -815,8 +815,17 @@ export function getDaegungPositionForDate(year: number, month: number, day: numb
   isJongungAM: boolean;
   isJongungPM: boolean;
 } {
-  // 기준점: 양력 2026년 1월 1일 00:00 = 二之二(原) 시작
-  const epochDate = new Date(2026, 0, 1, 0, 0, 0); // 2026년 1월 1일 00:00
+  // 황극력 날짜 가져오기
+  const hwDate = getHwanggeukDate(year, month, day);
+  const hwYear = hwDate.year;
+  
+  // 해당 황극력 연도의 시작일 (hwanggeukToSolar로 정확한 양력일 계산)
+  const yearStart = hwanggeukToSolar(hwYear, 1, 1);
+  const epochDate = new Date(yearStart.year, yearStart.month - 1, yearStart.day, 0, 0, 0);
+  
+  // 다음 황극력 연도 시작일 (존궁 계산용)
+  const nextYearStart = hwanggeukToSolar(hwYear + 1, 1, 1);
+  const nextEpochDate = new Date(nextYearStart.year, nextYearStart.month - 1, nextYearStart.day, 0, 0, 0);
   
   // 현재 날짜의 오전(06:00)과 오후(18:00) 시간
   const amTime = new Date(year, month - 1, day, 6, 0, 0);
@@ -847,12 +856,12 @@ export function getDaegungPositionForDate(year: number, month: number, day: numb
   const positionAM = posMod(amPositionCycle, 9) + 2;
   const positionPM = posMod(pmPositionCycle, 9) + 2;
   
-  // 존궁 여부: 1년의 마지막 1.5일 (12월 30일 오후 ~ 12월 31일)
-  // 1년 = 365일, 마지막 1.5일 = 12월 30일 오후부터
-  const isLastDayOfYear = (month === 12 && day === 31);
-  const isSecondLastDayPM = (month === 12 && day === 30); // 30일 오후부터 존궁
-  const isJongungAM = isLastDayOfYear; // 12월 31일 오전 = 존궁
-  const isJongungPM = isLastDayOfYear || isSecondLastDayPM; // 12월 30일 오후, 31일 오후 = 존궁
+  // 존궁 여부: 황극력 연말 마지막 1.5일 (다음 황극력 1월 1일 직전 36시간)
+  const amToNextEpoch = nextEpochDate.getTime() - amTime.getTime();
+  const pmToNextEpoch = nextEpochDate.getTime() - pmTime.getTime();
+  const oneAndHalfDaysMs = 1.5 * 24 * 60 * 60 * 1000; // 36시간
+  const isJongungAM = amToNextEpoch > 0 && amToNextEpoch <= oneAndHalfDaysMs;
+  const isJongungPM = pmToNextEpoch > 0 && pmToNextEpoch <= oneAndHalfDaysMs;
   
   // 전환일 여부 (오전과 오후의 값이 다른 경우)
   const isTransitionDay = (daegungAM !== daegungPM) || (positionAM !== positionPM);

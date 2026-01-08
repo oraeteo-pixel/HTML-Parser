@@ -7,7 +7,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { Mail, Send, Inbox, Check, Loader2 } from "lucide-react";
+import { Mail, Send, Inbox, Check, Loader2, Home } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
@@ -117,7 +117,12 @@ export default function Messages() {
 
   return (
     <div className="max-w-[990px] mx-auto px-4 py-4">
-      <h1 className="text-xl font-semibold mb-4" style={{ fontFamily: "'Malgun Gothic', sans-serif" }}>쪽지함</h1>
+      <div className="flex items-center gap-3 mb-4">
+        <Button variant="ghost" size="icon" onClick={() => setLocation("/")} data-testid="button-home">
+          <Home className="h-5 w-5" />
+        </Button>
+        <h1 className="text-xl font-semibold" style={{ fontFamily: "'Malgun Gothic', sans-serif" }}>쪽지함</h1>
+      </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="mb-4">

@@ -325,7 +325,7 @@ export default function Madang() {
             <table className="w-full text-xs border-collapse">
               <thead>
                 <tr className="border-b bg-muted/50">
-                  <th className="text-left p-1 font-medium border-r w-8"></th>
+                  <th className="text-left p-1 font-medium border-r w-12"></th>
                   <th className="text-left p-1 font-medium border-r">제목</th>
                   <th className="text-left p-1 font-medium border-r hidden sm:table-cell w-16">작성자</th>
                   <th className="text-left p-1 font-medium hidden md:table-cell w-16">날짜</th>
@@ -348,7 +348,7 @@ export default function Madang() {
                         {post.ganji ? (
                           <button
                             className="px-1 py-0.5 rounded text-white text-xs font-medium cursor-pointer hover:opacity-80"
-                            style={{ backgroundColor: 'hsl(215 50% 35%)' }}
+                            style={{ backgroundColor: 'hsl(215 50% 35%)', writingMode: 'horizontal-tb' }}
                             onClick={(e) => {
                               e.stopPropagation();
                               setFilterGanji(post.ganji);

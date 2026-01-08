@@ -735,17 +735,16 @@ function calculateDaegungAndPosition(koreanTime: Date): { daegung: number; posit
   const totalHalfDays = Math.floor(minutesFromEpoch / halfDayPeriod);
   const halfDayOfYear = (totalHalfDays % 732) + 1; // 1~732
   
-  // 대궁 계산: 9반일(4.5일)마다 2→3→4→5→6→7→8→9→10 순환
-  // 각 대궁 값이 4.5일간 유지됨
+  // 대궁 계산: 반일마다 2→3→4→5→6→7→8→9→10 순환
+  // 오프셋: 소궁/대궁 정보창용
   const calibrationOffset = -1;
-  const daegungCycleNum = Math.floor(totalHalfDays / 9); // 4.5일 단위
-  const daegungIndex = ((daegungCycleNum + calibrationOffset) % 9 + 9) % 9;
+  const daegungIndex = ((totalHalfDays + calibrationOffset) % 9 + 9) % 9;
   const daegung = daegungIndex + 2; // 2~10
   
-  // Position 계산: 81반일(40.5일)마다 2→3→...→10 순환
-  const positionCycleNum = Math.floor(daegungCycleNum / 9); // 40.5일 단위
+  // Position 계산: 대궁사이클(9반일 = 4.5일)마다 2→3→...→10 순환
+  const daegungCycleNum = Math.floor(totalHalfDays / 9);
   const positionOffset = 3;
-  const positionIndex = ((positionCycleNum + positionOffset) % 9 + 9) % 9;
+  const positionIndex = ((daegungCycleNum + positionOffset) % 9 + 9) % 9;
   const position = positionIndex + 2; // 2~10
   
   return { daegung, position, halfDayOfYear };

@@ -724,8 +724,11 @@ function calculateDaegungAndPosition(koreanTime: Date): { daegung: number; posit
     epochYear = year - 1;
   }
   
-  // 시작점: 해당 황극력 연도의 4월 20일 23:00
-  const epochDate = new Date(epochYear, 3, 20, 23, 0, 0);
+  // 시작점: 해당 황극력 연도의 4월 20일 23:00 KST
+  // April 20, 23:00 KST = April 20, 14:00 UTC
+  // koreanTime은 UTC에 +9시간을 더한 값이므로, epochDate도 동일하게 처리
+  const epochUTC = Date.UTC(epochYear, 3, 20, 14, 0, 0); // 23:00 KST = 14:00 UTC
+  const epochDate = new Date(epochUTC + (9 * 60 * 60 * 1000)); // koreanTime과 동일한 방식으로 +9시간
   
   // 시작점부터 현재까지 경과한 분 계산
   const minutesFromEpoch = Math.floor((koreanTime.getTime() - epochDate.getTime()) / (1000 * 60));

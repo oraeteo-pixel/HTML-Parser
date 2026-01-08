@@ -568,6 +568,13 @@ const HW_28_DESCRIPTIONS = [
   "三秋之金", "三夏之火", "三春之木", "煙霧之化", "風雲之墟", "河漢之邊", "星辰之道"
 ];
 
+const HW_28_IMAGES = [
+  "deungwoo", "masung", "ohan", "wanglyang", "kabok", "jinjun", "kungdan",
+  "dumu", "kusun", "pujun", "jampeng", "kyunsim", "punge", "wangpae",
+  "juwoo", "limkwang", "jejun", "leechung", "kyungdan", "mansu", "kaeyoen",
+  "biyung", "yoki", "yusik", "kungsun", "jangkung", "mamu", "yuyung"
+];
+
 const HW_28_ZUNKOG_MANSIONS = ["星", "尾", "昴", "女"];
 
 export function getHwanggeukDayGanZhi(hwYear: number, hwMonth: number, hwDay: number): string {
@@ -586,6 +593,7 @@ export function getHwanggeuk28Mansion(hwYear: number, hwMonth: number, hwDay: nu
   mansion: string; 
   general: string;
   description: string;
+  image: string;
   isZunkong: boolean;
 } {
   const dayGanZhi = getHwanggeukDayGanZhi(hwYear, hwMonth, hwDay);
@@ -597,6 +605,7 @@ export function getHwanggeuk28Mansion(hwYear: number, hwMonth: number, hwDay: nu
       mansion: "中, 星宿尊空", 
       general: "-",
       description: "尊空",
+      image: "",
       isZunkong: true
     };
   }
@@ -605,8 +614,9 @@ export function getHwanggeuk28Mansion(hwYear: number, hwMonth: number, hwDay: nu
   const mansion = HW_28_MANSIONS[mansionIndex];
   const general = HW_28_GENERALS[mansionIndex];
   const description = HW_28_DESCRIPTIONS[mansionIndex];
+  const image = HW_28_IMAGES[mansionIndex];
   
-  return { mansion, general, description, isZunkong: false };
+  return { mansion, general, description, image, isZunkong: false };
 }
 
 export function getHwanggeukPosition(hwYear: number, hwMonth: number, hwDay: number): string {

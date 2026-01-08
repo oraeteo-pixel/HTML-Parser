@@ -322,13 +322,13 @@ export default function Madang() {
           </Card>
         ) : (
           <Card className="overflow-hidden rounded-none sm:rounded-md">
-            <table className="w-full text-sm border-collapse">
+            <table className="w-full text-xs border-collapse">
               <thead>
                 <tr className="border-b bg-muted/50">
-                  <th className="text-left p-1.5 font-medium border-r w-10"></th>
-                  <th className="text-left p-1.5 font-medium border-r">제목</th>
-                  <th className="text-left p-1.5 font-medium border-r hidden sm:table-cell w-20">작성자</th>
-                  <th className="text-left p-1.5 font-medium hidden md:table-cell w-20">날짜</th>
+                  <th className="text-left p-1 font-medium border-r w-8"></th>
+                  <th className="text-left p-1 font-medium border-r">제목</th>
+                  <th className="text-left p-1 font-medium border-r hidden sm:table-cell w-16">작성자</th>
+                  <th className="text-left p-1 font-medium hidden md:table-cell w-16">날짜</th>
                 </tr>
               </thead>
               <tbody>
@@ -344,10 +344,10 @@ export default function Madang() {
                       onClick={() => setExpandedPost(isExpanded ? null : post.id)}
                       data-testid={`post-${post.id}`}
                     >
-                      <td className="p-1.5 border-r text-center align-top">
+                      <td className="p-1 border-r text-center align-top">
                         {post.ganji ? (
                           <button
-                            className="px-1 py-0.5 rounded text-white text-[10px] font-normal cursor-pointer hover:opacity-80"
+                            className="px-0.5 py-0 rounded text-white text-[9px] font-normal cursor-pointer hover:opacity-80"
                             style={{ backgroundColor: 'hsl(215 50% 35%)' }}
                             onClick={(e) => {
                               e.stopPropagation();
@@ -358,10 +358,10 @@ export default function Madang() {
                             {post.ganji}
                           </button>
                         ) : (
-                          <span className="text-muted-foreground text-xs">-</span>
+                          <span className="text-muted-foreground text-[9px]">-</span>
                         )}
                       </td>
-                      <td className="p-1.5 border-r">
+                      <td className="p-1 border-r">
                         <div className="flex items-center gap-1">
                           <span className="font-medium line-clamp-1">{post.title}</span>
                           {postMediaItems.length > 0 && (
@@ -384,11 +384,11 @@ export default function Madang() {
                           </div>
                         )}
                       </td>
-                      <td className="p-1.5 border-r hidden sm:table-cell align-top">
+                      <td className="p-1 border-r hidden sm:table-cell align-top">
                         <Popover>
                           <PopoverTrigger asChild>
                             <button
-                              className="text-xs hover:underline cursor-pointer"
+                              className="text-[10px] hover:underline cursor-pointer"
                               onClick={(e) => e.stopPropagation()}
                               data-testid={`author-${post.id}`}
                             >
@@ -428,7 +428,7 @@ export default function Madang() {
                           </PopoverContent>
                         </Popover>
                       </td>
-                      <td className="p-1.5 text-xs text-muted-foreground hidden md:table-cell whitespace-nowrap align-top">
+                      <td className="p-1 text-[10px] text-muted-foreground hidden md:table-cell whitespace-nowrap align-top">
                         {formatDate(post.createdAt)}
                       </td>
                     </tr>

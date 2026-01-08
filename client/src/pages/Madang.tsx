@@ -330,7 +330,7 @@ export default function Madang() {
     <div className="min-h-screen bg-background" style={{ fontFamily: "'Malgun Gothic', '맑은 고딕', sans-serif" }}>
       <Navigation />
       
-      <main className="max-w-[990px] mx-auto px-0 sm:px-2 py-4 text-[7px] sm:text-xs" data-testid="madang-main">
+      <main className="max-w-[990px] mx-auto px-0 sm:px-2 py-4 text-sm sm:text-base" data-testid="madang-main">
         <Card className="p-4 mb-4 bg-gradient-to-r from-slate-50/50 to-slate-100/50 dark:from-slate-900/20 dark:to-slate-800/20">
           <div className="flex items-center gap-3">
             <MessageSquare className="h-8 w-8 orae-navy" />

@@ -10,7 +10,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-import { useSearch } from "wouter";
+import { useSearch, useLocation } from "wouter";
 import { getDayGanZhi } from "@/lib/calendarData";
 import type { Post, Comment } from "@shared/schema";
 
@@ -379,6 +379,7 @@ function VoteButtons({ postId, likes, dislikes, user }: { postId: number; likes:
 export default function Madang() {
   const { user } = useAuth();
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
   const searchString = useSearch();
   const params = new URLSearchParams(searchString);
   const ganjiFromUrl = params.get("ganji");
@@ -868,19 +869,19 @@ export default function Madang() {
                               >
                                 이 작성자의 글만 보기
                               </Button>
-                              {post.authorEmail && (
+                              {user && user.id !== post.authorId && (
                                 <Button
                                   variant="ghost"
                                   size="sm"
                                   className="justify-start"
                                   onClick={(e) => {
                                     e.stopPropagation();
-                                    window.location.href = `mailto:${post.authorEmail}?subject=[오리알터] ${post.author}님께`;
+                                    setLocation(`/messages?to=${post.authorId}&name=${encodeURIComponent(post.author)}`);
                                   }}
-                                  data-testid={`email-author-${post.id}`}
+                                  data-testid={`message-author-${post.id}`}
                                 >
                                   <Mail className="h-4 w-4 mr-2" />
-                                  이메일 보내기
+                                  쪽지 보내기
                                 </Button>
                               )}
                             </div>

@@ -11,7 +11,7 @@ import { Mail, Send, Inbox, Check, Loader2, Home } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
-import { useLocation } from "wouter";
+import { useLocation, useSearch } from "wouter";
 
 type ReceivedMessage = {
   id: number;
@@ -38,12 +38,18 @@ type SentMessage = {
 export default function Messages() {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const [, setLocation] = useLocation();
+  const searchString = useSearch();
+  const params = new URLSearchParams(searchString);
+  const toUserId = params.get("to");
+  const toUserName = params.get("name");
+  
   const { toast } = useToast();
-  const [activeTab, setActiveTab] = useState("received");
+  const [activeTab, setActiveTab] = useState(toUserId ? "compose" : "received");
   const [replyTo, setReplyTo] = useState<ReceivedMessage | null>(null);
   const [replyContent, setReplyContent] = useState("");
-  const [newReceiverEmail, setNewReceiverEmail] = useState("");
-  const [newContent, setNewContent] = useState("");
+  const [composeReceiverId, setComposeReceiverId] = useState(toUserId || "");
+  const [composeReceiverName, setComposeReceiverName] = useState(toUserName || "");
+  const [composeContent, setComposeContent] = useState("");
 
   const { data: receivedMessages, isLoading: receivedLoading } = useQuery<ReceivedMessage[]>({
     queryKey: ["/api/messages/received"],
@@ -73,14 +79,22 @@ export default function Messages() {
       toast({ title: "쪽지를 보냈습니다." });
       setReplyTo(null);
       setReplyContent("");
-      setNewReceiverEmail("");
-      setNewContent("");
+      setComposeReceiverId("");
+      setComposeReceiverName("");
+      setComposeContent("");
+      setActiveTab("sent");
+      setLocation("/messages");
       queryClient.invalidateQueries({ queryKey: ["/api/messages/sent"] });
     },
     onError: (error: any) => {
       toast({ title: "오류", description: error.message || "쪽지 전송에 실패했습니다.", variant: "destructive" });
     },
   });
+
+  const handleCompose = () => {
+    if (!composeReceiverId || !composeContent.trim()) return;
+    sendMessageMutation.mutate({ receiverId: composeReceiverId, content: composeContent });
+  };
 
   const handleMarkAsRead = (msg: ReceivedMessage) => {
     if (!msg.isRead) {
@@ -134,6 +148,12 @@ export default function Messages() {
             <Send className="h-4 w-4 mr-2" />
             보낸 쪽지
           </TabsTrigger>
+          {composeReceiverName && (
+            <TabsTrigger value="compose" data-testid="tab-compose">
+              <Mail className="h-4 w-4 mr-2" />
+              쪽지 쓰기
+            </TabsTrigger>
+          )}
         </TabsList>
 
         <TabsContent value="received">
@@ -236,6 +256,42 @@ export default function Messages() {
               ))}
             </div>
           )}
+        </TabsContent>
+
+        <TabsContent value="compose">
+          <Card className="p-4">
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium mb-1 block">받는 사람</label>
+                <Input
+                  value={composeReceiverName}
+                  disabled
+                  className="bg-muted"
+                  data-testid="input-receiver-name"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-medium mb-1 block">내용</label>
+                <Textarea
+                  value={composeContent}
+                  onChange={(e) => setComposeContent(e.target.value)}
+                  placeholder="쪽지 내용을 입력하세요..."
+                  className="min-h-[120px]"
+                  data-testid="textarea-compose"
+                />
+              </div>
+              <div className="flex justify-end">
+                <Button
+                  onClick={handleCompose}
+                  disabled={!composeContent.trim() || sendMessageMutation.isPending}
+                  data-testid="button-send-compose"
+                >
+                  {sendMessageMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-1" /> : <Send className="h-4 w-4 mr-1" />}
+                  쪽지 보내기
+                </Button>
+              </div>
+            </div>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>

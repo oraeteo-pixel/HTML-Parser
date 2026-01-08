@@ -390,18 +390,18 @@ export default function EbookViewerPage() {
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-2" align="start">
                     <div className="flex flex-col gap-2">
-                      {post.authorEmail && (
+                      {user && user.id !== post.authorId && (
                         <Button
                           variant="ghost"
                           size="sm"
                           className="justify-start"
                           onClick={() => {
-                            window.location.href = `mailto:${post.authorEmail}?subject=[오리알터] ${post.author}님께`;
+                            setLocation(`/messages?to=${post.authorId}&name=${encodeURIComponent(post.author)}`);
                           }}
-                          data-testid={`ebook-email-author-${post.id}`}
+                          data-testid={`ebook-message-author-${post.id}`}
                         >
                           <Mail className="h-4 w-4 mr-2" />
-                          이메일 보내기
+                          쪽지 보내기
                         </Button>
                       )}
                     </div>

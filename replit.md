@@ -129,9 +129,10 @@ The `shared/` directory contains code used by both frontend and backend:
   - Position = `(daegungCycleNum + positionOffset) % 9 + 2` (2~10 순환)
   - positionOffset = 3
 - **X지Y 표기법**:
-  - X = position (대궁이 몇 번째 사이클인지, 2~10)
-  - Y = 소궁 (해당 사이클 내 소궁 번호, 2~10)
-  - 예: "7지8" = 7번째 대궁 사이클에서 소궁 8
+  - 매년 황극력 1월 1일은 2지2부터 시작
+  - X = position 값 (2~10), 실제 순서는 X-1번째 (2=1번째, 7=6번째)
+  - Y = 소궁 값 (2~10)
+  - 예: "7지8" = 6번째 대궁(position 7)에서 소궁 8
 - **소궁 계산**:
   - 시간 슬롯: 23:20부터 80분 간격 (슬롯 1-9 오전, 10-18 오후)
   - 소궁 = SOGUNG_PATTERNS[position][슬롯인덱스]

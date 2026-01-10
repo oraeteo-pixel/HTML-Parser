@@ -982,6 +982,16 @@ export function Calendar() {
                   <div className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">풀이</div>
                   <p className="text-sm leading-relaxed">{interp.advice}</p>
                 </div>
+                
+                {/* 원문 */}
+                {interp.wonmun && (
+                  <div className="space-y-1">
+                    <div className="text-sm font-medium text-muted-foreground">원문 (原文)</div>
+                    <div className="max-h-64 overflow-y-auto p-3 bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+                      <pre className="text-xs leading-relaxed whitespace-pre-wrap font-serif">{interp.wonmun}</pre>
+                    </div>
+                  </div>
+                )}
               </div>
             );
           })()}

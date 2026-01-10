@@ -1,4 +1,4 @@
-import { User, Star, BookOpen, CalendarDays, Users, LogOut, Loader2, Mail } from "lucide-react";
+import { User, Star, BookOpen, CalendarDays, Users, LogOut, Loader2, Mail, Settings } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
@@ -157,6 +157,18 @@ export function Navigation() {
                     <p className="text-sm font-medium text-center">
                       {user.firstName || user.email || "User"}
                     </p>
+                    {user.isAdmin === 1 && (
+                      <Button 
+                        variant="outline"
+                        size="sm"
+                        className="w-full"
+                        onClick={() => setLocation("/admin")}
+                        data-testid="button-admin"
+                      >
+                        <Settings className="h-4 w-4 mr-1" />
+                        관리자
+                      </Button>
+                    )}
                     <Button 
                       variant="outline"
                       size="sm"

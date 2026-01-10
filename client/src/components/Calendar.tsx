@@ -822,37 +822,6 @@ export function Calendar() {
           <div className="space-y-4">
             {calType === "hw" ? (
               <div className="grid grid-cols-2 gap-3 text-fluid-sm">
-                <div className="info-card">
-                  <div className="text-muted-foreground text-xs mb-1 uppercase tracking-wide">절기</div>
-                  <div className="font-bold text-fluid-lg">{displayData.currentTerm.hanja}</div>
-                  <div className="text-muted-foreground text-xs">{displayData.currentTerm.korean}</div>
-                </div>
-                <div className="info-card">
-                  <div className="text-muted-foreground text-xs mb-1 uppercase tracking-wide">팔괘</div>
-                  <div className="font-bold text-fluid-lg">{trigram.trigram}</div>
-                </div>
-                <div className="info-card">
-                  <div className="text-muted-foreground text-xs mb-1 uppercase tracking-wide">節局</div>
-                  <div className="font-bold text-fluid-lg">{jeolguk.name}</div>
-                </div>
-                <div className="info-card">
-                  <div className="text-muted-foreground text-xs mb-1 uppercase tracking-wide">81궁 (X之Y)</div>
-                  <div className="font-bold text-fluid-lg">
-                    {liveSogungDaegung.isZungung ? "존궁" : formatPositionDaegungHanja(liveSogungDaegung.position, liveSogungDaegung.daegung)}
-                  </div>
-                  {!liveSogungDaegung.isZungung && (
-                    <div className="text-muted-foreground text-sm">{get81PalaceName(liveSogungDaegung.position, liveSogungDaegung.daegung)}</div>
-                  )}
-                </div>
-                <div className="info-card col-span-2">
-                  <div className="text-muted-foreground text-xs mb-1 uppercase tracking-wide">28宿</div>
-                  <div className="font-bold text-fluid-lg">
-                    {hwMansion.isZunkong ? "존궁" : `${hwMansion.mansion}${hwMansion.general}`}
-                  </div>
-                  {!hwMansion.isZunkong && (
-                    <div className="text-muted-foreground text-sm">{hwMansion.description}</div>
-                  )}
-                </div>
                 {/* 60갑자 시간표 */}
                 <div className="info-card col-span-2">
                   <div className="text-muted-foreground text-xs mb-2 uppercase tracking-wide">60甲子 時間</div>

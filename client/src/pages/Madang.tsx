@@ -299,21 +299,6 @@ function CommentSection({ postId, user }: { postId: number; user: any }) {
 
   return (
     <div className="border-t pt-4 mt-4">
-      <h3 className="font-bold mb-3 flex items-center gap-2 text-base">
-        <MessageSquare className="h-5 w-5" />
-        답글 {comments?.length || 0}
-      </h3>
-      
-      {isLoading ? (
-        <p className="text-muted-foreground">로딩 중...</p>
-      ) : rootComments.length > 0 ? (
-        <div className="space-y-3 mb-4">
-          {rootComments.map(comment => renderComment(comment))}
-        </div>
-      ) : (
-        <p className="text-muted-foreground mb-4">아직 답글이 없습니다.</p>
-      )}
-      
       <Button
         variant="outline"
         size="sm"
@@ -331,7 +316,7 @@ function CommentSection({ postId, user }: { postId: number; user: any }) {
         답글 작성
       </Button>
       {showRootEditor && user && (
-        <div className="space-y-2 mt-2">
+        <div className="space-y-2 mb-4">
           <RichEditor
             content={commentText}
             onContentChange={setCommentText}
@@ -354,6 +339,21 @@ function CommentSection({ postId, user }: { postId: number; user: any }) {
             </Button>
           </div>
         </div>
+      )}
+      
+      <h3 className="font-bold mb-3 flex items-center gap-2 text-base">
+        <MessageSquare className="h-5 w-5" />
+        답글 {comments?.length || 0}
+      </h3>
+      
+      {isLoading ? (
+        <p className="text-muted-foreground">로딩 중...</p>
+      ) : rootComments.length > 0 ? (
+        <div className="space-y-3">
+          {rootComments.map(comment => renderComment(comment))}
+        </div>
+      ) : (
+        <p className="text-muted-foreground">아직 답글이 없습니다.</p>
       )}
     </div>
   );

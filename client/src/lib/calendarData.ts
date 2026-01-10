@@ -1344,7 +1344,7 @@ export function getCalendarDayData(year: number, month: number, day: number): Ca
 }
 
 // 64괘 주역 괘사 및 풀이 데이터
-// 키: "${하괘}-${상괘}" (대궁-소궁)
+// 키: "${상괘}-${하괘}" (소궁-대궁)
 export const HEXAGRAM_INTERPRETATIONS: { [key: string]: { 
   name: string; 
   korean: string; 
@@ -1353,78 +1353,78 @@ export const HEXAGRAM_INTERPRETATIONS: { [key: string]: {
   meaning: string;  // 의미/풀이
   advice: string;  // 조언
 } } = {
-  // 乾 (10=天) 하괘
-  "10-10": { name: "乾", korean: "건", fullName: "重乾天", guasa: "元亨利貞", meaning: "하늘의 도(道)를 상징. 크게 형통하고 바르게 함이 이롭다.", advice: "크게 발전하나 결과는 미약할 수 있음. 앞으로는 내리막길을 대비하라." },
+  // 乾 (10=天) 상괘
+  "10-10": { name: "乾", korean: "건", fullName: "重天乾", guasa: "乾 元亨利貞", meaning: "하늘의 도(道)를 상징. 크게 형통하고 바르게 함이 이롭다.", advice: "크게 발전하나 결과는 미약할 수 있음. 앞으로는 내리막길을 대비하라." },
   "10-4": { name: "履", korean: "리", fullName: "天澤履", guasa: "履虎尾 不咥人 亨", meaning: "호랑이 꼬리를 밟아도 물리지 않으니 형통하다.", advice: "과거의 전철을 밟는다. 남의 뒤를 따르되 조심하면 화를 당하지 않음." },
-  "10-9": { name: "同人", korean: "동인", fullName: "天火同人", guasa: "同人于野 亨 利涉大川", meaning: "들판에서 사람들과 함께 하니 형통하다.", advice: "남과 같이 행동하거나 동지(同志)를 만난다." },
-  "10-5": { name: "无妄", korean: "무망", fullName: "天雷无妄", guasa: "元亨利貞 其匪正有眚", meaning: "크게 형통하고 바르니 이롭다. 바르지 않으면 재앙이 있다.", advice: "욕심 없이 순리대로 행하고 변함이 없어야 좋다." },
-  "10-7": { name: "姤", korean: "구", fullName: "天風姤", guasa: "女壯 勿用取女", meaning: "여자가 강성하니 취하지 말라.", advice: "우연히 만난다. 기(氣)가 센 여자를 만날 수 있다." },
-  "10-3": { name: "訟", korean: "송", fullName: "天水訟", guasa: "有孚窒 惕中吉 終凶", meaning: "성실함이 막히니 두려워하면 중도에 길하나 끝까지 가면 흉하다.", advice: "소송(訴訟)이나 재판(裁判) 등 남과 싸우고 있는 형상." },
-  "10-8": { name: "遯", korean: "돈", fullName: "天山遯", guasa: "亨 小利貞", meaning: "형통하니 작은 것이 바르면 이롭다.", advice: "숨거나 달아나야 좋은 상(象)." },
-  "10-2": { name: "否", korean: "비", fullName: "天地否", guasa: "否之匪人 不利君子貞", meaning: "막힘이니 군자가 바르게 해도 이롭지 않다.", advice: "막혀서 일이 안 된다. 위기가 올 수 있다." },
-  // 兌 (4=澤) 하괘
-  "4-10": { name: "夬", korean: "쾌", fullName: "澤天夬", guasa: "揚于王庭 孚號有厲", meaning: "왕의 궁정에서 결단하니 성실함으로 호소하라.", advice: "좋은 일이 있으니 결정해야 한다." },
-  "4-4": { name: "兌", korean: "태", fullName: "重兌澤", guasa: "亨 利貞", meaning: "형통하니 바르면 이롭다.", advice: "좋은 일이 있다. 기쁨의 괘." },
-  "4-9": { name: "革", korean: "혁", fullName: "澤火革", guasa: "巳日乃孚 元亨利貞", meaning: "사일(巳日)에 믿음이 있으니 크게 형통하다.", advice: "변화가 있으니 대비하라." },
-  "4-5": { name: "隨", korean: "수", fullName: "澤雷隨", guasa: "元亨利貞 无咎", meaning: "크게 형통하고 바르면 이롭고 허물이 없다.", advice: "순리대로 따라야 한다." },
-  "4-7": { name: "大過", korean: "대과", fullName: "澤風大過", guasa: "棟撓 利有攸往 亨", meaning: "대들보가 휘었으니 갈 곳이 있으면 이롭다.", advice: "너무 지나치니 조금 참으라." },
-  "4-3": { name: "困", korean: "곤", fullName: "澤水困", guasa: "亨 貞大人吉", meaning: "형통하니 바르면 대인이 길하다.", advice: "곤경에 빠져 있다." },
-  "4-8": { name: "咸", korean: "함", fullName: "澤山咸", guasa: "亨 利貞 取女吉", meaning: "형통하고 바르면 이롭고 여자를 취하면 길하다.", advice: "서로 사랑을 느낀다. 감응의 괘." },
-  "4-2": { name: "萃", korean: "췌", fullName: "澤地萃", guasa: "亨 王假有廟", meaning: "형통하니 왕이 종묘에 이른다.", advice: "모인다. 무성하다. 경쟁에서 이긴다." },
-  // 離 (9=火) 하괘
-  "9-10": { name: "大有", korean: "대유", fullName: "火天大有", guasa: "元亨", meaning: "크게 형통하다.", advice: "크게 소유한다. 지금 당장 적극적으로 일을 시작해야 한다." },
-  "9-4": { name: "睽", korean: "규", fullName: "火澤睽", guasa: "小事吉", meaning: "작은 일은 길하다.", advice: "일그러지고 불화가 있는 격. 동상이몽(同床異夢)." },
-  "9-9": { name: "離", korean: "리", fullName: "重離火", guasa: "利貞 亨 畜牝牛吉", meaning: "바르면 이롭고 형통하니 암소를 기르면 길하다.", advice: "불이 훨훨 타고 있는 상으로 천하 태평한 괘." },
-  "9-5": { name: "噬嗑", korean: "서합", fullName: "火雷噬嗑", guasa: "亨 利用獄", meaning: "형통하니 옥사(獄事)를 쓰는 것이 이롭다.", advice: "고기와 모래를 같이 저작하는 격. 순리대로 따르면 길함." },
-  "9-7": { name: "鼎", korean: "정", fullName: "火風鼎", guasa: "元吉 亨", meaning: "크게 길하고 형통하다.", advice: "조건이 구비되었으니 협력하면 대길(大吉)." },
-  "9-3": { name: "未濟", korean: "미제", fullName: "火水未濟", guasa: "亨 小狐汔濟", meaning: "형통하니 어린 여우가 거의 건넌다.", advice: "아직 어려운 상태에 있지만 노력하면 가능하다." },
-  "9-8": { name: "旅", korean: "려", fullName: "火山旅", guasa: "小亨 旅貞吉", meaning: "조금 형통하니 나그네의 바름이 길하다.", advice: "나그네처럼 고달프고 외롭지만 얻는 것도 있음." },
-  "9-2": { name: "晉", korean: "진", fullName: "火地晉", guasa: "康侯用錫馬蕃庶", meaning: "강후가 말을 하사받아 번성한다.", advice: "밝은 태양이 솟아오른다. 나아감의 괘." },
-  // 震 (5=雷) 하괘
-  "5-10": { name: "大壯", korean: "대장", fullName: "雷天大壯", guasa: "利貞", meaning: "바르면 이롭다.", advice: "크게 번창하고 왕성하게 진행한다." },
-  "5-4": { name: "歸妹", korean: "귀매", fullName: "雷澤歸妹", guasa: "征凶 无攸利", meaning: "가면 흉하고 이로운 바가 없다.", advice: "소녀가 나이 많은 남자에게 시집가는 형." },
-  "5-9": { name: "豐", korean: "풍", fullName: "雷火豐", guasa: "亨 王假之", meaning: "형통하니 왕이 이에 이른다.", advice: "풍족하다. 번영을 상징한다." },
-  "5-5": { name: "震", korean: "진", fullName: "重震雷", guasa: "亨 震來虩虩", meaning: "형통하니 우레가 오면 두렵다.", advice: "크게 놀랄 일이 있을 수 있음. 소리만 요란하고 실속없는 괘." },
-  "5-7": { name: "恒", korean: "항", fullName: "雷風恒", guasa: "亨 无咎 利貞", meaning: "형통하고 허물이 없으니 바르면 이롭다.", advice: "좋은 일이 많다. 항상함의 괘." },
-  "5-3": { name: "解", korean: "해", fullName: "雷水解", guasa: "利西南", meaning: "서남쪽이 이롭다.", advice: "어려운 일이 풀린다." },
-  "5-8": { name: "小過", korean: "소과", fullName: "雷山小過", guasa: "亨 利貞", meaning: "형통하고 바르면 이롭다.", advice: "일이 조금 지나치니 조심하라." },
-  "5-2": { name: "豫", korean: "예", fullName: "雷地豫", guasa: "利建侯行師", meaning: "제후를 세우고 군대를 행하는 것이 이롭다.", advice: "앞으로 좋은 일이 있으니 준비하라." },
-  // 巽 (7=風) 하괘
-  "7-10": { name: "小畜", korean: "소축", fullName: "風天小畜", guasa: "亨 密雲不雨", meaning: "형통하니 빽빽한 구름이나 비가 오지 않는다.", advice: "조금씩 저축한다. 기다리면 크게 얻음." },
-  "7-4": { name: "中孚", korean: "중부", fullName: "風澤中孚", guasa: "豚魚吉 利涉大川", meaning: "돼지와 물고기도 길하니 큰 내를 건너는 것이 이롭다.", advice: "새가 알을 품듯이 정성을 다하면 결과가 좋다." },
-  "7-9": { name: "家人", korean: "가인", fullName: "風火家人", guasa: "利女貞", meaning: "여자가 바르면 이롭다.", advice: "집안이 화목해지고 있다. 여자들이 애를 쓰고 있다." },
-  "7-5": { name: "益", korean: "익", fullName: "風雷益", guasa: "利有攸往 利涉大川", meaning: "갈 곳이 있으면 이롭고 큰 내를 건너는 것이 이롭다.", advice: "이득이 있다." },
-  "7-7": { name: "巽", korean: "손", fullName: "重巽風", guasa: "小亨 利有攸往", meaning: "조금 형통하니 갈 곳이 있으면 이롭다.", advice: "바람이 부는 격으로 조금씩 발전하고 있는 상." },
-  "7-3": { name: "渙", korean: "환", fullName: "風水渙", guasa: "亨 王假有廟", meaning: "형통하니 왕이 종묘에 이른다.", advice: "근심 걱정이 사라지고 발전을 예상한다." },
-  "7-8": { name: "漸", korean: "점", fullName: "風山漸", guasa: "女歸吉 利貞", meaning: "여자가 시집가면 길하니 바르면 이롭다.", advice: "점점 좋아지고 있는 상. 결혼하면 좋은 때." },
-  "7-2": { name: "觀", korean: "관", fullName: "風地觀", guasa: "盥而不薦", meaning: "손을 씻고 제사를 올리지 않는다.", advice: "어려운 일이 있을 수 있으니 잘 관망하여 행동하라." },
-  // 坎 (3=水) 하괘
-  "3-10": { name: "需", korean: "수", fullName: "水天需", guasa: "有孚 光亨 貞吉", meaning: "믿음이 있으니 빛나고 형통하며 바르면 길하다.", advice: "기다리면 좋은 일이 있다." },
-  "3-4": { name: "節", korean: "절", fullName: "水澤節", guasa: "亨 苦節不可貞", meaning: "형통하니 고된 절제는 바르게 할 수 없다.", advice: "절약하고 절도 있게 행동하라." },
-  "3-9": { name: "旣濟", korean: "기제", fullName: "水火旣濟", guasa: "亨 小利貞", meaning: "형통하니 작은 것이 바르면 이롭다.", advice: "어려운 일이 지나간 상태. 앞으로는 내리막길." },
-  "3-5": { name: "屯", korean: "준", fullName: "水雷屯", guasa: "元亨利貞 勿用有攸往", meaning: "크게 형통하고 바르면 이롭다. 갈 곳을 쓰지 말라.", advice: "막히고 고난이 있다. 인내가 필요하다." },
-  "3-7": { name: "井", korean: "정", fullName: "水風井", guasa: "改邑不改井", meaning: "마을을 고쳐도 우물은 고치지 않는다.", advice: "우물가에서 두레박을 얻은 격. 현재 상태가 가장 좋다." },
-  "3-3": { name: "坎", korean: "감", fullName: "重坎水", guasa: "習坎 有孚 維心亨", meaning: "거듭 빠지니 믿음이 있으면 마음이 형통하다.", advice: "험난한 데 빠져 있는 격. 앞뒤로 홍수가 일고 있음." },
-  "3-8": { name: "蹇", korean: "건", fullName: "水山蹇", guasa: "利西南 不利東北", meaning: "서남쪽이 이롭고 동북쪽이 이롭지 않다.", advice: "진퇴양난의 처지에 있으니 신중하게 행동해야 한다." },
-  "3-2": { name: "比", korean: "비", fullName: "水地比", guasa: "吉 原筮元永貞", meaning: "길하니 처음 점침이 크고 영원히 바르다.", advice: "서로 돕고 협조해야 길하다." },
-  // 艮 (8=山) 하괘
-  "8-10": { name: "大畜", korean: "대축", fullName: "山天大畜", guasa: "利貞 不家食吉", meaning: "바르면 이롭고 집에서 먹지 않으면 길하다.", advice: "풍족하게 쌓여 있는 상태. 인재를 기르고 덕을 길러야 한다." },
-  "8-4": { name: "損", korean: "손", fullName: "山澤損", guasa: "有孚 元吉", meaning: "믿음이 있으면 크게 길하다.", advice: "손해를 보고 있는 상. 앞으로 언젠가는 이익이 있다." },
-  "8-9": { name: "賁", korean: "비", fullName: "山火賁", guasa: "亨 小利有攸往", meaning: "형통하니 작은 것이 갈 곳이 있으면 이롭다.", advice: "지금은 아름답게 보이나 앞으로는 암흑이 예상된다." },
-  "8-5": { name: "頤", korean: "이", fullName: "山雷頤", guasa: "貞吉 觀頤", meaning: "바르면 길하니 턱을 본다.", advice: "자신을 수양하고, 음식이나 말을 조심해야 한다." },
-  "8-7": { name: "蠱", korean: "고", fullName: "山風蠱", guasa: "元亨 利涉大川", meaning: "크게 형통하니 큰 내를 건너는 것이 이롭다.", advice: "내부의 병폐(病弊)를 제거해야 한다." },
-  "8-3": { name: "蒙", korean: "몽", fullName: "山水蒙", guasa: "亨 匪我求童蒙", meaning: "형통하니 내가 어린 몽매를 구하는 것이 아니다.", advice: "스승을 만나 지도를 받아야 한다." },
-  "8-8": { name: "艮", korean: "간", fullName: "重艮山", guasa: "艮其背 不獲其身", meaning: "등에 그치니 그 몸을 얻지 못한다.", advice: "산 넘어 산인 격. 노력을 배가해야 풀린다." },
-  "8-2": { name: "剝", korean: "박", fullName: "山地剝", guasa: "不利有攸往", meaning: "갈 곳이 있으면 이롭지 않다.", advice: "무너지기 직전으로 인내가 필요하다." },
-  // 坤 (2=地) 하괘
-  "2-10": { name: "泰", korean: "태", fullName: "地天泰", guasa: "小往大來 吉亨", meaning: "작은 것이 가고 큰 것이 오니 길하고 형통하다.", advice: "태평하고 순조롭게 모든 일이 잘 되가는 형국." },
-  "2-4": { name: "臨", korean: "림", fullName: "地澤臨", guasa: "元亨利貞", meaning: "크게 형통하고 바르면 이롭다.", advice: "군림하고 지배하는 괘. 부하의 반발이 있을 수 있다." },
-  "2-9": { name: "明夷", korean: "명이", fullName: "地火明夷", guasa: "利艱貞", meaning: "어려움에 바르면 이롭다.", advice: "해가 지고 암흑이 온다." },
-  "2-5": { name: "復", korean: "복", fullName: "地雷復", guasa: "亨 出入无疾", meaning: "형통하니 출입에 병이 없다.", advice: "앞으로 좋은 일이 있으니 적극적으로 행동하라." },
-  "2-7": { name: "升", korean: "승", fullName: "地風升", guasa: "元亨 用見大人", meaning: "크게 형통하니 대인을 보는 것이 이롭다.", advice: "크게 발전한다." },
-  "2-3": { name: "師", korean: "사", fullName: "地水師", guasa: "貞丈人吉", meaning: "바르니 장인이 길하다.", advice: "인화(人和)와 통솔력(統率力)을 길러야 한다." },
-  "2-8": { name: "謙", korean: "겸", fullName: "地山謙", guasa: "亨 君子有終", meaning: "형통하니 군자가 끝이 있다.", advice: "겸손하게 행동하면 잘 풀린다." },
-  "2-2": { name: "坤", korean: "곤", fullName: "重坤地", guasa: "元亨利牝馬之貞", meaning: "크게 형통하니 암말의 바름이 이롭다.", advice: "앞장서지 말고 자신의 도리를 지켜 순응하면 대길(大吉)." }
+  "10-9": { name: "同人", korean: "동인", fullName: "天火同人", guasa: "同人于野 亨 利涉大川 利君子貞", meaning: "들판에서 사람들과 함께 하니 형통하다.", advice: "남과 같이 행동하거나 동지(同志)를 만난다." },
+  "10-5": { name: "无妄", korean: "무망", fullName: "天雷无妄", guasa: "无妄 元亨 利貞 其匪正 有眚 不利有攸往", meaning: "크게 형통하고 바르니 이롭다. 바르지 않으면 재앙이 있다.", advice: "욕심 없이 순리대로 행하고 변함이 없어야 좋다." },
+  "10-7": { name: "姤", korean: "구", fullName: "天風姤", guasa: "姤 女壯 勿用取女", meaning: "여자가 강성하니 취하지 말라.", advice: "우연히 만난다. 기(氣)가 센 여자를 만날 수 있다." },
+  "10-3": { name: "訟", korean: "송", fullName: "天水訟", guasa: "訟 有孚 窒惕 中吉 終凶 利見大人 不利涉大川", meaning: "성실함이 막히니 두려워하면 중도에 길하나 끝까지 가면 흉하다.", advice: "소송(訴訟)이나 재판(裁判) 등 남과 싸우고 있는 형상." },
+  "10-8": { name: "遯", korean: "돈", fullName: "天山遯", guasa: "遯 亨 小利貞", meaning: "형통하니 작은 것이 바르면 이롭다.", advice: "숨거나 달아나야 좋은 상(象)." },
+  "10-2": { name: "否", korean: "비", fullName: "天地否", guasa: "否之匪人 不利君子貞 大往小來", meaning: "막힘이니 군자가 바르게 해도 이롭지 않다.", advice: "막혀서 일이 안 된다. 위기가 올 수 있다." },
+  // 兌 (4=澤) 상괘
+  "4-10": { name: "夬", korean: "쾌", fullName: "澤天夬", guasa: "夬 揚于王庭 孚號有厲 告自邑 不利卽戎 利有攸往", meaning: "왕의 궁정에서 결단하니 성실함으로 호소하라.", advice: "좋은 일이 있으니 결정해야 한다." },
+  "4-4": { name: "兌", korean: "태", fullName: "重澤兌", guasa: "兌 亨 利貞", meaning: "형통하니 바르면 이롭다.", advice: "좋은 일이 있다. 기쁨의 괘." },
+  "4-9": { name: "革", korean: "혁", fullName: "澤火革", guasa: "革 已日乃孚 元亨利貞 悔亡", meaning: "사일(巳日)에 믿음이 있으니 크게 형통하다.", advice: "변화가 있으니 대비하라." },
+  "4-5": { name: "隨", korean: "수", fullName: "澤雷隨", guasa: "隨 元亨 利貞 无咎", meaning: "크게 형통하고 바르면 이롭고 허물이 없다.", advice: "순리대로 따라야 한다." },
+  "4-7": { name: "大過", korean: "대과", fullName: "澤風大過", guasa: "大過 棟橈 利有攸往 亨", meaning: "대들보가 휘었으니 갈 곳이 있으면 이롭다.", advice: "너무 지나치니 조금 참으라." },
+  "4-3": { name: "困", korean: "곤", fullName: "澤水困", guasa: "困 亨 貞 大人吉 无咎 有言不信", meaning: "형통하니 바르면 대인이 길하다.", advice: "곤경에 빠져 있다." },
+  "4-8": { name: "咸", korean: "함", fullName: "澤山咸", guasa: "咸 亨 利貞 取女吉", meaning: "형통하고 바르면 이롭고 여자를 취하면 길하다.", advice: "서로 사랑을 느낀다. 감응의 괘." },
+  "4-2": { name: "萃", korean: "췌", fullName: "澤地萃", guasa: "萃 王假有廟 利見大人 亨 利貞 用大牲吉 利有攸往", meaning: "형통하니 왕이 종묘에 이른다.", advice: "모인다. 무성하다. 경쟁에서 이긴다." },
+  // 離 (9=火) 상괘
+  "9-10": { name: "大有", korean: "대유", fullName: "火天大有", guasa: "大有 元亨", meaning: "크게 형통하다.", advice: "크게 소유한다. 지금 당장 적극적으로 일을 시작해야 한다." },
+  "9-4": { name: "睽", korean: "규", fullName: "火澤睽", guasa: "暌 小事吉", meaning: "작은 일은 길하다.", advice: "일그러지고 불화가 있는 격. 동상이몽(同床異夢)." },
+  "9-9": { name: "離", korean: "리", fullName: "重火離", guasa: "離 利貞 亨 畜牝牛吉", meaning: "바르면 이롭고 형통하니 암소를 기르면 길하다.", advice: "불이 훨훨 타고 있는 상으로 천하 태평한 괘." },
+  "9-5": { name: "噬嗑", korean: "서합", fullName: "火雷噬嗑", guasa: "噬嗑 亨 利用獄", meaning: "형통하니 옥사(獄事)를 쓰는 것이 이롭다.", advice: "고기와 모래를 같이 저작하는 격. 순리대로 따르면 길함." },
+  "9-7": { name: "鼎", korean: "정", fullName: "火風鼎", guasa: "鼎 元吉 亨", meaning: "크게 길하고 형통하다.", advice: "조건이 구비되었으니 협력하면 대길(大吉)." },
+  "9-3": { name: "未濟", korean: "미제", fullName: "火水未濟", guasa: "未濟 亨 小狐汔濟 濡其尾 无攸利", meaning: "형통하니 어린 여우가 거의 건넌다.", advice: "아직 어려운 상태에 있지만 노력하면 가능하다." },
+  "9-8": { name: "旅", korean: "려", fullName: "火山旅", guasa: "旅 小亨 旅貞吉", meaning: "조금 형통하니 나그네의 바름이 길하다.", advice: "나그네처럼 고달프고 외롭지만 얻는 것도 있음." },
+  "9-2": { name: "晉", korean: "진", fullName: "火地晉", guasa: "晉 康侯 用錫馬蕃庶 晝日三接", meaning: "강후가 말을 하사받아 번성한다.", advice: "밝은 태양이 솟아오른다. 나아감의 괘." },
+  // 震 (5=雷) 상괘
+  "5-10": { name: "大壯", korean: "대장", fullName: "雷天大壯", guasa: "大壯 利貞", meaning: "바르면 이롭다.", advice: "크게 번창하고 왕성하게 진행한다." },
+  "5-4": { name: "歸妹", korean: "귀매", fullName: "雷澤歸妹", guasa: "歸妹 征凶 无攸利", meaning: "가면 흉하고 이로운 바가 없다.", advice: "소녀가 나이 많은 남자에게 시집가는 형." },
+  "5-9": { name: "豐", korean: "풍", fullName: "雷火豐", guasa: "豐 亨 王假之 勿憂 宜日中", meaning: "형통하니 왕이 이에 이른다.", advice: "풍족하다. 번영을 상징한다." },
+  "5-5": { name: "震", korean: "진", fullName: "重雷震", guasa: "震 亨 震來虩虩 笑言啞啞 震驚百里 不喪匕鬯", meaning: "형통하니 우레가 오면 두렵다.", advice: "크게 놀랄 일이 있을 수 있음. 소리만 요란하고 실속없는 괘." },
+  "5-7": { name: "恒", korean: "항", fullName: "雷風恒", guasa: "恒 亨 无咎 利貞 利有攸往", meaning: "형통하고 허물이 없으니 바르면 이롭다.", advice: "좋은 일이 많다. 항상함의 괘." },
+  "5-3": { name: "解", korean: "해", fullName: "雷水解", guasa: "解 利西南 无所往 其來復吉 有攸往 夙吉", meaning: "서남쪽이 이롭다.", advice: "어려운 일이 풀린다." },
+  "5-8": { name: "小過", korean: "소과", fullName: "雷山小過", guasa: "小過 亨 利貞 可小事 不可大事 飛鳥遺之音 不宜上 宜下 大吉", meaning: "형통하고 바르면 이롭다.", advice: "일이 조금 지나치니 조심하라." },
+  "5-2": { name: "豫", korean: "예", fullName: "雷地豫", guasa: "豫 利建侯行師", meaning: "제후를 세우고 군대를 행하는 것이 이롭다.", advice: "앞으로 좋은 일이 있으니 준비하라." },
+  // 巽 (7=風) 상괘
+  "7-10": { name: "小畜", korean: "소축", fullName: "風天小畜", guasa: "小畜 亨 密雲不雨 自我西郊", meaning: "형통하니 빽빽한 구름이나 비가 오지 않는다.", advice: "조금씩 저축한다. 기다리면 크게 얻음." },
+  "7-4": { name: "中孚", korean: "중부", fullName: "風澤中孚", guasa: "中孚 豚魚吉 利涉大川 利貞", meaning: "돼지와 물고기도 길하니 큰 내를 건너는 것이 이롭다.", advice: "새가 알을 품듯이 정성을 다하면 결과가 좋다." },
+  "7-9": { name: "家人", korean: "가인", fullName: "風火家人", guasa: "家人 利女貞", meaning: "여자가 바르면 이롭다.", advice: "집안이 화목해지고 있다. 여자들이 애를 쓰고 있다." },
+  "7-5": { name: "益", korean: "익", fullName: "風雷益", guasa: "益 利有攸往 利涉大川", meaning: "갈 곳이 있으면 이롭고 큰 내를 건너는 것이 이롭다.", advice: "이득이 있다." },
+  "7-7": { name: "巽", korean: "손", fullName: "重風巽", guasa: "巽 小亨 利有攸往 利見大人", meaning: "조금 형통하니 갈 곳이 있으면 이롭다.", advice: "바람이 부는 격으로 조금씩 발전하고 있는 상." },
+  "7-3": { name: "渙", korean: "환", fullName: "風水渙", guasa: "渙 亨 王假有廟 利涉大川 利貞", meaning: "형통하니 왕이 종묘에 이른다.", advice: "근심 걱정이 사라지고 발전을 예상한다." },
+  "7-8": { name: "漸", korean: "점", fullName: "風山漸", guasa: "漸 女歸吉 利貞", meaning: "여자가 시집가면 길하니 바르면 이롭다.", advice: "점점 좋아지고 있는 상. 결혼하면 좋은 때." },
+  "7-2": { name: "觀", korean: "관", fullName: "風地觀", guasa: "觀 盥而不薦 有孚顒若", meaning: "손을 씻고 제사를 올리지 않는다.", advice: "어려운 일이 있을 수 있으니 잘 관망하여 행동하라." },
+  // 坎 (3=水) 상괘
+  "3-10": { name: "需", korean: "수", fullName: "水天需", guasa: "需 有孚 光亨 貞吉 利涉大川", meaning: "믿음이 있으니 빛나고 형통하며 바르면 길하다.", advice: "기다리면 좋은 일이 있다." },
+  "3-4": { name: "節", korean: "절", fullName: "水澤節", guasa: "節 亨 苦節不可貞", meaning: "형통하니 고된 절제는 바르게 할 수 없다.", advice: "절약하고 절도 있게 행동하라." },
+  "3-9": { name: "旣濟", korean: "기제", fullName: "水火旣濟", guasa: "旣濟 亨小 初吉終亂", meaning: "형통하니 작은 것이 바르면 이롭다.", advice: "어려운 일이 지나간 상태. 앞으로는 내리막길." },
+  "3-5": { name: "屯", korean: "준", fullName: "水雷屯", guasa: "屯 元亨利貞 勿用有攸往 利建侯", meaning: "크게 형통하고 바르면 이롭다. 갈 곳을 쓰지 말라.", advice: "막히고 고난이 있다. 인내가 필요하다." },
+  "3-7": { name: "井", korean: "정", fullName: "水風井", guasa: "井 改邑不改井 无喪无得 往來井井 汔至亦未繘井 羸其瓶 凶", meaning: "마을을 고쳐도 우물은 고치지 않는다.", advice: "우물가에서 두레박을 얻은 격. 현재 상태가 가장 좋다." },
+  "3-3": { name: "坎", korean: "감", fullName: "重水坎", guasa: "習坎 有孚 維心亨 行有尙", meaning: "거듭 빠지니 믿음이 있으면 마음이 형통하다.", advice: "험난한 데 빠져 있는 격. 앞뒤로 홍수가 일고 있음." },
+  "3-8": { name: "蹇", korean: "건", fullName: "水山蹇", guasa: "蹇 利西南 不利東北 利見大人 貞吉", meaning: "서남쪽이 이롭고 동북쪽이 이롭지 않다.", advice: "진퇴양난의 처지에 있으니 신중하게 행동해야 한다." },
+  "3-2": { name: "比", korean: "비", fullName: "水地比", guasa: "比 吉 原筮元永貞 无咎 不寧方來 後夫凶", meaning: "길하니 처음 점침이 크고 영원히 바르다.", advice: "서로 돕고 협조해야 길하다." },
+  // 艮 (8=山) 상괘
+  "8-10": { name: "大畜", korean: "대축", fullName: "山天大畜", guasa: "大畜 利貞 不家食吉 利涉大川", meaning: "바르면 이롭고 집에서 먹지 않으면 길하다.", advice: "풍족하게 쌓여 있는 상태. 인재를 기르고 덕을 길러야 한다." },
+  "8-4": { name: "損", korean: "손", fullName: "山澤損", guasa: "損 有孚 元吉 无咎 可貞 利有攸往 曷之用 二簋可用亨", meaning: "믿음이 있으면 크게 길하다.", advice: "손해를 보고 있는 상. 앞으로 언젠가는 이익이 있다." },
+  "8-9": { name: "賁", korean: "비", fullName: "山火賁", guasa: "賁 亨 小利有攸往", meaning: "형통하니 작은 것이 갈 곳이 있으면 이롭다.", advice: "지금은 아름답게 보이나 앞으로는 암흑이 예상된다." },
+  "8-5": { name: "頤", korean: "이", fullName: "山雷頤", guasa: "頤 貞吉 觀頤 自求口實", meaning: "바르면 길하니 턱을 본다.", advice: "자신을 수양하고, 음식이나 말을 조심해야 한다." },
+  "8-7": { name: "蠱", korean: "고", fullName: "山風蠱", guasa: "蠱 元亨 利涉大川 先甲三日 後甲三日", meaning: "크게 형통하니 큰 내를 건너는 것이 이롭다.", advice: "내부의 병폐(病弊)를 제거해야 한다." },
+  "8-3": { name: "蒙", korean: "몽", fullName: "山水蒙", guasa: "蒙 亨 匪我求童蒙 童蒙求我 初筮告 再三瀆 瀆則不告 利貞", meaning: "형통하니 내가 어린 몽매를 구하는 것이 아니다.", advice: "스승을 만나 지도를 받아야 한다." },
+  "8-8": { name: "艮", korean: "간", fullName: "重山艮", guasa: "艮其背 不獲其身 行其庭 不見其人 无咎", meaning: "등에 그치니 그 몸을 얻지 못한다.", advice: "산 넘어 산인 격. 노력을 배가해야 풀린다." },
+  "8-2": { name: "剝", korean: "박", fullName: "山地剝", guasa: "剝 不利有攸往", meaning: "갈 곳이 있으면 이롭지 않다.", advice: "무너지기 직전으로 인내가 필요하다." },
+  // 坤 (2=地) 상괘
+  "2-10": { name: "泰", korean: "태", fullName: "地天泰", guasa: "泰 小往大來 吉亨", meaning: "작은 것이 가고 큰 것이 오니 길하고 형통하다.", advice: "태평하고 순조롭게 모든 일이 잘 되가는 형국." },
+  "2-4": { name: "臨", korean: "림", fullName: "地澤臨", guasa: "臨 元亨利貞 至于八月有凶", meaning: "크게 형통하고 바르면 이롭다.", advice: "군림하고 지배하는 괘. 부하의 반발이 있을 수 있다." },
+  "2-9": { name: "明夷", korean: "명이", fullName: "地火明夷", guasa: "明夷 利艱貞", meaning: "어려움에 바르면 이롭다.", advice: "해가 지고 암흑이 온다." },
+  "2-5": { name: "復", korean: "복", fullName: "地雷復", guasa: "復 亨 出入无疾 朋來无咎 反復其道 七日來復 利有攸往", meaning: "형통하니 출입에 병이 없다.", advice: "앞으로 좋은 일이 있으니 적극적으로 행동하라." },
+  "2-7": { name: "升", korean: "승", fullName: "地風升", guasa: "升 元亨 用見大人 勿恤 南征吉", meaning: "크게 형통하니 대인을 보는 것이 이롭다.", advice: "크게 발전한다." },
+  "2-3": { name: "師", korean: "사", fullName: "地水師", guasa: "師 貞 丈人吉 无咎", meaning: "바르니 장인이 길하다.", advice: "인화(人和)와 통솔력(統率力)을 길러야 한다." },
+  "2-8": { name: "謙", korean: "겸", fullName: "地山謙", guasa: "謙 亨 君子有終", meaning: "형통하니 군자가 끝이 있다.", advice: "겸손하게 행동하면 잘 풀린다." },
+  "2-2": { name: "坤", korean: "곤", fullName: "重地坤", guasa: "坤 元亨利牝馬之貞 君子有攸往 先迷後得主 利西南得朋 東北喪朋 安貞吉", meaning: "크게 형통하니 암말의 바름이 이롭다.", advice: "앞장서지 말고 자신의 도리를 지켜 순응하면 대길(大吉)." }
 };
 
 // 64괘 주역 풀이 조회 함수

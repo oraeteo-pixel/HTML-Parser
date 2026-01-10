@@ -57,7 +57,12 @@ export function Navigation() {
       <div className="max-w-[990px] mx-auto px-2">
         <div className="h-[56px] sm:h-[70px] flex items-center justify-between relative">
           <Link href="/calendar" className="flex items-center gap-1 hover:opacity-80 transition-opacity" data-testid="link-logo">
-            <img src={logoImage} alt="ORAE Logo" className="h-8 w-8 sm:h-10 sm:w-10" />
+            <img 
+              src={logoImage} 
+              alt="ORAE Logo" 
+              className="h-8 w-8 sm:h-10 sm:w-10"
+              style={{ filter: 'sepia(100%) saturate(300%) brightness(70%) hue-rotate(140deg)' }}
+            />
           </Link>
 
           <div className="flex gap-2 sm:gap-4 items-end pb-1">

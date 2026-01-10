@@ -4,7 +4,7 @@ import { Footer } from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { RichEditor, type MediaItem } from "@/components/RichEditor";
+import { RichEditor, type MediaItem, type TextStyle, getFontFamilyCSS } from "@/components/RichEditor";
 import { PdfViewer } from "@/components/PdfViewer";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
@@ -44,6 +44,8 @@ export default function EbookPage() {
   const [editTitle, setEditTitle] = useState("");
   const [editContent, setEditContent] = useState("");
   const [editMediaItems, setEditMediaItems] = useState<MediaItem[]>([]);
+  const [textStyle, setTextStyle] = useState<TextStyle>({ fontFamily: "noto-sans", fontSize: "16px", lineHeight: "1.5", fontWeight: "400" });
+  const [editTextStyle, setEditTextStyle] = useState<TextStyle>({ fontFamily: "noto-sans", fontSize: "16px", lineHeight: "1.5", fontWeight: "400" });
 
   // Auto-open editor when write=true
   useEffect(() => {
@@ -58,7 +60,7 @@ export default function EbookPage() {
   });
 
   const createPost = useMutation({
-    mutationFn: async (data: { title: string; content: string; section: string; mediaUrls?: string[]; youtubeUrls?: string[] }) => {
+    mutationFn: async (data: { title: string; content: string; section: string; mediaUrls?: string[]; youtubeUrls?: string[]; textStyle?: string }) => {
       return apiRequest("POST", "/api/posts", data);
     },
     onSuccess: () => {
@@ -66,6 +68,7 @@ export default function EbookPage() {
       setTitle("");
       setContent("");
       setMediaItems([]);
+      setTextStyle({ fontFamily: "noto-sans", fontSize: "16px", lineHeight: "1.5", fontWeight: "400" });
       setShowEditor(false);
       toast({ title: "전자책이 등록되었습니다." });
     },
@@ -75,7 +78,7 @@ export default function EbookPage() {
   });
 
   const updatePost = useMutation({
-    mutationFn: async (data: { id: number; title: string; content: string; mediaUrls?: string[]; youtubeUrls?: string[] }) => {
+    mutationFn: async (data: { id: number; title: string; content: string; mediaUrls?: string[]; youtubeUrls?: string[]; textStyle?: string }) => {
       return apiRequest("PUT", `/api/posts/${data.id}`, data);
     },
     onSuccess: () => {
@@ -84,6 +87,7 @@ export default function EbookPage() {
       setEditTitle("");
       setEditContent("");
       setEditMediaItems([]);
+      setEditTextStyle({ fontFamily: "noto-sans", fontSize: "16px", lineHeight: "1.5", fontWeight: "400" });
       toast({ title: "전자책이 수정되었습니다." });
     },
     onError: () => {
@@ -117,7 +121,8 @@ export default function EbookPage() {
       content, 
       section: "ebook",
       mediaUrls: mediaUrls.length > 0 ? mediaUrls : undefined,
-      youtubeUrls: youtubeUrls.length > 0 ? youtubeUrls : undefined
+      youtubeUrls: youtubeUrls.length > 0 ? youtubeUrls : undefined,
+      textStyle: JSON.stringify(textStyle)
     });
   };
 
@@ -228,7 +233,8 @@ export default function EbookPage() {
       title: editTitle,
       content: editContent,
       mediaUrls: mediaUrls.length > 0 ? mediaUrls : undefined,
-      youtubeUrls: youtubeUrls.length > 0 ? youtubeUrls : undefined
+      youtubeUrls: youtubeUrls.length > 0 ? youtubeUrls : undefined,
+      textStyle: JSON.stringify(editTextStyle)
     });
   };
 
@@ -237,6 +243,10 @@ export default function EbookPage() {
     setEditTitle(post.title);
     setEditContent(post.content);
     setEditMediaItems(parseMediaItems(post));
+    try {
+      const ts = post.textStyle ? JSON.parse(post.textStyle) : null;
+      if (ts) setEditTextStyle(ts);
+    } catch (e) {}
   };
 
   const cancelEdit = () => {
@@ -325,6 +335,8 @@ export default function EbookPage() {
               isSubmitting={createPost.isPending}
               submitText="전자책 등록"
               placeholder="전자책 설명을 입력하세요. PDF 파일과 표지 이미지를 함께 업로드하세요."
+              textStyle={textStyle}
+              onTextStyleChange={setTextStyle}
             />
           </div>
         )}
@@ -346,6 +358,8 @@ export default function EbookPage() {
                 isSubmitting={updatePost.isPending}
                 submitText="수정 완료"
                 placeholder="전자책 설명을 입력하세요."
+                textStyle={editTextStyle}
+                onTextStyleChange={setEditTextStyle}
               />
             </DialogContent>
           </Dialog>

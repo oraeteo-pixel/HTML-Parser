@@ -9,10 +9,10 @@ export function Footer() {
   
   const todayData = getCalendarDayData(today.getFullYear(), today.getMonth() + 1, today.getDate());
 
-  // 60갑자 시간 (황극력 기준: 23:00 시작)
-  // 오전: 乙巳(23시)~丙戌(09시) / 오후: 丁亥(11시)~戊辰(21시)
+  // 60갑자 시간 (황극력 기준)
+  // 오전: 乙巳~庚戌 / 오후: 辛亥~丙辰
   const amHours = ["乙巳", "丙午", "丁未", "戊申", "己酉", "庚戌"];
-  const pmHours = ["丁亥", "戊子", "己丑", "庚寅", "辛卯", "壬辰"];
+  const pmHours = ["辛亥", "壬子", "癸丑", "甲寅", "乙卯", "丙辰"];
 
   return (
     <footer className="max-w-[990px] mx-auto py-4 text-center" data-testid="footer">

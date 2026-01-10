@@ -220,11 +220,52 @@ export function getYearGanZhi(year: number): string {
   return HEAVENLY_STEMS[stemIndex] + EARTHLY_BRANCHES[branchIndex];
 }
 
-export function getMonthGanZhi(year: number, month: number): string {
-  const diff = (year - 2024) * 12 + (month - 4);
-  const g = (((diff % 10) + 10) % 10);
-  const z = (((diff % 12) + 12) % 12);
-  return HEAVENLY_STEMS[g] + EARTHLY_BRANCHES[z];
+export function getMonthGanZhi(year: number, month: number, day?: number): string {
+  // 절기 기반 월간지 계산
+  // 절입일: 소한(1월), 입춘(2월), 경칩(3월), 청명(4월), 입하(5월), 망종(6월)
+  //        소서(7월), 입추(8월), 백로(9월), 한로(10월), 입동(11월), 대설(12월)
+  
+  const nodeDay = day !== undefined ? day : 15; // 기본값은 월 중순
+  const termDays = SOLAR_TERM_DAYS[month];
+  const nodeDate = termDays ? termDays[0] : 5; // 해당 월의 절입일
+  
+  // 절입일 전이면 전월 지지 사용
+  let monthBranch: number; // 지지 인덱스 (0=子, 1=丑, 2=寅, ...)
+  let ganzhiYear = year;
+  
+  if (nodeDay < nodeDate) {
+    // 절입일 전: 전월 지지
+    if (month === 1) {
+      monthBranch = 0; // 자월(子月) - 전년 12월의 지지
+      ganzhiYear = year - 1;
+    } else if (month === 2) {
+      monthBranch = 1; // 축월(丑月)
+      ganzhiYear = year - 1; // 입춘 전이면 전년
+    } else {
+      monthBranch = month - 1; // 전월 지지
+    }
+  } else {
+    // 절입일 이후: 해당월 지지
+    if (month === 1) {
+      monthBranch = 1; // 축월(丑月)
+      ganzhiYear = year - 1; // 1월은 전년의 축월
+    } else if (month === 2) {
+      monthBranch = 2; // 인월(寅月) - 새해 시작
+    } else {
+      monthBranch = month; // 해당월 지지
+    }
+  }
+  
+  // 년간에 따른 월간 계산
+  // 갑기년: 병인월(丙寅), 을경년: 무인월(戊寅), 병신년: 경인월(庚寅), 정임년: 임인월(壬寅), 무계년: 갑인월(甲寅)
+  const yearStemIndex = ((ganzhiYear - 4) % 10 + 10) % 10;
+  const inMonthStemStart = [2, 4, 6, 8, 0, 2, 4, 6, 8, 0][yearStemIndex]; // 인월(寅月)의 천간
+  
+  // 인월(寅)=2부터 시작하므로 월지에서 2를 빼서 오프셋 계산
+  const monthOffset = ((monthBranch - 2) % 12 + 12) % 12;
+  const monthStemIndex = (inMonthStemStart + monthOffset) % 10;
+  
+  return HEAVENLY_STEMS[monthStemIndex] + EARTHLY_BRANCHES[monthBranch];
 }
 
 export function getDayGanZhi(year: number, month: number, day: number): string {
@@ -1257,7 +1298,7 @@ export function getLunarGanZhi(year: number, month: number, day: number): { year
 export function getCalendarDayData(year: number, month: number, day: number): CalendarDayData {
   const lunar = solarToLunar(year, month, day);
   const yearGanZhi = getYearGanZhi(year);
-  const monthGanZhi = getMonthGanZhi(year, month);
+  const monthGanZhi = getMonthGanZhi(year, month, day);
   const dayGanZhi = getDayGanZhi(year, month, day);
   const lunarGanZhi = getLunarGanZhi(year, month, day);
   const mansion = get28Mansion(year, month, day);

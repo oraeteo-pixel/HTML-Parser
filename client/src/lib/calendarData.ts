@@ -1297,9 +1297,9 @@ export function getLunarGanZhi(year: number, month: number, day: number): { year
 
 export function getCalendarDayData(year: number, month: number, day: number): CalendarDayData {
   const lunar = solarToLunar(year, month, day);
-  // korean-lunar-calendar 라이브러리의 getChineseGapja()를 사용하여 정확한 간지 계산
+  // 선천력: 음력 기반 간지 (korean-lunar-calendar 라이브러리 사용)
   const lunarGanZhi = getLunarGanZhi(year, month, day);
-  // 음력 기반 간지를 기본값으로 사용
+  // 선천력 간지는 음력 기반 간지 사용
   const yearGanZhi = lunarGanZhi.year;
   const monthGanZhi = lunarGanZhi.month;
   const dayGanZhi = lunarGanZhi.day;

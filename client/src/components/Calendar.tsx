@@ -352,6 +352,48 @@ export function Calendar() {
     }, 50);
   };
 
+  // 연도 선택 시 해당 연도 1월 1일 선택
+  const handleYearSelect = (year: number) => {
+    if (calType === "hw") {
+      setHwYear(year);
+      setHwMonth(1);
+      // 황극력 1월 1일의 양력 날짜 계산
+      const monthData = getHwanggeukMonthData(year, 1);
+      if (monthData.length > 0) {
+        const firstDay = monthData.find(d => d.hwDay === 1);
+        if (firstDay) {
+          setSelectedDay(firstDay.solarDate);
+          setShowDayDetail(true);
+        }
+      }
+    } else {
+      setSolarYear(year);
+      setSolarMonth(1);
+      setSelectedDay(new Date(year, 0, 1));
+      setShowDayDetail(true);
+    }
+  };
+
+  // 월 선택 시 해당 월 1일 선택
+  const handleMonthSelect = (month: number) => {
+    if (calType === "hw") {
+      setHwMonth(month);
+      // 황극력 해당 월 1일의 양력 날짜 계산
+      const monthData = getHwanggeukMonthData(hwYear, month);
+      if (monthData.length > 0) {
+        const firstDay = monthData.find(d => d.hwDay === 1);
+        if (firstDay) {
+          setSelectedDay(firstDay.solarDate);
+          setShowDayDetail(true);
+        }
+      }
+    } else {
+      setSolarMonth(month);
+      setSelectedDay(new Date(solarYear, month - 1, 1));
+      setShowDayDetail(true);
+    }
+  };
+
   const years = useMemo(() => {
     if (calType === "hw") {
       return Array.from({ length: 112 }, (_, i) => 1989 + i);
@@ -519,7 +561,7 @@ export function Calendar() {
           
           <Select 
             value={String(calType === "hw" ? hwYear : solarYear)} 
-            onValueChange={(v) => { setSelectedDay(null); calType === "hw" ? setHwYear(Number(v)) : setSolarYear(Number(v)); }}
+            onValueChange={(v) => handleYearSelect(Number(v))}
           >
             <SelectTrigger className="w-[68px] sm:w-[100px] h-5 sm:h-8 text-xs sm:text-sm px-1.5" data-testid="select-year">
               <SelectValue />
@@ -551,7 +593,7 @@ export function Calendar() {
 
           <Select 
             value={String(calType === "hw" ? hwMonth : solarMonth)} 
-            onValueChange={(v) => { setSelectedDay(null); calType === "hw" ? setHwMonth(Number(v)) : setSolarMonth(Number(v)); }}
+            onValueChange={(v) => handleMonthSelect(Number(v))}
           >
             <SelectTrigger className="w-[56px] sm:w-[80px] h-5 sm:h-8 text-xs sm:text-sm px-1.5" data-testid="select-month">
               <SelectValue />

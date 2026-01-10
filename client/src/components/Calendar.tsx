@@ -644,7 +644,7 @@ export function Calendar() {
             return (
               <div 
                 key={`hw-${hwDay}`} 
-                className={`calendar-cell group cursor-pointer ${isCurrentDay ? "today" : ""} ${isSelected ? "bg-slate-300 dark:bg-slate-600" : ""}`}
+                className={`calendar-cell group cursor-pointer ${isCurrentDay ? "today" : ""} ${isSelected && !isCurrentDay ? "today" : ""}`}
                 data-testid={`calendar-day-${hwDay}`}
                 onClick={() => handleDayClick(solarDate)}
               >
@@ -707,7 +707,7 @@ export function Calendar() {
             return (
               <div 
                 key={`solar-${solarDay}`} 
-                className={`calendar-cell group cursor-pointer ${isCurrentDay ? "today" : ""} ${isSelected ? "bg-slate-300 dark:bg-slate-600" : ""}`}
+                className={`calendar-cell group cursor-pointer ${isCurrentDay ? "today" : ""} ${isSelected && !isCurrentDay ? "today" : ""}`}
                 data-testid={`calendar-day-${solarDay}`}
                 onClick={() => handleDayClick(solarDate)}
               >

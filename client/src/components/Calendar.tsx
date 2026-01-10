@@ -702,7 +702,7 @@ export function Calendar() {
       <div className="mt-3 py-2 px-3 text-center text-sm text-muted-foreground border-t border-border">
         {calType === "hw" ? (
           <span>
-            {liveHwanggeuk.yearGanZhi}年 {liveHwanggeuk.monthGanZhi}月 {liveDayGanZhi}日 {liveHourGanZhi}時
+            {liveHwanggeuk.year}年 {liveHwanggeuk.month}月 {liveHwanggeuk.day}日 ({currentTime.getHours()}:{String(currentTime.getMinutes()).padStart(2, '0')}) - {liveHwanggeuk.yearGanZhi}年 {liveHwanggeuk.monthGanZhi}月 {liveDayGanZhi}日 {liveHourGanZhi}時
           </span>
         ) : (
           <span>

@@ -773,9 +773,9 @@ export function Calendar() {
             ) : (
               <div className="grid grid-cols-2 gap-3 text-fluid-sm">
                 <div className="info-card col-span-2">
-                  <div className="text-muted-foreground text-xs mb-1 uppercase tracking-wide">음력 간지 (60갑자)</div>
+                  <div className="text-muted-foreground text-xs mb-1 uppercase tracking-wide">선천력 간지 (60갑자)</div>
                   <div className="font-bold text-fluid-lg">
-                    {displayData.lunarGanZhi.year}年 {displayData.lunarGanZhi.month}月 {displayData.lunarGanZhi.day}日
+                    {displayData.yearGanZhi}年 {displayData.monthGanZhi}月 {displayData.dayGanZhi}日
                   </div>
                 </div>
                 <div className="info-card">

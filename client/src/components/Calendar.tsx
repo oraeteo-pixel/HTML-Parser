@@ -50,12 +50,23 @@ for (let i = 0; i < 60; i++) {
 }
 
 // 특정 황극력 날짜의 60갑자 시간 계산 (오전 6개, 오후 6개)
-// 매월 1일 = 丁巳(53) 시작, 매일 12시간씩 진행 (월 상관없이 일자만 사용)
-function get60GanziHours(hwDay: number): { am: string[], pm: string[] } {
-  // 매월 1일부터 며칠째인지 계산 (월 상관없이 1일에 리셋)
-  const totalDays = hwDay - 1; // 1일 = 0, 26일 = 25
+// 황극력 1년 1월 1일 = 丁巳(53) 시작, 매일 12시간씩 진행 (연속)
+function get60GanziHours(hwYear: number, hwMonth: number, hwDay: number): { am: string[], pm: string[] } {
+  // 황극력 1년 1월 1일부터 총 며칠째인지 계산
+  // 황극력 월별 일수: 1~6월 30/31일씩
+  const HW_MONTH_DAYS = [30, 31, 30, 31, 30, 31, 30, 31, 30, 31, 30, 31];
   
-  // 하루에 12시간씩 진행, 매월 1일 오전 시작 = 丁巳(53)
+  // 연도별 일수 (366일)
+  const daysPerYear = 366;
+  let totalDays = (hwYear - 1) * daysPerYear; // 1년부터 시작
+  
+  // 해당 연도 내 일수 추가
+  for (let m = 1; m < hwMonth; m++) {
+    totalDays += HW_MONTH_DAYS[m - 1];
+  }
+  totalDays += (hwDay - 1); // 1일 = 0
+  
+  // 하루에 12시간씩 진행, 황극력 1년 1월 1일 오전 시작 = 丁巳(53)
   let startIndex = (53 + totalDays * 12) % 60;
   if (startIndex < 0) startIndex += 60;
   
@@ -846,7 +857,7 @@ export function Calendar() {
                 <div className="info-card col-span-2">
                   <div className="text-muted-foreground text-xs mb-2 uppercase tracking-wide">60甲子 時間</div>
                   {(() => {
-                    const ganziHours = get60GanziHours(infoHwanggeuk.day);
+                    const ganziHours = get60GanziHours(infoHwanggeuk.year, infoHwanggeuk.month, infoHwanggeuk.day);
                     return (
                       <div className="space-y-1">
                         <div className="flex items-center gap-1 flex-wrap">

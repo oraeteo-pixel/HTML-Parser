@@ -103,7 +103,7 @@ function CommentSection({ postId, user }: { postId: number; user: any }) {
             <Button
               variant="ghost"
               size="sm"
-              className="mt-1 h-6 px-2 text-xs"
+              className="mt-1 h-6 px-2 text-xs text-muted-foreground"
               onClick={() => {
                 if (!user) {
                   toast({ title: "로그인이 필요합니다.", description: "답글을 작성하려면 로그인해 주세요." });
@@ -128,7 +128,7 @@ function CommentSection({ postId, user }: { postId: number; user: any }) {
               compact
             />
             <div className="flex gap-2 justify-end">
-              <Button size="sm" variant="ghost" onClick={() => setReplyingTo(null)}>취소</Button>
+              <Button size="sm" variant="ghost" className="text-muted-foreground" onClick={() => setReplyingTo(null)}>취소</Button>
               <Button size="sm" onClick={() => handleSubmitReply(comment.id)} disabled={(!replyText.trim() && replyMedia.length === 0) || createComment.isPending}>
                 <Send className="h-3 w-3 mr-1" />
                 답글
@@ -175,7 +175,7 @@ function CommentSection({ postId, user }: { postId: number; user: any }) {
             compact
           />
           <div className="flex gap-2 justify-end">
-            <Button size="sm" variant="ghost" onClick={() => { setShowRootEditor(false); setCommentText(""); setCommentMedia([]); }}>취소</Button>
+            <Button size="sm" variant="ghost" className="text-muted-foreground" onClick={() => { setShowRootEditor(false); setCommentText(""); setCommentMedia([]); }}>취소</Button>
             <Button
               size="sm"
               onClick={handleSubmitComment}

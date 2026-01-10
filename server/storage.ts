@@ -1,4 +1,4 @@
-import { users, posts, comments, postVotes, messages, type User, type Post, type Comment, type PostVote, type Message } from "@shared/schema";
+import { users, posts, comments, postVotes, messages, siteSettings, type User, type Post, type Comment, type PostVote, type Message, type SiteSetting } from "@shared/schema";
 import type { InsertPost, InsertComment, InsertPostVote, InsertMessage } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, sql, and } from "drizzle-orm";
@@ -29,6 +29,10 @@ export interface IStorage {
   getUnreadCount(userId: string): Promise<number>;
   markAsRead(messageId: number, userId: string): Promise<boolean>;
   getUserById(userId: string): Promise<User | null>;
+  
+  getSiteSetting(key: string): Promise<SiteSetting | null>;
+  setSiteSetting(key: string, value: string): Promise<SiteSetting>;
+  getAllSiteSettings(): Promise<SiteSetting[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -328,6 +332,31 @@ export class DatabaseStorage implements IStorage {
   async getUserById(userId: string): Promise<User | null> {
     const [user] = await db.select().from(users).where(eq(users.id, userId));
     return user || null;
+  }
+
+  async getSiteSetting(key: string): Promise<SiteSetting | null> {
+    const [setting] = await db.select().from(siteSettings).where(eq(siteSettings.key, key));
+    return setting || null;
+  }
+
+  async setSiteSetting(key: string, value: string): Promise<SiteSetting> {
+    const existing = await this.getSiteSetting(key);
+    if (existing) {
+      const [updated] = await db.update(siteSettings)
+        .set({ value, updatedAt: new Date() })
+        .where(eq(siteSettings.key, key))
+        .returning();
+      return updated;
+    } else {
+      const [newSetting] = await db.insert(siteSettings)
+        .values({ key, value })
+        .returning();
+      return newSetting;
+    }
+  }
+
+  async getAllSiteSettings(): Promise<SiteSetting[]> {
+    return await db.select().from(siteSettings);
   }
 }
 

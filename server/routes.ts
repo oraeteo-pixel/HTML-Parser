@@ -468,5 +468,50 @@ export async function registerRoutes(
     }
   });
 
+  // === Site Settings Routes ===
+  
+  // Get all site settings (public)
+  app.get("/api/settings", async (req, res) => {
+    const settings = await storage.getAllSiteSettings();
+    const settingsMap: Record<string, string> = {};
+    settings.forEach(s => { settingsMap[s.key] = s.value; });
+    res.json(settingsMap);
+  });
+
+  // Get specific site setting (public)
+  app.get("/api/settings/:key", async (req, res) => {
+    const setting = await storage.getSiteSetting(req.params.key);
+    if (!setting) {
+      return res.status(404).json({ message: "Setting not found" });
+    }
+    res.json({ key: setting.key, value: setting.value });
+  });
+
+  // Update site setting (admin only)
+  app.post("/api/settings", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const user = await storage.getUser(userId);
+      if (!user || user.isAdmin !== 1) {
+        return res.status(403).json({ message: "관리자만 설정을 변경할 수 있습니다." });
+      }
+
+      const { key, value } = req.body;
+      if (!key || typeof value !== 'string') {
+        return res.status(400).json({ message: "Invalid request" });
+      }
+
+      const setting = await storage.setSiteSetting(key, value);
+      res.json(setting);
+    } catch (err) {
+      console.error('Setting update error:', err);
+      res.status(500).json({ message: "설정 저장 중 오류가 발생했습니다." });
+    }
+  });
+
   return httpServer;
 }

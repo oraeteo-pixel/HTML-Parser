@@ -792,19 +792,71 @@ export function Calendar() {
             {liveHwanggeuk.year}年 {liveHwanggeuk.month}月 {liveHwanggeuk.day}日 ({currentTime.getHours()}:{String(currentTime.getMinutes()).padStart(2, '0')}) - {liveHwanggeuk.yearGanZhi}年 {liveHwanggeuk.monthGanZhi}月 {liveDayGanZhi}日 {liveHourGanZhi}時
           </div>
           {(() => {
-            const ganziHours = get60GanziHours(infoHwanggeuk.year, infoHwanggeuk.month, infoHwanggeuk.day);
+            // 항상 오늘(liveHwanggeuk) 기준 60갑자 시간표 표시
+            const ganziHours = get60GanziHours(liveHwanggeuk.year, liveHwanggeuk.month, liveHwanggeuk.day);
+            // 현재 시간에 해당하는 시진 인덱스 계산 (황극력: 23시 = 자시 시작)
+            const hour = currentTime.getHours();
+            const minute = currentTime.getMinutes();
+            // 23시부터 2시간 간격으로 12시진
+            // 23:00~01:00(0), 01:00~03:00(1), 03:00~05:00(2), 05:00~07:00(3), 07:00~09:00(4), 09:00~11:00(5) = 오전
+            // 11:00~13:00(6), 13:00~15:00(7), 15:00~17:00(8), 17:00~19:00(9), 19:00~21:00(10), 21:00~23:00(11) = 오후
+            let currentSlot = 0;
+            if (hour >= 23) {
+              currentSlot = 0; // 자시 오전 1번째
+            } else if (hour < 1) {
+              currentSlot = 0;
+            } else if (hour < 3) {
+              currentSlot = 1;
+            } else if (hour < 5) {
+              currentSlot = 2;
+            } else if (hour < 7) {
+              currentSlot = 3;
+            } else if (hour < 9) {
+              currentSlot = 4;
+            } else if (hour < 11) {
+              currentSlot = 5;
+            } else if (hour < 13) {
+              currentSlot = 6;
+            } else if (hour < 15) {
+              currentSlot = 7;
+            } else if (hour < 17) {
+              currentSlot = 8;
+            } else if (hour < 19) {
+              currentSlot = 9;
+            } else if (hour < 21) {
+              currentSlot = 10;
+            } else {
+              currentSlot = 11;
+            }
+            const isAm = currentSlot < 6;
+            const slotInRow = isAm ? currentSlot : currentSlot - 6;
+            
             return (
               <div className="space-y-1">
                 <div className="flex items-center justify-center gap-1 flex-wrap">
                   <span className="text-muted-foreground text-xs w-8">오전</span>
                   {ganziHours.am.map((h, i) => (
-                    <span key={`am-${i}`} className="px-1.5 py-0.5 text-xs border border-border bg-muted/30 rounded">{h}</span>
+                    <span 
+                      key={`am-${i}`} 
+                      className={`px-1.5 py-0.5 text-xs border rounded transition-all ${
+                        isAm && i === slotInRow 
+                          ? "border-yellow-500 bg-yellow-400/50 text-yellow-900 dark:text-yellow-100 font-bold" 
+                          : "border-border bg-muted/30"
+                      }`}
+                    >{h}</span>
                   ))}
                 </div>
                 <div className="flex items-center justify-center gap-1 flex-wrap">
                   <span className="text-muted-foreground text-xs w-8">오후</span>
                   {ganziHours.pm.map((h, i) => (
-                    <span key={`pm-${i}`} className="px-1.5 py-0.5 text-xs border border-border bg-muted/30 rounded">{h}</span>
+                    <span 
+                      key={`pm-${i}`} 
+                      className={`px-1.5 py-0.5 text-xs border rounded transition-all ${
+                        !isAm && i === slotInRow 
+                          ? "border-yellow-500 bg-yellow-400/50 text-yellow-900 dark:text-yellow-100 font-bold" 
+                          : "border-border bg-muted/30"
+                      }`}
+                    >{h}</span>
                   ))}
                 </div>
               </div>

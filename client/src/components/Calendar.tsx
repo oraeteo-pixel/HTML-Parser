@@ -31,7 +31,8 @@ import {
   getKoreanTime,
   CalendarDayData,
   WEEKDAYS_HANJA as WEEKDAYS_HANJA_DATA,
-  MANSION_GENERAL_IMAGES
+  MANSION_GENERAL_IMAGES,
+  HEXAGRAM_ORDER
 } from "@/lib/calendarData";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 
@@ -938,9 +939,11 @@ export function Calendar() {
                 if (!selectedHexagram) return "";
                 const interp = getHexagramInterpretation(selectedHexagram.sogung, selectedHexagram.daegung);
                 if (!interp) return "주역 풀이";
+                const key = `${selectedHexagram.sogung}-${selectedHexagram.daegung}`;
+                const orderNum = HEXAGRAM_ORDER[key] || 0;
                 return (
                   <div className="space-y-1">
-                    <div className="text-2xl font-bold">{interp.fullName}</div>
+                    <div className="text-2xl font-bold">{orderNum}. {interp.fullName}</div>
                     <div className="text-lg text-muted-foreground">({interp.korean})</div>
                   </div>
                 );
@@ -987,8 +990,8 @@ export function Calendar() {
                 {interp.wonmun && (
                   <div className="space-y-1">
                     <div className="text-sm font-medium text-muted-foreground">원문 (原文)</div>
-                    <div className="p-3 bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg">
-                      <pre className="text-xs leading-relaxed whitespace-pre-wrap font-serif">{interp.wonmun}</pre>
+                    <div className="p-4 bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg w-full max-w-none">
+                      <pre className="text-sm leading-relaxed whitespace-pre-wrap font-serif">{interp.wonmun}</pre>
                     </div>
                   </div>
                 )}

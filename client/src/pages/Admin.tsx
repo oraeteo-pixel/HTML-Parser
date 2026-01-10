@@ -77,7 +77,6 @@ export default function Admin() {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
   const [activeSection, setActiveSection] = useState<MenuSection>("dashboard");
-  const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   
   const [settings, setSettings] = useState<LogoSettings>(DEFAULT_SETTINGS);
@@ -86,7 +85,6 @@ export default function Admin() {
   const [selectedParentId, setSelectedParentId] = useState<number | null>(null);
   const [addingLevel, setAddingLevel] = useState<1 | 2 | 3>(1);
   const [editingPage, setEditingPage] = useState<PageContent | null>(null);
-  const [searchQuery, setSearchQuery] = useState("");
 
   const { data: savedSettings, isLoading: settingsLoading } = useQuery<Record<string, string>>({
     queryKey: ["/api/settings"],
@@ -253,90 +251,85 @@ export default function Admin() {
     { pageSlug: "28su", title: "28수" },
   ];
 
-  const filteredMenuItems = menuItems.filter(item => 
-    item.label.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const renderTopMenu = () => (
+    <div className="bg-slate-800 text-white">
+      <div className="flex items-center justify-between px-4 h-12">
+        <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2">
+            <Shield className="h-5 w-5 text-cyan-400" />
+            <span className="font-bold text-lg">관리자모드</span>
+          </div>
+          
+          <nav className="hidden md:flex items-center gap-1">
+            {menuItems.map((item) => {
+              const isActive = activeSection === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => setActiveSection(item.id)}
+                  className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
+                    isActive 
+                      ? 'bg-cyan-600 text-white' 
+                      : 'text-slate-300 hover:bg-slate-700 hover:text-white'
+                  }`}
+                  data-testid={`menu-${item.id}`}
+                >
+                  {item.label}
+                </button>
+              );
+            })}
+          </nav>
+        </div>
 
-  const renderSidebar = () => (
-    <div className={`bg-slate-800 text-white flex flex-col h-full ${sidebarOpen ? 'w-64' : 'w-16'} transition-all duration-300`}>
-      <div className="p-4 border-b border-slate-700">
-        <div className="flex items-center justify-between">
-          {sidebarOpen && (
-            <div className="flex items-center gap-2">
-              <Shield className="h-6 w-6 text-cyan-400" />
-              <span className="font-bold text-lg">관리자모드</span>
-            </div>
-          )}
+        <div className="flex items-center gap-2">
+          <Link href="/">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-slate-300 hover:bg-slate-700 hover:text-white"
+            >
+              <Home className="h-4 w-4 mr-1" />
+              <span className="hidden sm:inline">사이트로</span>
+            </Button>
+          </Link>
+          
           <Button
             size="icon"
             variant="ghost"
-            className="text-white hover:bg-slate-700"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="md:hidden text-white hover:bg-slate-700"
+            onClick={() => setMobileSidebarOpen(!mobileSidebarOpen)}
           >
-            {sidebarOpen ? <ChevronRight className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+            <Menu className="h-5 w-5" />
           </Button>
         </div>
       </div>
 
-      {sidebarOpen && (
-        <div className="p-3">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-            <Input
-              placeholder="메뉴 검색"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
-            />
+      {mobileSidebarOpen && (
+        <div className="md:hidden border-t border-slate-700 py-2 px-4">
+          <div className="flex flex-wrap gap-2">
+            {menuItems.map((item) => {
+              const isActive = activeSection === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    setActiveSection(item.id);
+                    setMobileSidebarOpen(false);
+                  }}
+                  className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
+                    isActive 
+                      ? 'bg-cyan-600 text-white' 
+                      : 'text-slate-300 hover:bg-slate-700 hover:text-white'
+                  }`}
+                  data-testid={`menu-mobile-${item.id}`}
+                >
+                  {item.label}
+                </button>
+              );
+            })}
           </div>
         </div>
       )}
-
-      <nav className="flex-1 overflow-y-auto p-2">
-        <div className="space-y-1">
-          {filteredMenuItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = activeSection === item.id;
-            return (
-              <button
-                key={item.id}
-                onClick={() => {
-                  setActiveSection(item.id);
-                  setMobileSidebarOpen(false);
-                }}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
-                  isActive 
-                    ? 'bg-cyan-600 text-white' 
-                    : 'text-slate-300 hover:bg-slate-700 hover:text-white'
-                }`}
-                data-testid={`menu-${item.id}`}
-              >
-                <Icon className="h-5 w-5 flex-shrink-0" />
-                {sidebarOpen && (
-                  <div className="flex-1 text-left">
-                    <div className="font-medium">{item.label}</div>
-                    {item.description && (
-                      <div className="text-xs opacity-70">{item.description}</div>
-                    )}
-                  </div>
-                )}
-              </button>
-            );
-          })}
-        </div>
-      </nav>
-
-      <div className="p-3 border-t border-slate-700">
-        <Link href="/">
-          <Button
-            variant="ghost"
-            className={`w-full text-slate-300 hover:bg-slate-700 hover:text-white ${sidebarOpen ? 'justify-start' : 'justify-center'}`}
-          >
-            <Home className="h-5 w-5" />
-            {sidebarOpen && <span className="ml-2">사이트로 돌아가기</span>}
-          </Button>
-        </Link>
-      </div>
     </div>
   );
 
@@ -1100,52 +1093,12 @@ export default function Admin() {
   };
 
   return (
-    <div className="min-h-screen flex bg-slate-100 dark:bg-slate-900">
-      <div className="hidden md:flex">
-        {renderSidebar()}
-      </div>
-
-      {mobileSidebarOpen && (
-        <div className="fixed inset-0 z-50 md:hidden">
-          <div className="fixed inset-0 bg-black/50" onClick={() => setMobileSidebarOpen(false)} />
-          <div className="fixed left-0 top-0 h-full w-64 z-50">
-            {renderSidebar()}
-          </div>
-        </div>
-      )}
-
-      <div className="flex-1 flex flex-col min-h-screen overflow-hidden">
-        <header className="bg-white dark:bg-slate-800 border-b px-4 py-3 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <Button
-              size="icon"
-              variant="ghost"
-              className="md:hidden"
-              onClick={() => setMobileSidebarOpen(true)}
-            >
-              <Menu className="h-5 w-5" />
-            </Button>
-            <div>
-              <h1 className="text-xl font-bold">관리자 모드</h1>
-              <p className="text-sm text-muted-foreground hidden sm:block">
-                {user?.firstName || user?.email}님 환영합니다
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Link href="/">
-              <Button variant="outline" size="sm">
-                <Home className="h-4 w-4 mr-1" />
-                <span className="hidden sm:inline">사이트로</span>
-              </Button>
-            </Link>
-          </div>
-        </header>
-
-        <main className="flex-1 overflow-y-auto p-4 md:p-6">
-          {renderContent()}
-        </main>
-      </div>
+    <div className="min-h-screen flex flex-col bg-slate-100 dark:bg-slate-900">
+      {renderTopMenu()}
+      
+      <main className="flex-1 overflow-y-auto p-4 md:p-6">
+        {renderContent()}
+      </main>
     </div>
   );
 }

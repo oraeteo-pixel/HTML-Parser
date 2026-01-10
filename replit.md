@@ -24,6 +24,11 @@ This is a Korean-language community calendar web application ("오리알터닷�
 - 황극력 = 새로운 문명 패러다임의 표현
 - 이 앱(오리알터닷컴)은 그 정수를 담아내는 것이 목표
 
+### 핵심 법칙 (가장 중요)
+- **황극력**: 황극력만의 고유한 법칙으로 계산 (사용자만 알고 있는 비밀 법칙)
+- **선천력(선천시)**: 기존 동양 시진 방식대로 계산
+- 두 역법은 완전히 별개의 체계이며, 각각의 법칙에 따라 독립적으로 운영됨
+
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.

@@ -230,12 +230,14 @@ export function Calendar() {
   const infoDay = infoDate.getDate();
 
   const infoHwanggeuk = useMemo(() => {
-    return getHwanggeukDate(infoYear, infoMonth, infoDay);
-  }, [infoYear, infoMonth, infoDay]);
+    // 23시 이후면 다음 황극력 날짜로 전환
+    return getHwanggeukDate(infoYear, infoMonth, infoDay, currentTime.getHours());
+  }, [infoYear, infoMonth, infoDay, currentTime]);
 
   const infoDayGanZhi = useMemo(() => {
-    return getDayGanZhi(infoYear, infoMonth, infoDay);
-  }, [infoYear, infoMonth, infoDay]);
+    // 황극력 기준 일진 사용
+    return getHwanggeukDayGanZhi(infoHwanggeuk.year, infoHwanggeuk.month, infoHwanggeuk.day);
+  }, [infoHwanggeuk]);
 
   const infoHourGanZhi = useMemo(() => {
     return getHwanggeukHourGanZhi(infoYear, infoMonth, infoDay, currentTime.getHours(), currentTime.getMinutes());

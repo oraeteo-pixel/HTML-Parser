@@ -50,29 +50,27 @@ for (let i = 0; i < 60; i++) {
 }
 
 // 특정 날짜의 60갑자 시간 계산 (오전 6개, 오후 6개)
-// 황극력 날짜 기준으로 계산 - 황극력 1월 1일 = 乙巳(41) 시작
+// 기준: 양력 2026년 1월 10일 = 乙巳(41) 시작
 function get60GanziHours(date: Date): { am: string[], pm: string[] } {
-  // 황극력 1월 1일의 양력 날짜를 구함 (해당 연도 기준)
-  const year = date.getFullYear();
-  const hwEpoch = hwanggeukToSolar(year >= 2026 ? year - 1988 : year - 1989 + 1, 1, 1);
-  const epochDate = new Date(hwEpoch.year, hwEpoch.month - 1, hwEpoch.day);
+  // 기준일: 양력 2026년 1월 10일 = 乙巳(41) 시작
+  const epochDate = new Date(2026, 0, 10);
   const targetDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
   
-  // 날짜 차이 계산 (황극력 1월 1일부터 몇 일째인지)
+  // 날짜 차이 계산
   const diffDays = Math.floor((targetDate.getTime() - epochDate.getTime()) / (1000 * 60 * 60 * 24));
   
-  // 하루에 12시간씩 진행, 황극력 1월 1일 오전 시작 = 乙巳(41)
-  const startIndex = (41 + diffDays * 12) % 60;
-  const adjustedStart = startIndex < 0 ? startIndex + 60 : startIndex;
+  // 하루에 12시간씩 진행, 기준일 오전 시작 = 乙巳(41)
+  let startIndex = (41 + diffDays * 12) % 60;
+  if (startIndex < 0) startIndex += 60;
   
   const am: string[] = [];
   const pm: string[] = [];
   
   for (let i = 0; i < 6; i++) {
-    am.push(GANZI_60[(adjustedStart + i) % 60]);
+    am.push(GANZI_60[(startIndex + i) % 60]);
   }
   for (let i = 6; i < 12; i++) {
-    pm.push(GANZI_60[(adjustedStart + i) % 60]);
+    pm.push(GANZI_60[(startIndex + i) % 60]);
   }
   
   return { am, pm };

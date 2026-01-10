@@ -877,33 +877,7 @@ export function Calendar() {
                   })()}
                 </div>
               </div>
-            ) : (
-              <div className="grid grid-cols-2 gap-3 text-fluid-sm">
-                <div className="info-card col-span-2">
-                  <div className="text-muted-foreground text-xs mb-1 uppercase tracking-wide">선천력 간지 (60갑자)</div>
-                  <div className="font-bold text-fluid-lg">
-                    {displayData.yearGanZhi}年 {displayData.monthGanZhi}月 {displayData.dayGanZhi}日
-                  </div>
-                </div>
-                <div className="info-card">
-                  <div className="text-muted-foreground text-xs mb-1 uppercase tracking-wide">양력 (陽曆)</div>
-                  <div className="font-bold text-fluid-base">
-                    {displayYear}年 {displayMonth}月 {displayDay}日
-                  </div>
-                </div>
-                <div className="info-card">
-                  <div className="text-muted-foreground text-xs mb-1 uppercase tracking-wide">음력 (陰曆)</div>
-                  <div className="font-bold text-fluid-base">
-                    {displayData.lunarYear}年 {displayData.lunarMonth}月 {displayData.lunarDay}日
-                    {displayData.isLeapMonth && <span className="text-xs ml-1">(閏)</span>}
-                  </div>
-                </div>
-                <div className="info-card col-span-2">
-                  <div className="text-muted-foreground text-xs mb-1 uppercase tracking-wide">절기 (節氣)</div>
-                  <div className="font-bold text-fluid-lg">{displayData.currentTerm.hanja} ({displayData.currentTerm.korean})</div>
-                </div>
-              </div>
-            )}
+            ) : null}
             <p className="text-xs text-muted-foreground">
               {CAL_DESCRIPTIONS[calType]}
             </p>

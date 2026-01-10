@@ -513,5 +513,136 @@ export async function registerRoutes(
     }
   });
 
+  // === Madang Categories Routes ===
+  
+  app.get("/api/admin/categories", async (req, res) => {
+    const categories = await storage.getMadangCategories();
+    res.json(categories);
+  });
+
+  app.post("/api/admin/categories", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      const user = await storage.getUser(userId);
+      if (!user || user.isAdmin !== 1) {
+        return res.status(403).json({ message: "관리자만 카테고리를 생성할 수 있습니다." });
+      }
+
+      const { name, slug, description, sortOrder, isActive } = req.body;
+      if (!name || !slug) {
+        return res.status(400).json({ message: "이름과 슬러그는 필수입니다." });
+      }
+
+      const category = await storage.createMadangCategory({ name, slug, description, sortOrder, isActive });
+      res.json(category);
+    } catch (err) {
+      console.error('Category create error:', err);
+      res.status(500).json({ message: "카테고리 생성 중 오류가 발생했습니다." });
+    }
+  });
+
+  app.put("/api/admin/categories/:id", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      const user = await storage.getUser(userId);
+      if (!user || user.isAdmin !== 1) {
+        return res.status(403).json({ message: "관리자만 카테고리를 수정할 수 있습니다." });
+      }
+
+      const id = parseInt(req.params.id);
+      const { name, slug, description, sortOrder, isActive } = req.body;
+      const category = await storage.updateMadangCategory(id, { name, slug, description, sortOrder, isActive });
+      if (!category) {
+        return res.status(404).json({ message: "카테고리를 찾을 수 없습니다." });
+      }
+      res.json(category);
+    } catch (err) {
+      console.error('Category update error:', err);
+      res.status(500).json({ message: "카테고리 수정 중 오류가 발생했습니다." });
+    }
+  });
+
+  app.delete("/api/admin/categories/:id", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      const user = await storage.getUser(userId);
+      if (!user || user.isAdmin !== 1) {
+        return res.status(403).json({ message: "관리자만 카테고리를 삭제할 수 있습니다." });
+      }
+
+      const id = parseInt(req.params.id);
+      await storage.deleteMadangCategory(id);
+      res.json({ success: true });
+    } catch (err) {
+      console.error('Category delete error:', err);
+      res.status(500).json({ message: "카테고리 삭제 중 오류가 발생했습니다." });
+    }
+  });
+
+  // === Page Contents Routes ===
+  
+  app.get("/api/admin/pages", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      const user = await storage.getUser(userId);
+      if (!user || user.isAdmin !== 1) {
+        return res.status(403).json({ message: "관리자만 접근할 수 있습니다." });
+      }
+
+      const pages = await storage.getPageContents();
+      res.json(pages);
+    } catch (err) {
+      console.error('Pages get error:', err);
+      res.status(500).json({ message: "페이지 목록 조회 중 오류가 발생했습니다." });
+    }
+  });
+
+  app.get("/api/admin/pages/:slug", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      const user = await storage.getUser(userId);
+      if (!user || user.isAdmin !== 1) {
+        return res.status(403).json({ message: "관리자만 접근할 수 있습니다." });
+      }
+
+      const page = await storage.getPageContent(req.params.slug);
+      if (!page) {
+        return res.status(404).json({ message: "페이지를 찾을 수 없습니다." });
+      }
+      res.json(page);
+    } catch (err) {
+      console.error('Page get error:', err);
+      res.status(500).json({ message: "페이지 조회 중 오류가 발생했습니다." });
+    }
+  });
+
+  app.post("/api/admin/pages", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      const user = await storage.getUser(userId);
+      if (!user || user.isAdmin !== 1) {
+        return res.status(403).json({ message: "관리자만 페이지를 수정할 수 있습니다." });
+      }
+
+      const { pageSlug, title, content, customCss, customJs } = req.body;
+      if (!pageSlug || !title) {
+        return res.status(400).json({ message: "페이지 슬러그와 제목은 필수입니다." });
+      }
+
+      const page = await storage.upsertPageContent({
+        pageSlug,
+        title,
+        content,
+        customCss,
+        customJs,
+        updatedBy: userId,
+      });
+      res.json(page);
+    } catch (err) {
+      console.error('Page save error:', err);
+      res.status(500).json({ message: "페이지 저장 중 오류가 발생했습니다." });
+    }
+  });
+
   return httpServer;
 }

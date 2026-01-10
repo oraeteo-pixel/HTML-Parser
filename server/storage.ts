@@ -1,7 +1,7 @@
-import { users, posts, comments, postVotes, messages, siteSettings, type User, type Post, type Comment, type PostVote, type Message, type SiteSetting } from "@shared/schema";
-import type { InsertPost, InsertComment, InsertPostVote, InsertMessage } from "@shared/schema";
+import { users, posts, comments, postVotes, messages, siteSettings, madangCategories, pageContents, type User, type Post, type Comment, type PostVote, type Message, type SiteSetting, type MadangCategory, type PageContent } from "@shared/schema";
+import type { InsertPost, InsertComment, InsertPostVote, InsertMessage, InsertMadangCategory, InsertPageContent } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, sql, and } from "drizzle-orm";
+import { eq, desc, sql, and, asc } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
@@ -33,6 +33,16 @@ export interface IStorage {
   getSiteSetting(key: string): Promise<SiteSetting | null>;
   setSiteSetting(key: string, value: string): Promise<SiteSetting>;
   getAllSiteSettings(): Promise<SiteSetting[]>;
+  
+  getMadangCategories(): Promise<MadangCategory[]>;
+  getMadangCategory(id: number): Promise<MadangCategory | null>;
+  createMadangCategory(category: InsertMadangCategory): Promise<MadangCategory>;
+  updateMadangCategory(id: number, data: Partial<InsertMadangCategory>): Promise<MadangCategory | null>;
+  deleteMadangCategory(id: number): Promise<boolean>;
+  
+  getPageContents(): Promise<PageContent[]>;
+  getPageContent(slug: string): Promise<PageContent | null>;
+  upsertPageContent(content: InsertPageContent): Promise<PageContent>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -357,6 +367,53 @@ export class DatabaseStorage implements IStorage {
 
   async getAllSiteSettings(): Promise<SiteSetting[]> {
     return await db.select().from(siteSettings);
+  }
+
+  async getMadangCategories(): Promise<MadangCategory[]> {
+    return await db.select().from(madangCategories).orderBy(asc(madangCategories.sortOrder));
+  }
+
+  async getMadangCategory(id: number): Promise<MadangCategory | null> {
+    const [category] = await db.select().from(madangCategories).where(eq(madangCategories.id, id));
+    return category || null;
+  }
+
+  async createMadangCategory(category: InsertMadangCategory): Promise<MadangCategory> {
+    const [newCategory] = await db.insert(madangCategories).values(category).returning();
+    return newCategory;
+  }
+
+  async updateMadangCategory(id: number, data: Partial<InsertMadangCategory>): Promise<MadangCategory | null> {
+    const [updated] = await db.update(madangCategories).set(data).where(eq(madangCategories.id, id)).returning();
+    return updated || null;
+  }
+
+  async deleteMadangCategory(id: number): Promise<boolean> {
+    const result = await db.delete(madangCategories).where(eq(madangCategories.id, id));
+    return true;
+  }
+
+  async getPageContents(): Promise<PageContent[]> {
+    return await db.select().from(pageContents);
+  }
+
+  async getPageContent(slug: string): Promise<PageContent | null> {
+    const [content] = await db.select().from(pageContents).where(eq(pageContents.pageSlug, slug));
+    return content || null;
+  }
+
+  async upsertPageContent(content: InsertPageContent): Promise<PageContent> {
+    const existing = await this.getPageContent(content.pageSlug);
+    if (existing) {
+      const [updated] = await db.update(pageContents)
+        .set({ ...content, updatedAt: new Date() })
+        .where(eq(pageContents.pageSlug, content.pageSlug))
+        .returning();
+      return updated;
+    } else {
+      const [newContent] = await db.insert(pageContents).values(content).returning();
+      return newContent;
+    }
   }
 }
 

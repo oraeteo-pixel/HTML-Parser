@@ -82,3 +82,34 @@ export const insertSiteSettingSchema = createInsertSchema(siteSettings).omit({ i
 
 export type SiteSetting = typeof siteSettings.$inferSelect;
 export type InsertSiteSetting = z.infer<typeof insertSiteSettingSchema>;
+
+export const madangCategories = pgTable("madang_categories", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  slug: text("slug").notNull().unique(),
+  description: text("description"),
+  sortOrder: integer("sort_order").default(0),
+  isActive: integer("is_active").default(1),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertMadangCategorySchema = createInsertSchema(madangCategories).omit({ id: true, createdAt: true });
+
+export type MadangCategory = typeof madangCategories.$inferSelect;
+export type InsertMadangCategory = z.infer<typeof insertMadangCategorySchema>;
+
+export const pageContents = pgTable("page_contents", {
+  id: serial("id").primaryKey(),
+  pageSlug: text("page_slug").notNull().unique(),
+  title: text("title").notNull(),
+  content: text("content"),
+  customCss: text("custom_css"),
+  customJs: text("custom_js"),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  updatedBy: varchar("updated_by").references(() => users.id),
+});
+
+export const insertPageContentSchema = createInsertSchema(pageContents).omit({ id: true, updatedAt: true });
+
+export type PageContent = typeof pageContents.$inferSelect;
+export type InsertPageContent = z.infer<typeof insertPageContentSchema>;

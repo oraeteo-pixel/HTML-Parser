@@ -1,7 +1,6 @@
 import { User, Star, BookOpen, CalendarDays, Users, LogOut, Loader2, Mail } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import logoImage from "@assets/image_1767628183426.png";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import {
@@ -57,12 +56,13 @@ export function Navigation() {
       <div className="max-w-[990px] mx-auto px-2">
         <div className="h-[56px] sm:h-[70px] flex items-center justify-between relative">
           <Link href="/calendar" className="flex items-center gap-1 hover:opacity-80 transition-opacity" data-testid="link-logo">
-            <img 
-              src={logoImage} 
-              alt="ORAE Logo" 
-              className="h-8 w-8 sm:h-10 sm:w-10"
-              style={{ filter: 'sepia(100%) saturate(300%) brightness(70%) hue-rotate(140deg)' }}
-            />
+            <div className="flex items-center gap-1">
+              <svg viewBox="0 0 40 40" className="h-8 w-8 sm:h-10 sm:w-10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M20 5 L35 30 L5 30 Z" fill="#0d7377" stroke="#0d7377" strokeWidth="1"/>
+                <path d="M15 20 L25 20 L20 12 Z" fill="white"/>
+              </svg>
+              <span className="text-base sm:text-lg font-bold" style={{ color: '#0d7377' }}>모약로</span>
+            </div>
           </Link>
 
           <div className="flex gap-2 sm:gap-4 items-end pb-1">

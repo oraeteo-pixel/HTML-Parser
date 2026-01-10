@@ -1084,7 +1084,7 @@ const NUMBER_TO_TRIGRAM: { [key: number]: { name: string; korean: string; elemen
 // 용담 팔괘: 2=坤, 3=坎, 4=兌, 5=震, 7=巽, 8=艮, 9=離, 10=乾
 const SIXTY_FOUR_HEXAGRAMS: { [key: string]: { hanja: string; korean: string; fullName: string } } = {
   // 坤 (2=地) 하괘
-  "2-2": { hanja: "坤", korean: "곤", fullName: "坤爲地" },
+  "2-2": { hanja: "重坤地", korean: "중곤지", fullName: "重坤地" },
   "2-3": { hanja: "比", korean: "비", fullName: "水地比" },
   "2-4": { hanja: "萃", korean: "췌", fullName: "澤地萃" },
   "2-5": { hanja: "豫", korean: "예", fullName: "雷地豫" },
@@ -1094,7 +1094,7 @@ const SIXTY_FOUR_HEXAGRAMS: { [key: string]: { hanja: string; korean: string; fu
   "2-10": { hanja: "否", korean: "비", fullName: "天地否" },
   // 坎 (3=水) 하괘
   "3-2": { hanja: "師", korean: "사", fullName: "地水師" },
-  "3-3": { hanja: "坎", korean: "감", fullName: "坎爲水" },
+  "3-3": { hanja: "重坎水", korean: "중감수", fullName: "重坎水" },
   "3-4": { hanja: "困", korean: "곤", fullName: "澤水困" },
   "3-5": { hanja: "解", korean: "해", fullName: "雷水解" },
   "3-7": { hanja: "渙", korean: "환", fullName: "風水渙" },
@@ -1104,7 +1104,7 @@ const SIXTY_FOUR_HEXAGRAMS: { [key: string]: { hanja: string; korean: string; fu
   // 兌 (4=澤) 하괘
   "4-2": { hanja: "臨", korean: "림", fullName: "地澤臨" },
   "4-3": { hanja: "節", korean: "절", fullName: "水澤節" },
-  "4-4": { hanja: "兌", korean: "태", fullName: "兌爲澤" },
+  "4-4": { hanja: "重兌澤", korean: "중태택", fullName: "重兌澤" },
   "4-5": { hanja: "歸妹", korean: "귀매", fullName: "雷澤歸妹" },
   "4-7": { hanja: "中孚", korean: "중부", fullName: "風澤中孚" },
   "4-8": { hanja: "損", korean: "손", fullName: "山澤損" },
@@ -1114,7 +1114,7 @@ const SIXTY_FOUR_HEXAGRAMS: { [key: string]: { hanja: string; korean: string; fu
   "5-2": { hanja: "復", korean: "복", fullName: "地雷復" },
   "5-3": { hanja: "屯", korean: "둔", fullName: "水雷屯" },
   "5-4": { hanja: "隨", korean: "수", fullName: "澤雷隨" },
-  "5-5": { hanja: "震", korean: "진", fullName: "震爲雷" },
+  "5-5": { hanja: "重震雷", korean: "중진뢰", fullName: "重震雷" },
   "5-7": { hanja: "益", korean: "익", fullName: "風雷益" },
   "5-8": { hanja: "頤", korean: "이", fullName: "山雷頤" },
   "5-9": { hanja: "噬嗑", korean: "서합", fullName: "火雷噬嗑" },
@@ -1124,7 +1124,7 @@ const SIXTY_FOUR_HEXAGRAMS: { [key: string]: { hanja: string; korean: string; fu
   "7-3": { hanja: "井", korean: "정", fullName: "水風井" },
   "7-4": { hanja: "大過", korean: "대과", fullName: "澤風大過" },
   "7-5": { hanja: "恒", korean: "항", fullName: "雷風恒" },
-  "7-7": { hanja: "巽", korean: "손", fullName: "巽爲風" },
+  "7-7": { hanja: "重巽風", korean: "중손풍", fullName: "重巽風" },
   "7-8": { hanja: "蠱", korean: "고", fullName: "山風蠱" },
   "7-9": { hanja: "鼎", korean: "정", fullName: "火風鼎" },
   "7-10": { hanja: "姤", korean: "구", fullName: "天風姤" },
@@ -1134,7 +1134,7 @@ const SIXTY_FOUR_HEXAGRAMS: { [key: string]: { hanja: string; korean: string; fu
   "8-4": { hanja: "咸", korean: "함", fullName: "澤山咸" },
   "8-5": { hanja: "小過", korean: "소과", fullName: "雷山小過" },
   "8-7": { hanja: "漸", korean: "점", fullName: "風山漸" },
-  "8-8": { hanja: "艮", korean: "간", fullName: "艮爲山" },
+  "8-8": { hanja: "重艮山", korean: "중간산", fullName: "重艮山" },
   "8-9": { hanja: "旅", korean: "려", fullName: "火山旅" },
   "8-10": { hanja: "遯", korean: "돈", fullName: "天山遯" },
   // 離 (9=火) 하괘
@@ -1144,7 +1144,7 @@ const SIXTY_FOUR_HEXAGRAMS: { [key: string]: { hanja: string; korean: string; fu
   "9-5": { hanja: "豐", korean: "풍", fullName: "雷火豐" },
   "9-7": { hanja: "家人", korean: "가인", fullName: "風火家人" },
   "9-8": { hanja: "賁", korean: "비", fullName: "山火賁" },
-  "9-9": { hanja: "離", korean: "리", fullName: "離爲火" },
+  "9-9": { hanja: "重離火", korean: "중리화", fullName: "重離火" },
   "9-10": { hanja: "同人", korean: "동인", fullName: "天火同人" },
   // 乾 (10=天) 하괘
   "10-2": { hanja: "泰", korean: "태", fullName: "地天泰" },
@@ -1154,7 +1154,7 @@ const SIXTY_FOUR_HEXAGRAMS: { [key: string]: { hanja: string; korean: string; fu
   "10-7": { hanja: "小畜", korean: "소축", fullName: "風天小畜" },
   "10-8": { hanja: "大畜", korean: "대축", fullName: "山天大畜" },
   "10-9": { hanja: "大有", korean: "대유", fullName: "火天大有" },
-  "10-10": { hanja: "乾", korean: "건", fullName: "乾爲天" }
+  "10-10": { hanja: "重乾天", korean: "중건천", fullName: "重乾天" }
 };
 
 // 중궁(6) 관련 괘 명칭 (용담 팔괘: 2=坤, 3=坎, 4=兌, 5=震, 6=中, 7=巽, 8=艮, 9=離, 10=乾)

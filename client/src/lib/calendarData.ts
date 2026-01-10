@@ -727,15 +727,16 @@ function calculateDaegungAndPosition(koreanTime: Date): { daegung: number; sogun
   const minutes = koreanTime.getMinutes();
   const totalMinutesOfDay = hours * 60 + minutes;
   
+  // 양력 날짜를 황극력으로 변환
   const year = koreanTime.getFullYear();
-  const yearStart = new Date(year, 0, 1);
-  
-  // 연중 일자 (1-indexed)
-  let dayOfYear = Math.floor((koreanTime.getTime() - yearStart.getTime()) / (24 * 60 * 60 * 1000)) + 1;
+  const month = koreanTime.getMonth() + 1;
+  const day = koreanTime.getDate();
   
   // 슬롯 인덱스 계산 (시간 기반)
   let slotIndex: number;
-  let adjustedDayOfYear = dayOfYear;
+  let adjustedYear = year;
+  let adjustedMonth = month;
+  let adjustedDay = day;
   
   if (totalMinutesOfDay < 20) {
     // 0:00~0:20 = 해당 날짜의 슬롯 0
@@ -756,16 +757,28 @@ function calculateDaegungAndPosition(koreanTime: Date): { daegung: number; sogun
     // 23:00~24:00 = 다음 날의 슬롯 0
     if (totalMinutesOfDay >= 1380) {
       slotIndex = 0;
-      adjustedDayOfYear = dayOfYear + 1;
-      if (adjustedDayOfYear > 366) adjustedDayOfYear = 1;
+      // 다음 날로 조정
+      const nextDay = new Date(year, month - 1, day + 1);
+      adjustedYear = nextDay.getFullYear();
+      adjustedMonth = nextDay.getMonth() + 1;
+      adjustedDay = nextDay.getDate();
     }
+  }
+  
+  // 양력 → 황극력 변환
+  const hwDate = getHwanggeukDate(adjustedYear, adjustedMonth, adjustedDay);
+  
+  // 황극력 연중 일자 계산 (1-indexed)
+  let hwDayOfYear = hwDate.day;
+  for (let m = 0; m < hwDate.month - 1; m++) {
+    hwDayOfYear += HW_MONTH_DAYS[m];
   }
   
   // AM/PM 결정
   const isAM = slotIndex >= 1 && slotIndex <= 8;
   
-  // 황극력 데이터에서 소궁/대궁 조회
-  const dayIndex = Math.min(adjustedDayOfYear - 1, 365);
+  // 황극력 데이터에서 소궁/대궁 조회 (dayIndex = 황극력 연중 일자 - 1)
+  const dayIndex = Math.min(hwDayOfYear - 1, 365);
   const dayData = (hwanggeukData as number[][][])[dayIndex];
   
   let sogung = 6;
@@ -780,7 +793,7 @@ function calculateDaegungAndPosition(koreanTime: Date): { daegung: number; sogun
   const amFirstSlot = dayData ? dayData[1] : [6, 6];
   const position = amFirstSlot[0] || 6;
   
-  const halfDayOfYear = (adjustedDayOfYear - 1) * 2 + (isAM ? 0 : 1);
+  const halfDayOfYear = (hwDayOfYear - 1) * 2 + (isAM ? 0 : 1);
   const totalSlots = dayIndex * 18 + slotIndex;
   const slotInHalfDay = isAM ? slotIndex - 1 : slotIndex - 9;
   const yValue = position;

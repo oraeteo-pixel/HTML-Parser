@@ -722,7 +722,7 @@ export function Calendar() {
           <div className="flex items-center justify-between mb-3">
             <h3 className="font-bold text-lg ganji-title">
               {calType === "hw" ? (
-                `${displayData.hwanggeuk.yearGanZhi}年 ${displayData.hwanggeuk.monthGanZhi}月 ${displayData.dayGanZhi}日 ${hwHourGanZhi}時`
+                `${infoHwanggeuk.yearGanZhi}年 ${infoHwanggeuk.monthGanZhi}月 ${infoDayGanZhi}日 ${infoHourGanZhi}時`
               ) : (
                 `${displayYear}년 ${displayMonth}월 ${displayDay}일 (${WEEKDAYS[displayDate.getDay()]}요일)`
               )}

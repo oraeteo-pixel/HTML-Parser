@@ -85,6 +85,8 @@ export type InsertSiteSetting = z.infer<typeof insertSiteSettingSchema>;
 
 export const madangCategories = pgTable("madang_categories", {
   id: serial("id").primaryKey(),
+  parentId: integer("parent_id"),
+  level: integer("level").default(1), // 1: 카테고리, 2: 서브카테고리, 3: 서브서브카테고리
   name: text("name").notNull(),
   slug: text("slug").notNull().unique(),
   description: text("description"),

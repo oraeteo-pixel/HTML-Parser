@@ -37,7 +37,9 @@ export default function Admin() {
   
   const [settings, setSettings] = useState<LogoSettings>(DEFAULT_SETTINGS);
   const [editingCategory, setEditingCategory] = useState<MadangCategory | null>(null);
-  const [newCategory, setNewCategory] = useState({ name: "", slug: "", description: "" });
+  const [newCategory, setNewCategory] = useState({ name: "", slug: "", description: "", parentId: null as number | null, level: 1 });
+  const [selectedParentId, setSelectedParentId] = useState<number | null>(null);
+  const [addingLevel, setAddingLevel] = useState<1 | 2 | 3>(1);
   const [editingPage, setEditingPage] = useState<PageContent | null>(null);
 
   const { data: savedSettings, isLoading: settingsLoading } = useQuery<Record<string, string>>({
@@ -75,12 +77,14 @@ export default function Admin() {
   });
 
   const createCategoryMutation = useMutation({
-    mutationFn: async (data: { name: string; slug: string; description: string }) => {
+    mutationFn: async (data: { name: string; slug: string; description: string; parentId?: number | null; level?: number }) => {
       return apiRequest("POST", "/api/admin/categories", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/categories"] });
-      setNewCategory({ name: "", slug: "", description: "" });
+      setNewCategory({ name: "", slug: "", description: "", parentId: null, level: 1 });
+      setSelectedParentId(null);
+      setAddingLevel(1);
       toast({ title: "카테고리 생성 완료" });
     },
   });
@@ -324,11 +328,61 @@ export default function Admin() {
             <Card>
               <CardHeader>
                 <CardTitle>마당 카테고리 관리</CardTitle>
-                <CardDescription>마당 게시판의 카테고리를 관리합니다.</CardDescription>
+                <CardDescription>마당 게시판의 카테고리를 관리합니다. (카테고리 → 서브 → 서브서브)</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="border rounded-md p-4 space-y-4">
-                  <h3 className="font-medium">새 카테고리 추가</h3>
+                  <div className="flex items-center gap-4 flex-wrap">
+                    <h3 className="font-medium">새 카테고리 추가</h3>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant={addingLevel === 1 ? "default" : "outline"}
+                        onClick={() => { setAddingLevel(1); setSelectedParentId(null); setNewCategory({ ...newCategory, parentId: null, level: 1 }); }}
+                      >
+                        카테고리
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant={addingLevel === 2 ? "default" : "outline"}
+                        onClick={() => { setAddingLevel(2); setNewCategory({ ...newCategory, level: 2 }); }}
+                      >
+                        서브
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant={addingLevel === 3 ? "default" : "outline"}
+                        onClick={() => { setAddingLevel(3); setNewCategory({ ...newCategory, level: 3 }); }}
+                      >
+                        서브서브
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  {addingLevel >= 2 && (
+                    <div className="space-y-2">
+                      <Label>상위 카테고리 선택</Label>
+                      <select
+                        className="w-full h-10 px-3 rounded-md border border-input bg-background"
+                        value={selectedParentId || ""}
+                        onChange={(e) => {
+                          const pid = e.target.value ? Number(e.target.value) : null;
+                          setSelectedParentId(pid);
+                          setNewCategory({ ...newCategory, parentId: pid });
+                        }}
+                      >
+                        <option value="">선택하세요</option>
+                        {addingLevel === 2 && categories?.filter(c => c.level === 1).map(c => (
+                          <option key={c.id} value={c.id}>{c.name}</option>
+                        ))}
+                        {addingLevel === 3 && categories?.filter(c => c.level === 2).map(c => {
+                          const parent = categories?.find(p => p.id === c.parentId);
+                          return <option key={c.id} value={c.id}>{parent?.name} → {c.name}</option>;
+                        })}
+                      </select>
+                    </div>
+                  )}
+                  
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <Input
                       placeholder="카테고리 이름"
@@ -350,12 +404,16 @@ export default function Admin() {
                     />
                   </div>
                   <Button
-                    onClick={() => createCategoryMutation.mutate(newCategory)}
-                    disabled={!newCategory.name || !newCategory.slug || createCategoryMutation.isPending}
+                    onClick={() => createCategoryMutation.mutate({
+                      ...newCategory,
+                      parentId: selectedParentId,
+                      level: addingLevel,
+                    })}
+                    disabled={!newCategory.name || !newCategory.slug || (addingLevel >= 2 && !selectedParentId) || createCategoryMutation.isPending}
                     data-testid="button-add-category"
                   >
                     <Plus className="h-4 w-4 mr-2" />
-                    추가
+                    {addingLevel === 1 ? "카테고리" : addingLevel === 2 ? "서브카테고리" : "서브서브카테고리"} 추가
                   </Button>
                 </div>
 
@@ -368,56 +426,103 @@ export default function Admin() {
                   ) : categories?.length === 0 ? (
                     <p className="text-muted-foreground text-center py-4">카테고리가 없습니다.</p>
                   ) : (
-                    <div className="space-y-2">
-                      {categories?.map((cat) => (
-                        <div key={cat.id} className="flex items-center justify-between p-3 border rounded-md" data-testid={`category-item-${cat.id}`}>
-                          {editingCategory?.id === cat.id ? (
-                            <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-2 mr-2">
-                              <Input
-                                value={editingCategory.name}
-                                onChange={(e) => setEditingCategory({ ...editingCategory, name: e.target.value })}
-                              />
-                              <Input
-                                value={editingCategory.slug}
-                                onChange={(e) => setEditingCategory({ ...editingCategory, slug: e.target.value })}
-                              />
-                              <Input
-                                value={editingCategory.description || ""}
-                                onChange={(e) => setEditingCategory({ ...editingCategory, description: e.target.value })}
-                              />
-                            </div>
-                          ) : (
-                            <div className="flex-1">
-                              <span className="font-medium">{cat.name}</span>
-                              <span className="text-muted-foreground ml-2">({cat.slug})</span>
-                              {cat.description && <span className="text-sm text-muted-foreground ml-2">- {cat.description}</span>}
-                            </div>
-                          )}
-                          <div className="flex items-center gap-2">
-                            <Switch
-                              checked={cat.isActive === 1}
-                              onCheckedChange={(checked) => updateCategoryMutation.mutate({ ...cat, isActive: checked ? 1 : 0 })}
-                            />
-                            {editingCategory?.id === cat.id ? (
-                              <>
-                                <Button size="sm" onClick={() => updateCategoryMutation.mutate(editingCategory)}>
-                                  <Save className="h-4 w-4" />
-                                </Button>
-                                <Button size="sm" variant="ghost" onClick={() => setEditingCategory(null)}>
-                                  취소
-                                </Button>
-                              </>
+                    <div className="space-y-1">
+                      {categories?.filter(c => c.level === 1 || !c.level).map((cat1) => (
+                        <div key={cat1.id} className="border rounded-md overflow-hidden" data-testid={`category-item-${cat1.id}`}>
+                          <div className="flex items-center justify-between p-3 bg-muted/30">
+                            {editingCategory?.id === cat1.id ? (
+                              <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-2 mr-2">
+                                <Input value={editingCategory.name} onChange={(e) => setEditingCategory({ ...editingCategory, name: e.target.value })} />
+                                <Input value={editingCategory.slug} onChange={(e) => setEditingCategory({ ...editingCategory, slug: e.target.value })} />
+                                <Input value={editingCategory.description || ""} onChange={(e) => setEditingCategory({ ...editingCategory, description: e.target.value })} />
+                              </div>
                             ) : (
-                              <>
-                                <Button size="icon" variant="ghost" onClick={() => setEditingCategory(cat)}>
-                                  <Edit className="h-4 w-4" />
-                                </Button>
-                                <Button size="icon" variant="ghost" onClick={() => deleteCategoryMutation.mutate(cat.id)}>
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
-                              </>
+                              <div className="flex-1">
+                                <span className="font-medium">{cat1.name}</span>
+                                <span className="text-muted-foreground ml-2 text-sm">({cat1.slug})</span>
+                              </div>
                             )}
+                            <div className="flex items-center gap-2">
+                              <Switch checked={cat1.isActive === 1} onCheckedChange={(checked) => updateCategoryMutation.mutate({ ...cat1, isActive: checked ? 1 : 0 })} />
+                              {editingCategory?.id === cat1.id ? (
+                                <>
+                                  <Button size="sm" onClick={() => updateCategoryMutation.mutate(editingCategory)}><Save className="h-4 w-4" /></Button>
+                                  <Button size="sm" variant="ghost" onClick={() => setEditingCategory(null)}>취소</Button>
+                                </>
+                              ) : (
+                                <>
+                                  <Button size="icon" variant="ghost" onClick={() => setEditingCategory(cat1)}><Edit className="h-4 w-4" /></Button>
+                                  <Button size="icon" variant="ghost" onClick={() => deleteCategoryMutation.mutate(cat1.id)}><Trash2 className="h-4 w-4" /></Button>
+                                </>
+                              )}
+                            </div>
                           </div>
+                          
+                          {categories?.filter(c => c.level === 2 && c.parentId === cat1.id).map((cat2) => (
+                            <div key={cat2.id} className="border-t">
+                              <div className="flex items-center justify-between p-3 pl-8 bg-muted/10">
+                                {editingCategory?.id === cat2.id ? (
+                                  <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-2 mr-2">
+                                    <Input value={editingCategory.name} onChange={(e) => setEditingCategory({ ...editingCategory, name: e.target.value })} />
+                                    <Input value={editingCategory.slug} onChange={(e) => setEditingCategory({ ...editingCategory, slug: e.target.value })} />
+                                    <Input value={editingCategory.description || ""} onChange={(e) => setEditingCategory({ ...editingCategory, description: e.target.value })} />
+                                  </div>
+                                ) : (
+                                  <div className="flex-1">
+                                    <span className="text-muted-foreground mr-2">└</span>
+                                    <span className="font-medium">{cat2.name}</span>
+                                    <span className="text-muted-foreground ml-2 text-sm">({cat2.slug})</span>
+                                  </div>
+                                )}
+                                <div className="flex items-center gap-2">
+                                  <Switch checked={cat2.isActive === 1} onCheckedChange={(checked) => updateCategoryMutation.mutate({ ...cat2, isActive: checked ? 1 : 0 })} />
+                                  {editingCategory?.id === cat2.id ? (
+                                    <>
+                                      <Button size="sm" onClick={() => updateCategoryMutation.mutate(editingCategory)}><Save className="h-4 w-4" /></Button>
+                                      <Button size="sm" variant="ghost" onClick={() => setEditingCategory(null)}>취소</Button>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Button size="icon" variant="ghost" onClick={() => setEditingCategory(cat2)}><Edit className="h-4 w-4" /></Button>
+                                      <Button size="icon" variant="ghost" onClick={() => deleteCategoryMutation.mutate(cat2.id)}><Trash2 className="h-4 w-4" /></Button>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+                              
+                              {categories?.filter(c => c.level === 3 && c.parentId === cat2.id).map((cat3) => (
+                                <div key={cat3.id} className="flex items-center justify-between p-3 pl-14 border-t">
+                                  {editingCategory?.id === cat3.id ? (
+                                    <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-2 mr-2">
+                                      <Input value={editingCategory.name} onChange={(e) => setEditingCategory({ ...editingCategory, name: e.target.value })} />
+                                      <Input value={editingCategory.slug} onChange={(e) => setEditingCategory({ ...editingCategory, slug: e.target.value })} />
+                                      <Input value={editingCategory.description || ""} onChange={(e) => setEditingCategory({ ...editingCategory, description: e.target.value })} />
+                                    </div>
+                                  ) : (
+                                    <div className="flex-1">
+                                      <span className="text-muted-foreground mr-2">└─</span>
+                                      <span>{cat3.name}</span>
+                                      <span className="text-muted-foreground ml-2 text-sm">({cat3.slug})</span>
+                                    </div>
+                                  )}
+                                  <div className="flex items-center gap-2">
+                                    <Switch checked={cat3.isActive === 1} onCheckedChange={(checked) => updateCategoryMutation.mutate({ ...cat3, isActive: checked ? 1 : 0 })} />
+                                    {editingCategory?.id === cat3.id ? (
+                                      <>
+                                        <Button size="sm" onClick={() => updateCategoryMutation.mutate(editingCategory)}><Save className="h-4 w-4" /></Button>
+                                        <Button size="sm" variant="ghost" onClick={() => setEditingCategory(null)}>취소</Button>
+                                      </>
+                                    ) : (
+                                      <>
+                                        <Button size="icon" variant="ghost" onClick={() => setEditingCategory(cat3)}><Edit className="h-4 w-4" /></Button>
+                                        <Button size="icon" variant="ghost" onClick={() => deleteCategoryMutation.mutate(cat3.id)}><Trash2 className="h-4 w-4" /></Button>
+                                      </>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          ))}
                         </div>
                       ))}
                     </div>

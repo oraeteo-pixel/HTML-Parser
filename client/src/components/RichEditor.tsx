@@ -42,6 +42,7 @@ export interface TextStyle {
   fontFamily: string;
   fontSize: string;
   lineHeight: string;
+  fontWeight: string;
 }
 
 interface RichEditorProps {
@@ -86,10 +87,19 @@ const LINE_HEIGHT_OPTIONS = [
   { value: "2.0", label: "매우넓게" },
 ];
 
+const FONT_WEIGHT_OPTIONS = [
+  { value: "300", label: "가늘게" },
+  { value: "400", label: "보통" },
+  { value: "500", label: "중간" },
+  { value: "600", label: "굵게" },
+  { value: "700", label: "매우굵게" },
+];
+
 const DEFAULT_TEXT_STYLE: TextStyle = {
   fontFamily: "noto-sans",
   fontSize: "16px",
   lineHeight: "1.5",
+  fontWeight: "400",
 };
 
 function extractYoutubeId(url: string): string | null {
@@ -315,6 +325,7 @@ export function RichEditor({
               fontFamily: getFontFamilyCSS(currentStyle.fontFamily),
               fontSize: currentStyle.fontSize,
               lineHeight: currentStyle.lineHeight,
+              fontWeight: currentStyle.fontWeight,
             }}
             data-testid="textarea-content"
           />
@@ -545,6 +556,23 @@ export function RichEditor({
                     {LINE_HEIGHT_OPTIONS.map((lh) => (
                       <SelectItem key={lh.value} value={lh.value}>
                         {lh.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                
+                <Select
+                  value={currentStyle.fontWeight}
+                  onValueChange={(value) => handleStyleChange("fontWeight", value)}
+                >
+                  <SelectTrigger className="w-[80px] h-8 text-xs" data-testid="select-font-weight">
+                    <span className="font-bold mr-1">B</span>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {FONT_WEIGHT_OPTIONS.map((fw) => (
+                      <SelectItem key={fw.value} value={fw.value}>
+                        {fw.label}
                       </SelectItem>
                     ))}
                   </SelectContent>

@@ -436,7 +436,7 @@ export default function Madang() {
   const [content, setContent] = useState("");
   const [ganji, setGanji] = useState(ganjiFromUrl || todayGanji);
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
-  const [textStyle, setTextStyle] = useState<TextStyle>({ fontFamily: "noto-sans", fontSize: "16px", lineHeight: "1.5" });
+  const [textStyle, setTextStyle] = useState<TextStyle>({ fontFamily: "noto-sans", fontSize: "16px", lineHeight: "1.5", fontWeight: "400" });
   const [expandedPost, setExpandedPost] = useState<number | null>(null);
   const [filterGanji, setFilterGanji] = useState<string | null>(null);
   const [filterAuthor, setFilterAuthor] = useState<string | null>(null);
@@ -493,7 +493,7 @@ export default function Madang() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/posts/section/madang"] });
       setTitle("");
-      setTextStyle({ fontFamily: "noto-sans", fontSize: "16px", lineHeight: "1.5" });
+      setTextStyle({ fontFamily: "noto-sans", fontSize: "16px", lineHeight: "1.5", fontWeight: "400" });
       setContent("");
       setGanji(todayGanji);
       setMediaItems([]);
@@ -929,6 +929,7 @@ export default function Madang() {
                                         fontFamily: getFontFamilyCSS(textStyle.fontFamily),
                                         fontSize: textStyle.fontSize,
                                         lineHeight: textStyle.lineHeight,
+                                        fontWeight: textStyle.fontWeight,
                                       };
                                     }
                                   } catch (e) {}

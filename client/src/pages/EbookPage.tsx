@@ -266,10 +266,16 @@ export default function EbookPage() {
                 <p className="text-sm text-muted-foreground">오리알터닷컴 전자책 컬렉션</p>
               </div>
             </div>
-            {user && !showEditor && (
+            {!showEditor && (
               <Button
                 size="icon"
-                onClick={() => setShowEditor(true)}
+                onClick={() => {
+                  if (!user) {
+                    toast({ title: "로그인이 필요합니다.", description: "전자책을 등록하려면 로그인해 주세요." });
+                    return;
+                  }
+                  setShowEditor(true);
+                }}
                 data-testid="button-write-ebook"
               >
                 <Pencil className="h-5 w-5" />

@@ -204,33 +204,37 @@ function CommentSection({ postId, user }: { postId: number; user: any }) {
                   <MediaDisplay items={media} />
                 </div>
               )}
-              {user && (
-                <div className="flex gap-1 mt-2 flex-wrap">
-                  {depth < maxDepth && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => { setReplyingTo(isReplying ? null : comment.id); setReplyText(""); setReplyMedia([]); }}
-                      data-testid={`button-reply-${comment.id}`}
-                    >
-                      <Reply className="h-3 w-3 mr-1" />
-                      답글
+              <div className="flex gap-1 mt-2 flex-wrap">
+                {depth < maxDepth && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      if (!user) {
+                        toast({ title: "로그인이 필요합니다.", description: "답글을 작성하려면 로그인해 주세요." });
+                        return;
+                      }
+                      setReplyingTo(isReplying ? null : comment.id); setReplyText(""); setReplyMedia([]);
+                    }}
+                    data-testid={`button-reply-${comment.id}`}
+                  >
+                    <Reply className="h-3 w-3 mr-1" />
+                    답글
+                  </Button>
+                )}
+                {canEditDelete(comment) && (
+                  <>
+                    <Button variant="ghost" size="sm" onClick={() => startEdit(comment)} data-testid={`button-edit-comment-${comment.id}`}>
+                      <Pencil className="h-3 w-3 mr-1" />
+                      수정
                     </Button>
-                  )}
-                  {canEditDelete(comment) && (
-                    <>
-                      <Button variant="ghost" size="sm" onClick={() => startEdit(comment)} data-testid={`button-edit-comment-${comment.id}`}>
-                        <Pencil className="h-3 w-3 mr-1" />
-                        수정
-                      </Button>
-                      <Button variant="ghost" size="sm" onClick={() => handleDelete(comment)} disabled={deleteComment.isPending} data-testid={`button-delete-comment-${comment.id}`}>
-                        <Trash2 className="h-3 w-3 mr-1" />
-                        삭제
-                      </Button>
-                    </>
-                  )}
-                </div>
-              )}
+                    <Button variant="ghost" size="sm" onClick={() => handleDelete(comment)} disabled={deleteComment.isPending} data-testid={`button-delete-comment-${comment.id}`}>
+                      <Trash2 className="h-3 w-3 mr-1" />
+                      삭제
+                    </Button>
+                  </>
+                )}
+              </div>
             </>
           )}
         </div>
@@ -279,18 +283,24 @@ function CommentSection({ postId, user }: { postId: number; user: any }) {
         <p className="text-muted-foreground mb-4">아직 답글이 없습니다.</p>
       )}
       
-      {user && !showRootEditor && (
+      {!showRootEditor && (
         <Button
           variant="outline"
           size="sm"
-          onClick={() => setShowRootEditor(true)}
+          onClick={() => {
+            if (!user) {
+              toast({ title: "로그인이 필요합니다.", description: "답글을 작성하려면 로그인해 주세요." });
+              return;
+            }
+            setShowRootEditor(true);
+          }}
           data-testid={`button-new-comment-${postId}`}
         >
           <Reply className="h-3 w-3 mr-1" />
           답글 작성
         </Button>
       )}
-      {user && showRootEditor && (
+      {showRootEditor && user && (
         <div className="space-y-2 mt-2">
           <RichEditor
             content={commentText}
@@ -314,9 +324,6 @@ function CommentSection({ postId, user }: { postId: number; user: any }) {
             </Button>
           </div>
         </div>
-      )}
-      {!user && (
-        <p className="text-muted-foreground">답글을 작성하려면 로그인해 주세요.</p>
       )}
     </div>
   );
@@ -606,10 +613,14 @@ export default function Madang() {
                 <p className="text-sm text-muted-foreground">오리알터닷컴 커뮤니티</p>
               </div>
             </div>
-            {user && !showEditor && (
+            {!showEditor && (
               <Button
                 size="icon"
                 onClick={() => {
+                  if (!user) {
+                    toast({ title: "로그인이 필요합니다.", description: "글을 작성하려면 로그인해 주세요." });
+                    return;
+                  }
                   setGanji(todayGanji);
                   setShowEditor(true);
                 }}

@@ -693,13 +693,34 @@ export function getJeolguk(hwYear: number, hwMonth: number, hwDay: number): {
 // 황극력 366일 데이터 (구궁도2.xlsx에서 추출)
 // 형식: hwanggeukData[dayIndex][slotIndex] = [sogung, daegung]
 // dayIndex: 0-365 (1월 1일 = 0)
-// slotIndex: 0-17 (AM 0-8, PM 9-17)
+// slotIndex: 0-17 (18개 슬롯/일, 80분 간격)
 import hwanggeukData from './hwanggeukData.json';
 
-// 구궁도2.xlsx 기반 소궁/대궁 계산
-// 핵심: 황극력은 매년 366일 동일한 패턴 반복
-// AM/PM 경계: 00:20 KST
-// 슬롯: 80분 간격, AM 9개 + PM 9개 = 18개/일
+// 슬롯 시작 시간 (분 단위) - 구궁도2.xlsx 헤더 기반
+// 슬롯 0 (0시20까지): 23:00 전날 ~ 0:20 당일
+// 슬롯 1-8: 0:20 ~ 11:00 (AM)
+// 슬롯 9-17: 11:00 ~ 23:00 (PM)
+const SLOT_START_MINUTES = [
+  -60,   // 슬롯 0: 23:00 (전날, -60으로 표현)
+  20,    // 슬롯 1: 0:20
+  100,   // 슬롯 2: 1:40
+  180,   // 슬롯 3: 3:00
+  260,   // 슬롯 4: 4:20
+  340,   // 슬롯 5: 5:40
+  420,   // 슬롯 6: 7:00
+  500,   // 슬롯 7: 8:20
+  580,   // 슬롯 8: 9:40
+  660,   // 슬롯 9: 11:00
+  740,   // 슬롯 10: 12:20
+  820,   // 슬롯 11: 13:40
+  900,   // 슬롯 12: 15:00
+  980,   // 슬롯 13: 16:20
+  1060,  // 슬롯 14: 17:40
+  1140,  // 슬롯 15: 19:00
+  1220,  // 슬롯 16: 20:20
+  1300,  // 슬롯 17: 21:40
+  1380,  // 다음 슬롯 0 시작 (23:00)
+];
 
 function calculateDaegungAndPosition(koreanTime: Date): { daegung: number; sogung: number; position: number; yValue: number; halfDayOfYear: number; totalSlots: number; slotInHalfDay: number } {
   const hours = koreanTime.getHours();
@@ -712,34 +733,36 @@ function calculateDaegungAndPosition(koreanTime: Date): { daegung: number; sogun
   // 연중 일자 (1-indexed)
   let dayOfYear = Math.floor((koreanTime.getTime() - yearStart.getTime()) / (24 * 60 * 60 * 1000)) + 1;
   
-  // AM/PM 결정 (00:20 기준)
-  let isAM: boolean;
+  // 슬롯 인덱스 계산 (시간 기반)
+  let slotIndex: number;
   let adjustedDayOfYear = dayOfYear;
   
   if (totalMinutesOfDay < 20) {
-    isAM = false;
-    adjustedDayOfYear = dayOfYear - 1;
-    if (adjustedDayOfYear < 1) adjustedDayOfYear = 365;
-  } else if (totalMinutesOfDay < 12 * 60 + 20) {
-    isAM = true;
+    // 0:00~0:20 = 해당 날짜의 슬롯 0
+    slotIndex = 0;
   } else {
-    isAM = false;
+    // 0:20 이후: 슬롯 1-17 중 하나
+    slotIndex = 0;
+    for (let i = 1; i < 18; i++) {
+      if (totalMinutesOfDay >= SLOT_START_MINUTES[i] && totalMinutesOfDay < SLOT_START_MINUTES[i + 1]) {
+        slotIndex = i;
+        break;
+      }
+    }
+    // 21:40~23:00 = 슬롯 17
+    if (totalMinutesOfDay >= 1300 && totalMinutesOfDay < 1380) {
+      slotIndex = 17;
+    }
+    // 23:00~24:00 = 다음 날의 슬롯 0
+    if (totalMinutesOfDay >= 1380) {
+      slotIndex = 0;
+      adjustedDayOfYear = dayOfYear + 1;
+      if (adjustedDayOfYear > 366) adjustedDayOfYear = 1;
+    }
   }
   
-  // 슬롯 내 위치 계산 (80분 간격, 0-8)
-  let slotStartMinutes = isAM ? 20 : 12 * 60 + 20;
-  let effectiveMinutes = totalMinutesOfDay;
-  
-  if (totalMinutesOfDay < 20) {
-    effectiveMinutes = 23 * 60 + (totalMinutesOfDay + 60);
-    slotStartMinutes = 12 * 60 + 20;
-  }
-  
-  const minutesIntoHalfDay = effectiveMinutes - slotStartMinutes;
-  const slotInHalfDay = Math.max(0, Math.min(8, Math.floor(minutesIntoHalfDay / 80)));
-  
-  // 전체 슬롯 인덱스 (0-17)
-  const slotIndex = isAM ? slotInHalfDay : 9 + slotInHalfDay;
+  // AM/PM 결정
+  const isAM = slotIndex >= 1 && slotIndex <= 8;
   
   // 황극력 데이터에서 소궁/대궁 조회
   const dayIndex = Math.min(adjustedDayOfYear - 1, 365);
@@ -753,12 +776,13 @@ function calculateDaegungAndPosition(koreanTime: Date): { daegung: number; sogun
     daegung = dayData[slotIndex][1] || 6;
   }
   
-  // Position 계산: 대궁 변화 패턴에서 추출 (AM 첫 슬롯의 소궁 값이 position)
-  const amFirstSlot = dayData ? dayData[0] : [6, 6];
+  // Position 계산: AM 첫 슬롯(슬롯 1)의 소궁 값이 position
+  const amFirstSlot = dayData ? dayData[1] : [6, 6];
   const position = amFirstSlot[0] || 6;
   
   const halfDayOfYear = (adjustedDayOfYear - 1) * 2 + (isAM ? 0 : 1);
   const totalSlots = dayIndex * 18 + slotIndex;
+  const slotInHalfDay = isAM ? slotIndex - 1 : slotIndex - 9;
   const yValue = position;
   
   return { daegung, sogung, position, yValue, halfDayOfYear, totalSlots, slotInHalfDay };

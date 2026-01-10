@@ -55,7 +55,7 @@ export function Navigation() {
     <div className="bg-white dark:bg-card border-b border-border sticky top-0 z-50" style={{ boxShadow: "0 0 15px #ccc" }}>
       <div className="max-w-[990px] mx-auto px-2">
         <div className="h-[56px] sm:h-[70px] flex items-center justify-between relative">
-          <Link href="/calendar" className="flex items-center gap-1 hover:opacity-80 transition-opacity" data-testid="link-logo">
+          <Link href="/calendar" className="flex items-center gap-2 hover:opacity-80 transition-opacity" data-testid="link-logo">
             <svg viewBox="0 0 40 40" className="h-8 w-8 sm:h-10 sm:w-10" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="20" cy="20" r="18" stroke="#0d7377" strokeWidth="2.5" fill="none"/>
               <circle cx="20" cy="20" r="14" stroke="#0d7377" strokeWidth="2.5" fill="none"/>
@@ -68,6 +68,7 @@ export function Navigation() {
               <line x1="8" y1="28" x2="14" y2="24" stroke="#0d7377" strokeWidth="2.5"/>
               <line x1="26" y1="24" x2="32" y2="28" stroke="#0d7377" strokeWidth="2.5"/>
             </svg>
+            <span className="text-lg sm:text-xl font-bold tracking-wide" style={{ color: '#0d7377' }}>ORAE</span>
           </Link>
 
           <div className="flex gap-2 sm:gap-4 items-end pb-1">

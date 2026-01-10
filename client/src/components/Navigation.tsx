@@ -68,7 +68,7 @@ export function Navigation() {
               <line x1="8" y1="28" x2="14" y2="24" stroke="#0d7377" strokeWidth="2.5"/>
               <line x1="26" y1="24" x2="32" y2="28" stroke="#0d7377" strokeWidth="2.5"/>
             </svg>
-            <span className="text-lg sm:text-xl font-bold tracking-wide" style={{ color: '#0d7377' }}>ORAE</span>
+            <span className="text-xl sm:text-2xl font-bold tracking-wide" style={{ color: '#0d7377' }}>ORAE</span>
           </Link>
 
           <div className="flex gap-2 sm:gap-4 items-end pb-1">

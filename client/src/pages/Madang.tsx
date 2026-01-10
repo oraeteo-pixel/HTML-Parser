@@ -223,7 +223,7 @@ function CommentSection({ postId, user }: { postId: number; user: any }) {
                     }}
                     data-testid={`button-reply-${comment.id}`}
                   >
-                    <Reply className="h-3 w-3 mr-1" />
+                    <Reply className="h-3 w-3 mr-1 text-inherit" />
                     답글
                   </Button>
                 )}
@@ -244,7 +244,7 @@ function CommentSection({ postId, user }: { postId: number; user: any }) {
                   }}
                   data-testid={`button-edit-comment-${comment.id}`}
                 >
-                  <Pencil className="h-3 w-3 mr-1" />
+                  <Pencil className="h-3 w-3 mr-1 text-inherit" />
                   수정
                 </Button>
                 <Button
@@ -265,7 +265,7 @@ function CommentSection({ postId, user }: { postId: number; user: any }) {
                   disabled={deleteComment.isPending}
                   data-testid={`button-delete-comment-${comment.id}`}
                 >
-                  <Trash2 className="h-3 w-3 mr-1" />
+                  <Trash2 className="h-3 w-3 mr-1 text-inherit" />
                   삭제
                 </Button>
               </div>
@@ -942,7 +942,7 @@ export default function Madang() {
                                     }}
                                     data-testid={`button-reply-post-${post.id}`}
                                   >
-                                    <Reply className="h-4 w-4 mr-1" />
+                                    <Reply className="h-4 w-4 mr-1 text-inherit" />
                                     답글
                                   </Button>
                                   <Button
@@ -962,7 +962,7 @@ export default function Madang() {
                                     }}
                                     data-testid={`button-edit-${post.id}`}
                                   >
-                                    <Pencil className="h-4 w-4 mr-1" />
+                                    <Pencil className="h-4 w-4 mr-1 text-inherit" />
                                     수정
                                   </Button>
                                   <Button
@@ -983,7 +983,7 @@ export default function Madang() {
                                     disabled={deletePost.isPending}
                                     data-testid={`button-delete-${post.id}`}
                                   >
-                                    <Trash2 className="h-4 w-4 mr-1" />
+                                    <Trash2 className="h-4 w-4 mr-1 text-inherit" />
                                     삭제
                                   </Button>
                                 </div>

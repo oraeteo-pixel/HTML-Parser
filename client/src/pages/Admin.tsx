@@ -67,11 +67,7 @@ export default function Admin() {
 
   const saveMutation = useMutation({
     mutationFn: async (data: { key: string; value: string }) => {
-      return apiRequest("/api/settings", {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: { "Content-Type": "application/json" },
-      });
+      return apiRequest("POST", "/api/settings", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/settings"] });
@@ -80,11 +76,7 @@ export default function Admin() {
 
   const createCategoryMutation = useMutation({
     mutationFn: async (data: { name: string; slug: string; description: string }) => {
-      return apiRequest("/api/admin/categories", {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: { "Content-Type": "application/json" },
-      });
+      return apiRequest("POST", "/api/admin/categories", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/categories"] });
@@ -94,12 +86,8 @@ export default function Admin() {
   });
 
   const updateCategoryMutation = useMutation({
-    mutationFn: async (data: { id: number; name: string; slug: string; description?: string; isActive?: number }) => {
-      return apiRequest(`/api/admin/categories/${data.id}`, {
-        method: "PUT",
-        body: JSON.stringify(data),
-        headers: { "Content-Type": "application/json" },
-      });
+    mutationFn: async (data: { id: number; name: string; slug: string; description?: string | null; isActive?: number | null }) => {
+      return apiRequest("PUT", `/api/admin/categories/${data.id}`, data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/categories"] });
@@ -110,7 +98,7 @@ export default function Admin() {
 
   const deleteCategoryMutation = useMutation({
     mutationFn: async (id: number) => {
-      return apiRequest(`/api/admin/categories/${id}`, { method: "DELETE" });
+      return apiRequest("DELETE", `/api/admin/categories/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/categories"] });
@@ -120,11 +108,7 @@ export default function Admin() {
 
   const savePageMutation = useMutation({
     mutationFn: async (data: Partial<PageContent>) => {
-      return apiRequest("/api/admin/pages", {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: { "Content-Type": "application/json" },
-      });
+      return apiRequest("POST", "/api/admin/pages", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/pages"] });

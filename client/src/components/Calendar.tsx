@@ -786,45 +786,55 @@ export function Calendar() {
         </div>
       </div>
 
-      {/* 64괘 표시 (황극력만) */}
+      {/* 81궁 표시 (황극력만) - 9x9 그리드 */}
       {calType === "hw" && (
         <div className="mt-4 p-3 border border-border rounded-md bg-card">
-          <div className="grid grid-cols-8 gap-1">
+          <div className="grid grid-cols-9 gap-1">
             {(() => {
-              // 용담 팔괘 순서: 곤, 감, 태, 진, 손, 간, 리, 건
-              const trigramOrder = [2, 3, 4, 5, 7, 8, 9, 10];
+              // 9궁 순서: 곤, 감, 태, 진, 중, 손, 간, 리, 건 (2~10)
+              const nineOrder = [2, 3, 4, 5, 6, 7, 8, 9, 10];
               const trigramNames: { [key: number]: string } = {
-                2: "坤", 3: "坎", 4: "兌", 5: "震", 7: "巽", 8: "艮", 9: "離", 10: "乾"
+                2: "坤", 3: "坎", 4: "兌", 5: "震", 6: "中", 7: "巽", 8: "艮", 9: "離", 10: "乾"
               };
-              const hexagrams: JSX.Element[] = [];
+              const cells: JSX.Element[] = [];
               
               // 현재 소궁/대궁 (실시간)
               const currentSogung = liveSogungDaegung.sogung;
               const currentDaegung = liveSogungDaegung.daegung;
               
-              // 8x8 = 64괘 생성 (행: 하괘/대궁, 열: 상괘/소궁)
-              for (let row = 0; row < 8; row++) {
-                const lower = trigramOrder[row]; // 하괘 (대궁)
-                for (let col = 0; col < 8; col++) {
-                  const upper = trigramOrder[col]; // 상괘 (소궁)
+              // 9x9 = 81궁 생성 (행: 하괘/대궁, 열: 상괘/소궁)
+              for (let row = 0; row < 9; row++) {
+                const lower = nineOrder[row]; // 하괘 (대궁)
+                for (let col = 0; col < 9; col++) {
+                  const upper = nineOrder[col]; // 상괘 (소궁)
                   const hexagram = get64HexagramName(upper, lower);
-                  const isCurrentHexagram = upper === currentSogung && lower === currentDaegung;
-                  hexagrams.push(
+                  const isCurrentCell = upper === currentSogung && lower === currentDaegung;
+                  
+                  // 중궁(6)이 포함된 경우 특수 표시
+                  const isCenterRow = lower === 6;
+                  const isCenterCol = upper === 6;
+                  const isCenter = isCenterRow && isCenterCol;
+                  
+                  cells.push(
                     <div 
                       key={`${lower}-${upper}`}
                       className={`text-center p-1 border rounded text-xs cursor-pointer transition-all ${
-                        isCurrentHexagram 
+                        isCurrentCell 
                           ? "border-yellow-500 bg-yellow-400/50 text-yellow-900 dark:text-yellow-100 font-bold" 
-                          : "border-border/50 hover-elevate"
+                          : isCenter
+                            ? "border-amber-400 bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200"
+                            : (isCenterRow || isCenterCol)
+                              ? "border-border/30 bg-muted/30 text-muted-foreground"
+                              : "border-border/50 hover-elevate"
                       }`}
                       title={hexagram ? `${hexagram.fullName} (${hexagram.korean})` : `${trigramNames[upper]}之${trigramNames[lower]}`}
                     >
-                      <div className="font-bold">{hexagram?.hanja || "?"}</div>
+                      <div className="font-bold">{hexagram?.hanja || (isCenter ? "中" : `${trigramNames[upper]}${trigramNames[lower]}`)}</div>
                     </div>
                   );
                 }
               }
-              return hexagrams;
+              return cells;
             })()}
           </div>
         </div>

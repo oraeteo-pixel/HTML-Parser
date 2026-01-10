@@ -489,12 +489,52 @@ export default function Admin() {
     </div>
   );
 
+  const logoPresets = [
+    { id: "style1", name: "스타일 1", text: "오래오라이", korean: "", hanja: "悟來", suffix: "닷컴" },
+    { id: "style2", name: "스타일 2", text: "오래", korean: "오라이悟", hanja: "來", suffix: "닷컴" },
+    { id: "style3", name: "스타일 3", text: "오래", korean: "오라이悟", hanja: "來", suffix: "닷컴" },
+    { id: "style4", name: "스타일 4", text: "悟來", korean: "오라이오래닷컴", hanja: "", suffix: "" },
+  ];
+
+  const applyPreset = (preset: typeof logoPresets[0]) => {
+    setSettings({
+      ...settings,
+      logoText: preset.text,
+      logoTextKorean: preset.korean,
+      logoTextHanja: preset.hanja + (preset.suffix ? " " + preset.suffix : ""),
+    });
+  };
+
   const renderLogoSettings = () => (
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold">로고 설정</h2>
         <p className="text-muted-foreground">사이트 로고 텍스트와 스타일을 설정합니다.</p>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>로고 스타일 프리셋</CardTitle>
+          <CardDescription>미리 정의된 스타일 중 하나를 선택하세요.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {logoPresets.map((preset) => (
+              <button
+                key={preset.id}
+                onClick={() => applyPreset(preset)}
+                className="p-4 border rounded-lg text-left hover:bg-muted/50 transition-colors"
+                data-testid={`preset-${preset.id}`}
+              >
+                <div className="text-lg font-bold text-primary mb-1" style={{ color: settings.logoColor }}>
+                  {preset.text} {preset.korean} {preset.hanja} {preset.suffix}
+                </div>
+                <div className="text-sm text-muted-foreground">{preset.name}</div>
+              </button>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardContent className="p-6 space-y-6">

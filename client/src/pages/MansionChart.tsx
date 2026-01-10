@@ -225,6 +225,10 @@ export default function MansionChart() {
               const trigramNames: { [key: number]: string } = {
                 2: "坤", 3: "坎", 4: "兌", 5: "震", 6: "中", 7: "巽", 8: "艮", 9: "離", 10: "乾"
               };
+              // 팔괘 Unicode 기호 (상괘/하괘 표시용)
+              const trigramSymbols: { [key: number]: string } = {
+                2: "☷", 3: "☵", 4: "☱", 5: "☳", 6: "☯", 7: "☴", 8: "☶", 9: "☲", 10: "☰"
+              };
               const cells: JSX.Element[] = [];
               
               // 현재 소궁/대궁 (실시간)
@@ -244,6 +248,10 @@ export default function MansionChart() {
                   const isCenterCol = upper === 6;
                   const isCenter = isCenterRow && isCenterCol;
                   
+                  // 상괘(소궁) + 하괘(대궁) 기호
+                  const upperSymbol = trigramSymbols[upper] || "";
+                  const lowerSymbol = trigramSymbols[lower] || "";
+                  
                   cells.push(
                     <div 
                       key={`${lower}-${upper}`}
@@ -258,7 +266,11 @@ export default function MansionChart() {
                       }`}
                       title={hexagram ? `${hexagram.fullName} (${hexagram.korean})` : `${trigramNames[upper]}之${trigramNames[lower]}`}
                     >
-                      <div className="font-bold">{hexagram?.hanja || (isCenter ? "中" : `${trigramNames[upper]}${trigramNames[lower]}`)}</div>
+                      <div className="flex flex-col items-center leading-none">
+                        <span className="text-sm">{upperSymbol}</span>
+                        <span className="text-sm">{lowerSymbol}</span>
+                      </div>
+                      <div className="font-bold text-[10px] mt-0.5">{hexagram?.hanja || (isCenter ? "中" : `${trigramNames[upper]}${trigramNames[lower]}`)}</div>
                     </div>
                   );
                 }

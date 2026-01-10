@@ -222,18 +222,45 @@ function CommentSection({ postId, user }: { postId: number; user: any }) {
                     답글
                   </Button>
                 )}
-                {canEditDelete(comment) && (
-                  <>
-                    <Button variant="ghost" size="sm" onClick={() => startEdit(comment)} data-testid={`button-edit-comment-${comment.id}`}>
-                      <Pencil className="h-3 w-3 mr-1" />
-                      수정
-                    </Button>
-                    <Button variant="ghost" size="sm" onClick={() => handleDelete(comment)} disabled={deleteComment.isPending} data-testid={`button-delete-comment-${comment.id}`}>
-                      <Trash2 className="h-3 w-3 mr-1" />
-                      삭제
-                    </Button>
-                  </>
-                )}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    if (!user) {
+                      toast({ title: "로그인이 필요합니다.", description: "수정하려면 로그인해 주세요." });
+                      return;
+                    }
+                    if (user.id !== comment.authorId && user.isAdmin !== 1) {
+                      toast({ title: "권한이 없습니다.", description: "본인의 답글만 수정할 수 있습니다." });
+                      return;
+                    }
+                    startEdit(comment);
+                  }}
+                  data-testid={`button-edit-comment-${comment.id}`}
+                >
+                  <Pencil className="h-3 w-3 mr-1" />
+                  수정
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    if (!user) {
+                      toast({ title: "로그인이 필요합니다.", description: "삭제하려면 로그인해 주세요." });
+                      return;
+                    }
+                    if (user.id !== comment.authorId && user.isAdmin !== 1) {
+                      toast({ title: "권한이 없습니다.", description: "본인의 답글만 삭제할 수 있습니다." });
+                      return;
+                    }
+                    handleDelete(comment);
+                  }}
+                  disabled={deleteComment.isPending}
+                  data-testid={`button-delete-comment-${comment.id}`}
+                >
+                  <Trash2 className="h-3 w-3 mr-1" />
+                  삭제
+                </Button>
               </div>
             </>
           )}
@@ -890,29 +917,47 @@ export default function Madang() {
                               )}
                               <div className="my-3 flex items-center justify-between flex-wrap gap-2">
                                 <VoteButtons postId={post.id} likes={post.likes || 0} dislikes={post.dislikes || 0} user={user} />
-                                {user && (user.id === post.authorId || user.isAdmin === 1) && (
-                                  <div className="flex gap-1">
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      onClick={() => startEdit(post)}
-                                      data-testid={`button-edit-${post.id}`}
-                                    >
-                                      <Pencil className="h-4 w-4 mr-1" />
-                                      수정
-                                    </Button>
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      onClick={() => handleDelete(post)}
-                                      disabled={deletePost.isPending}
-                                      data-testid={`button-delete-${post.id}`}
-                                    >
-                                      <Trash2 className="h-4 w-4 mr-1" />
-                                      삭제
-                                    </Button>
-                                  </div>
-                                )}
+                                <div className="flex gap-1">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => {
+                                      if (!user) {
+                                        toast({ title: "로그인이 필요합니다.", description: "수정하려면 로그인해 주세요." });
+                                        return;
+                                      }
+                                      if (user.id !== post.authorId && user.isAdmin !== 1) {
+                                        toast({ title: "권한이 없습니다.", description: "본인의 글만 수정할 수 있습니다." });
+                                        return;
+                                      }
+                                      startEdit(post);
+                                    }}
+                                    data-testid={`button-edit-${post.id}`}
+                                  >
+                                    <Pencil className="h-4 w-4 mr-1" />
+                                    수정
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => {
+                                      if (!user) {
+                                        toast({ title: "로그인이 필요합니다.", description: "삭제하려면 로그인해 주세요." });
+                                        return;
+                                      }
+                                      if (user.id !== post.authorId && user.isAdmin !== 1) {
+                                        toast({ title: "권한이 없습니다.", description: "본인의 글만 삭제할 수 있습니다." });
+                                        return;
+                                      }
+                                      handleDelete(post);
+                                    }}
+                                    disabled={deletePost.isPending}
+                                    data-testid={`button-delete-${post.id}`}
+                                  >
+                                    <Trash2 className="h-4 w-4 mr-1" />
+                                    삭제
+                                  </Button>
+                                </div>
                               </div>
                             </>
                           )}

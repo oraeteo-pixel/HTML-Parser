@@ -95,12 +95,18 @@ function CommentSection({ postId, user }: { postId: number; user: any }) {
             </span>
           </div>
           <div className="text-sm whitespace-pre-wrap">{comment.content}</div>
-          {user && canReply && (
+          {canReply && (
             <Button
               variant="ghost"
               size="sm"
               className="mt-1 h-6 px-2 text-xs"
-              onClick={() => setReplyingTo(isReplying ? null : comment.id)}
+              onClick={() => {
+                if (!user) {
+                  toast({ title: "로그인이 필요합니다.", description: "답글을 작성하려면 로그인해 주세요." });
+                  return;
+                }
+                setReplyingTo(isReplying ? null : comment.id);
+              }}
             >
               <Reply className="h-3 w-3 mr-1" />
               답글
@@ -152,17 +158,23 @@ function CommentSection({ postId, user }: { postId: number; user: any }) {
         <p className="text-muted-foreground mb-4">아직 답글이 없습니다.</p>
       )}
       
-      {user && !showRootEditor && (
+      {!showRootEditor && (
         <Button
           variant="outline"
           size="sm"
-          onClick={() => setShowRootEditor(true)}
+          onClick={() => {
+            if (!user) {
+              toast({ title: "로그인이 필요합니다.", description: "답글을 작성하려면 로그인해 주세요." });
+              return;
+            }
+            setShowRootEditor(true);
+          }}
         >
           <Reply className="h-3 w-3 mr-1" />
           답글 작성
         </Button>
       )}
-      {user && showRootEditor && (
+      {showRootEditor && user && (
         <div className="space-y-2 mt-2">
           <RichEditor
             content={commentText}
@@ -185,9 +197,6 @@ function CommentSection({ postId, user }: { postId: number; user: any }) {
             </Button>
           </div>
         </div>
-      )}
-      {!user && (
-        <p className="text-muted-foreground">답글을 작성하려면 로그인해 주세요.</p>
       )}
     </div>
   );
@@ -423,29 +432,47 @@ export default function EbookViewerPage() {
                 </Popover>
                 <span> · {formatDate(post.createdAt)}</span>
               </p>
-              {user && (user.id === post.authorId || user.isAdmin === 1) && (
-                <div className="flex gap-1">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setLocation(`/ebook?edit=${post.id}`)}
-                    data-testid={`button-edit-ebook-${post.id}`}
-                  >
-                    <Pencil className="h-3 w-3 mr-1" />
-                    수정
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleDelete}
-                    disabled={deletePost.isPending}
-                    data-testid={`button-delete-ebook-${post.id}`}
-                  >
-                    <Trash2 className="h-3 w-3 mr-1" />
-                    삭제
-                  </Button>
-                </div>
-              )}
+              <div className="flex gap-1">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    if (!user) {
+                      toast({ title: "로그인이 필요합니다.", description: "수정하려면 로그인해 주세요." });
+                      return;
+                    }
+                    if (user.id !== post.authorId && user.isAdmin !== 1) {
+                      toast({ title: "권한이 없습니다.", description: "본인의 전자책만 수정할 수 있습니다." });
+                      return;
+                    }
+                    setLocation(`/ebook?edit=${post.id}`);
+                  }}
+                  data-testid={`button-edit-ebook-${post.id}`}
+                >
+                  <Pencil className="h-3 w-3 mr-1" />
+                  수정
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    if (!user) {
+                      toast({ title: "로그인이 필요합니다.", description: "삭제하려면 로그인해 주세요." });
+                      return;
+                    }
+                    if (user.id !== post.authorId && user.isAdmin !== 1) {
+                      toast({ title: "권한이 없습니다.", description: "본인의 전자책만 삭제할 수 있습니다." });
+                      return;
+                    }
+                    handleDelete();
+                  }}
+                  disabled={deletePost.isPending}
+                  data-testid={`button-delete-ebook-${post.id}`}
+                >
+                  <Trash2 className="h-3 w-3 mr-1" />
+                  삭제
+                </Button>
+              </div>
             </div>
             
             <CommentSection postId={post.id} user={user} />

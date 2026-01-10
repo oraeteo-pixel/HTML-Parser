@@ -50,18 +50,12 @@ for (let i = 0; i < 60; i++) {
 }
 
 // 특정 황극력 날짜의 60갑자 시간 계산 (오전 6개, 오후 6개)
-// 황극력 1월 1일 = 乙巳(41) 시작, 매일 12시간씩 진행
-// 황극력 월별 일수: 1~6월 31일, 7~11월 30일, 12월 30일(평년) 또는 31일(윤년)
-function get60GanziHours(hwYear: number, hwMonth: number, hwDay: number): { am: string[], pm: string[] } {
-  // 황극력 1월 1일부터 총 며칠째인지 계산
-  const daysPerMonth = [31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 30]; // 1~12월
-  let totalDays = 0;
-  for (let m = 1; m < hwMonth; m++) {
-    totalDays += daysPerMonth[m - 1];
-  }
-  totalDays += (hwDay - 1); // 1월 1일 = 0, 1월 26일 = 25
+// 매월 1일 = 乙巳(41) 시작, 매일 12시간씩 진행
+function get60GanziHours(hwDay: number): { am: string[], pm: string[] } {
+  // 매월 1일부터 며칠째인지 계산 (월 상관없이 1일에 리셋)
+  const totalDays = hwDay - 1; // 1일 = 0, 26일 = 25
   
-  // 하루에 12시간씩 진행, 황극력 1월 1일 오전 시작 = 乙巳(41)
+  // 하루에 12시간씩 진행, 매월 1일 오전 시작 = 乙巳(41)
   let startIndex = (41 + totalDays * 12) % 60;
   if (startIndex < 0) startIndex += 60;
   

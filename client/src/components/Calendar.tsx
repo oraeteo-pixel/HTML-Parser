@@ -50,15 +50,15 @@ for (let i = 0; i < 60; i++) {
 }
 
 // 특정 황극력 날짜의 60갑자 시간 계산 (오전 6개, 오후 6개)
-// 황극력 1년 1월 1일 = 丁巳(53) 시작, 매일 12시간씩 진행 (연속)
+// 황극력 1989년(원년) 1월 1일 = 丁巳(53) 시작, 매일 12시간씩 진행 (연속)
 function get60GanziHours(hwYear: number, hwMonth: number, hwDay: number): { am: string[], pm: string[] } {
-  // 황극력 1년 1월 1일부터 총 며칠째인지 계산
-  // 황극력 월별 일수: 1~6월 30/31일씩
+  // 황극력 1989년 1월 1일부터 총 며칠째인지 계산
+  // 황극력 월별 일수: 1~12월 30/31일씩 교대
   const HW_MONTH_DAYS = [30, 31, 30, 31, 30, 31, 30, 31, 30, 31, 30, 31];
   
   // 연도별 일수 (366일)
   const daysPerYear = 366;
-  let totalDays = (hwYear - 1) * daysPerYear; // 1년부터 시작
+  let totalDays = (hwYear - 1989) * daysPerYear; // 1989년(원년)부터 시작
   
   // 해당 연도 내 일수 추가
   for (let m = 1; m < hwMonth; m++) {

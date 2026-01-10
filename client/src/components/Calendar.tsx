@@ -50,13 +50,13 @@ for (let i = 0; i < 60; i++) {
 }
 
 // 특정 황극력 날짜의 60갑자 시간 계산 (오전 6개, 오후 6개)
-// 매월 1일 = 乙巳(41) 시작, 매일 12시간씩 진행 (월 상관없이 일자만 사용)
+// 매월 1일 = 丁巳(53) 시작, 매일 12시간씩 진행 (월 상관없이 일자만 사용)
 function get60GanziHours(hwDay: number): { am: string[], pm: string[] } {
   // 매월 1일부터 며칠째인지 계산 (월 상관없이 1일에 리셋)
   const totalDays = hwDay - 1; // 1일 = 0, 26일 = 25
   
-  // 하루에 12시간씩 진행, 매월 1일 오전 시작 = 乙巳(41)
-  let startIndex = (41 + totalDays * 12) % 60;
+  // 하루에 12시간씩 진행, 매월 1일 오전 시작 = 丁巳(53)
+  let startIndex = (53 + totalDays * 12) % 60;
   if (startIndex < 0) startIndex += 60;
   
   const am: string[] = [];

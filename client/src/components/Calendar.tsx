@@ -931,7 +931,7 @@ export function Calendar() {
 
       {/* 64괘 주역 풀이 모달 */}
       <Dialog open={!!selectedHexagram} onOpenChange={(open) => !open && setSelectedHexagram(null)}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-center">
               {(() => {
@@ -987,7 +987,7 @@ export function Calendar() {
                 {interp.wonmun && (
                   <div className="space-y-1">
                     <div className="text-sm font-medium text-muted-foreground">원문 (原文)</div>
-                    <div className="max-h-64 overflow-y-auto p-3 bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+                    <div className="p-3 bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg">
                       <pre className="text-xs leading-relaxed whitespace-pre-wrap font-serif">{interp.wonmun}</pre>
                     </div>
                   </div>

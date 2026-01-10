@@ -786,6 +786,41 @@ export function Calendar() {
         </div>
       </div>
 
+      {/* 64괘 표시 (황극력만) */}
+      {calType === "hw" && (
+        <div className="mt-4 p-3 border border-border rounded-md bg-card">
+          <div className="grid grid-cols-8 gap-1">
+            {(() => {
+              // 용담 팔괘 순서: 곤, 감, 태, 진, 손, 간, 리, 건
+              const trigramOrder = [2, 3, 4, 5, 7, 8, 9, 10];
+              const trigramNames: { [key: number]: string } = {
+                2: "坤", 3: "坎", 4: "兌", 5: "震", 7: "巽", 8: "艮", 9: "離", 10: "乾"
+              };
+              const hexagrams: JSX.Element[] = [];
+              
+              // 8x8 = 64괘 생성 (행: 하괘/대궁, 열: 상괘/소궁)
+              for (let row = 0; row < 8; row++) {
+                const lower = trigramOrder[row]; // 하괘 (대궁)
+                for (let col = 0; col < 8; col++) {
+                  const upper = trigramOrder[col]; // 상괘 (소궁)
+                  const hexagram = get64HexagramName(upper, lower);
+                  hexagrams.push(
+                    <div 
+                      key={`${lower}-${upper}`}
+                      className="text-center p-1 border border-border/50 rounded text-xs hover-elevate cursor-pointer"
+                      title={hexagram ? `${hexagram.fullName} (${hexagram.korean})` : `${trigramNames[upper]}之${trigramNames[lower]}`}
+                    >
+                      <div className="font-bold">{hexagram?.hanja || "?"}</div>
+                    </div>
+                  );
+                }
+              }
+              return hexagrams;
+            })()}
+          </div>
+        </div>
+      )}
+
       {calType === "hw" && (
         <div className="mt-3 py-3 px-3 border-t border-border">
           <div className="text-center text-sm text-muted-foreground mb-3">

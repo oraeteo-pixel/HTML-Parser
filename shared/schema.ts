@@ -17,6 +17,7 @@ export const posts = pgTable("posts", {
   section: text("section").default("madang"),
   mediaUrls: text("media_urls").array(),
   youtubeUrls: text("youtube_urls").array(),
+  textStyle: text("text_style"), // JSON: { fontFamily, fontSize, lineHeight }
   likes: integer("likes").default(0),
   dislikes: integer("dislikes").default(0),
   createdAt: timestamp("created_at").defaultNow(),

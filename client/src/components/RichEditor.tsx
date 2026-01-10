@@ -19,8 +19,17 @@ import {
   Link as LinkIcon,
   AlertCircle,
   FileText,
-  Download
+  Download,
+  Type,
+  AlignJustify
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export interface MediaItem {
   type: "image" | "video" | "file" | "youtube" | "pdf";
@@ -29,13 +38,21 @@ export interface MediaItem {
   thumbnailUrl?: string;
 }
 
+export interface TextStyle {
+  fontFamily: string;
+  fontSize: string;
+  lineHeight: string;
+}
+
 interface RichEditorProps {
   title?: string;
   content: string;
   mediaItems: MediaItem[];
+  textStyle?: TextStyle;
   onTitleChange?: (title: string) => void;
   onContentChange: (content: string) => void;
   onMediaItemsChange: (items: MediaItem[]) => void;
+  onTextStyleChange?: (style: TextStyle) => void;
   onSubmit?: () => void;
   isSubmitting?: boolean;
   submitText?: string;
@@ -43,6 +60,37 @@ interface RichEditorProps {
   compact?: boolean;
   onUploadingChange?: (isUploading: boolean) => void;
 }
+
+const FONT_OPTIONS = [
+  { value: "noto-sans", label: "Noto Sans KR" },
+  { value: "nanum-gothic", label: "나눔고딕" },
+  { value: "nanum-myeongjo", label: "나눔명조" },
+  { value: "batang", label: "바탕체" },
+  { value: "dotum", label: "돋움체" },
+  { value: "gulim", label: "굴림체" },
+];
+
+const FONT_SIZE_OPTIONS = [
+  { value: "12px", label: "12" },
+  { value: "14px", label: "14" },
+  { value: "16px", label: "16" },
+  { value: "18px", label: "18" },
+  { value: "20px", label: "20" },
+  { value: "24px", label: "24" },
+];
+
+const LINE_HEIGHT_OPTIONS = [
+  { value: "1.2", label: "좁게" },
+  { value: "1.5", label: "보통" },
+  { value: "1.8", label: "넓게" },
+  { value: "2.0", label: "매우넓게" },
+];
+
+const DEFAULT_TEXT_STYLE: TextStyle = {
+  fontFamily: "noto-sans",
+  fontSize: "16px",
+  lineHeight: "1.5",
+};
 
 function extractYoutubeId(url: string): string | null {
   const patterns = [
@@ -56,13 +104,28 @@ function extractYoutubeId(url: string): string | null {
   return null;
 }
 
+// 폰트 값을 CSS font-family로 변환
+export function getFontFamilyCSS(fontValue: string): string {
+  const fontMap: { [key: string]: string } = {
+    "noto-sans": "'Noto Sans KR', sans-serif",
+    "nanum-gothic": "'Nanum Gothic', sans-serif",
+    "nanum-myeongjo": "'Nanum Myeongjo', serif",
+    "batang": "Batang, '바탕', serif",
+    "dotum": "Dotum, '돋움', sans-serif",
+    "gulim": "Gulim, '굴림', sans-serif",
+  };
+  return fontMap[fontValue] || "'Noto Sans KR', sans-serif";
+}
+
 export function RichEditor({
   title,
   content,
   mediaItems,
+  textStyle,
   onTitleChange,
   onContentChange,
   onMediaItemsChange,
+  onTextStyleChange,
   onSubmit,
   isSubmitting = false,
   submitText = "저장",
@@ -71,6 +134,13 @@ export function RichEditor({
   onUploadingChange
 }: RichEditorProps) {
   const [isDragOver, setIsDragOver] = useState(false);
+  const currentStyle = textStyle || DEFAULT_TEXT_STYLE;
+  
+  const handleStyleChange = (key: keyof TextStyle, value: string) => {
+    if (onTextStyleChange) {
+      onTextStyleChange({ ...currentStyle, [key]: value });
+    }
+  };
   const [youtubeUrl, setYoutubeUrl] = useState("");
   const [showYoutubeInput, setShowYoutubeInput] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -241,6 +311,11 @@ export function RichEditor({
             value={content}
             onChange={(e) => onContentChange(e.target.value)}
             className={`${compact ? "min-h-[80px]" : "min-h-[200px]"} border-0 resize-none focus-visible:ring-0`}
+            style={{
+              fontFamily: getFontFamilyCSS(currentStyle.fontFamily),
+              fontSize: currentStyle.fontSize,
+              lineHeight: currentStyle.lineHeight,
+            }}
             data-testid="textarea-content"
           />
           
@@ -420,6 +495,62 @@ export function RichEditor({
             >
               <Youtube className="h-4 w-4" />
             </Button>
+            
+            {/* 텍스트 스타일 선택 */}
+            {onTextStyleChange && (
+              <>
+                <div className="h-4 w-px bg-border mx-1" />
+                <Select
+                  value={currentStyle.fontFamily}
+                  onValueChange={(value) => handleStyleChange("fontFamily", value)}
+                >
+                  <SelectTrigger className="w-[100px] h-8 text-xs" data-testid="select-font-family">
+                    <Type className="h-3 w-3 mr-1" />
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {FONT_OPTIONS.map((font) => (
+                      <SelectItem key={font.value} value={font.value}>
+                        {font.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                
+                <Select
+                  value={currentStyle.fontSize}
+                  onValueChange={(value) => handleStyleChange("fontSize", value)}
+                >
+                  <SelectTrigger className="w-[60px] h-8 text-xs" data-testid="select-font-size">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {FONT_SIZE_OPTIONS.map((size) => (
+                      <SelectItem key={size.value} value={size.value}>
+                        {size.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                
+                <Select
+                  value={currentStyle.lineHeight}
+                  onValueChange={(value) => handleStyleChange("lineHeight", value)}
+                >
+                  <SelectTrigger className="w-[80px] h-8 text-xs" data-testid="select-line-height">
+                    <AlignJustify className="h-3 w-3 mr-1" />
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {LINE_HEIGHT_OPTIONS.map((lh) => (
+                      <SelectItem key={lh.value} value={lh.value}>
+                        {lh.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </>
+            )}
           </div>
 
           {!compact && onSubmit && (

@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, Fragment } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { RichEditor, MediaDisplay, type MediaItem } from "@/components/RichEditor";
+import { RichEditor, MediaDisplay, type MediaItem, type TextStyle, getFontFamilyCSS } from "@/components/RichEditor";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { MessageSquare, ChevronDown, ChevronUp, X, Mail, Send, ThumbsUp, ThumbsDown, Pencil, Trash2, Plus, Reply, CornerDownRight } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
@@ -436,6 +436,7 @@ export default function Madang() {
   const [content, setContent] = useState("");
   const [ganji, setGanji] = useState(ganjiFromUrl || todayGanji);
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
+  const [textStyle, setTextStyle] = useState<TextStyle>({ fontFamily: "noto-sans", fontSize: "16px", lineHeight: "1.5" });
   const [expandedPost, setExpandedPost] = useState<number | null>(null);
   const [filterGanji, setFilterGanji] = useState<string | null>(null);
   const [filterAuthor, setFilterAuthor] = useState<string | null>(null);
@@ -486,12 +487,13 @@ export default function Madang() {
   };
 
   const createPost = useMutation({
-    mutationFn: async (data: { title: string; content: string; section: string; ganji?: string; mediaUrls?: string[]; youtubeUrls?: string[] }) => {
+    mutationFn: async (data: { title: string; content: string; section: string; ganji?: string; mediaUrls?: string[]; youtubeUrls?: string[]; textStyle?: string }) => {
       return apiRequest("POST", "/api/posts", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/posts/section/madang"] });
       setTitle("");
+      setTextStyle({ fontFamily: "noto-sans", fontSize: "16px", lineHeight: "1.5" });
       setContent("");
       setGanji(todayGanji);
       setMediaItems([]);
@@ -548,7 +550,8 @@ export default function Madang() {
       section: "madang",
       ganji: ganji || undefined,
       mediaUrls: mediaUrls.length > 0 ? mediaUrls : undefined,
-      youtubeUrls: youtubeUrls.length > 0 ? youtubeUrls : undefined
+      youtubeUrls: youtubeUrls.length > 0 ? youtubeUrls : undefined,
+      textStyle: JSON.stringify(textStyle)
     });
   };
 
@@ -696,9 +699,11 @@ export default function Madang() {
               title={title}
               content={content}
               mediaItems={mediaItems}
+              textStyle={textStyle}
               onTitleChange={setTitle}
               onContentChange={setContent}
               onMediaItemsChange={setMediaItems}
+              onTextStyleChange={setTextStyle}
               onSubmit={handleSubmit}
               isSubmitting={createPost.isPending}
               submitText="글 작성"
@@ -914,9 +919,24 @@ export default function Madang() {
                             </div>
                           ) : (
                             <>
-                              <div className="prose prose-base dark:prose-invert max-w-none mb-3 text-base">
+                              <div 
+                                className="prose prose-base dark:prose-invert max-w-none mb-3"
+                                style={(() => {
+                                  try {
+                                    const textStyle: TextStyle = post.textStyle ? JSON.parse(post.textStyle) : null;
+                                    if (textStyle) {
+                                      return {
+                                        fontFamily: getFontFamilyCSS(textStyle.fontFamily),
+                                        fontSize: textStyle.fontSize,
+                                        lineHeight: textStyle.lineHeight,
+                                      };
+                                    }
+                                  } catch (e) {}
+                                  return {};
+                                })()}
+                              >
                                 {post.content.split("\n").map((paragraph, i) => (
-                                  <p key={i}>{paragraph}</p>
+                                  <p key={i} style={{ margin: '0.5em 0' }}>{paragraph}</p>
                                 ))}
                               </div>
                               {postMediaItems.length > 0 && (

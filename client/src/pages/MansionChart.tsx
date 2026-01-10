@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { getHwanggeuk28Mansion, getHwanggeukDate, getDayGanZhi, getKoreanTime, getJeolguk, getSogungDaegung, getMansionGanjiMap, SIXTY_GANJI, getHwanggeukHourGanZhi } from "@/lib/calendarData";
+import { getHwanggeuk28Mansion, getHwanggeukDate, getDayGanZhi, getKoreanTime, getJeolguk, getSogungDaegung, getMansionGanjiMap, SIXTY_GANJI, getHwanggeukHourGanZhi, get64HexagramName } from "@/lib/calendarData";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { JeolgukCircularChart } from "@/components/JeolgukCircularChart";
@@ -214,6 +214,59 @@ export default function MansionChart() {
 
         {/* 24 Jeolguk Circular Chart */}
         <JeolgukCircularChart date={today} />
+
+        {/* 81궁 그리드 (9x9) */}
+        <Card className="mt-4 p-4">
+          <h2 className="text-lg font-bold orae-navy text-center mb-3">八十一宮 (81궁)</h2>
+          <div className="grid grid-cols-9 gap-1">
+            {(() => {
+              // 9궁 순서: 곤, 감, 태, 진, 중, 손, 간, 리, 건 (2~10)
+              const nineOrder = [2, 3, 4, 5, 6, 7, 8, 9, 10];
+              const trigramNames: { [key: number]: string } = {
+                2: "坤", 3: "坎", 4: "兌", 5: "震", 6: "中", 7: "巽", 8: "艮", 9: "離", 10: "乾"
+              };
+              const cells: JSX.Element[] = [];
+              
+              // 현재 소궁/대궁 (실시간)
+              const currentSogung = todaySogungDaegung.sogung;
+              const currentDaegung = todaySogungDaegung.daegung;
+              
+              // 9x9 = 81궁 생성 (행: 하괘/대궁, 열: 상괘/소궁)
+              for (let row = 0; row < 9; row++) {
+                const lower = nineOrder[row]; // 하괘 (대궁)
+                for (let col = 0; col < 9; col++) {
+                  const upper = nineOrder[col]; // 상괘 (소궁)
+                  const hexagram = get64HexagramName(upper, lower);
+                  const isCurrentCell = upper === currentSogung && lower === currentDaegung;
+                  
+                  // 중궁(6)이 포함된 경우 특수 표시
+                  const isCenterRow = lower === 6;
+                  const isCenterCol = upper === 6;
+                  const isCenter = isCenterRow && isCenterCol;
+                  
+                  cells.push(
+                    <div 
+                      key={`${lower}-${upper}`}
+                      className={`text-center p-1 border rounded text-xs cursor-pointer transition-all ${
+                        isCurrentCell 
+                          ? "border-yellow-500 bg-yellow-400/50 text-yellow-900 dark:text-yellow-100 font-bold" 
+                          : isCenter
+                            ? "border-amber-400 bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200"
+                            : (isCenterRow || isCenterCol)
+                              ? "border-border/30 bg-muted/30 text-muted-foreground"
+                              : "border-border/50 hover-elevate"
+                      }`}
+                      title={hexagram ? `${hexagram.fullName} (${hexagram.korean})` : `${trigramNames[upper]}之${trigramNames[lower]}`}
+                    >
+                      <div className="font-bold">{hexagram?.hanja || (isCenter ? "中" : `${trigramNames[upper]}${trigramNames[lower]}`)}</div>
+                    </div>
+                  );
+                }
+              }
+              return cells;
+            })()}
+          </div>
+        </Card>
       </main>
       
       <Footer />

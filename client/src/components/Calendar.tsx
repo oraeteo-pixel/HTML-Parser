@@ -591,7 +591,8 @@ export function Calendar() {
             const { hwDay, solarDate, dayData } = dayInfo;
             const isSun = solarDate.getDay() === 0;
             const isSat = solarDate.getDay() === 6;
-            const isCurrentDay = isTodayKorean(solarDate);
+            // 황극력 기준 오늘 하이라이트 (23시 이후면 다음 날)
+            const isCurrentDay = hwDay === todayHw.day && hwYear === todayHw.year && hwMonth === todayHw.month;
             const isSelected = selectedDay && isSameDay(solarDate, selectedDay);
             const hwDate = getHwanggeukDate(solarDate.getFullYear(), solarDate.getMonth() + 1, solarDate.getDate());
             const cellMansion = getHwanggeuk28Mansion(hwDate.year, hwDate.month, hwDate.day);

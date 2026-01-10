@@ -21,6 +21,9 @@ interface LogoSettings {
   logoTextHanja: string;
   logoColor: string;
   logoFontFamily: string;
+  logoTextSize: string;
+  logoTextKoreanSize: string;
+  logoTextHanjaSize: string;
 }
 
 const DEFAULT_SETTINGS: LogoSettings = {
@@ -29,6 +32,23 @@ const DEFAULT_SETTINGS: LogoSettings = {
   logoTextHanja: "",
   logoColor: "#0d7377",
   logoFontFamily: "Noto Sans KR",
+  logoTextSize: "2xl",
+  logoTextKoreanSize: "sm",
+  logoTextHanjaSize: "xs",
+};
+
+const getSizeValue = (size: string): string => {
+  const sizeMap: Record<string, string> = {
+    'xs': '0.75rem',
+    'sm': '0.875rem',
+    'base': '1rem',
+    'lg': '1.125rem',
+    'xl': '1.25rem',
+    '2xl': '1.5rem',
+    '3xl': '1.875rem',
+    '4xl': '2.25rem',
+  };
+  return sizeMap[size] || '1rem';
 };
 
 export default function Admin() {
@@ -63,6 +83,9 @@ export default function Admin() {
         logoTextHanja: savedSettings.logoTextHanja || DEFAULT_SETTINGS.logoTextHanja,
         logoColor: savedSettings.logoColor || DEFAULT_SETTINGS.logoColor,
         logoFontFamily: savedSettings.logoFontFamily || DEFAULT_SETTINGS.logoFontFamily,
+        logoTextSize: savedSettings.logoTextSize || DEFAULT_SETTINGS.logoTextSize,
+        logoTextKoreanSize: savedSettings.logoTextKoreanSize || DEFAULT_SETTINGS.logoTextKoreanSize,
+        logoTextHanjaSize: savedSettings.logoTextHanjaSize || DEFAULT_SETTINGS.logoTextHanjaSize,
       });
     }
   }, [savedSettings]);
@@ -129,6 +152,9 @@ export default function Admin() {
         saveMutation.mutateAsync({ key: "logoTextHanja", value: settings.logoTextHanja }),
         saveMutation.mutateAsync({ key: "logoColor", value: settings.logoColor }),
         saveMutation.mutateAsync({ key: "logoFontFamily", value: settings.logoFontFamily }),
+        saveMutation.mutateAsync({ key: "logoTextSize", value: settings.logoTextSize }),
+        saveMutation.mutateAsync({ key: "logoTextKoreanSize", value: settings.logoTextKoreanSize }),
+        saveMutation.mutateAsync({ key: "logoTextHanjaSize", value: settings.logoTextHanjaSize }),
       ]);
       toast({ title: "저장 완료", description: "로고 설정이 저장되었습니다." });
     } catch (err) {
@@ -215,33 +241,81 @@ export default function Admin() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="logoText">영문 텍스트</Label>
-                    <Input
-                      id="logoText"
-                      value={settings.logoText}
-                      onChange={(e) => setSettings({ ...settings, logoText: e.target.value })}
-                      placeholder="ORAE"
-                      data-testid="input-logo-text"
-                    />
+                    <div className="flex gap-2">
+                      <Input
+                        id="logoText"
+                        value={settings.logoText}
+                        onChange={(e) => setSettings({ ...settings, logoText: e.target.value })}
+                        placeholder="ORAE"
+                        className="flex-1"
+                        data-testid="input-logo-text"
+                      />
+                      <select
+                        value={settings.logoTextSize}
+                        onChange={(e) => setSettings({ ...settings, logoTextSize: e.target.value })}
+                        className="w-20 h-10 px-2 rounded-md border border-input bg-background text-sm"
+                      >
+                        <option value="xs">XS</option>
+                        <option value="sm">SM</option>
+                        <option value="base">M</option>
+                        <option value="lg">LG</option>
+                        <option value="xl">XL</option>
+                        <option value="2xl">2XL</option>
+                        <option value="3xl">3XL</option>
+                      </select>
+                    </div>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="logoTextKorean">한글 텍스트</Label>
-                    <Input
-                      id="logoTextKorean"
-                      value={settings.logoTextKorean}
-                      onChange={(e) => setSettings({ ...settings, logoTextKorean: e.target.value })}
-                      placeholder="오래"
-                      data-testid="input-logo-korean"
-                    />
+                    <div className="flex gap-2">
+                      <Input
+                        id="logoTextKorean"
+                        value={settings.logoTextKorean}
+                        onChange={(e) => setSettings({ ...settings, logoTextKorean: e.target.value })}
+                        placeholder="오래"
+                        className="flex-1"
+                        data-testid="input-logo-korean"
+                      />
+                      <select
+                        value={settings.logoTextKoreanSize}
+                        onChange={(e) => setSettings({ ...settings, logoTextKoreanSize: e.target.value })}
+                        className="w-20 h-10 px-2 rounded-md border border-input bg-background text-sm"
+                      >
+                        <option value="xs">XS</option>
+                        <option value="sm">SM</option>
+                        <option value="base">M</option>
+                        <option value="lg">LG</option>
+                        <option value="xl">XL</option>
+                        <option value="2xl">2XL</option>
+                        <option value="3xl">3XL</option>
+                      </select>
+                    </div>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="logoTextHanja">한자 텍스트</Label>
-                    <Input
-                      id="logoTextHanja"
-                      value={settings.logoTextHanja}
-                      onChange={(e) => setSettings({ ...settings, logoTextHanja: e.target.value })}
-                      placeholder="悠久"
-                      data-testid="input-logo-hanja"
-                    />
+                    <div className="flex gap-2">
+                      <Input
+                        id="logoTextHanja"
+                        value={settings.logoTextHanja}
+                        onChange={(e) => setSettings({ ...settings, logoTextHanja: e.target.value })}
+                        placeholder="悠久"
+                        className="flex-1"
+                        data-testid="input-logo-hanja"
+                      />
+                      <select
+                        value={settings.logoTextHanjaSize}
+                        onChange={(e) => setSettings({ ...settings, logoTextHanjaSize: e.target.value })}
+                        className="w-20 h-10 px-2 rounded-md border border-input bg-background text-sm"
+                      >
+                        <option value="xs">XS</option>
+                        <option value="sm">SM</option>
+                        <option value="base">M</option>
+                        <option value="lg">LG</option>
+                        <option value="xl">XL</option>
+                        <option value="2xl">2XL</option>
+                        <option value="3xl">3XL</option>
+                      </select>
+                    </div>
                   </div>
                 </div>
 
@@ -300,13 +374,13 @@ export default function Admin() {
                     </svg>
                     <div className="flex flex-col leading-tight" style={{ fontFamily: settings.logoFontFamily }}>
                       {settings.logoText && (
-                        <span className="text-2xl font-bold" style={{ color: settings.logoColor }}>{settings.logoText}</span>
+                        <span className="font-bold" style={{ color: settings.logoColor, fontSize: getSizeValue(settings.logoTextSize) }}>{settings.logoText}</span>
                       )}
                       {settings.logoTextKorean && (
-                        <span className="text-sm font-medium" style={{ color: settings.logoColor }}>{settings.logoTextKorean}</span>
+                        <span className="font-medium" style={{ color: settings.logoColor, fontSize: getSizeValue(settings.logoTextKoreanSize) }}>{settings.logoTextKorean}</span>
                       )}
                       {settings.logoTextHanja && (
-                        <span className="text-xs" style={{ color: settings.logoColor }}>{settings.logoTextHanja}</span>
+                        <span style={{ color: settings.logoColor, fontSize: getSizeValue(settings.logoTextHanjaSize) }}>{settings.logoTextHanja}</span>
                       )}
                     </div>
                   </div>

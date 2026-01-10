@@ -18,6 +18,9 @@ interface LogoSettings {
   logoTextHanja?: string;
   logoColor?: string;
   logoFontFamily?: string;
+  logoTextSize?: string;
+  logoTextKoreanSize?: string;
+  logoTextHanjaSize?: string;
 }
 
 const DEFAULT_LOGO: LogoSettings = {
@@ -26,6 +29,23 @@ const DEFAULT_LOGO: LogoSettings = {
   logoTextHanja: "",
   logoColor: "#0d7377",
   logoFontFamily: "Noto Sans KR",
+  logoTextSize: "2xl",
+  logoTextKoreanSize: "3xl",
+  logoTextHanjaSize: "xs",
+};
+
+const getSizeValue = (size?: string): string => {
+  const sizeMap: Record<string, string> = {
+    'xs': '0.75rem',
+    'sm': '0.875rem',
+    'base': '1rem',
+    'lg': '1.125rem',
+    'xl': '1.25rem',
+    '2xl': '1.5rem',
+    '3xl': '1.875rem',
+    '4xl': '2.25rem',
+  };
+  return sizeMap[size || 'base'] || '1rem';
 };
 
 export function Navigation() {
@@ -41,6 +61,9 @@ export function Navigation() {
   const logoTextKorean = siteSettings?.logoTextKorean ?? DEFAULT_LOGO.logoTextKorean;
   const logoTextHanja = siteSettings?.logoTextHanja ?? DEFAULT_LOGO.logoTextHanja;
   const logoFontFamily = siteSettings?.logoFontFamily || DEFAULT_LOGO.logoFontFamily;
+  const logoTextSize = siteSettings?.logoTextSize || DEFAULT_LOGO.logoTextSize;
+  const logoTextKoreanSize = siteSettings?.logoTextKoreanSize || DEFAULT_LOGO.logoTextKoreanSize;
+  const logoTextHanjaSize = siteSettings?.logoTextHanjaSize || DEFAULT_LOGO.logoTextHanjaSize;
   
   const { data: madangPosts } = useQuery<PostWithAuthor[]>({
     queryKey: ["/api/posts/section/madang"],
@@ -95,9 +118,9 @@ export function Navigation() {
               <line x1="26" y1="24" x2="32" y2="28" stroke={logoColor} strokeWidth="2.5"/>
             </svg>
             <div className="flex flex-col leading-tight" style={{ fontFamily: `${logoFontFamily}, sans-serif` }}>
-              {logoText && <span className="text-xl sm:text-2xl font-bold" style={{ color: logoColor }}>{logoText}</span>}
-              {logoTextKorean && <span className="text-2xl sm:text-3xl font-bold" style={{ color: logoColor }}>{logoTextKorean}</span>}
-              {logoTextHanja && <span className="text-xs" style={{ color: logoColor }}>{logoTextHanja}</span>}
+              {logoText && <span className="font-bold" style={{ color: logoColor, fontSize: getSizeValue(logoTextSize) }}>{logoText}</span>}
+              {logoTextKorean && <span className="font-bold" style={{ color: logoColor, fontSize: getSizeValue(logoTextKoreanSize) }}>{logoTextKorean}</span>}
+              {logoTextHanja && <span style={{ color: logoColor, fontSize: getSizeValue(logoTextHanjaSize) }}>{logoTextHanja}</span>}
             </div>
           </Link>
 

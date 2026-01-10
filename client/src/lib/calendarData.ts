@@ -1179,9 +1179,9 @@ export function get64HexagramName(sogung: number, daegung: number): { hanja: str
   if (daegung === 6 && sogung === 6) {
     // 6,6 = 중지중
     return {
-      hanja: "中之中",
+      hanja: "重之中",
       korean: "중지중",
-      fullName: "中之中",
+      fullName: "重之中",
       lowerTrigram: "中",
       upperTrigram: "中"
     };

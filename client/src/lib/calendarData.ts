@@ -408,14 +408,26 @@ function getHwanggeukDaysFromEpoch(year: number, month: number, day: number): nu
   return Math.floor(diffTime / (1000 * 60 * 60 * 24));
 }
 
-export function getHwanggeukDate(year: number, month: number, day: number): { 
+export function getHwanggeukDate(year: number, month: number, day: number, hour?: number): { 
   year: number; 
   month: number; 
   day: number;
   yearGanZhi: string;
   monthGanZhi: string;
 } {
-  const daysFromEpoch = getHwanggeukDaysFromEpoch(year, month, day);
+  // 23시 이후면 황극력은 다음 날로 전환
+  let adjustedYear = year;
+  let adjustedMonth = month;
+  let adjustedDay = day;
+  
+  if (hour !== undefined && hour >= 23) {
+    const nextDate = new Date(year, month - 1, day + 1);
+    adjustedYear = nextDate.getFullYear();
+    adjustedMonth = nextDate.getMonth() + 1;
+    adjustedDay = nextDate.getDate();
+  }
+  
+  const daysFromEpoch = getHwanggeukDaysFromEpoch(adjustedYear, adjustedMonth, adjustedDay);
   
   const hwYear = HW_EPOCH_YEAR + Math.floor(daysFromEpoch / HW_DAYS_PER_YEAR);
   let dayOfYear = (daysFromEpoch % HW_DAYS_PER_YEAR) + 1;

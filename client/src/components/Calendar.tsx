@@ -847,9 +847,11 @@ export function Calendar() {
                 </div>
               </div>
             ) : null}
-            <p className="text-xs text-muted-foreground">
-              {CAL_DESCRIPTIONS[calType]}
-            </p>
+{calType === "df" && (
+              <p className="text-xs text-muted-foreground">
+                {CAL_DESCRIPTIONS[calType]}
+              </p>
+            )}
           </div>
         </div>
       )}

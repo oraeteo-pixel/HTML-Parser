@@ -213,8 +213,16 @@ export function solarToLunar(year: number, month: number, day: number): { year: 
   };
 }
 
-export function getYearGanZhi(year: number): string {
-  const offset = (year - 4) % 60;
+export function getYearGanZhi(year: number, month?: number, day?: number): string {
+  // 절기 기반 연간지: 입춘(2월 4일경) 전이면 전년 간지 사용
+  let ganzhiYear = year;
+  if (month !== undefined && day !== undefined) {
+    const lichunDay = SOLAR_TERM_DAYS[2]?.[0] || 4; // 입춘일 (2월의 첫 번째 절기)
+    if (month < 2 || (month === 2 && day < lichunDay)) {
+      ganzhiYear = year - 1;
+    }
+  }
+  const offset = (ganzhiYear - 4) % 60;
   const stemIndex = offset % 10;
   const branchIndex = offset % 12;
   return HEAVENLY_STEMS[stemIndex] + EARTHLY_BRANCHES[branchIndex];
@@ -1297,12 +1305,12 @@ export function getLunarGanZhi(year: number, month: number, day: number): { year
 
 export function getCalendarDayData(year: number, month: number, day: number): CalendarDayData {
   const lunar = solarToLunar(year, month, day);
-  // 선천력: 음력 기반 간지 (korean-lunar-calendar 라이브러리 사용)
+  // 음력 기반 간지 (korean-lunar-calendar 라이브러리 사용) - 참조용
   const lunarGanZhi = getLunarGanZhi(year, month, day);
-  // 선천력 간지는 음력 기반 간지 사용
-  const yearGanZhi = lunarGanZhi.year;
-  const monthGanZhi = lunarGanZhi.month;
-  const dayGanZhi = lunarGanZhi.day;
+  // 선천력 간지는 절기 기반으로 계산 (자정 기준 날짜 전환)
+  const yearGanZhi = getYearGanZhi(year, month, day);
+  const monthGanZhi = getMonthGanZhi(year, month, day);
+  const dayGanZhi = getDayGanZhi(year, month, day);
   const mansion = get28Mansion(year, month, day);
   const trigram = get8Trigram(year, month, day);
   const solarTerm = getSolarTerm(month, day);

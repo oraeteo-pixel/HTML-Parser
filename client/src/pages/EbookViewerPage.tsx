@@ -76,8 +76,12 @@ function CommentSection({ postId, user }: { postId: number; user: any }) {
     });
   };
 
-  const rootComments = comments?.filter(c => !c.parentId) || [];
-  const getReplies = (parentId: number) => comments?.filter(c => c.parentId === parentId) || [];
+  const rootComments = (comments?.filter(c => !c.parentId) || []).sort((a, b) => 
+    new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()
+  );
+  const getReplies = (parentId: number) => (comments?.filter(c => c.parentId === parentId) || []).sort((a, b) => 
+    new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()
+  );
 
   const renderComment = (comment: CommentWithAuthor, depth = 0) => {
     const replies = getReplies(comment.id);
@@ -158,22 +162,22 @@ function CommentSection({ postId, user }: { postId: number; user: any }) {
         <p className="text-muted-foreground mb-4">아직 답글이 없습니다.</p>
       )}
       
-      {!showRootEditor && (
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => {
-            if (!user) {
-              toast({ title: "로그인이 필요합니다.", description: "답글을 작성하려면 로그인해 주세요." });
-              return;
-            }
-            setShowRootEditor(true);
-          }}
-        >
-          <Reply className="h-3 w-3 mr-1" />
-          답글 작성
-        </Button>
-      )}
+      <Button
+        variant="outline"
+        size="sm"
+        className={showRootEditor ? "hidden" : "invisible absolute"}
+        onClick={() => {
+          if (!user) {
+            toast({ title: "로그인이 필요합니다.", description: "답글을 작성하려면 로그인해 주세요." });
+            return;
+          }
+          setShowRootEditor(true);
+        }}
+        data-testid={`button-new-comment-${postId}`}
+      >
+        <Reply className="h-3 w-3 mr-1" />
+        답글 작성
+      </Button>
       {showRootEditor && user && (
         <div className="space-y-2 mt-2">
           <RichEditor

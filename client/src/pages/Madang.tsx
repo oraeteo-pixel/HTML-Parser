@@ -163,8 +163,12 @@ function CommentSection({ postId, user }: { postId: number; user: any }) {
     return user && (user.id === comment.authorId || user.isAdmin === 1);
   };
 
-  const rootComments = comments?.filter(c => !c.parentId) || [];
-  const getReplies = (parentId: number) => comments?.filter(c => c.parentId === parentId) || [];
+  const rootComments = (comments?.filter(c => !c.parentId) || []).sort((a, b) => 
+    new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()
+  );
+  const getReplies = (parentId: number) => (comments?.filter(c => c.parentId === parentId) || []).sort((a, b) => 
+    new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()
+  );
 
   const renderComment = (comment: CommentWithAuthor, depth: number = 0) => {
     const media = parseCommentMedia(comment);
@@ -310,23 +314,22 @@ function CommentSection({ postId, user }: { postId: number; user: any }) {
         <p className="text-muted-foreground mb-4">아직 답글이 없습니다.</p>
       )}
       
-      {!showRootEditor && (
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => {
-            if (!user) {
-              toast({ title: "로그인이 필요합니다.", description: "답글을 작성하려면 로그인해 주세요." });
-              return;
-            }
-            setShowRootEditor(true);
-          }}
-          data-testid={`button-new-comment-${postId}`}
-        >
-          <Reply className="h-3 w-3 mr-1" />
-          답글 작성
-        </Button>
-      )}
+      <Button
+        variant="outline"
+        size="sm"
+        className={showRootEditor ? "hidden" : "invisible absolute"}
+        onClick={() => {
+          if (!user) {
+            toast({ title: "로그인이 필요합니다.", description: "답글을 작성하려면 로그인해 주세요." });
+            return;
+          }
+          setShowRootEditor(true);
+        }}
+        data-testid={`button-new-comment-${postId}`}
+      >
+        <Reply className="h-3 w-3 mr-1" />
+        답글 작성
+      </Button>
       {showRootEditor && user && (
         <div className="space-y-2 mt-2">
           <RichEditor
@@ -918,6 +921,25 @@ export default function Madang() {
                               <div className="my-3 flex items-center justify-between flex-wrap gap-2">
                                 <VoteButtons postId={post.id} likes={post.likes || 0} dislikes={post.dislikes || 0} user={user} />
                                 <div className="flex gap-1">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={() => {
+                                      if (!user) {
+                                        toast({ title: "로그인이 필요합니다.", description: "답글을 작성하려면 로그인해 주세요." });
+                                        return;
+                                      }
+                                      setExpandedPost(post.id);
+                                      setTimeout(() => {
+                                        const commentBtn = document.querySelector(`[data-testid="button-new-comment-${post.id}"]`) as HTMLButtonElement;
+                                        if (commentBtn) commentBtn.click();
+                                      }, 100);
+                                    }}
+                                    data-testid={`button-reply-post-${post.id}`}
+                                  >
+                                    <Reply className="h-4 w-4 mr-1" />
+                                    답글
+                                  </Button>
                                   <Button
                                     variant="ghost"
                                     size="sm"

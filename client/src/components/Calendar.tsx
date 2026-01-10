@@ -49,15 +49,33 @@ function isTodayKorean(date: Date): boolean {
 }
 
 export function Calendar() {
-  const today = getKoreanTime();
-  const todayHw = getHwanggeukDate(today.getFullYear(), today.getMonth() + 1, today.getDate(), today.getHours());
+  const [currentTime, setCurrentTime] = useState(getKoreanTime());
+  
+  // 현재 시간 기준으로 황극력 날짜 계산 (23시 이후면 다음 날)
+  const todayHw = useMemo(() => {
+    return getHwanggeukDate(
+      currentTime.getFullYear(), 
+      currentTime.getMonth() + 1, 
+      currentTime.getDate(), 
+      currentTime.getHours()
+    );
+  }, [currentTime]);
+  
   const [, navigate] = useLocation();
   
   const [calType, setCalType] = useState<"hw" | "df">("hw");
-  const [hwYear, setHwYear] = useState(todayHw.year);
-  const [hwMonth, setHwMonth] = useState(todayHw.month);
-  const [solarYear, setSolarYear] = useState(today.getFullYear());
-  const [solarMonth, setSolarMonth] = useState(today.getMonth() + 1);
+  const [hwYear, setHwYear] = useState(() => {
+    const now = getKoreanTime();
+    const hw = getHwanggeukDate(now.getFullYear(), now.getMonth() + 1, now.getDate(), now.getHours());
+    return hw.year;
+  });
+  const [hwMonth, setHwMonth] = useState(() => {
+    const now = getKoreanTime();
+    const hw = getHwanggeukDate(now.getFullYear(), now.getMonth() + 1, now.getDate(), now.getHours());
+    return hw.month;
+  });
+  const [solarYear, setSolarYear] = useState(() => getKoreanTime().getFullYear());
+  const [solarMonth, setSolarMonth] = useState(() => getKoreanTime().getMonth() + 1);
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
   const [showDayDetail, setShowDayDetail] = useState(false);
   const [showTalisman, setShowTalisman] = useState(false);
@@ -99,14 +117,14 @@ export function Calendar() {
       return selectedDay;
     }
     if (calType === "hw" && hwMonthData.length > 0) {
-      const todayHwInfo = getHwanggeukDate(today.getFullYear(), today.getMonth() + 1, today.getDate(), today.getHours());
+      const todayHwInfo = getHwanggeukDate(currentTime.getFullYear(), currentTime.getMonth() + 1, currentTime.getDate(), currentTime.getHours());
       if (todayHwInfo.year === hwYear && todayHwInfo.month === hwMonth) {
-        return today;
+        return currentTime;
       }
       return hwMonthData[0].solarDate;
     }
-    return today;
-  }, [selectedDay, calType, hwYear, hwMonth, hwMonthData, today]);
+    return currentTime;
+  }, [selectedDay, calType, hwYear, hwMonth, hwMonthData, currentTime]);
   
   const displayYear = displayDate.getFullYear();
   const displayMonth = displayDate.getMonth() + 1;
@@ -115,8 +133,6 @@ export function Calendar() {
 
   const hwYearGanZhi = getHwanggeukYearGanZhi(hwYear);
   const hwMonthGanZhi = getHwanggeukMonthGanZhi(hwYear, hwMonth);
-  
-  const [currentTime, setCurrentTime] = useState(getKoreanTime());
   
   useEffect(() => {
     const timer = setInterval(() => {
@@ -310,12 +326,13 @@ export function Calendar() {
   };
 
   const goToday = () => {
-    const todayHwNew = getHwanggeukDate(today.getFullYear(), today.getMonth() + 1, today.getDate(), today.getHours());
+    const now = getKoreanTime();
+    const todayHwNew = getHwanggeukDate(now.getFullYear(), now.getMonth() + 1, now.getDate(), now.getHours());
     setHwYear(todayHwNew.year);
     setHwMonth(todayHwNew.month);
-    setSolarYear(today.getFullYear());
-    setSolarMonth(today.getMonth() + 1);
-    setSelectedDay(today);
+    setSolarYear(now.getFullYear());
+    setSolarMonth(now.getMonth() + 1);
+    setSelectedDay(now);
     setShowDayDetail(true);
     setTimeout(() => {
       const todayCell = document.querySelector('.calendar-cell.today');

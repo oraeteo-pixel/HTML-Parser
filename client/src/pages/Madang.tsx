@@ -892,6 +892,7 @@ export default function Madang() {
                                 <Button
                                   variant="ghost"
                                   size="sm"
+                                  className="text-muted-foreground"
                                   onClick={cancelEdit}
                                   data-testid="button-cancel-edit"
                                 >
@@ -927,6 +928,7 @@ export default function Madang() {
                                   <Button
                                     variant="ghost"
                                     size="sm"
+                                    className="text-muted-foreground"
                                     onClick={() => {
                                       if (!user) {
                                         toast({ title: "로그인이 필요합니다.", description: "답글을 작성하려면 로그인해 주세요." });
@@ -946,6 +948,7 @@ export default function Madang() {
                                   <Button
                                     variant="ghost"
                                     size="sm"
+                                    className="text-muted-foreground"
                                     onClick={() => {
                                       if (!user) {
                                         toast({ title: "로그인이 필요합니다.", description: "수정하려면 로그인해 주세요." });
@@ -965,6 +968,7 @@ export default function Madang() {
                                   <Button
                                     variant="ghost"
                                     size="sm"
+                                    className="text-muted-foreground"
                                     onClick={() => {
                                       if (!user) {
                                         toast({ title: "로그인이 필요합니다.", description: "삭제하려면 로그인해 주세요." });

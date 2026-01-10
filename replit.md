@@ -102,6 +102,22 @@ The `shared/` directory contains code used by both frontend and backend:
 - tsx for TypeScript execution (development)
 - Replit-specific plugins for development experience
 
+## Recent Changes (2026-01-10)
+
+### 60갑자 시간표 기능 추가
+- **위치**: 황극력 달력 상세 정보 섹션
+- **계산 규칙**:
+  - 황극력 1년(1989년) 1월 1일 오전 = 丁巳(정사)시부터 시작
+  - 매일 12시간씩 진행 (오전 6시간 + 오후 6시간)
+  - 연속 순환: 황극력 1년 1월 1일부터 현재까지 쭉 이어짐
+- **60갑자 배열**: 甲子(0)~癸亥(59), 丁巳 = 인덱스 53
+- **계산 공식**: `startIndex = (53 + totalDays * 12) % 60`
+- **표시 형식**: 오전/오후 각 6개씩 박스 형태로 표시
+
+### 달력 네비게이션 개선
+- 연도/월 선택 시 해당 월 1일 자동 하이라이트
+- 선택된 날짜에 노란색 하이라이트 적용 (today 스타일)
+
 ## Recent Changes (2026-01-08)
 
 ### 달력 데이터 엑셀 다운로드 기능 추가

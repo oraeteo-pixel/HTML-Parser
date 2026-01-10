@@ -43,6 +43,9 @@ export interface IStorage {
   getPageContents(): Promise<PageContent[]>;
   getPageContent(slug: string): Promise<PageContent | null>;
   upsertPageContent(content: InsertPageContent): Promise<PageContent>;
+  
+  getAllUsers(): Promise<User[]>;
+  updateUserAdmin(userId: string, isAdmin: number): Promise<User | null>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -418,6 +421,15 @@ export class DatabaseStorage implements IStorage {
       const [newContent] = await db.insert(pageContents).values(content).returning();
       return newContent;
     }
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    return await db.select().from(users).orderBy(desc(users.createdAt));
+  }
+
+  async updateUserAdmin(userId: string, isAdmin: number): Promise<User | null> {
+    const [updated] = await db.update(users).set({ isAdmin }).where(eq(users.id, userId)).returning();
+    return updated || null;
   }
 }
 

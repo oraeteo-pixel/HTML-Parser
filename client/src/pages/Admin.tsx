@@ -5,15 +5,19 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
-import { Navigation } from "@/components/Navigation";
-import { Footer } from "@/components/Footer";
-import { Loader2, Save, Plus, Trash2, Edit, Download, Upload, Settings, FolderTree, Calendar, FileCode } from "lucide-react";
-import type { MadangCategory, PageContent } from "@shared/schema";
+import { 
+  Loader2, Save, Plus, Trash2, Edit, Download, 
+  Settings, FolderTree, Calendar, FileCode, Users, 
+  LayoutDashboard, ChevronRight, ChevronDown, Search,
+  Home, Shield, FileText, Palette, Database, Menu, X
+} from "lucide-react";
+import type { MadangCategory, PageContent, User } from "@shared/schema";
+import { Link } from "wouter";
 
 interface LogoSettings {
   logoText: string;
@@ -51,9 +55,30 @@ const getSizeValue = (size: string): string => {
   return sizeMap[size] || '1rem';
 };
 
+type MenuSection = "dashboard" | "logo" | "categories" | "calendar" | "pages" | "members";
+
+interface MenuItem {
+  id: MenuSection;
+  label: string;
+  icon: typeof Settings;
+  description?: string;
+}
+
+const menuItems: MenuItem[] = [
+  { id: "dashboard", label: "대시보드", icon: LayoutDashboard, description: "관리자 현황" },
+  { id: "logo", label: "로고 설정", icon: Palette, description: "사이트 로고" },
+  { id: "members", label: "회원 관리", icon: Users, description: "회원 목록" },
+  { id: "categories", label: "마당 카테고리", icon: FolderTree, description: "카테고리 관리" },
+  { id: "calendar", label: "달력 데이터", icon: Calendar, description: "엑셀 다운로드" },
+  { id: "pages", label: "페이지 관리", icon: FileCode, description: "콘텐츠 편집" },
+];
+
 export default function Admin() {
   const { user, isAuthenticated, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
+  const [activeSection, setActiveSection] = useState<MenuSection>("dashboard");
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   
   const [settings, setSettings] = useState<LogoSettings>(DEFAULT_SETTINGS);
   const [editingCategory, setEditingCategory] = useState<MadangCategory | null>(null);
@@ -61,6 +86,7 @@ export default function Admin() {
   const [selectedParentId, setSelectedParentId] = useState<number | null>(null);
   const [addingLevel, setAddingLevel] = useState<1 | 2 | 3>(1);
   const [editingPage, setEditingPage] = useState<PageContent | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const { data: savedSettings, isLoading: settingsLoading } = useQuery<Record<string, string>>({
     queryKey: ["/api/settings"],
@@ -72,6 +98,16 @@ export default function Admin() {
 
   const { data: pages, isLoading: pagesLoading } = useQuery<PageContent[]>({
     queryKey: ["/api/admin/pages"],
+    enabled: isAuthenticated && user?.isAdmin === 1,
+  });
+
+  const { data: members, isLoading: membersLoading } = useQuery<User[]>({
+    queryKey: ["/api/admin/users"],
+    enabled: isAuthenticated && user?.isAdmin === 1,
+  });
+
+  const { data: recentPosts } = useQuery<any[]>({
+    queryKey: ["/api/posts"],
     enabled: isAuthenticated && user?.isAdmin === 1,
   });
 
@@ -144,6 +180,16 @@ export default function Admin() {
     },
   });
 
+  const toggleAdminMutation = useMutation({
+    mutationFn: async ({ userId, isAdmin }: { userId: string; isAdmin: number }) => {
+      return apiRequest("PUT", `/api/admin/users/${userId}/admin`, { isAdmin });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      toast({ title: "관리자 권한 변경 완료" });
+    },
+  });
+
   const handleSaveSettings = async () => {
     try {
       await Promise.all([
@@ -168,32 +214,34 @@ export default function Admin() {
 
   if (authLoading || settingsLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin" />
+      <div className="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-slate-900">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
   if (!isAuthenticated || !user) {
     return (
-      <div className="min-h-screen flex flex-col">
-        <Navigation />
-        <div className="flex-1 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-slate-900">
+        <Card className="p-8">
           <p className="text-muted-foreground">로그인이 필요합니다.</p>
-        </div>
-        <Footer />
+          <Link href="/">
+            <Button className="mt-4 w-full">홈으로 돌아가기</Button>
+          </Link>
+        </Card>
       </div>
     );
   }
 
   if (user.isAdmin !== 1) {
     return (
-      <div className="min-h-screen flex flex-col">
-        <Navigation />
-        <div className="flex-1 flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-slate-900">
+        <Card className="p-8">
           <p className="text-muted-foreground">관리자만 접근할 수 있습니다.</p>
-        </div>
-        <Footer />
+          <Link href="/">
+            <Button className="mt-4 w-full">홈으로 돌아가기</Button>
+          </Link>
+        </Card>
       </div>
     );
   }
@@ -205,541 +253,899 @@ export default function Admin() {
     { pageSlug: "28su", title: "28수" },
   ];
 
-  return (
-    <div className="min-h-screen flex flex-col bg-background">
-      <Navigation />
-      <main className="flex-1 max-w-[990px] mx-auto px-4 py-8 w-full">
-        <h1 className="text-2xl font-bold mb-6">관리자 설정</h1>
+  const filteredMenuItems = menuItems.filter(item => 
+    item.label.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
-        <Tabs defaultValue="logo" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-6">
-            <TabsTrigger value="logo" className="flex items-center gap-2" data-testid="tab-logo">
-              <Settings className="h-4 w-4" />
-              <span className="hidden sm:inline">로고</span>
-            </TabsTrigger>
-            <TabsTrigger value="categories" className="flex items-center gap-2" data-testid="tab-categories">
-              <FolderTree className="h-4 w-4" />
-              <span className="hidden sm:inline">카테고리</span>
-            </TabsTrigger>
-            <TabsTrigger value="calendar" className="flex items-center gap-2" data-testid="tab-calendar">
-              <Calendar className="h-4 w-4" />
-              <span className="hidden sm:inline">달력</span>
-            </TabsTrigger>
-            <TabsTrigger value="pages" className="flex items-center gap-2" data-testid="tab-pages">
-              <FileCode className="h-4 w-4" />
-              <span className="hidden sm:inline">페이지</span>
-            </TabsTrigger>
-          </TabsList>
+  const renderSidebar = () => (
+    <div className={`bg-slate-800 text-white flex flex-col h-full ${sidebarOpen ? 'w-64' : 'w-16'} transition-all duration-300`}>
+      <div className="p-4 border-b border-slate-700">
+        <div className="flex items-center justify-between">
+          {sidebarOpen && (
+            <div className="flex items-center gap-2">
+              <Shield className="h-6 w-6 text-cyan-400" />
+              <span className="font-bold text-lg">관리자모드</span>
+            </div>
+          )}
+          <Button
+            size="icon"
+            variant="ghost"
+            className="text-white hover:bg-slate-700"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+          >
+            {sidebarOpen ? <ChevronRight className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+          </Button>
+        </div>
+      </div>
 
-          <TabsContent value="logo">
-            <Card>
-              <CardHeader>
-                <CardTitle>로고 설정</CardTitle>
-                <CardDescription>사이트 로고 텍스트와 스타일을 설정합니다.</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="logoText">영문 텍스트</Label>
-                    <div className="flex gap-2">
-                      <Input
-                        id="logoText"
-                        value={settings.logoText}
-                        onChange={(e) => setSettings({ ...settings, logoText: e.target.value })}
-                        placeholder="ORAE"
-                        className="flex-1"
-                        data-testid="input-logo-text"
-                      />
-                      <select
-                        value={settings.logoTextSize}
-                        onChange={(e) => setSettings({ ...settings, logoTextSize: e.target.value })}
-                        className="w-20 h-10 px-2 rounded-md border border-input bg-background text-sm"
-                      >
-                        <option value="xs">XS</option>
-                        <option value="sm">SM</option>
-                        <option value="base">M</option>
-                        <option value="lg">LG</option>
-                        <option value="xl">XL</option>
-                        <option value="2xl">2XL</option>
-                        <option value="3xl">3XL</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="logoTextKorean">한글 텍스트</Label>
-                    <div className="flex gap-2">
-                      <Input
-                        id="logoTextKorean"
-                        value={settings.logoTextKorean}
-                        onChange={(e) => setSettings({ ...settings, logoTextKorean: e.target.value })}
-                        placeholder="오래"
-                        className="flex-1"
-                        data-testid="input-logo-korean"
-                      />
-                      <select
-                        value={settings.logoTextKoreanSize}
-                        onChange={(e) => setSettings({ ...settings, logoTextKoreanSize: e.target.value })}
-                        className="w-20 h-10 px-2 rounded-md border border-input bg-background text-sm"
-                      >
-                        <option value="xs">XS</option>
-                        <option value="sm">SM</option>
-                        <option value="base">M</option>
-                        <option value="lg">LG</option>
-                        <option value="xl">XL</option>
-                        <option value="2xl">2XL</option>
-                        <option value="3xl">3XL</option>
-                      </select>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="logoTextHanja">한자 텍스트</Label>
-                    <div className="flex gap-2">
-                      <Input
-                        id="logoTextHanja"
-                        value={settings.logoTextHanja}
-                        onChange={(e) => setSettings({ ...settings, logoTextHanja: e.target.value })}
-                        placeholder="悠久"
-                        className="flex-1"
-                        data-testid="input-logo-hanja"
-                      />
-                      <select
-                        value={settings.logoTextHanjaSize}
-                        onChange={(e) => setSettings({ ...settings, logoTextHanjaSize: e.target.value })}
-                        className="w-20 h-10 px-2 rounded-md border border-input bg-background text-sm"
-                      >
-                        <option value="xs">XS</option>
-                        <option value="sm">SM</option>
-                        <option value="base">M</option>
-                        <option value="lg">LG</option>
-                        <option value="xl">XL</option>
-                        <option value="2xl">2XL</option>
-                        <option value="3xl">3XL</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
+      {sidebarOpen && (
+        <div className="p-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Input
+              placeholder="메뉴 검색"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9 bg-slate-700 border-slate-600 text-white placeholder:text-slate-400"
+            />
+          </div>
+        </div>
+      )}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="logoColor">로고 색상</Label>
-                    <div className="flex gap-2">
-                      <Input
-                        id="logoColor"
-                        type="color"
-                        value={settings.logoColor}
-                        onChange={(e) => setSettings({ ...settings, logoColor: e.target.value })}
-                        className="w-16 h-10 p-1"
-                        data-testid="input-logo-color"
-                      />
-                      <Input
-                        value={settings.logoColor}
-                        onChange={(e) => setSettings({ ...settings, logoColor: e.target.value })}
-                        placeholder="#0d7377"
-                        className="flex-1"
-                      />
-                    </div>
+      <nav className="flex-1 overflow-y-auto p-2">
+        <div className="space-y-1">
+          {filteredMenuItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = activeSection === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => {
+                  setActiveSection(item.id);
+                  setMobileSidebarOpen(false);
+                }}
+                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors ${
+                  isActive 
+                    ? 'bg-cyan-600 text-white' 
+                    : 'text-slate-300 hover:bg-slate-700 hover:text-white'
+                }`}
+                data-testid={`menu-${item.id}`}
+              >
+                <Icon className="h-5 w-5 flex-shrink-0" />
+                {sidebarOpen && (
+                  <div className="flex-1 text-left">
+                    <div className="font-medium">{item.label}</div>
+                    {item.description && (
+                      <div className="text-xs opacity-70">{item.description}</div>
+                    )}
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="logoFontFamily">폰트</Label>
-                    <select
-                      id="logoFontFamily"
-                      value={settings.logoFontFamily}
-                      onChange={(e) => setSettings({ ...settings, logoFontFamily: e.target.value })}
-                      className="w-full h-10 px-3 rounded-md border border-input bg-background"
-                      data-testid="select-logo-font"
-                    >
-                      <option value="Noto Sans KR">Noto Sans KR (고딕)</option>
-                      <option value="Nanum Gothic">Nanum Gothic (나눔고딕)</option>
-                      <option value="Nanum Myeongjo">Nanum Myeongjo (나눔명조)</option>
-                      <option value="serif">명조체 (Serif)</option>
-                      <option value="sans-serif">고딕체 (Sans-Serif)</option>
-                    </select>
-                  </div>
-                </div>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </nav>
 
-                <div className="space-y-2">
-                  <Label>미리보기</Label>
-                  <div className="p-4 border rounded-md bg-white dark:bg-card flex items-center gap-3">
-                    <svg viewBox="0 0 40 40" className="h-10 w-10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <circle cx="20" cy="20" r="18" stroke={settings.logoColor} strokeWidth="2.5" fill="none"/>
-                      <circle cx="20" cy="20" r="14" stroke={settings.logoColor} strokeWidth="2.5" fill="none"/>
-                      <circle cx="20" cy="20" r="10" stroke={settings.logoColor} strokeWidth="2.5" fill="none"/>
-                      <circle cx="20" cy="20" r="6" stroke={settings.logoColor} strokeWidth="2.5" fill="none"/>
-                      <circle cx="20" cy="20" r="2" fill={settings.logoColor}/>
-                      <line x1="20" y1="2" x2="20" y2="10" stroke={settings.logoColor} strokeWidth="2.5"/>
-                      <line x1="6" y1="12" x2="12" y2="16" stroke={settings.logoColor} strokeWidth="2.5"/>
-                      <line x1="28" y1="16" x2="34" y2="12" stroke={settings.logoColor} strokeWidth="2.5"/>
-                      <line x1="8" y1="28" x2="14" y2="24" stroke={settings.logoColor} strokeWidth="2.5"/>
-                      <line x1="26" y1="24" x2="32" y2="28" stroke={settings.logoColor} strokeWidth="2.5"/>
-                    </svg>
-                    <div className="flex flex-col leading-tight" style={{ fontFamily: settings.logoFontFamily }}>
-                      {settings.logoText && (
-                        <span className="font-bold" style={{ color: settings.logoColor, fontSize: getSizeValue(settings.logoTextSize) }}>{settings.logoText}</span>
-                      )}
-                      {settings.logoTextKorean && (
-                        <span className="font-medium" style={{ color: settings.logoColor, fontSize: getSizeValue(settings.logoTextKoreanSize) }}>{settings.logoTextKorean}</span>
-                      )}
-                      {settings.logoTextHanja && (
-                        <span style={{ color: settings.logoColor, fontSize: getSizeValue(settings.logoTextHanjaSize) }}>{settings.logoTextHanja}</span>
-                      )}
-                    </div>
-                  </div>
-                </div>
+      <div className="p-3 border-t border-slate-700">
+        <Link href="/">
+          <Button
+            variant="ghost"
+            className={`w-full text-slate-300 hover:bg-slate-700 hover:text-white ${sidebarOpen ? 'justify-start' : 'justify-center'}`}
+          >
+            <Home className="h-5 w-5" />
+            {sidebarOpen && <span className="ml-2">사이트로 돌아가기</span>}
+          </Button>
+        </Link>
+      </div>
+    </div>
+  );
 
-                <Button onClick={handleSaveSettings} disabled={saveMutation.isPending} data-testid="button-save-logo">
-                  {saveMutation.isPending ? (
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  ) : (
-                    <Save className="h-4 w-4 mr-2" />
+  const renderDashboard = () => (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold">대시보드</h2>
+        <p className="text-muted-foreground">관리자 현황을 한눈에 확인하세요.</p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card className="bg-gradient-to-br from-cyan-500 to-cyan-600 text-white border-0" data-testid="card-total-members">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-cyan-100">전체 회원</p>
+                <p className="text-3xl font-bold" data-testid="text-total-members-count">{members?.length || 0}</p>
+              </div>
+              <Users className="h-10 w-10 opacity-80" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-emerald-500 to-emerald-600 text-white border-0" data-testid="card-admin-count">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-emerald-100">관리자 수</p>
+                <p className="text-3xl font-bold" data-testid="text-admin-count">{members?.filter(m => m.isAdmin === 1).length || 0}</p>
+              </div>
+              <Shield className="h-10 w-10 opacity-80" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-violet-500 to-violet-600 text-white border-0" data-testid="card-categories">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-violet-100">카테고리</p>
+                <p className="text-3xl font-bold" data-testid="text-categories-count">{categories?.length || 0}</p>
+              </div>
+              <FolderTree className="h-10 w-10 opacity-80" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-amber-500 to-amber-600 text-white border-0" data-testid="card-posts">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-amber-100">게시글 수</p>
+                <p className="text-3xl font-bold" data-testid="text-posts-count">{recentPosts?.length || 0}</p>
+              </div>
+              <FileText className="h-10 w-10 opacity-80" />
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Users className="h-5 w-5" />
+              최근 가입 회원
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left py-2 px-3">닉네임</th>
+                    <th className="text-left py-2 px-3">아이디</th>
+                    <th className="text-left py-2 px-3">가입일</th>
+                    <th className="text-left py-2 px-3">권한</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {members?.slice(0, 5).map((member) => (
+                    <tr key={member.id} className="border-b hover:bg-muted/50">
+                      <td className="py-2 px-3">{member.firstName || member.lastName ? `${member.firstName || ''} ${member.lastName || ''}`.trim() : member.email}</td>
+                      <td className="py-2 px-3 text-muted-foreground">{member.email || '-'}</td>
+                      <td className="py-2 px-3 text-muted-foreground">
+                        {member.createdAt ? new Date(member.createdAt).toLocaleDateString('ko-KR') : '-'}
+                      </td>
+                      <td className="py-2 px-3">
+                        {member.isAdmin === 1 ? (
+                          <Badge variant="default" className="bg-cyan-600">관리자</Badge>
+                        ) : (
+                          <Badge variant="secondary">일반</Badge>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                  {(!members || members.length === 0) && (
+                    <tr>
+                      <td colSpan={4} className="py-4 text-center text-muted-foreground">
+                        회원이 없습니다.
+                      </td>
+                    </tr>
                   )}
-                  저장
-                </Button>
-              </CardContent>
-            </Card>
-          </TabsContent>
+                </tbody>
+              </table>
+            </div>
+            <Button
+              variant="outline"
+              className="w-full mt-4"
+              onClick={() => setActiveSection("members")}
+            >
+              전체 회원 보기
+            </Button>
+          </CardContent>
+        </Card>
 
-          <TabsContent value="categories">
-            <Card>
-              <CardHeader>
-                <CardTitle>마당 카테고리 관리</CardTitle>
-                <CardDescription>마당 게시판의 카테고리를 관리합니다. (카테고리 → 서브 → 서브서브)</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="border rounded-md p-4 space-y-4">
-                  <div className="flex items-center gap-4 flex-wrap">
-                    <h3 className="font-medium">새 카테고리 추가</h3>
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        variant={addingLevel === 1 ? "default" : "outline"}
-                        onClick={() => { setAddingLevel(1); setSelectedParentId(null); setNewCategory({ ...newCategory, parentId: null, level: 1 }); }}
-                      >
-                        카테고리
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant={addingLevel === 2 ? "default" : "outline"}
-                        onClick={() => { setAddingLevel(2); setNewCategory({ ...newCategory, level: 2 }); }}
-                      >
-                        서브
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant={addingLevel === 3 ? "default" : "outline"}
-                        onClick={() => { setAddingLevel(3); setNewCategory({ ...newCategory, level: 3 }); }}
-                      >
-                        서브서브
-                      </Button>
-                    </div>
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <FileText className="h-5 w-5" />
+              최근 게시글
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b">
+                    <th className="text-left py-2 px-3">제목</th>
+                    <th className="text-left py-2 px-3">작성자</th>
+                    <th className="text-left py-2 px-3">날짜</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {recentPosts?.slice(0, 5).map((post: any) => (
+                    <tr key={post.id} className="border-b hover:bg-muted/50">
+                      <td className="py-2 px-3 truncate max-w-[200px]">{post.title}</td>
+                      <td className="py-2 px-3 text-muted-foreground">{post.author}</td>
+                      <td className="py-2 px-3 text-muted-foreground">
+                        {post.createdAt ? new Date(post.createdAt).toLocaleDateString('ko-KR') : '-'}
+                      </td>
+                    </tr>
+                  ))}
+                  {(!recentPosts || recentPosts.length === 0) && (
+                    <tr>
+                      <td colSpan={3} className="py-4 text-center text-muted-foreground">
+                        게시글이 없습니다.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+
+  const renderLogoSettings = () => (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold">로고 설정</h2>
+        <p className="text-muted-foreground">사이트 로고 텍스트와 스타일을 설정합니다.</p>
+      </div>
+
+      <Card>
+        <CardContent className="p-6 space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="logoText">영문 텍스트</Label>
+              <div className="flex gap-2">
+                <Input
+                  id="logoText"
+                  value={settings.logoText}
+                  onChange={(e) => setSettings({ ...settings, logoText: e.target.value })}
+                  placeholder="ORAE"
+                  className="flex-1"
+                  data-testid="input-logo-text"
+                />
+                <select
+                  value={settings.logoTextSize}
+                  onChange={(e) => setSettings({ ...settings, logoTextSize: e.target.value })}
+                  className="w-20 h-10 px-2 rounded-md border border-input bg-background text-sm"
+                >
+                  <option value="xs">XS</option>
+                  <option value="sm">SM</option>
+                  <option value="base">M</option>
+                  <option value="lg">LG</option>
+                  <option value="xl">XL</option>
+                  <option value="2xl">2XL</option>
+                  <option value="3xl">3XL</option>
+                </select>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="logoTextKorean">한글 텍스트</Label>
+              <div className="flex gap-2">
+                <Input
+                  id="logoTextKorean"
+                  value={settings.logoTextKorean}
+                  onChange={(e) => setSettings({ ...settings, logoTextKorean: e.target.value })}
+                  placeholder="오래"
+                  className="flex-1"
+                  data-testid="input-logo-korean"
+                />
+                <select
+                  value={settings.logoTextKoreanSize}
+                  onChange={(e) => setSettings({ ...settings, logoTextKoreanSize: e.target.value })}
+                  className="w-20 h-10 px-2 rounded-md border border-input bg-background text-sm"
+                >
+                  <option value="xs">XS</option>
+                  <option value="sm">SM</option>
+                  <option value="base">M</option>
+                  <option value="lg">LG</option>
+                  <option value="xl">XL</option>
+                  <option value="2xl">2XL</option>
+                  <option value="3xl">3XL</option>
+                </select>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="logoTextHanja">한자 텍스트</Label>
+              <div className="flex gap-2">
+                <Input
+                  id="logoTextHanja"
+                  value={settings.logoTextHanja}
+                  onChange={(e) => setSettings({ ...settings, logoTextHanja: e.target.value })}
+                  placeholder="悠久"
+                  className="flex-1"
+                  data-testid="input-logo-hanja"
+                />
+                <select
+                  value={settings.logoTextHanjaSize}
+                  onChange={(e) => setSettings({ ...settings, logoTextHanjaSize: e.target.value })}
+                  className="w-20 h-10 px-2 rounded-md border border-input bg-background text-sm"
+                >
+                  <option value="xs">XS</option>
+                  <option value="sm">SM</option>
+                  <option value="base">M</option>
+                  <option value="lg">LG</option>
+                  <option value="xl">XL</option>
+                  <option value="2xl">2XL</option>
+                  <option value="3xl">3XL</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="logoColor">로고 색상</Label>
+              <div className="flex gap-2">
+                <Input
+                  id="logoColor"
+                  type="color"
+                  value={settings.logoColor}
+                  onChange={(e) => setSettings({ ...settings, logoColor: e.target.value })}
+                  className="w-16 h-10 p-1"
+                  data-testid="input-logo-color"
+                />
+                <Input
+                  value={settings.logoColor}
+                  onChange={(e) => setSettings({ ...settings, logoColor: e.target.value })}
+                  placeholder="#0d7377"
+                  className="flex-1"
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="logoFontFamily">폰트</Label>
+              <select
+                id="logoFontFamily"
+                value={settings.logoFontFamily}
+                onChange={(e) => setSettings({ ...settings, logoFontFamily: e.target.value })}
+                className="w-full h-10 px-3 rounded-md border border-input bg-background"
+                data-testid="select-logo-font"
+              >
+                <option value="Noto Sans KR">Noto Sans KR (고딕)</option>
+                <option value="Nanum Gothic">Nanum Gothic (나눔고딕)</option>
+                <option value="Nanum Myeongjo">Nanum Myeongjo (나눔명조)</option>
+                <option value="serif">명조체 (Serif)</option>
+                <option value="sans-serif">고딕체 (Sans-Serif)</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label>미리보기</Label>
+            <div className="p-4 border rounded-md bg-white dark:bg-card flex items-center gap-3">
+              <svg viewBox="0 0 40 40" className="h-10 w-10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="20" cy="20" r="18" stroke={settings.logoColor} strokeWidth="2.5" fill="none"/>
+                <circle cx="20" cy="20" r="14" stroke={settings.logoColor} strokeWidth="2.5" fill="none"/>
+                <circle cx="20" cy="20" r="10" stroke={settings.logoColor} strokeWidth="2.5" fill="none"/>
+                <circle cx="20" cy="20" r="6" stroke={settings.logoColor} strokeWidth="2.5" fill="none"/>
+                <circle cx="20" cy="20" r="2" fill={settings.logoColor}/>
+                <line x1="20" y1="2" x2="20" y2="10" stroke={settings.logoColor} strokeWidth="2.5"/>
+                <line x1="6" y1="12" x2="12" y2="16" stroke={settings.logoColor} strokeWidth="2.5"/>
+                <line x1="28" y1="16" x2="34" y2="12" stroke={settings.logoColor} strokeWidth="2.5"/>
+                <line x1="8" y1="28" x2="14" y2="24" stroke={settings.logoColor} strokeWidth="2.5"/>
+                <line x1="26" y1="24" x2="32" y2="28" stroke={settings.logoColor} strokeWidth="2.5"/>
+              </svg>
+              <div className="flex flex-col leading-tight" style={{ fontFamily: settings.logoFontFamily }}>
+                {settings.logoText && (
+                  <span className="font-bold" style={{ color: settings.logoColor, fontSize: getSizeValue(settings.logoTextSize) }}>{settings.logoText}</span>
+                )}
+                {settings.logoTextKorean && (
+                  <span className="font-medium" style={{ color: settings.logoColor, fontSize: getSizeValue(settings.logoTextKoreanSize) }}>{settings.logoTextKorean}</span>
+                )}
+                {settings.logoTextHanja && (
+                  <span style={{ color: settings.logoColor, fontSize: getSizeValue(settings.logoTextHanjaSize) }}>{settings.logoTextHanja}</span>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <Button onClick={handleSaveSettings} disabled={saveMutation.isPending} data-testid="button-save-logo">
+            {saveMutation.isPending ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <Save className="h-4 w-4 mr-2" />
+            )}
+            저장
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  const renderMembers = () => (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold">회원 관리</h2>
+        <p className="text-muted-foreground">회원 목록을 관리하고 관리자 권한을 부여합니다.</p>
+      </div>
+
+      <Card>
+        <CardContent className="p-0">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50">
+                <tr className="border-b">
+                  <th className="text-left py-3 px-4 font-medium">이름</th>
+                  <th className="text-left py-3 px-4 font-medium">이메일</th>
+                  <th className="text-left py-3 px-4 font-medium">가입일</th>
+                  <th className="text-left py-3 px-4 font-medium">권한</th>
+                  <th className="text-left py-3 px-4 font-medium">관리</th>
+                </tr>
+              </thead>
+              <tbody>
+                {membersLoading ? (
+                  <tr>
+                    <td colSpan={5} className="py-8 text-center">
+                      <Loader2 className="h-6 w-6 animate-spin mx-auto" />
+                    </td>
+                  </tr>
+                ) : members?.map((member) => (
+                  <tr key={member.id} className="border-b hover:bg-muted/30">
+                    <td className="py-3 px-4 font-medium">
+                      {member.firstName || member.lastName ? `${member.firstName || ''} ${member.lastName || ''}`.trim() : (member.email || '-')}
+                    </td>
+                    <td className="py-3 px-4 text-muted-foreground">{member.email || '-'}</td>
+                    <td className="py-3 px-4 text-muted-foreground">
+                      {member.createdAt ? new Date(member.createdAt).toLocaleDateString('ko-KR') : '-'}
+                    </td>
+                    <td className="py-3 px-4">
+                      {member.isAdmin === 1 ? (
+                        <Badge variant="default" className="bg-cyan-600">관리자</Badge>
+                      ) : (
+                        <Badge variant="secondary">일반</Badge>
+                      )}
+                    </td>
+                    <td className="py-3 px-4">
+                      {member.id !== user?.id && (
+                        <Switch
+                          checked={member.isAdmin === 1}
+                          onCheckedChange={(checked) => 
+                            toggleAdminMutation.mutate({ userId: member.id, isAdmin: checked ? 1 : 0 })
+                          }
+                          disabled={toggleAdminMutation.isPending}
+                        />
+                      )}
+                    </td>
+                  </tr>
+                ))}
+                {(!members || members.length === 0) && !membersLoading && (
+                  <tr>
+                    <td colSpan={5} className="py-8 text-center text-muted-foreground">
+                      회원이 없습니다.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+
+  const renderCategories = () => (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold">마당 카테고리 관리</h2>
+        <p className="text-muted-foreground">마당 게시판의 카테고리를 관리합니다. (카테고리 → 서브 → 서브서브)</p>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>새 카테고리 추가</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center gap-4 flex-wrap">
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                variant={addingLevel === 1 ? "default" : "outline"}
+                onClick={() => { setAddingLevel(1); setSelectedParentId(null); setNewCategory({ ...newCategory, parentId: null, level: 1 }); }}
+              >
+                카테고리
+              </Button>
+              <Button
+                size="sm"
+                variant={addingLevel === 2 ? "default" : "outline"}
+                onClick={() => { setAddingLevel(2); setNewCategory({ ...newCategory, level: 2 }); }}
+              >
+                서브
+              </Button>
+              <Button
+                size="sm"
+                variant={addingLevel === 3 ? "default" : "outline"}
+                onClick={() => { setAddingLevel(3); setNewCategory({ ...newCategory, level: 3 }); }}
+              >
+                서브서브
+              </Button>
+            </div>
+          </div>
+          
+          {addingLevel >= 2 && (
+            <div className="space-y-2">
+              <Label>상위 카테고리 선택</Label>
+              <select
+                className="w-full h-10 px-3 rounded-md border border-input bg-background"
+                value={selectedParentId || ""}
+                onChange={(e) => {
+                  const pid = e.target.value ? Number(e.target.value) : null;
+                  setSelectedParentId(pid);
+                  setNewCategory({ ...newCategory, parentId: pid });
+                }}
+              >
+                <option value="">선택하세요</option>
+                {addingLevel === 2 && categories?.filter(c => c.level === 1).map(c => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
+                {addingLevel === 3 && categories?.filter(c => c.level === 2).map(c => {
+                  const parent = categories?.find(p => p.id === c.parentId);
+                  return <option key={c.id} value={c.id}>{parent?.name} → {c.name}</option>;
+                })}
+              </select>
+            </div>
+          )}
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Input
+              placeholder="카테고리 이름"
+              value={newCategory.name}
+              onChange={(e) => setNewCategory({ ...newCategory, name: e.target.value })}
+              data-testid="input-new-category-name"
+            />
+            <Input
+              placeholder="슬러그 (영문)"
+              value={newCategory.slug}
+              onChange={(e) => setNewCategory({ ...newCategory, slug: e.target.value })}
+              data-testid="input-new-category-slug"
+            />
+            <Input
+              placeholder="설명 (선택)"
+              value={newCategory.description}
+              onChange={(e) => setNewCategory({ ...newCategory, description: e.target.value })}
+              data-testid="input-new-category-desc"
+            />
+          </div>
+          <Button
+            onClick={() => createCategoryMutation.mutate({
+              ...newCategory,
+              parentId: selectedParentId,
+              level: addingLevel,
+            })}
+            disabled={!newCategory.name || !newCategory.slug || (addingLevel >= 2 && !selectedParentId) || createCategoryMutation.isPending}
+            data-testid="button-add-category"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            {addingLevel === 1 ? "카테고리" : addingLevel === 2 ? "서브카테고리" : "서브서브카테고리"} 추가
+          </Button>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>카테고리 목록</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {categoriesLoading ? (
+            <div className="flex justify-center py-4">
+              <Loader2 className="h-6 w-6 animate-spin" />
+            </div>
+          ) : categories?.length === 0 ? (
+            <p className="text-muted-foreground text-center py-4">카테고리가 없습니다.</p>
+          ) : (
+            <div className="space-y-2">
+              {categories?.filter(c => c.level === 1).map((category) => (
+                <div key={category.id} className="border rounded-lg">
+                  <div className="flex items-center justify-between p-3 bg-muted/30">
+                    {editingCategory?.id === category.id ? (
+                      <div className="flex-1 flex gap-2">
+                        <Input value={editingCategory.name} onChange={(e) => setEditingCategory({ ...editingCategory, name: e.target.value })} />
+                        <Input value={editingCategory.slug} onChange={(e) => setEditingCategory({ ...editingCategory, slug: e.target.value })} />
+                        <Button size="sm" onClick={() => updateCategoryMutation.mutate(editingCategory)}>저장</Button>
+                        <Button size="sm" variant="outline" onClick={() => setEditingCategory(null)}>취소</Button>
+                      </div>
+                    ) : (
+                      <>
+                        <div>
+                          <span className="font-medium">{category.name}</span>
+                          <span className="text-muted-foreground ml-2">({category.slug})</span>
+                        </div>
+                        <div className="flex gap-1">
+                          <Button size="icon" variant="ghost" onClick={() => setEditingCategory(category)}>
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button size="icon" variant="ghost" onClick={() => deleteCategoryMutation.mutate(category.id)}>
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </>
+                    )}
                   </div>
                   
-                  {addingLevel >= 2 && (
-                    <div className="space-y-2">
-                      <Label>상위 카테고리 선택</Label>
-                      <select
-                        className="w-full h-10 px-3 rounded-md border border-input bg-background"
-                        value={selectedParentId || ""}
-                        onChange={(e) => {
-                          const pid = e.target.value ? Number(e.target.value) : null;
-                          setSelectedParentId(pid);
-                          setNewCategory({ ...newCategory, parentId: pid });
-                        }}
-                      >
-                        <option value="">선택하세요</option>
-                        {addingLevel === 2 && categories?.filter(c => c.level === 1).map(c => (
-                          <option key={c.id} value={c.id}>{c.name}</option>
-                        ))}
-                        {addingLevel === 3 && categories?.filter(c => c.level === 2).map(c => {
-                          const parent = categories?.find(p => p.id === c.parentId);
-                          return <option key={c.id} value={c.id}>{parent?.name} → {c.name}</option>;
-                        })}
-                      </select>
-                    </div>
-                  )}
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <Input
-                      placeholder="카테고리 이름"
-                      value={newCategory.name}
-                      onChange={(e) => setNewCategory({ ...newCategory, name: e.target.value })}
-                      data-testid="input-new-category-name"
-                    />
-                    <Input
-                      placeholder="슬러그 (영문)"
-                      value={newCategory.slug}
-                      onChange={(e) => setNewCategory({ ...newCategory, slug: e.target.value })}
-                      data-testid="input-new-category-slug"
-                    />
-                    <Input
-                      placeholder="설명 (선택)"
-                      value={newCategory.description}
-                      onChange={(e) => setNewCategory({ ...newCategory, description: e.target.value })}
-                      data-testid="input-new-category-desc"
-                    />
-                  </div>
-                  <Button
-                    onClick={() => createCategoryMutation.mutate({
-                      ...newCategory,
-                      parentId: selectedParentId,
-                      level: addingLevel,
-                    })}
-                    disabled={!newCategory.name || !newCategory.slug || (addingLevel >= 2 && !selectedParentId) || createCategoryMutation.isPending}
-                    data-testid="button-add-category"
-                  >
-                    <Plus className="h-4 w-4 mr-2" />
-                    {addingLevel === 1 ? "카테고리" : addingLevel === 2 ? "서브카테고리" : "서브서브카테고리"} 추가
-                  </Button>
-                </div>
-
-                <div className="space-y-2">
-                  <h3 className="font-medium">카테고리 목록</h3>
-                  {categoriesLoading ? (
-                    <div className="flex justify-center py-4">
-                      <Loader2 className="h-6 w-6 animate-spin" />
-                    </div>
-                  ) : categories?.length === 0 ? (
-                    <p className="text-muted-foreground text-center py-4">카테고리가 없습니다.</p>
-                  ) : (
-                    <div className="space-y-1">
-                      {categories?.filter(c => c.level === 1 || !c.level).map((cat1) => (
-                        <div key={cat1.id} className="border rounded-md overflow-hidden" data-testid={`category-item-${cat1.id}`}>
-                          <div className="flex items-center justify-between p-3 bg-muted/30">
-                            {editingCategory?.id === cat1.id ? (
-                              <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-2 mr-2">
-                                <Input value={editingCategory.name} onChange={(e) => setEditingCategory({ ...editingCategory, name: e.target.value })} />
-                                <Input value={editingCategory.slug} onChange={(e) => setEditingCategory({ ...editingCategory, slug: e.target.value })} />
-                                <Input value={editingCategory.description || ""} onChange={(e) => setEditingCategory({ ...editingCategory, description: e.target.value })} />
-                              </div>
-                            ) : (
-                              <div className="flex-1">
-                                <span className="font-medium">{cat1.name}</span>
-                                <span className="text-muted-foreground ml-2 text-sm">({cat1.slug})</span>
-                              </div>
-                            )}
-                            <div className="flex items-center gap-2">
-                              <Switch checked={cat1.isActive === 1} onCheckedChange={(checked) => updateCategoryMutation.mutate({ ...cat1, isActive: checked ? 1 : 0 })} />
-                              {editingCategory?.id === cat1.id ? (
-                                <>
-                                  <Button size="sm" onClick={() => updateCategoryMutation.mutate(editingCategory)}><Save className="h-4 w-4" /></Button>
-                                  <Button size="sm" variant="ghost" onClick={() => setEditingCategory(null)}>취소</Button>
-                                </>
-                              ) : (
-                                <>
-                                  <Button size="icon" variant="ghost" onClick={() => setEditingCategory(cat1)}><Edit className="h-4 w-4" /></Button>
-                                  <Button size="icon" variant="ghost" onClick={() => deleteCategoryMutation.mutate(cat1.id)}><Trash2 className="h-4 w-4" /></Button>
-                                </>
-                              )}
-                            </div>
+                  {categories?.filter(c => c.level === 2 && c.parentId === category.id).map((sub) => (
+                    <div key={sub.id} className="border-t">
+                      <div className="flex items-center justify-between p-3 pl-8 bg-muted/10">
+                        {editingCategory?.id === sub.id ? (
+                          <div className="flex-1 flex gap-2">
+                            <Input value={editingCategory.name} onChange={(e) => setEditingCategory({ ...editingCategory, name: e.target.value })} />
+                            <Input value={editingCategory.slug} onChange={(e) => setEditingCategory({ ...editingCategory, slug: e.target.value })} />
+                            <Button size="sm" onClick={() => updateCategoryMutation.mutate(editingCategory)}>저장</Button>
+                            <Button size="sm" variant="outline" onClick={() => setEditingCategory(null)}>취소</Button>
                           </div>
-                          
-                          {categories?.filter(c => c.level === 2 && c.parentId === cat1.id).map((cat2) => (
-                            <div key={cat2.id} className="border-t">
-                              <div className="flex items-center justify-between p-3 pl-8 bg-muted/10">
-                                {editingCategory?.id === cat2.id ? (
-                                  <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-2 mr-2">
-                                    <Input value={editingCategory.name} onChange={(e) => setEditingCategory({ ...editingCategory, name: e.target.value })} />
-                                    <Input value={editingCategory.slug} onChange={(e) => setEditingCategory({ ...editingCategory, slug: e.target.value })} />
-                                    <Input value={editingCategory.description || ""} onChange={(e) => setEditingCategory({ ...editingCategory, description: e.target.value })} />
-                                  </div>
-                                ) : (
-                                  <div className="flex-1">
-                                    <span className="text-muted-foreground mr-2">└</span>
-                                    <span className="font-medium">{cat2.name}</span>
-                                    <span className="text-muted-foreground ml-2 text-sm">({cat2.slug})</span>
-                                  </div>
-                                )}
-                                <div className="flex items-center gap-2">
-                                  <Switch checked={cat2.isActive === 1} onCheckedChange={(checked) => updateCategoryMutation.mutate({ ...cat2, isActive: checked ? 1 : 0 })} />
-                                  {editingCategory?.id === cat2.id ? (
-                                    <>
-                                      <Button size="sm" onClick={() => updateCategoryMutation.mutate(editingCategory)}><Save className="h-4 w-4" /></Button>
-                                      <Button size="sm" variant="ghost" onClick={() => setEditingCategory(null)}>취소</Button>
-                                    </>
-                                  ) : (
-                                    <>
-                                      <Button size="icon" variant="ghost" onClick={() => setEditingCategory(cat2)}><Edit className="h-4 w-4" /></Button>
-                                      <Button size="icon" variant="ghost" onClick={() => deleteCategoryMutation.mutate(cat2.id)}><Trash2 className="h-4 w-4" /></Button>
-                                    </>
-                                  )}
-                                </div>
-                              </div>
-                              
-                              {categories?.filter(c => c.level === 3 && c.parentId === cat2.id).map((cat3) => (
-                                <div key={cat3.id} className="flex items-center justify-between p-3 pl-14 border-t">
-                                  {editingCategory?.id === cat3.id ? (
-                                    <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-2 mr-2">
-                                      <Input value={editingCategory.name} onChange={(e) => setEditingCategory({ ...editingCategory, name: e.target.value })} />
-                                      <Input value={editingCategory.slug} onChange={(e) => setEditingCategory({ ...editingCategory, slug: e.target.value })} />
-                                      <Input value={editingCategory.description || ""} onChange={(e) => setEditingCategory({ ...editingCategory, description: e.target.value })} />
-                                    </div>
-                                  ) : (
-                                    <div className="flex-1">
-                                      <span className="text-muted-foreground mr-2">└─</span>
-                                      <span>{cat3.name}</span>
-                                      <span className="text-muted-foreground ml-2 text-sm">({cat3.slug})</span>
-                                    </div>
-                                  )}
-                                  <div className="flex items-center gap-2">
-                                    <Switch checked={cat3.isActive === 1} onCheckedChange={(checked) => updateCategoryMutation.mutate({ ...cat3, isActive: checked ? 1 : 0 })} />
-                                    {editingCategory?.id === cat3.id ? (
-                                      <>
-                                        <Button size="sm" onClick={() => updateCategoryMutation.mutate(editingCategory)}><Save className="h-4 w-4" /></Button>
-                                        <Button size="sm" variant="ghost" onClick={() => setEditingCategory(null)}>취소</Button>
-                                      </>
-                                    ) : (
-                                      <>
-                                        <Button size="icon" variant="ghost" onClick={() => setEditingCategory(cat3)}><Edit className="h-4 w-4" /></Button>
-                                        <Button size="icon" variant="ghost" onClick={() => deleteCategoryMutation.mutate(cat3.id)}><Trash2 className="h-4 w-4" /></Button>
-                                      </>
-                                    )}
-                                  </div>
-                                </div>
-                              ))}
+                        ) : (
+                          <>
+                            <div>
+                              <span className="text-muted-foreground mr-2">└</span>
+                              <span className="font-medium">{sub.name}</span>
+                              <span className="text-muted-foreground ml-2">({sub.slug})</span>
                             </div>
-                          ))}
+                            <div className="flex gap-1">
+                              <Button size="icon" variant="ghost" onClick={() => setEditingCategory(sub)}>
+                                <Edit className="h-4 w-4" />
+                              </Button>
+                              <Button size="icon" variant="ghost" onClick={() => deleteCategoryMutation.mutate(sub.id)}>
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </>
+                        )}
+                      </div>
+                      
+                      {categories?.filter(c => c.level === 3 && c.parentId === sub.id).map((subsub) => (
+                        <div key={subsub.id} className="flex items-center justify-between p-3 pl-14 border-t bg-background">
+                          {editingCategory?.id === subsub.id ? (
+                            <div className="flex-1 flex gap-2">
+                              <Input value={editingCategory.name} onChange={(e) => setEditingCategory({ ...editingCategory, name: e.target.value })} />
+                              <Input value={editingCategory.slug} onChange={(e) => setEditingCategory({ ...editingCategory, slug: e.target.value })} />
+                              <Button size="sm" onClick={() => updateCategoryMutation.mutate(editingCategory)}>저장</Button>
+                              <Button size="sm" variant="outline" onClick={() => setEditingCategory(null)}>취소</Button>
+                            </div>
+                          ) : (
+                            <>
+                              <div>
+                                <span className="text-muted-foreground mr-2">└</span>
+                                <span>{subsub.name}</span>
+                                <span className="text-muted-foreground ml-2">({subsub.slug})</span>
+                              </div>
+                              <div className="flex gap-1">
+                                <Button size="icon" variant="ghost" onClick={() => setEditingCategory(subsub)}>
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                                <Button size="icon" variant="ghost" onClick={() => deleteCategoryMutation.mutate(subsub.id)}>
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </>
+                          )}
                         </div>
                       ))}
                     </div>
-                  )}
+                  ))}
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
+  );
 
-          <TabsContent value="calendar">
-            <Card>
-              <CardHeader>
-                <CardTitle>달력 데이터 관리</CardTitle>
-                <CardDescription>달력 데이터를 다운로드하거나 업로드합니다.</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="border rounded-md p-4 space-y-4">
-                  <h3 className="font-medium">데이터 다운로드</h3>
-                  <p className="text-sm text-muted-foreground">
-                    1989년부터 2050년까지의 달력 데이터를 엑셀 파일로 다운로드합니다.
-                  </p>
-                  <Button onClick={handleDownloadCalendar} data-testid="button-download-calendar">
-                    <Download className="h-4 w-4 mr-2" />
-                    엑셀 다운로드 (1989-2050)
-                  </Button>
-                </div>
+  const renderCalendar = () => (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold">달력 데이터</h2>
+        <p className="text-muted-foreground">달력 데이터를 엑셀 파일로 다운로드합니다.</p>
+      </div>
 
-                <div className="border rounded-md p-4 space-y-4">
-                  <h3 className="font-medium">데이터 업로드</h3>
-                  <p className="text-sm text-muted-foreground">
-                    달력 데이터 업로드 기능은 추후 지원 예정입니다.
-                  </p>
-                  <Button disabled>
-                    <Upload className="h-4 w-4 mr-2" />
-                    엑셀 업로드 (준비 중)
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Database className="h-5 w-5" />
+            엑셀 다운로드
+          </CardTitle>
+          <CardDescription>1989년 1월 1일 ~ 2050년 12월 31일까지의 달력 데이터</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="bg-muted/30 p-4 rounded-lg space-y-2">
+            <h4 className="font-medium">포함 데이터:</h4>
+            <ul className="text-sm text-muted-foreground space-y-1 list-disc list-inside">
+              <li>날짜 (양력, 황극력)</li>
+              <li>60간지 (干支)</li>
+              <li>28수 (二十八宿)</li>
+              <li>28장 (二十八章)</li>
+              <li>오전/오후 소궁, 대궁, 81궁 이름</li>
+              <li>오전/오후 팔괘 (소궁/대궁 기반)</li>
+            </ul>
+          </div>
+          <Button onClick={handleDownloadCalendar} className="w-full sm:w-auto" data-testid="button-download-calendar">
+            <Download className="h-4 w-4 mr-2" />
+            엑셀 파일 다운로드
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
 
-          <TabsContent value="pages">
-            <Card>
-              <CardHeader>
-                <CardTitle>페이지 콘텐츠 관리</CardTitle>
-                <CardDescription>각 페이지의 콘텐츠와 스타일을 관리합니다.</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {pagesLoading ? (
-                  <div className="flex justify-center py-4">
-                    <Loader2 className="h-6 w-6 animate-spin" />
+  const renderPages = () => (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold">페이지 관리</h2>
+        <p className="text-muted-foreground">페이지 콘텐츠를 편집합니다.</p>
+      </div>
+
+      {editingPage ? (
+        <Card>
+          <CardHeader>
+            <CardTitle>페이지 편집: {editingPage.title}</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label>제목</Label>
+              <Input
+                value={editingPage.title || ""}
+                onChange={(e) => setEditingPage({ ...editingPage, title: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>콘텐츠 (HTML)</Label>
+              <Textarea
+                value={editingPage.content || ""}
+                onChange={(e) => setEditingPage({ ...editingPage, content: e.target.value })}
+                rows={10}
+                className="font-mono text-sm"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>커스텀 CSS</Label>
+              <Textarea
+                value={editingPage.customCss || ""}
+                onChange={(e) => setEditingPage({ ...editingPage, customCss: e.target.value })}
+                rows={5}
+                className="font-mono text-sm"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>커스텀 JavaScript</Label>
+              <Textarea
+                value={editingPage.customJs || ""}
+                onChange={(e) => setEditingPage({ ...editingPage, customJs: e.target.value })}
+                rows={5}
+                className="font-mono text-sm"
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button onClick={() => savePageMutation.mutate(editingPage)} disabled={savePageMutation.isPending}>
+                {savePageMutation.isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
+                저장
+              </Button>
+              <Button variant="outline" onClick={() => setEditingPage(null)}>취소</Button>
+            </div>
+          </CardContent>
+        </Card>
+      ) : (
+        <Card>
+          <CardHeader>
+            <CardTitle>페이지 목록</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {defaultPages.map((page) => {
+                const savedPage = pages?.find(p => p.pageSlug === page.pageSlug);
+                return (
+                  <div key={page.pageSlug} className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/30">
+                    <div>
+                      <span className="font-medium">{page.title}</span>
+                      <span className="text-muted-foreground ml-2">/{page.pageSlug}</span>
+                      {savedPage && (
+                        <Badge variant="secondary" className="ml-2">편집됨</Badge>
+                      )}
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setEditingPage(savedPage || { 
+                        id: 0, 
+                        pageSlug: page.pageSlug, 
+                        title: page.title, 
+                        content: "", 
+                        customCss: "", 
+                        customJs: "",
+                        updatedBy: user?.id || null,
+                        updatedAt: null 
+                      })}
+                    >
+                      <Edit className="h-4 w-4 mr-1" />
+                      편집
+                    </Button>
                   </div>
-                ) : (
-                  <div className="space-y-4">
-                    {defaultPages.map((page) => {
-                      const savedPage = pages?.find(p => p.pageSlug === page.pageSlug);
-                      const isEditing = editingPage?.pageSlug === page.pageSlug;
-                      
-                      return (
-                        <div key={page.pageSlug} className="border rounded-md p-4" data-testid={`page-item-${page.pageSlug}`}>
-                          <div className="flex items-center justify-between mb-4">
-                            <div>
-                              <h3 className="font-medium">{page.title}</h3>
-                              <span className="text-sm text-muted-foreground">/{page.pageSlug}</span>
-                            </div>
-                            {!isEditing && (
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => setEditingPage(savedPage || {
-                                  id: 0,
-                                  pageSlug: page.pageSlug,
-                                  title: page.title,
-                                  content: "",
-                                  customCss: "",
-                                  customJs: "",
-                                  updatedAt: null,
-                                  updatedBy: null,
-                                })}
-                              >
-                                <Edit className="h-4 w-4 mr-2" />
-                                편집
-                              </Button>
-                            )}
-                          </div>
-                          
-                          {isEditing && (
-                            <div className="space-y-4">
-                              <div className="space-y-2">
-                                <Label>페이지 콘텐츠 (HTML)</Label>
-                                <Textarea
-                                  value={editingPage.content || ""}
-                                  onChange={(e) => setEditingPage({ ...editingPage, content: e.target.value })}
-                                  rows={6}
-                                  placeholder="<div>커스텀 콘텐츠...</div>"
-                                  className="font-mono text-sm"
-                                />
-                              </div>
-                              <div className="space-y-2">
-                                <Label>커스텀 CSS</Label>
-                                <Textarea
-                                  value={editingPage.customCss || ""}
-                                  onChange={(e) => setEditingPage({ ...editingPage, customCss: e.target.value })}
-                                  rows={4}
-                                  placeholder=".custom-class { color: red; }"
-                                  className="font-mono text-sm"
-                                />
-                              </div>
-                              <div className="space-y-2">
-                                <Label>커스텀 JavaScript</Label>
-                                <Textarea
-                                  value={editingPage.customJs || ""}
-                                  onChange={(e) => setEditingPage({ ...editingPage, customJs: e.target.value })}
-                                  rows={4}
-                                  placeholder="console.log('Hello');"
-                                  className="font-mono text-sm"
-                                />
-                              </div>
-                              <div className="flex gap-2">
-                                <Button
-                                  onClick={() => savePageMutation.mutate(editingPage)}
-                                  disabled={savePageMutation.isPending}
-                                >
-                                  {savePageMutation.isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
-                                  저장
-                                </Button>
-                                <Button variant="ghost" onClick={() => setEditingPage(null)}>
-                                  취소
-                                </Button>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </main>
-      <Footer />
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </div>
+  );
+
+  const renderContent = () => {
+    switch (activeSection) {
+      case "dashboard":
+        return renderDashboard();
+      case "logo":
+        return renderLogoSettings();
+      case "members":
+        return renderMembers();
+      case "categories":
+        return renderCategories();
+      case "calendar":
+        return renderCalendar();
+      case "pages":
+        return renderPages();
+      default:
+        return renderDashboard();
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex bg-slate-100 dark:bg-slate-900">
+      <div className="hidden md:flex">
+        {renderSidebar()}
+      </div>
+
+      {mobileSidebarOpen && (
+        <div className="fixed inset-0 z-50 md:hidden">
+          <div className="fixed inset-0 bg-black/50" onClick={() => setMobileSidebarOpen(false)} />
+          <div className="fixed left-0 top-0 h-full w-64 z-50">
+            {renderSidebar()}
+          </div>
+        </div>
+      )}
+
+      <div className="flex-1 flex flex-col min-h-screen overflow-hidden">
+        <header className="bg-white dark:bg-slate-800 border-b px-4 py-3 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <Button
+              size="icon"
+              variant="ghost"
+              className="md:hidden"
+              onClick={() => setMobileSidebarOpen(true)}
+            >
+              <Menu className="h-5 w-5" />
+            </Button>
+            <div>
+              <h1 className="text-xl font-bold">관리자 모드</h1>
+              <p className="text-sm text-muted-foreground hidden sm:block">
+                {user?.firstName || user?.email}님 환영합니다
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Link href="/">
+              <Button variant="outline" size="sm">
+                <Home className="h-4 w-4 mr-1" />
+                <span className="hidden sm:inline">사이트로</span>
+              </Button>
+            </Link>
+          </div>
+        </header>
+
+        <main className="flex-1 overflow-y-auto p-4 md:p-6">
+          {renderContent()}
+        </main>
+      </div>
     </div>
   );
 }

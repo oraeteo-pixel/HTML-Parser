@@ -798,16 +798,25 @@ export function Calendar() {
               };
               const hexagrams: JSX.Element[] = [];
               
+              // 현재 소궁/대궁 (실시간)
+              const currentSogung = liveSogungDaegung.sogung;
+              const currentDaegung = liveSogungDaegung.daegung;
+              
               // 8x8 = 64괘 생성 (행: 하괘/대궁, 열: 상괘/소궁)
               for (let row = 0; row < 8; row++) {
                 const lower = trigramOrder[row]; // 하괘 (대궁)
                 for (let col = 0; col < 8; col++) {
                   const upper = trigramOrder[col]; // 상괘 (소궁)
                   const hexagram = get64HexagramName(upper, lower);
+                  const isCurrentHexagram = upper === currentSogung && lower === currentDaegung;
                   hexagrams.push(
                     <div 
                       key={`${lower}-${upper}`}
-                      className="text-center p-1 border border-border/50 rounded text-xs hover-elevate cursor-pointer"
+                      className={`text-center p-1 border rounded text-xs cursor-pointer transition-all ${
+                        isCurrentHexagram 
+                          ? "border-yellow-500 bg-yellow-400/50 text-yellow-900 dark:text-yellow-100 font-bold" 
+                          : "border-border/50 hover-elevate"
+                      }`}
                       title={hexagram ? `${hexagram.fullName} (${hexagram.korean})` : `${trigramNames[upper]}之${trigramNames[lower]}`}
                     >
                       <div className="font-bold">{hexagram?.hanja || "?"}</div>

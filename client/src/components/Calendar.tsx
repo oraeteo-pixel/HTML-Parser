@@ -12,6 +12,7 @@ import {
   getHwanggeukYearGanZhi,
   getHwanggeukMonthGanZhi,
   getHwanggeukHourGanZhi,
+  getHwanggeukDayGanZhi,
   getHwanggeuk28Mansion,
   getHwanggeukPosition,
   getDayGanZhi,
@@ -159,12 +160,12 @@ export function Calendar() {
   }, [currentTime]);
   
   const liveDayGanZhi = useMemo(() => {
-    return getDayGanZhi(
-      currentTime.getFullYear(),
-      currentTime.getMonth() + 1,
-      currentTime.getDate()
+    return getHwanggeukDayGanZhi(
+      liveHwanggeuk.year,
+      liveHwanggeuk.month,
+      liveHwanggeuk.day
     );
-  }, [currentTime]);
+  }, [liveHwanggeuk]);
   
   const liveHourGanZhi = useMemo(() => {
     return getHwanggeukHourGanZhi(

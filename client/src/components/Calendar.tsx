@@ -41,6 +41,41 @@ const CAL_DESCRIPTIONS = {
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 const WEEKDAYS_HANJA = ["日", "月", "火", "水", "木", "金", "土"];
 
+// 60갑자 시간 배열 (甲子부터 癸亥까지)
+const STEMS = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"];
+const BRANCHES = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
+const GANZI_60: string[] = [];
+for (let i = 0; i < 60; i++) {
+  GANZI_60.push(STEMS[i % 10] + BRANCHES[i % 12]);
+}
+
+// 특정 날짜의 60갑자 시간 계산 (오전 6개, 오후 6개)
+// 기준: 2026년 1월 10일 오전 시작 = 乙巳(인덱스 41)
+function get60GanziHours(date: Date): { am: string[], pm: string[] } {
+  // 기준일: 2026년 1월 10일
+  const epochDate = new Date(2026, 0, 10);
+  const targetDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  
+  // 날짜 차이 계산
+  const diffDays = Math.floor((targetDate.getTime() - epochDate.getTime()) / (1000 * 60 * 60 * 24));
+  
+  // 하루에 12시간씩 진행, 기준일 오전 시작 = 乙巳(41)
+  const startIndex = (41 + diffDays * 12) % 60;
+  const adjustedStart = startIndex < 0 ? startIndex + 60 : startIndex;
+  
+  const am: string[] = [];
+  const pm: string[] = [];
+  
+  for (let i = 0; i < 6; i++) {
+    am.push(GANZI_60[(adjustedStart + i) % 60]);
+  }
+  for (let i = 6; i < 12; i++) {
+    pm.push(GANZI_60[(adjustedStart + i) % 60]);
+  }
+  
+  return { am, pm };
+}
+
 function isTodayKorean(date: Date): boolean {
   const koreanNow = getKoreanTime();
   return date.getFullYear() === koreanNow.getFullYear() &&
@@ -810,6 +845,29 @@ export function Calendar() {
                   {!hwMansion.isZunkong && (
                     <div className="text-muted-foreground text-sm">{hwMansion.description}</div>
                   )}
+                </div>
+                {/* 60갑자 시간표 */}
+                <div className="info-card col-span-2">
+                  <div className="text-muted-foreground text-xs mb-2 uppercase tracking-wide">60甲子 時間</div>
+                  {(() => {
+                    const ganziHours = get60GanziHours(displayDate);
+                    return (
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-1 flex-wrap">
+                          <span className="text-muted-foreground text-xs w-8">오전</span>
+                          {ganziHours.am.map((h, i) => (
+                            <span key={`am-${i}`} className="px-1.5 py-0.5 text-xs border border-border bg-muted/30 rounded">{h}</span>
+                          ))}
+                        </div>
+                        <div className="flex items-center gap-1 flex-wrap">
+                          <span className="text-muted-foreground text-xs w-8">오후</span>
+                          {ganziHours.pm.map((h, i) => (
+                            <span key={`pm-${i}`} className="px-1.5 py-0.5 text-xs border border-border bg-muted/30 rounded">{h}</span>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </div>
               </div>
             ) : (

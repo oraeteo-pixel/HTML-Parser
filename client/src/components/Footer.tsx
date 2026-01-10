@@ -9,11 +9,6 @@ export function Footer() {
   
   const todayData = getCalendarDayData(today.getFullYear(), today.getMonth() + 1, today.getDate());
 
-  // 60갑자 시간 (황극력 기준)
-  // 오전: 乙巳~庚戌 / 오후: 辛亥~丙辰
-  const amHours = ["乙巳", "丙午", "丁未", "戊申", "己酉", "庚戌"];
-  const pmHours = ["辛亥", "壬子", "癸丑", "甲寅", "乙卯", "丙辰"];
-
   return (
     <footer className="max-w-[990px] mx-auto py-4 text-center" data-testid="footer">
       <div className="text-sm mb-2" data-testid="footer-date">
@@ -22,24 +17,6 @@ export function Footer() {
           (음{todayData.lunarMonth}.{todayData.lunarDay} {todayData.dayGanZhi}日)
         </span>
       </div>
-      
-      {/* 60갑자 시간표 */}
-      <div className="mt-3 mb-2" data-testid="footer-60ganzi">
-        <div className="text-xs text-muted-foreground mb-1">황극력 시간</div>
-        <div className="flex justify-center gap-0.5 text-xs">
-          <span className="text-muted-foreground mr-1">오전</span>
-          {amHours.map((h, i) => (
-            <span key={`am-${i}`} className="px-1 py-0.5 border border-border bg-muted/30">{h}</span>
-          ))}
-        </div>
-        <div className="flex justify-center gap-0.5 text-xs mt-0.5">
-          <span className="text-muted-foreground mr-1">오후</span>
-          {pmHours.map((h, i) => (
-            <span key={`pm-${i}`} className="px-1 py-0.5 border border-border bg-muted/30">{h}</span>
-          ))}
-        </div>
-      </div>
-      
       <p className="text-muted-foreground text-xs" data-testid="footer-copyright">
         © 2026 ORAE. All rights reserved.
       </p>

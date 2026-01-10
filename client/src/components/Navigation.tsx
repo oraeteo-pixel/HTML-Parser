@@ -56,13 +56,18 @@ export function Navigation() {
       <div className="max-w-[990px] mx-auto px-2">
         <div className="h-[56px] sm:h-[70px] flex items-center justify-between relative">
           <Link href="/calendar" className="flex items-center gap-1 hover:opacity-80 transition-opacity" data-testid="link-logo">
-            <div className="flex items-center gap-1">
-              <svg viewBox="0 0 40 40" className="h-8 w-8 sm:h-10 sm:w-10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M20 5 L35 30 L5 30 Z" fill="#0d7377" stroke="#0d7377" strokeWidth="1"/>
-                <path d="M15 20 L25 20 L20 12 Z" fill="white"/>
-              </svg>
-              <span className="text-base sm:text-lg font-bold" style={{ color: '#0d7377' }}>모약로</span>
-            </div>
+            <svg viewBox="0 0 40 40" className="h-8 w-8 sm:h-10 sm:w-10" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="20" cy="20" r="18" stroke="#0d7377" strokeWidth="2.5" fill="none"/>
+              <circle cx="20" cy="20" r="14" stroke="#0d7377" strokeWidth="2.5" fill="none"/>
+              <circle cx="20" cy="20" r="10" stroke="#0d7377" strokeWidth="2.5" fill="none"/>
+              <circle cx="20" cy="20" r="6" stroke="#0d7377" strokeWidth="2.5" fill="none"/>
+              <circle cx="20" cy="20" r="2" fill="#0d7377"/>
+              <line x1="20" y1="2" x2="20" y2="10" stroke="#0d7377" strokeWidth="2.5"/>
+              <line x1="6" y1="12" x2="12" y2="16" stroke="#0d7377" strokeWidth="2.5"/>
+              <line x1="28" y1="16" x2="34" y2="12" stroke="#0d7377" strokeWidth="2.5"/>
+              <line x1="8" y1="28" x2="14" y2="24" stroke="#0d7377" strokeWidth="2.5"/>
+              <line x1="26" y1="24" x2="32" y2="28" stroke="#0d7377" strokeWidth="2.5"/>
+            </svg>
           </Link>
 
           <div className="flex gap-2 sm:gap-4 items-end pb-1">

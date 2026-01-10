@@ -787,72 +787,29 @@ export function Calendar() {
       </div>
 
       {calType === "hw" && (
-        <div className="mt-3 py-2 px-3 text-center text-sm text-muted-foreground border-t border-border">
-          <span>
+        <div className="mt-3 py-3 px-3 border-t border-border">
+          <div className="text-center text-sm text-muted-foreground mb-3">
             {liveHwanggeuk.year}年 {liveHwanggeuk.month}月 {liveHwanggeuk.day}日 ({currentTime.getHours()}:{String(currentTime.getMinutes()).padStart(2, '0')}) - {liveHwanggeuk.yearGanZhi}年 {liveHwanggeuk.monthGanZhi}月 {liveDayGanZhi}日 {liveHourGanZhi}時
-          </span>
-        </div>
-      )}
-
-      {showDayDetail && (
-        <div 
-          id="day-detail-section" 
-          className="mt-4 p-4 rounded-md border border-border bg-card animate-in slide-in-from-top-2 duration-200"
-        >
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-bold text-lg ganji-title">
-              {calType === "hw" ? (
-                `${infoHwanggeuk.yearGanZhi}年 ${infoHwanggeuk.monthGanZhi}月 ${infoDayGanZhi}日 ${infoHourGanZhi}時`
-              ) : (
-                `${displayYear}년 ${displayMonth}월 ${displayDay}일 (${WEEKDAYS[displayDate.getDay()]}요일)`
-              )}
-            </h3>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              onClick={() => setShowDayDetail(false)}
-              data-testid="button-close-detail"
-            >
-              <span className="text-lg">×</span>
-            </Button>
           </div>
-          <p className="text-sm text-muted-foreground mb-3">
-            {calType === "hw" ? "황극력" : "선천력"} 상세 정보
-          </p>
-          <div className="space-y-4">
-            {calType === "hw" ? (
-              <div className="grid grid-cols-2 gap-3 text-fluid-sm">
-                {/* 60갑자 시간표 */}
-                <div className="info-card col-span-2">
-                  <div className="text-muted-foreground text-xs mb-2 uppercase tracking-wide">60甲子 時間</div>
-                  {(() => {
-                    const ganziHours = get60GanziHours(infoHwanggeuk.year, infoHwanggeuk.month, infoHwanggeuk.day);
-                    return (
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-1 flex-wrap">
-                          <span className="text-muted-foreground text-xs w-8">오전</span>
-                          {ganziHours.am.map((h, i) => (
-                            <span key={`am-${i}`} className="px-1.5 py-0.5 text-xs border border-border bg-muted/30 rounded">{h}</span>
-                          ))}
-                        </div>
-                        <div className="flex items-center gap-1 flex-wrap">
-                          <span className="text-muted-foreground text-xs w-8">오후</span>
-                          {ganziHours.pm.map((h, i) => (
-                            <span key={`pm-${i}`} className="px-1.5 py-0.5 text-xs border border-border bg-muted/30 rounded">{h}</span>
-                          ))}
-                        </div>
-                      </div>
-                    );
-                  })()}
+          {(() => {
+            const ganziHours = get60GanziHours(infoHwanggeuk.year, infoHwanggeuk.month, infoHwanggeuk.day);
+            return (
+              <div className="space-y-1">
+                <div className="flex items-center justify-center gap-1 flex-wrap">
+                  <span className="text-muted-foreground text-xs w-8">오전</span>
+                  {ganziHours.am.map((h, i) => (
+                    <span key={`am-${i}`} className="px-1.5 py-0.5 text-xs border border-border bg-muted/30 rounded">{h}</span>
+                  ))}
+                </div>
+                <div className="flex items-center justify-center gap-1 flex-wrap">
+                  <span className="text-muted-foreground text-xs w-8">오후</span>
+                  {ganziHours.pm.map((h, i) => (
+                    <span key={`pm-${i}`} className="px-1.5 py-0.5 text-xs border border-border bg-muted/30 rounded">{h}</span>
+                  ))}
                 </div>
               </div>
-            ) : null}
-{calType === "df" && (
-              <p className="text-xs text-muted-foreground">
-                {CAL_DESCRIPTIONS[calType]}
-              </p>
-            )}
-          </div>
+            );
+          })()}
         </div>
       )}
       

@@ -1443,7 +1443,8 @@ export function getHexagramInterpretation(sogung: number, daegung: number): {
     return null; // 중궁은 주역 64괘에 포함되지 않음
   }
   
-  const key = `${daegung}-${sogung}`;
+  // HEXAGRAM_INTERPRETATIONS의 키: "${상괘}-${하괘}" (소궁-대궁)
+  const key = `${sogung}-${daegung}`;
   const interp = HEXAGRAM_INTERPRETATIONS[key];
   if (!interp) return null;
   

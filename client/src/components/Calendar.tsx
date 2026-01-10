@@ -387,7 +387,15 @@ export function Calendar() {
   };
 
   const handleDayClick = (solarDate: Date) => {
-    setSelectedDay(solarDate);
+    // 오늘 날짜를 클릭한 경우 현재 시간을 반영
+    if (isTodayKorean(solarDate)) {
+      const now = getKoreanTime();
+      const dateWithTime = new Date(solarDate);
+      dateWithTime.setHours(now.getHours(), now.getMinutes(), now.getSeconds());
+      setSelectedDay(dateWithTime);
+    } else {
+      setSelectedDay(solarDate);
+    }
     setShowDayDetail(true);
     setTimeout(() => {
       window.scrollTo({ top: 0, behavior: 'smooth' });

@@ -968,6 +968,14 @@ export function Calendar() {
                   </div>
                 </div>
                 
+                {/* 기본 설명 */}
+                {interp.description && (
+                  <div className="space-y-1">
+                    <div className="text-sm font-medium text-muted-foreground">괘 설명</div>
+                    <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-400">{interp.description}</p>
+                  </div>
+                )}
+                
                 {/* 괘사 */}
                 <div className="p-3 border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30 rounded-lg">
                   <div className="text-sm font-medium text-amber-800 dark:text-amber-300 mb-1">괘사 (卦辭)</div>

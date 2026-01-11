@@ -1209,12 +1209,12 @@ export default function Admin() {
           <CardDescription>홈페이지에 표시되는 로고입니다.</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-center p-6 border rounded-lg bg-white dark:bg-slate-900">
+          <div className="flex items-center justify-center p-4 border-2 border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900">
             {logoImageUrl ? (
               <img 
                 src={logoImageUrl} 
                 alt="현재 로고" 
-                className="h-16 w-auto max-w-[300px] object-contain"
+                className="h-10 w-auto max-w-[200px] object-contain"
               />
             ) : (
               <div className="flex items-center gap-3" style={{ fontFamily: `${settings.logoFontFamily}, sans-serif` }}>

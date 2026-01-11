@@ -1447,11 +1447,82 @@ export default function Admin() {
                           className="w-full h-8 px-2 rounded-md border border-input bg-background text-sm"
                           data-testid="select-font-family"
                         >
-                          <option value="Noto Sans KR">Noto Sans KR</option>
-                          <option value="Nanum Gothic">나눔고딕</option>
-                          <option value="Nanum Myeongjo">나눔명조</option>
-                          <option value="serif">명조체</option>
-                          <option value="sans-serif">고딕체</option>
+                          <optgroup label="한글 고딕">
+                            <option value="Noto Sans KR">Noto Sans KR</option>
+                            <option value="Nanum Gothic">나눔고딕</option>
+                            <option value="Gothic A1">Gothic A1</option>
+                            <option value="IBM Plex Sans KR">IBM Plex Sans KR</option>
+                            <option value="Gowun Dodum">고운돋움</option>
+                            <option value="Black Han Sans">검은고딕</option>
+                            <option value="Do Hyeon">도현</option>
+                            <option value="Jua">주아</option>
+                          </optgroup>
+                          <optgroup label="한글 명조">
+                            <option value="Nanum Myeongjo">나눔명조</option>
+                            <option value="Noto Serif KR">Noto Serif KR</option>
+                            <option value="Gowun Batang">고운바탕</option>
+                            <option value="Song Myung">송명</option>
+                            <option value="Hahmlet">함렛</option>
+                          </optgroup>
+                          <optgroup label="한글 손글씨">
+                            <option value="Nanum Pen Script">나눔펜스크립트</option>
+                            <option value="Gaegu">개구</option>
+                            <option value="Gamja Flower">감자꽃</option>
+                            <option value="Poor Story">푸어스토리</option>
+                            <option value="Single Day">싱글데이</option>
+                            <option value="Hi Melody">하이멜로디</option>
+                            <option value="Yeon Sung">연성</option>
+                          </optgroup>
+                          <optgroup label="한글 개성체">
+                            <option value="Cute Font">큐트폰트</option>
+                            <option value="Stylish">스타일리쉬</option>
+                            <option value="Sunflower">해바라기</option>
+                            <option value="Dokdo">독도</option>
+                            <option value="East Sea Dokdo">동해독도</option>
+                            <option value="Kirang Haerang">끼랑해랑</option>
+                            <option value="Black And White Picture">흑백사진</option>
+                            <option value="Gugi">구기</option>
+                          </optgroup>
+                          <optgroup label="한글 코딩">
+                            <option value="Nanum Gothic Coding">나눔고딕코딩</option>
+                          </optgroup>
+                          <optgroup label="영문 고딕">
+                            <option value="Inter">Inter</option>
+                            <option value="Roboto">Roboto</option>
+                            <option value="Open Sans">Open Sans</option>
+                            <option value="Montserrat">Montserrat</option>
+                            <option value="Poppins">Poppins</option>
+                            <option value="IBM Plex Sans">IBM Plex Sans</option>
+                            <option value="DM Sans">DM Sans</option>
+                            <option value="Plus Jakarta Sans">Plus Jakarta Sans</option>
+                            <option value="Space Grotesk">Space Grotesk</option>
+                            <option value="Outfit">Outfit</option>
+                            <option value="Geist">Geist</option>
+                          </optgroup>
+                          <optgroup label="영문 명조">
+                            <option value="Playfair Display">Playfair Display</option>
+                            <option value="Lora">Lora</option>
+                            <option value="Merriweather">Merriweather</option>
+                            <option value="Libre Baskerville">Libre Baskerville</option>
+                            <option value="Source Serif 4">Source Serif 4</option>
+                          </optgroup>
+                          <optgroup label="영문 코딩/고정폭">
+                            <option value="Fira Code">Fira Code</option>
+                            <option value="JetBrains Mono">JetBrains Mono</option>
+                            <option value="Source Code Pro">Source Code Pro</option>
+                            <option value="Roboto Mono">Roboto Mono</option>
+                            <option value="IBM Plex Mono">IBM Plex Mono</option>
+                            <option value="Space Mono">Space Mono</option>
+                            <option value="Geist Mono">Geist Mono</option>
+                          </optgroup>
+                          <optgroup label="특수">
+                            <option value="Architects Daughter">Architects Daughter</option>
+                            <option value="Oxanium">Oxanium</option>
+                          </optgroup>
+                          <optgroup label="기본">
+                            <option value="serif">명조체 (기본)</option>
+                            <option value="sans-serif">고딕체 (기본)</option>
+                          </optgroup>
                         </select>
                       </div>
                     </div>

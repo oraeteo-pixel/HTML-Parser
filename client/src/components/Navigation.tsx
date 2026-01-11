@@ -21,6 +21,7 @@ interface LogoSettings {
   logoTextSize?: string;
   logoTextKoreanSize?: string;
   logoTextHanjaSize?: string;
+  logoImageUrl?: string;
 }
 
 const DEFAULT_LOGO: LogoSettings = {
@@ -64,6 +65,7 @@ export function Navigation() {
   const logoTextSize = siteSettings?.logoTextSize || DEFAULT_LOGO.logoTextSize;
   const logoTextKoreanSize = siteSettings?.logoTextKoreanSize || DEFAULT_LOGO.logoTextKoreanSize;
   const logoTextHanjaSize = siteSettings?.logoTextHanjaSize || DEFAULT_LOGO.logoTextHanjaSize;
+  const logoImageUrl = siteSettings?.logoImageUrl;
   
   const { data: madangPosts } = useQuery<PostWithAuthor[]>({
     queryKey: ["/api/posts/section/madang"],
@@ -105,23 +107,33 @@ export function Navigation() {
       <div className="max-w-[990px] mx-auto px-2">
         <div className="h-[56px] sm:h-[70px] flex items-center justify-between relative">
           <Link href="/calendar" className="flex items-center gap-2 hover:opacity-80 transition-opacity" data-testid="link-logo">
-            <svg viewBox="0 0 40 40" className="h-8 w-8 sm:h-10 sm:w-10" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="20" cy="20" r="18" stroke={logoColor} strokeWidth="2.5" fill="none"/>
-              <circle cx="20" cy="20" r="14" stroke={logoColor} strokeWidth="2.5" fill="none"/>
-              <circle cx="20" cy="20" r="10" stroke={logoColor} strokeWidth="2.5" fill="none"/>
-              <circle cx="20" cy="20" r="6" stroke={logoColor} strokeWidth="2.5" fill="none"/>
-              <circle cx="20" cy="20" r="2" fill={logoColor}/>
-              <line x1="20" y1="2" x2="20" y2="10" stroke={logoColor} strokeWidth="2.5"/>
-              <line x1="6" y1="12" x2="12" y2="16" stroke={logoColor} strokeWidth="2.5"/>
-              <line x1="28" y1="16" x2="34" y2="12" stroke={logoColor} strokeWidth="2.5"/>
-              <line x1="8" y1="28" x2="14" y2="24" stroke={logoColor} strokeWidth="2.5"/>
-              <line x1="26" y1="24" x2="32" y2="28" stroke={logoColor} strokeWidth="2.5"/>
-            </svg>
-            <div className="flex flex-col leading-tight" style={{ fontFamily: `${logoFontFamily}, sans-serif` }}>
-              {logoText && <span className="font-bold" style={{ color: logoColor, fontSize: getSizeValue(logoTextSize) }}>{logoText}</span>}
-              {logoTextKorean && <span className="font-bold" style={{ color: logoColor, fontSize: getSizeValue(logoTextKoreanSize) }}>{logoTextKorean}</span>}
-              {logoTextHanja && <span style={{ color: logoColor, fontSize: getSizeValue(logoTextHanjaSize) }}>{logoTextHanja}</span>}
-            </div>
+            {logoImageUrl ? (
+              <img 
+                src={logoImageUrl} 
+                alt="로고" 
+                className="h-10 sm:h-14 w-auto max-w-[200px] object-contain"
+              />
+            ) : (
+              <>
+                <svg viewBox="0 0 40 40" className="h-8 w-8 sm:h-10 sm:w-10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="20" cy="20" r="18" stroke={logoColor} strokeWidth="2.5" fill="none"/>
+                  <circle cx="20" cy="20" r="14" stroke={logoColor} strokeWidth="2.5" fill="none"/>
+                  <circle cx="20" cy="20" r="10" stroke={logoColor} strokeWidth="2.5" fill="none"/>
+                  <circle cx="20" cy="20" r="6" stroke={logoColor} strokeWidth="2.5" fill="none"/>
+                  <circle cx="20" cy="20" r="2" fill={logoColor}/>
+                  <line x1="20" y1="2" x2="20" y2="10" stroke={logoColor} strokeWidth="2.5"/>
+                  <line x1="6" y1="12" x2="12" y2="16" stroke={logoColor} strokeWidth="2.5"/>
+                  <line x1="28" y1="16" x2="34" y2="12" stroke={logoColor} strokeWidth="2.5"/>
+                  <line x1="8" y1="28" x2="14" y2="24" stroke={logoColor} strokeWidth="2.5"/>
+                  <line x1="26" y1="24" x2="32" y2="28" stroke={logoColor} strokeWidth="2.5"/>
+                </svg>
+                <div className="flex flex-col leading-tight" style={{ fontFamily: `${logoFontFamily}, sans-serif` }}>
+                  {logoText && <span className="font-bold" style={{ color: logoColor, fontSize: getSizeValue(logoTextSize) }}>{logoText}</span>}
+                  {logoTextKorean && <span className="font-bold" style={{ color: logoColor, fontSize: getSizeValue(logoTextKoreanSize) }}>{logoTextKorean}</span>}
+                  {logoTextHanja && <span style={{ color: logoColor, fontSize: getSizeValue(logoTextHanjaSize) }}>{logoTextHanja}</span>}
+                </div>
+              </>
+            )}
           </Link>
 
           <div className="flex gap-2 sm:gap-4 items-end pb-1">

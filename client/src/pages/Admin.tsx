@@ -253,6 +253,10 @@ export default function Admin() {
   const [editorTextEnabled, setEditorTextEnabled] = useState<boolean>(false);
   const [editorText, setEditorText] = useState<string>("");
   const [editorTextColor, setEditorTextColor] = useState<string>("#000000");
+  const [editorTextSize, setEditorTextSize] = useState<number>(20);
+  const [editorFontWeight, setEditorFontWeight] = useState<number>(700);
+  const [editorFontFamily, setEditorFontFamily] = useState<string>("Noto Sans KR");
+  const [editorLogoGap, setEditorLogoGap] = useState<number>(8);
   const [editorDragOver, setEditorDragOver] = useState(false);
 
   const { data: savedSettings, isLoading: settingsLoading } = useQuery<Record<string, string>>({
@@ -315,6 +319,10 @@ export default function Admin() {
       if (savedSettings.logoTextEnabled) setEditorTextEnabled(savedSettings.logoTextEnabled === "true");
       if (savedSettings.logoTextContent) setEditorText(savedSettings.logoTextContent);
       if (savedSettings.logoTextColor) setEditorTextColor(savedSettings.logoTextColor);
+      if (savedSettings.logoTextSize) setEditorTextSize(Number(savedSettings.logoTextSize) || 20);
+      if (savedSettings.logoFontWeight) setEditorFontWeight(Number(savedSettings.logoFontWeight) || 700);
+      if (savedSettings.logoFontFamilyOverlay) setEditorFontFamily(savedSettings.logoFontFamilyOverlay);
+      if (savedSettings.logoLogoGap) setEditorLogoGap(Number(savedSettings.logoLogoGap) || 8);
     }
   }, [savedSettings]);
 
@@ -1272,7 +1280,7 @@ export default function Admin() {
                 style={{ backgroundColor: editorBackgroundColor }}
               >
                 {editorLogoUrl ? (
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center" style={{ gap: `${editorLogoGap}px` }}>
                     <img
                       src={editorLogoUrl}
                       alt="편집 중인 로고"
@@ -1283,7 +1291,12 @@ export default function Admin() {
                       className="h-16 w-auto max-w-[200px] object-contain transition-transform"
                     />
                     {editorTextEnabled && editorText && (
-                      <span className="font-bold text-xl" style={{ color: editorTextColor }}>{editorText}</span>
+                      <span style={{ 
+                        color: editorTextColor,
+                        fontSize: `${editorTextSize}px`,
+                        fontWeight: editorFontWeight,
+                        fontFamily: editorFontFamily,
+                      }}>{editorText}</span>
                     )}
                   </div>
                 ) : (
@@ -1361,24 +1374,81 @@ export default function Admin() {
                   <Label>텍스트 로고 추가</Label>
                 </div>
                 {editorTextEnabled && (
-                  <div className="space-y-2 mt-2">
+                  <div className="space-y-3 mt-2">
                     <Input
                       value={editorText}
                       onChange={(e) => setEditorText(e.target.value)}
                       placeholder="텍스트 입력"
                       data-testid="input-logo-text-content"
                     />
-                    <div className="flex gap-2">
-                      <Label className="flex items-center gap-2">
-                        텍스트 색상
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="space-y-1">
+                        <Label className="text-xs">텍스트 색상</Label>
                         <input
                           type="color"
                           value={editorTextColor}
                           onChange={(e) => setEditorTextColor(e.target.value)}
-                          className="h-8 w-12 rounded border cursor-pointer"
+                          className="h-8 w-full rounded border cursor-pointer"
                           data-testid="input-logo-text-color"
                         />
-                      </Label>
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">크기 ({editorTextSize}px)</Label>
+                        <input
+                          type="range"
+                          min="12"
+                          max="48"
+                          value={editorTextSize}
+                          onChange={(e) => setEditorTextSize(Number(e.target.value))}
+                          className="w-full"
+                          data-testid="slider-text-size"
+                        />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      <div className="space-y-1">
+                        <Label className="text-xs">글자 굵기</Label>
+                        <select
+                          value={editorFontWeight}
+                          onChange={(e) => setEditorFontWeight(Number(e.target.value))}
+                          className="w-full h-8 px-2 rounded-md border border-input bg-background text-sm"
+                          data-testid="select-font-weight"
+                        >
+                          <option value={300}>가늘게 (300)</option>
+                          <option value={400}>보통 (400)</option>
+                          <option value={500}>중간 (500)</option>
+                          <option value={600}>굵게 (600)</option>
+                          <option value={700}>진하게 (700)</option>
+                          <option value={800}>매우 진하게 (800)</option>
+                        </select>
+                      </div>
+                      <div className="space-y-1">
+                        <Label className="text-xs">글씨체</Label>
+                        <select
+                          value={editorFontFamily}
+                          onChange={(e) => setEditorFontFamily(e.target.value)}
+                          className="w-full h-8 px-2 rounded-md border border-input bg-background text-sm"
+                          data-testid="select-font-family"
+                        >
+                          <option value="Noto Sans KR">Noto Sans KR</option>
+                          <option value="Nanum Gothic">나눔고딕</option>
+                          <option value="Nanum Myeongjo">나눔명조</option>
+                          <option value="serif">명조체</option>
+                          <option value="sans-serif">고딕체</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <Label className="text-xs">로고-텍스트 간격 ({editorLogoGap}px)</Label>
+                      <input
+                        type="range"
+                        min="0"
+                        max="32"
+                        value={editorLogoGap}
+                        onChange={(e) => setEditorLogoGap(Number(e.target.value))}
+                        className="w-full"
+                        data-testid="slider-logo-gap"
+                      />
                     </div>
                   </div>
                 )}
@@ -1399,6 +1469,10 @@ export default function Admin() {
                       await saveMutation.mutateAsync({ key: "logoTextEnabled", value: String(editorTextEnabled) });
                       await saveMutation.mutateAsync({ key: "logoTextContent", value: editorText });
                       await saveMutation.mutateAsync({ key: "logoTextColor", value: editorTextColor });
+                      await saveMutation.mutateAsync({ key: "logoTextSize", value: String(editorTextSize) });
+                      await saveMutation.mutateAsync({ key: "logoFontWeight", value: String(editorFontWeight) });
+                      await saveMutation.mutateAsync({ key: "logoFontFamilyOverlay", value: editorFontFamily });
+                      await saveMutation.mutateAsync({ key: "logoLogoGap", value: String(editorLogoGap) });
                       setLogoImageUrl(editorLogoUrl);
                       toast({ title: "로고가 홈페이지에 적용되었습니다!" });
                     } catch (error) {
@@ -1422,6 +1496,10 @@ export default function Admin() {
                     setEditorTextEnabled(false);
                     setEditorText("");
                     setEditorTextColor("#000000");
+                    setEditorTextSize(20);
+                    setEditorFontWeight(700);
+                    setEditorFontFamily("Noto Sans KR");
+                    setEditorLogoGap(8);
                   }}
                   data-testid="button-reset-editor"
                 >

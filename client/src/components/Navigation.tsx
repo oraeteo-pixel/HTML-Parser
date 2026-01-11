@@ -28,6 +28,9 @@ interface LogoSettings {
   logoTextEnabled?: string;
   logoTextContent?: string;
   logoTextColor?: string;
+  logoFontWeight?: string;
+  logoFontFamilyOverlay?: string;
+  logoLogoGap?: string;
 }
 
 const DEFAULT_LOGO: LogoSettings = {
@@ -78,6 +81,10 @@ export function Navigation() {
   const logoTextEnabled = siteSettings?.logoTextEnabled === "true";
   const logoTextContent = siteSettings?.logoTextContent || "";
   const logoTextColorValue = siteSettings?.logoTextColor || "#000000";
+  const logoTextSizeValue = Number(siteSettings?.logoTextSize) || 20;
+  const logoFontWeightValue = Number(siteSettings?.logoFontWeight) || 700;
+  const logoFontFamilyOverlay = siteSettings?.logoFontFamilyOverlay || "Noto Sans KR";
+  const logoLogoGap = Number(siteSettings?.logoLogoGap) || 8;
   
   const { data: madangPosts } = useQuery<PostWithAuthor[]>({
     queryKey: ["/api/posts/section/madang"],
@@ -121,8 +128,11 @@ export function Navigation() {
           <Link href="/calendar" className="flex items-center gap-2 hover:opacity-80 transition-opacity" data-testid="link-logo">
             {logoImageUrl ? (
               <div 
-                className="flex items-center gap-2 px-1 rounded"
-                style={{ backgroundColor: logoBackgroundColor !== "transparent" ? logoBackgroundColor : undefined }}
+                className="flex items-center px-1 rounded"
+                style={{ 
+                  backgroundColor: logoBackgroundColor !== "transparent" ? logoBackgroundColor : undefined,
+                  gap: `${logoLogoGap}px`,
+                }}
               >
                 <img 
                   src={logoImageUrl} 
@@ -134,7 +144,12 @@ export function Navigation() {
                   }}
                 />
                 {logoTextEnabled && logoTextContent && (
-                  <span className="font-bold text-lg sm:text-xl" style={{ color: logoTextColorValue }}>
+                  <span style={{ 
+                    color: logoTextColorValue,
+                    fontSize: `${logoTextSizeValue}px`,
+                    fontWeight: logoFontWeightValue,
+                    fontFamily: logoFontFamilyOverlay,
+                  }}>
                     {logoTextContent}
                   </span>
                 )}

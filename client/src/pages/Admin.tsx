@@ -19,8 +19,10 @@ import {
 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
-import type { MadangCategory, PageContent, User } from "@shared/schema";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import type { MadangCategory, PageContent, User, PageLayout, LayoutBlock } from "@shared/schema";
 import { Link } from "wouter";
+import PageBuilder from "@/components/PageBuilder";
 
 interface LogoSettings {
   logoText: string;
@@ -58,7 +60,7 @@ const getSizeValue = (size: string): string => {
   return sizeMap[size] || '1rem';
 };
 
-type MenuSection = "dashboard" | "logo" | "categories" | "calendar" | "pages" | "members";
+type MenuSection = "dashboard" | "logo" | "categories" | "calendar" | "pages" | "members" | "layouts";
 
 interface MenuItem {
   id: MenuSection;
@@ -72,6 +74,7 @@ const menuItems: MenuItem[] = [
   { id: "logo", label: "로고 설정", icon: Palette, description: "사이트 로고" },
   { id: "members", label: "회원 관리", icon: Users, description: "회원 목록" },
   { id: "categories", label: "마당 카테고리", icon: FolderTree, description: "카테고리 관리" },
+  { id: "layouts", label: "페이지 빌더", icon: FileText, description: "드래그앤드롭 편집" },
   { id: "calendar", label: "달력 데이터", icon: Calendar, description: "엑셀 다운로드" },
   { id: "pages", label: "페이지 관리", icon: FileCode, description: "콘텐츠 편집" },
 ];
@@ -95,6 +98,12 @@ export default function Admin() {
   const [showSmsModal, setShowSmsModal] = useState(false);
   const [emailContent, setEmailContent] = useState({ subject: "", body: "" });
   const [smsContent, setSmsContent] = useState("");
+  
+  const [editingLayout, setEditingLayout] = useState<PageLayout | null>(null);
+  const [creatingLayout, setCreatingLayout] = useState(false);
+  const [newLayoutName, setNewLayoutName] = useState("");
+  const [newLayoutSlug, setNewLayoutSlug] = useState("");
+  const [newLayoutType, setNewLayoutType] = useState<"madang" | "ebook">("madang");
 
   const { data: savedSettings, isLoading: settingsLoading } = useQuery<Record<string, string>>({
     queryKey: ["/api/settings"],
@@ -116,6 +125,11 @@ export default function Admin() {
 
   const { data: recentPosts } = useQuery<any[]>({
     queryKey: ["/api/posts"],
+    enabled: isAuthenticated && user?.isAdmin === 1,
+  });
+
+  const { data: layouts, isLoading: layoutsLoading } = useQuery<PageLayout[]>({
+    queryKey: ["/api/admin/layouts"],
     enabled: isAuthenticated && user?.isAdmin === 1,
   });
 
@@ -263,6 +277,68 @@ export default function Admin() {
     });
     setShowSmsModal(false);
     setSmsContent("");
+  };
+
+  const createLayoutMutation = useMutation({
+    mutationFn: async (data: { name: string; slug: string; layoutJson: string; htmlContent?: string; customCss?: string }) => {
+      return apiRequest("POST", "/api/admin/layouts", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/layouts"] });
+      setCreatingLayout(false);
+      setNewLayoutName("");
+      setNewLayoutSlug("");
+      toast({ title: "레이아웃 생성 완료" });
+    },
+  });
+
+  const updateLayoutMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: number; data: { name?: string; slug?: string; layoutJson?: string; htmlContent?: string; customCss?: string; isPublished?: number } }) => {
+      return apiRequest("PUT", `/api/admin/layouts/${id}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/layouts"] });
+      setEditingLayout(null);
+      toast({ title: "레이아웃 저장 완료" });
+    },
+  });
+
+  const deleteLayoutMutation = useMutation({
+    mutationFn: async (id: number) => {
+      return apiRequest("DELETE", `/api/admin/layouts/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/layouts"] });
+      toast({ title: "레이아웃 삭제 완료" });
+    },
+  });
+
+  const handleCreateLayout = () => {
+    if (!newLayoutName || !newLayoutSlug) {
+      toast({ title: "오류", description: "이름과 슬러그를 입력하세요.", variant: "destructive" });
+      return;
+    }
+    const defaultBlocks: LayoutBlock[] = [
+      { id: "block_header", type: "header", props: { height: "80px", backgroundColor: "#f8fafc" } },
+      { id: "block_body", type: "body", props: { minHeight: "400px", backgroundColor: "#ffffff" } },
+      { id: "block_footer", type: "footer", props: { height: "60px", backgroundColor: "#f8fafc" } },
+    ];
+    createLayoutMutation.mutate({
+      name: newLayoutName,
+      slug: `${newLayoutType}-${newLayoutSlug}`,
+      layoutJson: JSON.stringify(defaultBlocks),
+    });
+  };
+
+  const handleSaveLayout = (layoutId: number, data: { blocks: LayoutBlock[]; html: string; css: string }) => {
+    updateLayoutMutation.mutate({
+      id: layoutId,
+      data: {
+        layoutJson: JSON.stringify(data.blocks),
+        htmlContent: data.html,
+        customCss: data.css,
+      },
+    });
   };
 
   const handleSaveSettings = async () => {
@@ -1032,6 +1108,159 @@ export default function Admin() {
     </div>
   );
 
+  const renderLayouts = () => {
+    if (editingLayout) {
+      const blocks: LayoutBlock[] = editingLayout.layoutJson ? JSON.parse(editingLayout.layoutJson) : [];
+      return (
+        <PageBuilder
+          initialBlocks={blocks}
+          initialHtml={editingLayout.htmlContent || ""}
+          initialCss={editingLayout.customCss || ""}
+          layoutName={editingLayout.name}
+          onSave={(data) => handleSaveLayout(editingLayout.id, data)}
+          onCancel={() => setEditingLayout(null)}
+        />
+      );
+    }
+
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center justify-between flex-wrap gap-4">
+          <div>
+            <h2 className="text-2xl font-bold">페이지 빌더</h2>
+            <p className="text-muted-foreground">마당/전자책 페이지 레이아웃을 드래그 앤 드롭으로 디자인합니다.</p>
+          </div>
+          <Button onClick={() => setCreatingLayout(true)} data-testid="button-create-layout">
+            <Plus className="h-4 w-4 mr-2" />
+            새 레이아웃
+          </Button>
+        </div>
+
+        {creatingLayout && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">새 레이아웃 만들기</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="space-y-2">
+                  <Label>페이지 타입</Label>
+                  <Select value={newLayoutType} onValueChange={(v) => setNewLayoutType(v as any)}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="madang">마당</SelectItem>
+                      <SelectItem value="ebook">전자책</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-2">
+                  <Label>레이아웃 이름</Label>
+                  <Input
+                    value={newLayoutName}
+                    onChange={(e) => setNewLayoutName(e.target.value)}
+                    placeholder="예: 메인 페이지"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>슬러그</Label>
+                  <Input
+                    value={newLayoutSlug}
+                    onChange={(e) => setNewLayoutSlug(e.target.value)}
+                    placeholder="예: main"
+                  />
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <Button onClick={handleCreateLayout} disabled={createLayoutMutation.isPending}>
+                  {createLayoutMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                  생성
+                </Button>
+                <Button variant="outline" onClick={() => setCreatingLayout(false)}>
+                  취소
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        <Card>
+          <CardContent className="p-0">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-muted/50">
+                  <tr className="border-b">
+                    <th className="text-left py-3 px-4 font-medium">이름</th>
+                    <th className="text-left py-3 px-4 font-medium">슬러그</th>
+                    <th className="text-left py-3 px-4 font-medium">타입</th>
+                    <th className="text-left py-3 px-4 font-medium">수정일</th>
+                    <th className="text-left py-3 px-4 font-medium">관리</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {layoutsLoading ? (
+                    <tr>
+                      <td colSpan={5} className="py-8 text-center">
+                        <Loader2 className="h-6 w-6 animate-spin mx-auto" />
+                      </td>
+                    </tr>
+                  ) : layouts?.map((layout) => (
+                    <tr key={layout.id} className="border-b hover:bg-muted/30">
+                      <td className="py-3 px-4 font-medium">{layout.name}</td>
+                      <td className="py-3 px-4 text-muted-foreground">{layout.slug}</td>
+                      <td className="py-3 px-4">
+                        <Badge variant={layout.slug.startsWith('madang') ? 'default' : 'secondary'}>
+                          {layout.slug.startsWith('madang') ? '마당' : '전자책'}
+                        </Badge>
+                      </td>
+                      <td className="py-3 px-4 text-muted-foreground">
+                        {layout.updatedAt ? new Date(layout.updatedAt).toLocaleDateString('ko-KR') : '-'}
+                      </td>
+                      <td className="py-3 px-4">
+                        <div className="flex gap-1">
+                          <Button 
+                            size="icon" 
+                            variant="ghost" 
+                            onClick={() => setEditingLayout(layout)}
+                            data-testid={`button-edit-layout-${layout.id}`}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button 
+                            size="icon" 
+                            variant="ghost" 
+                            className="text-destructive hover:text-destructive"
+                            onClick={() => {
+                              if (confirm('정말 이 레이아웃을 삭제하시겠습니까?')) {
+                                deleteLayoutMutation.mutate(layout.id);
+                              }
+                            }}
+                            disabled={deleteLayoutMutation.isPending}
+                            data-testid={`button-delete-layout-${layout.id}`}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                  {(!layouts || layouts.length === 0) && !layoutsLoading && (
+                    <tr>
+                      <td colSpan={5} className="py-8 text-center text-muted-foreground">
+                        레이아웃이 없습니다. 새 레이아웃을 만들어보세요.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  };
+
   const renderCategories = () => (
     <div className="space-y-6">
       <div>
@@ -1385,6 +1614,8 @@ export default function Admin() {
         return renderMembers();
       case "categories":
         return renderCategories();
+      case "layouts":
+        return renderLayouts();
       case "calendar":
         return renderCalendar();
       case "pages":

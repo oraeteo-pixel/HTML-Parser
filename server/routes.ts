@@ -734,5 +734,129 @@ export async function registerRoutes(
     }
   });
 
+  // === Page Layouts (Page Builder) Routes ===
+  
+  app.get("/api/admin/layouts", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      const user = await storage.getUser(userId);
+      if (!user || user.isAdmin !== 1) {
+        return res.status(403).json({ message: "관리자만 접근할 수 있습니다." });
+      }
+
+      const layouts = await storage.getPageLayouts();
+      res.json(layouts);
+    } catch (err) {
+      console.error('Layouts get error:', err);
+      res.status(500).json({ message: "레이아웃 목록 조회 중 오류가 발생했습니다." });
+    }
+  });
+
+  app.get("/api/admin/layouts/:id", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      const user = await storage.getUser(userId);
+      if (!user || user.isAdmin !== 1) {
+        return res.status(403).json({ message: "관리자만 접근할 수 있습니다." });
+      }
+
+      const layout = await storage.getPageLayout(parseInt(req.params.id));
+      if (!layout) {
+        return res.status(404).json({ message: "레이아웃을 찾을 수 없습니다." });
+      }
+      res.json(layout);
+    } catch (err) {
+      console.error('Layout get error:', err);
+      res.status(500).json({ message: "레이아웃 조회 중 오류가 발생했습니다." });
+    }
+  });
+
+  app.get("/api/layouts/:slug", async (req, res) => {
+    try {
+      const layout = await storage.getPageLayoutBySlug(req.params.slug);
+      if (!layout || layout.isPublished !== 1) {
+        return res.status(404).json({ message: "레이아웃을 찾을 수 없습니다." });
+      }
+      res.json(layout);
+    } catch (err) {
+      console.error('Layout get error:', err);
+      res.status(500).json({ message: "레이아웃 조회 중 오류가 발생했습니다." });
+    }
+  });
+
+  app.post("/api/admin/layouts", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      const user = await storage.getUser(userId);
+      if (!user || user.isAdmin !== 1) {
+        return res.status(403).json({ message: "관리자만 레이아웃을 생성할 수 있습니다." });
+      }
+
+      const { name, slug, layoutJson, htmlContent, customCss, isPublished } = req.body;
+      if (!name || !slug || !layoutJson) {
+        return res.status(400).json({ message: "이름, 슬러그, 레이아웃 JSON은 필수입니다." });
+      }
+
+      const layout = await storage.createPageLayout({
+        name,
+        slug,
+        layoutJson,
+        htmlContent,
+        customCss,
+        isPublished: isPublished || 0,
+        updatedBy: userId,
+      });
+      res.json(layout);
+    } catch (err) {
+      console.error('Layout create error:', err);
+      res.status(500).json({ message: "레이아웃 생성 중 오류가 발생했습니다." });
+    }
+  });
+
+  app.put("/api/admin/layouts/:id", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      const user = await storage.getUser(userId);
+      if (!user || user.isAdmin !== 1) {
+        return res.status(403).json({ message: "관리자만 레이아웃을 수정할 수 있습니다." });
+      }
+
+      const { name, slug, layoutJson, htmlContent, customCss, isPublished } = req.body;
+      const layout = await storage.updatePageLayout(parseInt(req.params.id), {
+        name,
+        slug,
+        layoutJson,
+        htmlContent,
+        customCss,
+        isPublished,
+        updatedBy: userId,
+      });
+      
+      if (!layout) {
+        return res.status(404).json({ message: "레이아웃을 찾을 수 없습니다." });
+      }
+      res.json(layout);
+    } catch (err) {
+      console.error('Layout update error:', err);
+      res.status(500).json({ message: "레이아웃 수정 중 오류가 발생했습니다." });
+    }
+  });
+
+  app.delete("/api/admin/layouts/:id", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      const user = await storage.getUser(userId);
+      if (!user || user.isAdmin !== 1) {
+        return res.status(403).json({ message: "관리자만 레이아웃을 삭제할 수 있습니다." });
+      }
+
+      await storage.deletePageLayout(parseInt(req.params.id));
+      res.json({ success: true });
+    } catch (err) {
+      console.error('Layout delete error:', err);
+      res.status(500).json({ message: "레이아웃 삭제 중 오류가 발생했습니다." });
+    }
+  });
+
   return httpServer;
 }

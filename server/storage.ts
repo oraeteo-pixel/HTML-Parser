@@ -1,5 +1,5 @@
-import { users, posts, comments, postVotes, messages, siteSettings, madangCategories, pageContents, type User, type Post, type Comment, type PostVote, type Message, type SiteSetting, type MadangCategory, type PageContent } from "@shared/schema";
-import type { InsertPost, InsertComment, InsertPostVote, InsertMessage, InsertMadangCategory, InsertPageContent } from "@shared/schema";
+import { users, posts, comments, postVotes, messages, siteSettings, madangCategories, pageContents, pageLayouts, type User, type Post, type Comment, type PostVote, type Message, type SiteSetting, type MadangCategory, type PageContent, type PageLayout } from "@shared/schema";
+import type { InsertPost, InsertComment, InsertPostVote, InsertMessage, InsertMadangCategory, InsertPageContent, InsertPageLayout } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, sql, and, asc } from "drizzle-orm";
 
@@ -48,6 +48,13 @@ export interface IStorage {
   updateUserAdmin(userId: string, isAdmin: number): Promise<User | null>;
   updateUser(userId: string, data: { firstName?: string; lastName?: string; phone?: string; email?: string }): Promise<User | null>;
   deleteUser(userId: string): Promise<boolean>;
+  
+  getPageLayouts(): Promise<PageLayout[]>;
+  getPageLayout(id: number): Promise<PageLayout | null>;
+  getPageLayoutBySlug(slug: string): Promise<PageLayout | null>;
+  createPageLayout(layout: InsertPageLayout): Promise<PageLayout>;
+  updatePageLayout(id: number, data: Partial<InsertPageLayout>): Promise<PageLayout | null>;
+  deletePageLayout(id: number): Promise<boolean>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -441,6 +448,38 @@ export class DatabaseStorage implements IStorage {
 
   async deleteUser(userId: string): Promise<boolean> {
     await db.delete(users).where(eq(users.id, userId));
+    return true;
+  }
+
+  async getPageLayouts(): Promise<PageLayout[]> {
+    return await db.select().from(pageLayouts).orderBy(desc(pageLayouts.updatedAt));
+  }
+
+  async getPageLayout(id: number): Promise<PageLayout | null> {
+    const [layout] = await db.select().from(pageLayouts).where(eq(pageLayouts.id, id));
+    return layout || null;
+  }
+
+  async getPageLayoutBySlug(slug: string): Promise<PageLayout | null> {
+    const [layout] = await db.select().from(pageLayouts).where(eq(pageLayouts.slug, slug));
+    return layout || null;
+  }
+
+  async createPageLayout(layout: InsertPageLayout): Promise<PageLayout> {
+    const [newLayout] = await db.insert(pageLayouts).values(layout).returning();
+    return newLayout;
+  }
+
+  async updatePageLayout(id: number, data: Partial<InsertPageLayout>): Promise<PageLayout | null> {
+    const [updated] = await db.update(pageLayouts)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(pageLayouts.id, id))
+      .returning();
+    return updated || null;
+  }
+
+  async deletePageLayout(id: number): Promise<boolean> {
+    await db.delete(pageLayouts).where(eq(pageLayouts.id, id));
     return true;
   }
 }

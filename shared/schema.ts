@@ -115,3 +115,35 @@ export const insertPageContentSchema = createInsertSchema(pageContents).omit({ i
 
 export type PageContent = typeof pageContents.$inferSelect;
 export type InsertPageContent = z.infer<typeof insertPageContentSchema>;
+
+export const pageLayouts = pgTable("page_layouts", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  slug: text("slug").notNull().unique(),
+  layoutJson: text("layout_json").notNull(), // JSON structure for blocks
+  htmlContent: text("html_content"), // Generated or custom HTML
+  customCss: text("custom_css"),
+  isPublished: integer("is_published").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+  updatedBy: varchar("updated_by").references(() => users.id),
+});
+
+export const insertPageLayoutSchema = createInsertSchema(pageLayouts).omit({ id: true, createdAt: true, updatedAt: true });
+
+export type PageLayout = typeof pageLayouts.$inferSelect;
+export type InsertPageLayout = z.infer<typeof insertPageLayoutSchema>;
+
+// Block types for page builder
+export interface LayoutBlock {
+  id: string;
+  type: 'header' | 'sidebar-left' | 'sidebar-right' | 'body' | 'footer' | 'table' | 'text' | 'image' | 'button' | 'html' | 'container';
+  props: Record<string, any>;
+  children?: LayoutBlock[];
+  layout?: {
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+  };
+}

@@ -199,6 +199,7 @@ export default function PageBuilder({ initialBlocks = [], initialHtml = "", init
   const [importUrl, setImportUrl] = useState("");
   const [importHtml, setImportHtml] = useState("");
   const [importCss, setImportCss] = useState("");
+  const [importJs, setImportJs] = useState("");
   const [isImporting, setIsImporting] = useState(false);
   const [importDragOver, setImportDragOver] = useState(false);
 
@@ -258,6 +259,21 @@ export default function PageBuilder({ initialBlocks = [], initialHtml = "", init
     setImportDragOver(false);
   };
 
+  const processImportFile = async (file: File) => {
+    const ext = file.name.split('.').pop()?.toLowerCase();
+    const content = await file.text();
+    
+    if (ext === 'html' || ext === 'htm' || ext === 'php' || ext === 'jsp' || ext === 'asp') {
+      setImportHtml(prev => prev ? prev + "\n\n<!-- " + file.name + " -->\n" + content : "<!-- " + file.name + " -->\n" + content);
+    } else if (ext === 'css' || ext === 'scss' || ext === 'sass' || ext === 'less') {
+      setImportCss(prev => prev ? prev + "\n\n/* " + file.name + " */\n" + content : "/* " + file.name + " */\n" + content);
+    } else if (ext === 'js' || ext === 'jsx' || ext === 'ts' || ext === 'tsx' || ext === 'mjs') {
+      setImportJs(prev => prev ? prev + "\n\n// " + file.name + "\n" + content : "// " + file.name + "\n" + content);
+    } else if (ext === 'json' || ext === 'xml' || ext === 'svg' || ext === 'txt' || ext === 'md') {
+      setImportHtml(prev => prev ? prev + "\n\n<!-- " + file.name + " -->\n" + content : "<!-- " + file.name + " -->\n" + content);
+    }
+  };
+
   const handleImportDrop = async (e: React.DragEvent) => {
     e.preventDefault();
     e.stopPropagation();
@@ -270,14 +286,7 @@ export default function PageBuilder({ initialBlocks = [], initialHtml = "", init
     
     try {
       for (const file of files) {
-        const ext = file.name.split('.').pop()?.toLowerCase();
-        const content = await file.text();
-        
-        if (ext === 'html' || ext === 'htm') {
-          setImportHtml(prev => prev ? prev + "\n\n" + content : content);
-        } else if (ext === 'css') {
-          setImportCss(prev => prev ? prev + "\n\n" + content : content);
-        }
+        await processImportFile(file);
       }
     } catch (error) {
       console.error("파일 읽기 오류:", error);
@@ -294,14 +303,7 @@ export default function PageBuilder({ initialBlocks = [], initialHtml = "", init
     
     try {
       for (const file of files) {
-        const ext = file.name.split('.').pop()?.toLowerCase();
-        const content = await file.text();
-        
-        if (ext === 'html' || ext === 'htm') {
-          setImportHtml(prev => prev ? prev + "\n\n" + content : content);
-        } else if (ext === 'css') {
-          setImportCss(prev => prev ? prev + "\n\n" + content : content);
-        }
+        await processImportFile(file);
       }
     } catch (error) {
       console.error("파일 읽기 오류:", error);
@@ -1702,15 +1704,15 @@ export default function PageBuilder({ initialBlocks = [], initialHtml = "", init
                 <>
                   <Upload className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
                   <p className="text-sm font-medium mb-1">
-                    HTML/CSS 파일을 여기에 드래그하세요
+                    템플릿 파일을 여기에 드래그하세요
                   </p>
                   <p className="text-xs text-muted-foreground mb-3">
-                    또는 컴퓨터에서 파일 선택
+                    HTML, CSS, JS, JSON, XML, SVG, PHP 등 지원
                   </p>
                   <label>
                     <input
                       type="file"
-                      accept=".html,.htm,.css"
+                      accept=".html,.htm,.css,.scss,.sass,.less,.js,.jsx,.ts,.tsx,.mjs,.json,.xml,.svg,.txt,.md,.php,.jsp,.asp"
                       multiple
                       className="hidden"
                       onChange={handleImportFileInput}
@@ -1743,8 +1745,18 @@ export default function PageBuilder({ initialBlocks = [], initialHtml = "", init
                 value={importCss}
                 onChange={(e) => setImportCss(e.target.value)}
                 placeholder="CSS 코드를 붙여넣거나 파일을 드롭하세요..."
-                className="font-mono text-sm min-h-[100px]"
+                className="font-mono text-sm min-h-[80px]"
                 data-testid="textarea-import-css"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>JavaScript 코드 (선택사항)</Label>
+              <Textarea
+                value={importJs}
+                onChange={(e) => setImportJs(e.target.value)}
+                placeholder="JavaScript 코드를 붙여넣거나 파일을 드롭하세요..."
+                className="font-mono text-sm min-h-[80px]"
+                data-testid="textarea-import-js"
               />
             </div>
 
@@ -1777,25 +1789,31 @@ export default function PageBuilder({ initialBlocks = [], initialHtml = "", init
               setShowImportModal(false);
               setImportHtml("");
               setImportCss("");
+              setImportJs("");
               setImportUrl("");
             }} data-testid="button-import-cancel">
               취소
             </Button>
             <Button
               onClick={() => {
-                if (importHtml) {
-                  setHtmlContent((prev) => prev + "\n\n" + importHtml);
-                }
+                let combinedHtml = importHtml;
                 if (importCss) {
-                  setCssContent((prev) => prev + "\n\n" + importCss);
+                  combinedHtml += "\n\n<style>\n" + importCss + "\n</style>";
+                }
+                if (importJs) {
+                  combinedHtml += "\n\n<script>\n" + importJs + "\n</script>";
+                }
+                if (combinedHtml) {
+                  setHtmlContent((prev) => prev + "\n\n" + combinedHtml);
                 }
                 setShowImportModal(false);
                 setImportHtml("");
                 setImportCss("");
+                setImportJs("");
                 setImportUrl("");
                 setActiveTab("html");
               }}
-              disabled={!importHtml}
+              disabled={!importHtml && !importCss && !importJs}
               data-testid="button-import-apply"
             >
               코드 적용

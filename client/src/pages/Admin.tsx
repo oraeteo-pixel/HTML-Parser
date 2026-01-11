@@ -1486,6 +1486,24 @@ export default function Admin() {
                           <optgroup label="한글 코딩">
                             <option value="Nanum Gothic Coding">나눔고딕코딩</option>
                           </optgroup>
+                          <optgroup label="한자/중문 고딕">
+                            <option value="Noto Sans TC">Noto Sans TC (번체)</option>
+                            <option value="Noto Sans SC">Noto Sans SC (간체)</option>
+                            <option value="Noto Sans JP">Noto Sans JP (일본)</option>
+                          </optgroup>
+                          <optgroup label="한자/중문 명조">
+                            <option value="Noto Serif TC">Noto Serif TC (번체)</option>
+                            <option value="Noto Serif SC">Noto Serif SC (간체)</option>
+                            <option value="Noto Serif JP">Noto Serif JP (일본)</option>
+                          </optgroup>
+                          <optgroup label="한자/중문 서예체">
+                            <option value="Ma Shan Zheng">마산정 (馬山正)</option>
+                            <option value="ZCOOL XiaoWei">샤오웨이</option>
+                            <option value="ZCOOL QingKe HuangYou">청커황요우</option>
+                            <option value="Liu Jian Mao Cao">류젠마오차오</option>
+                            <option value="Long Cang">롱창</option>
+                            <option value="Zhi Mang Xing">지망싱</option>
+                          </optgroup>
                           <optgroup label="영문 고딕">
                             <option value="Inter">Inter</option>
                             <option value="Roboto">Roboto</option>

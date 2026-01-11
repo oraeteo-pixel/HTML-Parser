@@ -137,7 +137,8 @@ export type InsertPageLayout = z.infer<typeof insertPageLayoutSchema>;
 // Block types for page builder
 export interface LayoutBlock {
   id: string;
-  type: 'header' | 'sidebar-left' | 'sidebar-right' | 'body' | 'footer' | 'table' | 'text' | 'image' | 'button' | 'html' | 'container';
+  type: 'header' | 'sidebar-left' | 'sidebar-right' | 'body' | 'footer' | 'table' | 'text' | 'image' | 'button' | 'html' | 'container' | 
+        'madang-posts' | 'ebook-posts' | 'recent-posts' | 'popular-posts' | 'categories' | 'calendar-widget' | 'banner' | 'youtube-embed' | 'divider';
   props: Record<string, any>;
   children?: LayoutBlock[];
   layout?: {

@@ -40,6 +40,15 @@ import {
   Save,
   Plus,
   X,
+  Newspaper,
+  BookOpen,
+  Clock,
+  TrendingUp,
+  FolderTree,
+  CalendarDays,
+  ImageIcon,
+  Youtube,
+  Minus,
 } from "lucide-react";
 import type { LayoutBlock } from "@shared/schema";
 
@@ -50,18 +59,36 @@ interface BlockPaletteItem {
   defaultProps: Record<string, any>;
 }
 
-const BLOCK_PALETTE: BlockPaletteItem[] = [
+// 블록 카테고리 분류
+const LAYOUT_BLOCKS: BlockPaletteItem[] = [
   { type: "header", label: "헤더", icon: LayoutTemplate, defaultProps: { height: "80px", backgroundColor: "#f8fafc" } },
   { type: "sidebar-left", label: "왼쪽 사이드바", icon: PanelLeft, defaultProps: { width: "250px", backgroundColor: "#f1f5f9" } },
   { type: "sidebar-right", label: "오른쪽 사이드바", icon: PanelRight, defaultProps: { width: "250px", backgroundColor: "#f1f5f9" } },
   { type: "body", label: "본문 영역", icon: Square, defaultProps: { minHeight: "400px", backgroundColor: "#ffffff" } },
   { type: "footer", label: "푸터", icon: LayoutTemplate, defaultProps: { height: "60px", backgroundColor: "#f8fafc" } },
-  { type: "text", label: "텍스트", icon: Type, defaultProps: { content: "텍스트를 입력하세요", fontSize: "16px" } },
-  { type: "image", label: "이미지", icon: Image, defaultProps: { src: "", alt: "", width: "100%" } },
+  { type: "container", label: "컨테이너", icon: Square, defaultProps: { padding: "16px", backgroundColor: "transparent" } },
+  { type: "divider", label: "구분선", icon: Minus, defaultProps: { height: "1px", color: "#e2e8f0", margin: "16px 0" } },
+];
+
+const CONTENT_BLOCKS: BlockPaletteItem[] = [
+  { type: "text", label: "텍스트", icon: Type, defaultProps: { content: "텍스트를 입력하세요", fontSize: "16px", fontWeight: "normal" } },
+  { type: "image", label: "이미지", icon: Image, defaultProps: { src: "", alt: "", width: "100%", borderRadius: "0" } },
   { type: "table", label: "테이블", icon: Table, defaultProps: { rows: 3, cols: 3, data: [] } },
   { type: "html", label: "HTML", icon: Code, defaultProps: { html: "<div>HTML 코드</div>" } },
-  { type: "container", label: "컨테이너", icon: Square, defaultProps: { padding: "16px", backgroundColor: "transparent" } },
+  { type: "banner", label: "배너", icon: ImageIcon, defaultProps: { imageUrl: "", linkUrl: "", altText: "배너", height: "200px" } },
+  { type: "youtube-embed", label: "유튜브", icon: Youtube, defaultProps: { videoId: "", width: "100%", height: "315px" } },
 ];
+
+const WIDGET_BLOCKS: BlockPaletteItem[] = [
+  { type: "madang-posts", label: "마당 게시판", icon: Newspaper, defaultProps: { limit: 10, showPagination: true, style: "list", categoryId: null } },
+  { type: "ebook-posts", label: "전자책 목록", icon: BookOpen, defaultProps: { limit: 10, showPagination: true, style: "grid" } },
+  { type: "recent-posts", label: "최신글", icon: Clock, defaultProps: { limit: 5, section: "all", showDate: true } },
+  { type: "popular-posts", label: "인기글", icon: TrendingUp, defaultProps: { limit: 5, section: "all", sortBy: "likes" } },
+  { type: "categories", label: "카테고리 메뉴", icon: FolderTree, defaultProps: { style: "list", showCount: true } },
+  { type: "calendar-widget", label: "달력 위젯", icon: CalendarDays, defaultProps: { showLunar: true, compact: false } },
+];
+
+const BLOCK_PALETTE: BlockPaletteItem[] = [...LAYOUT_BLOCKS, ...CONTENT_BLOCKS, ...WIDGET_BLOCKS];
 
 interface SortableBlockProps {
   block: LayoutBlock;
@@ -200,10 +227,10 @@ export default function PageBuilder({ initialBlocks = [], initialHtml = "", init
           html += `<footer style="height: ${block.props.height}; background-color: ${block.props.backgroundColor}; padding: 16px;">\n  <!-- 푸터 내용 -->\n</footer>\n\n`;
           break;
         case "text":
-          html += `<p style="font-size: ${block.props.fontSize};">${block.props.content}</p>\n\n`;
+          html += `<p style="font-size: ${block.props.fontSize}; font-weight: ${block.props.fontWeight || 'normal'};">${block.props.content}</p>\n\n`;
           break;
         case "image":
-          html += `<img src="${block.props.src}" alt="${block.props.alt}" style="width: ${block.props.width};" />\n\n`;
+          html += `<img src="${block.props.src}" alt="${block.props.alt}" style="width: ${block.props.width}; border-radius: ${block.props.borderRadius || '0'};" />\n\n`;
           break;
         case "table":
           html += generateTableHtml(block.props.rows, block.props.cols, block.props.data);
@@ -213,6 +240,33 @@ export default function PageBuilder({ initialBlocks = [], initialHtml = "", init
           break;
         case "container":
           html += `<div style="padding: ${block.props.padding}; background-color: ${block.props.backgroundColor};">\n  <!-- 컨테이너 내용 -->\n</div>\n\n`;
+          break;
+        case "divider":
+          html += `<hr style="height: ${block.props.height}; background-color: ${block.props.color}; border: none; margin: ${block.props.margin};" />\n\n`;
+          break;
+        case "banner":
+          html += `<div class="banner-block" style="height: ${block.props.height};">\n  <a href="${block.props.linkUrl}">\n    <img src="${block.props.imageUrl}" alt="${block.props.altText}" style="width: 100%; height: 100%; object-fit: cover;" />\n  </a>\n</div>\n\n`;
+          break;
+        case "youtube-embed":
+          html += `<div class="youtube-embed" style="width: ${block.props.width};">\n  <iframe width="100%" height="${block.props.height}" src="https://www.youtube.com/embed/${block.props.videoId}" frameborder="0" allowfullscreen></iframe>\n</div>\n\n`;
+          break;
+        case "madang-posts":
+          html += `<div class="madang-posts-widget" data-limit="${block.props.limit}" data-style="${block.props.style}" data-category="${block.props.categoryId || ''}" data-pagination="${block.props.showPagination}">\n  <!-- 마당 게시판 위젯 (서버에서 렌더링) -->\n</div>\n\n`;
+          break;
+        case "ebook-posts":
+          html += `<div class="ebook-posts-widget" data-limit="${block.props.limit}" data-style="${block.props.style}" data-pagination="${block.props.showPagination}">\n  <!-- 전자책 목록 위젯 (서버에서 렌더링) -->\n</div>\n\n`;
+          break;
+        case "recent-posts":
+          html += `<div class="recent-posts-widget" data-limit="${block.props.limit}" data-section="${block.props.section}" data-show-date="${block.props.showDate}">\n  <!-- 최신글 위젯 (서버에서 렌더링) -->\n</div>\n\n`;
+          break;
+        case "popular-posts":
+          html += `<div class="popular-posts-widget" data-limit="${block.props.limit}" data-section="${block.props.section}" data-sort="${block.props.sortBy}">\n  <!-- 인기글 위젯 (서버에서 렌더링) -->\n</div>\n\n`;
+          break;
+        case "categories":
+          html += `<div class="categories-widget" data-style="${block.props.style}" data-show-count="${block.props.showCount}">\n  <!-- 카테고리 위젯 (서버에서 렌더링) -->\n</div>\n\n`;
+          break;
+        case "calendar-widget":
+          html += `<div class="calendar-widget" data-show-lunar="${block.props.showLunar}" data-compact="${block.props.compact}">\n  <!-- 달력 위젯 (서버에서 렌더링) -->\n</div>\n\n`;
           break;
       }
     });
@@ -294,23 +348,67 @@ export default function PageBuilder({ initialBlocks = [], initialHtml = "", init
 
         <TabsContent value="visual" className="mt-4">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <Card className="lg:col-span-1">
+            <Card className="lg:col-span-1 max-h-[600px] overflow-y-auto">
               <CardHeader>
                 <CardTitle className="text-sm">블록 팔레트</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-2">
-                {BLOCK_PALETTE.map((item) => (
-                  <Button
-                    key={item.type}
-                    variant="outline"
-                    className="w-full justify-start"
-                    onClick={() => addBlock(item)}
-                    data-testid={`button-add-${item.type}`}
-                  >
-                    <item.icon className="h-4 w-4 mr-2" />
-                    {item.label}
-                  </Button>
-                ))}
+              <CardContent className="space-y-4">
+                <div>
+                  <h4 className="text-xs font-semibold text-muted-foreground mb-2 uppercase">레이아웃</h4>
+                  <div className="space-y-1">
+                    {LAYOUT_BLOCKS.map((item) => (
+                      <Button
+                        key={item.type}
+                        variant="outline"
+                        size="sm"
+                        className="w-full justify-start"
+                        onClick={() => addBlock(item)}
+                        data-testid={`button-add-${item.type}`}
+                      >
+                        <item.icon className="h-4 w-4 mr-2" />
+                        {item.label}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+                
+                <div>
+                  <h4 className="text-xs font-semibold text-muted-foreground mb-2 uppercase">콘텐츠</h4>
+                  <div className="space-y-1">
+                    {CONTENT_BLOCKS.map((item) => (
+                      <Button
+                        key={item.type}
+                        variant="outline"
+                        size="sm"
+                        className="w-full justify-start"
+                        onClick={() => addBlock(item)}
+                        data-testid={`button-add-${item.type}`}
+                      >
+                        <item.icon className="h-4 w-4 mr-2" />
+                        {item.label}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+                
+                <div>
+                  <h4 className="text-xs font-semibold text-muted-foreground mb-2 uppercase">위젯</h4>
+                  <div className="space-y-1">
+                    {WIDGET_BLOCKS.map((item) => (
+                      <Button
+                        key={item.type}
+                        variant="outline"
+                        size="sm"
+                        className="w-full justify-start bg-primary/5"
+                        onClick={() => addBlock(item)}
+                        data-testid={`button-add-${item.type}`}
+                      >
+                        <item.icon className="h-4 w-4 mr-2" />
+                        {item.label}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
               </CardContent>
             </Card>
 
@@ -644,6 +742,388 @@ export default function PageBuilder({ initialBlocks = [], initialHtml = "", init
                         })
                       }
                     />
+                  </div>
+                </>
+              )}
+
+              {editingBlock.type === "divider" && (
+                <>
+                  <div className="space-y-2">
+                    <Label>두께</Label>
+                    <Input
+                      value={editingBlock.props.height || "1px"}
+                      onChange={(e) =>
+                        setEditingBlock({
+                          ...editingBlock,
+                          props: { ...editingBlock.props, height: e.target.value },
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>색상</Label>
+                    <Input
+                      type="color"
+                      value={editingBlock.props.color || "#e2e8f0"}
+                      onChange={(e) =>
+                        setEditingBlock({
+                          ...editingBlock,
+                          props: { ...editingBlock.props, color: e.target.value },
+                        })
+                      }
+                    />
+                  </div>
+                </>
+              )}
+
+              {editingBlock.type === "banner" && (
+                <>
+                  <div className="space-y-2">
+                    <Label>배너 이미지 URL</Label>
+                    <Input
+                      value={editingBlock.props.imageUrl || ""}
+                      onChange={(e) =>
+                        setEditingBlock({
+                          ...editingBlock,
+                          props: { ...editingBlock.props, imageUrl: e.target.value },
+                        })
+                      }
+                      placeholder="https://..."
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>링크 URL</Label>
+                    <Input
+                      value={editingBlock.props.linkUrl || ""}
+                      onChange={(e) =>
+                        setEditingBlock({
+                          ...editingBlock,
+                          props: { ...editingBlock.props, linkUrl: e.target.value },
+                        })
+                      }
+                      placeholder="https://..."
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>높이</Label>
+                    <Input
+                      value={editingBlock.props.height || "200px"}
+                      onChange={(e) =>
+                        setEditingBlock({
+                          ...editingBlock,
+                          props: { ...editingBlock.props, height: e.target.value },
+                        })
+                      }
+                    />
+                  </div>
+                </>
+              )}
+
+              {editingBlock.type === "youtube-embed" && (
+                <>
+                  <div className="space-y-2">
+                    <Label>유튜브 영상 ID</Label>
+                    <Input
+                      value={editingBlock.props.videoId || ""}
+                      onChange={(e) =>
+                        setEditingBlock({
+                          ...editingBlock,
+                          props: { ...editingBlock.props, videoId: e.target.value },
+                        })
+                      }
+                      placeholder="dQw4w9WgXcQ"
+                    />
+                    <p className="text-xs text-muted-foreground">URL에서 v= 뒤의 값을 입력하세요</p>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>높이</Label>
+                    <Input
+                      value={editingBlock.props.height || "315px"}
+                      onChange={(e) =>
+                        setEditingBlock({
+                          ...editingBlock,
+                          props: { ...editingBlock.props, height: e.target.value },
+                        })
+                      }
+                    />
+                  </div>
+                </>
+              )}
+
+              {(editingBlock.type === "madang-posts" || editingBlock.type === "ebook-posts") && (
+                <>
+                  <div className="space-y-2">
+                    <Label>표시 개수</Label>
+                    <Input
+                      type="number"
+                      min={1}
+                      max={50}
+                      value={editingBlock.props.limit || 10}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value);
+                        setEditingBlock({
+                          ...editingBlock,
+                          props: { ...editingBlock.props, limit: isNaN(val) ? 10 : val },
+                        });
+                      }}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>스타일</Label>
+                    <Select
+                      value={editingBlock.props.style || "list"}
+                      onValueChange={(v) =>
+                        setEditingBlock({
+                          ...editingBlock,
+                          props: { ...editingBlock.props, style: v },
+                        })
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="list">리스트</SelectItem>
+                        <SelectItem value="grid">그리드</SelectItem>
+                        <SelectItem value="card">카드</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>페이지네이션</Label>
+                    <Select
+                      value={editingBlock.props.showPagination ? "true" : "false"}
+                      onValueChange={(v) =>
+                        setEditingBlock({
+                          ...editingBlock,
+                          props: { ...editingBlock.props, showPagination: v === "true" },
+                        })
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="true">표시</SelectItem>
+                        <SelectItem value="false">숨김</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </>
+              )}
+
+              {editingBlock.type === "recent-posts" && (
+                <>
+                  <div className="space-y-2">
+                    <Label>표시 개수</Label>
+                    <Input
+                      type="number"
+                      min={1}
+                      max={20}
+                      value={editingBlock.props.limit || 5}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value);
+                        setEditingBlock({
+                          ...editingBlock,
+                          props: { ...editingBlock.props, limit: isNaN(val) ? 5 : val },
+                        });
+                      }}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>섹션</Label>
+                    <Select
+                      value={editingBlock.props.section || "all"}
+                      onValueChange={(v) =>
+                        setEditingBlock({
+                          ...editingBlock,
+                          props: { ...editingBlock.props, section: v },
+                        })
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">전체</SelectItem>
+                        <SelectItem value="madang">마당</SelectItem>
+                        <SelectItem value="ebook">전자책</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>날짜 표시</Label>
+                    <Select
+                      value={editingBlock.props.showDate ? "true" : "false"}
+                      onValueChange={(v) =>
+                        setEditingBlock({
+                          ...editingBlock,
+                          props: { ...editingBlock.props, showDate: v === "true" },
+                        })
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="true">표시</SelectItem>
+                        <SelectItem value="false">숨김</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </>
+              )}
+
+              {editingBlock.type === "popular-posts" && (
+                <>
+                  <div className="space-y-2">
+                    <Label>표시 개수</Label>
+                    <Input
+                      type="number"
+                      min={1}
+                      max={20}
+                      value={editingBlock.props.limit || 5}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value);
+                        setEditingBlock({
+                          ...editingBlock,
+                          props: { ...editingBlock.props, limit: isNaN(val) ? 5 : val },
+                        });
+                      }}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>섹션</Label>
+                    <Select
+                      value={editingBlock.props.section || "all"}
+                      onValueChange={(v) =>
+                        setEditingBlock({
+                          ...editingBlock,
+                          props: { ...editingBlock.props, section: v },
+                        })
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">전체</SelectItem>
+                        <SelectItem value="madang">마당</SelectItem>
+                        <SelectItem value="ebook">전자책</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>정렬 기준</Label>
+                    <Select
+                      value={editingBlock.props.sortBy || "likes"}
+                      onValueChange={(v) =>
+                        setEditingBlock({
+                          ...editingBlock,
+                          props: { ...editingBlock.props, sortBy: v },
+                        })
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="likes">좋아요</SelectItem>
+                        <SelectItem value="views">조회수</SelectItem>
+                        <SelectItem value="comments">댓글수</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </>
+              )}
+
+              {editingBlock.type === "categories" && (
+                <>
+                  <div className="space-y-2">
+                    <Label>스타일</Label>
+                    <Select
+                      value={editingBlock.props.style || "list"}
+                      onValueChange={(v) =>
+                        setEditingBlock({
+                          ...editingBlock,
+                          props: { ...editingBlock.props, style: v },
+                        })
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="list">리스트</SelectItem>
+                        <SelectItem value="accordion">아코디언</SelectItem>
+                        <SelectItem value="pills">태그</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>글 개수 표시</Label>
+                    <Select
+                      value={editingBlock.props.showCount ? "true" : "false"}
+                      onValueChange={(v) =>
+                        setEditingBlock({
+                          ...editingBlock,
+                          props: { ...editingBlock.props, showCount: v === "true" },
+                        })
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="true">표시</SelectItem>
+                        <SelectItem value="false">숨김</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </>
+              )}
+
+              {editingBlock.type === "calendar-widget" && (
+                <>
+                  <div className="space-y-2">
+                    <Label>음력 표시</Label>
+                    <Select
+                      value={editingBlock.props.showLunar ? "true" : "false"}
+                      onValueChange={(v) =>
+                        setEditingBlock({
+                          ...editingBlock,
+                          props: { ...editingBlock.props, showLunar: v === "true" },
+                        })
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="true">표시</SelectItem>
+                        <SelectItem value="false">숨김</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>간략 표시</Label>
+                    <Select
+                      value={editingBlock.props.compact ? "true" : "false"}
+                      onValueChange={(v) =>
+                        setEditingBlock({
+                          ...editingBlock,
+                          props: { ...editingBlock.props, compact: v === "true" },
+                        })
+                      }
+                    >
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="true">간략</SelectItem>
+                        <SelectItem value="false">전체</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </>
               )}

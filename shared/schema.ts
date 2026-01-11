@@ -138,7 +138,8 @@ export type InsertPageLayout = z.infer<typeof insertPageLayoutSchema>;
 export interface LayoutBlock {
   id: string;
   type: 'header' | 'sidebar-left' | 'sidebar-right' | 'body' | 'footer' | 'table' | 'text' | 'image' | 'button' | 'html' | 'container' | 
-        'madang-posts' | 'ebook-posts' | 'recent-posts' | 'popular-posts' | 'categories' | 'calendar-widget' | 'banner' | 'youtube-embed' | 'divider';
+        'madang-posts' | 'ebook-posts' | 'recent-posts' | 'popular-posts' | 'categories' | 'calendar-widget' | 'banner' | 'youtube-embed' | 'divider' |
+        'search-widget' | 'social-links' | 'tag-cloud' | 'notice' | 'spacer' | 'quote' | 'stats' | 'member-profile' | 'slider' | 'tabs' | 'accordion' | 'gallery' | 'login-widget';
   props: Record<string, any>;
   children?: LayoutBlock[];
   layout?: {

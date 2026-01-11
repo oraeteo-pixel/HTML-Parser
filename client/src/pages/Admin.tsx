@@ -246,6 +246,15 @@ export default function Admin() {
   const [uploadingLogo, setUploadingLogo] = useState(false);
   const [logoDragOver, setLogoDragOver] = useState(false);
 
+  const [editorLogoUrl, setEditorLogoUrl] = useState<string>("");
+  const [editorScale, setEditorScale] = useState<number>(100);
+  const [editorSharpness, setEditorSharpness] = useState<number>(100);
+  const [editorBackgroundColor, setEditorBackgroundColor] = useState<string>("#ffffff");
+  const [editorTextEnabled, setEditorTextEnabled] = useState<boolean>(false);
+  const [editorText, setEditorText] = useState<string>("");
+  const [editorTextColor, setEditorTextColor] = useState<string>("#000000");
+  const [editorDragOver, setEditorDragOver] = useState(false);
+
   const { data: savedSettings, isLoading: settingsLoading } = useQuery<Record<string, string>>({
     queryKey: ["/api/settings"],
   });
@@ -298,7 +307,14 @@ export default function Admin() {
       });
       if (savedSettings.logoImageUrl) {
         setLogoImageUrl(savedSettings.logoImageUrl);
+        setEditorLogoUrl(savedSettings.logoImageUrl);
       }
+      if (savedSettings.logoScale) setEditorScale(Number(savedSettings.logoScale) || 100);
+      if (savedSettings.logoSharpness) setEditorSharpness(Number(savedSettings.logoSharpness) || 100);
+      if (savedSettings.logoBackgroundColor) setEditorBackgroundColor(savedSettings.logoBackgroundColor);
+      if (savedSettings.logoTextEnabled) setEditorTextEnabled(savedSettings.logoTextEnabled === "true");
+      if (savedSettings.logoTextContent) setEditorText(savedSettings.logoTextContent);
+      if (savedSettings.logoTextColor) setEditorTextColor(savedSettings.logoTextColor);
     }
   }, [savedSettings]);
 
@@ -1232,6 +1248,214 @@ export default function Admin() {
                 </div>
               </div>
             )}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>로고 편집기</CardTitle>
+          <CardDescription>갤러리에서 로고를 드래그하여 편집 영역에 놓으세요. 크기, 선명도, 색상을 조절할 수 있습니다.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <Label>갤러리에서 로고 선택</Label>
+              <div className="grid grid-cols-3 gap-2 max-h-[200px] overflow-y-auto border rounded-lg p-2">
+                {siteLogos && siteLogos.length > 0 ? (
+                  siteLogos.map((logo) => (
+                    <div
+                      key={logo.id}
+                      draggable
+                      onDragStart={(e) => {
+                        e.dataTransfer.setData("logoUrl", logo.objectPath);
+                      }}
+                      onClick={() => setEditorLogoUrl(logo.objectPath)}
+                      className={`p-2 border rounded cursor-pointer hover:bg-muted/50 transition-colors ${
+                        editorLogoUrl === logo.objectPath ? "border-primary bg-primary/10" : ""
+                      }`}
+                      data-testid={`editor-logo-${logo.id}`}
+                    >
+                      <img src={logo.objectPath} alt={logo.name} className="h-12 w-full object-contain" />
+                    </div>
+                  ))
+                ) : (
+                  <div className="col-span-3 text-center py-4 text-muted-foreground text-sm">
+                    갤러리에 로고가 없습니다.
+                  </div>
+                )}
+              </div>
+
+              <div
+                onDragOver={(e) => { e.preventDefault(); setEditorDragOver(true); }}
+                onDragLeave={() => setEditorDragOver(false)}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  setEditorDragOver(false);
+                  const logoUrl = e.dataTransfer.getData("logoUrl");
+                  if (logoUrl) setEditorLogoUrl(logoUrl);
+                }}
+                className={`border-2 border-dashed rounded-lg p-6 flex items-center justify-center min-h-[120px] transition-colors ${
+                  editorDragOver ? "border-primary bg-primary/10" : "border-slate-300 dark:border-slate-600"
+                }`}
+                style={{ backgroundColor: editorBackgroundColor }}
+              >
+                {editorLogoUrl ? (
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={editorLogoUrl}
+                      alt="편집 중인 로고"
+                      style={{
+                        transform: `scale(${editorScale / 100})`,
+                        filter: `contrast(${editorSharpness}%)`,
+                      }}
+                      className="h-16 w-auto max-w-[200px] object-contain transition-transform"
+                    />
+                    {editorTextEnabled && editorText && (
+                      <span className="font-bold text-xl" style={{ color: editorTextColor }}>{editorText}</span>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-center text-muted-foreground">
+                    <Image className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                    <p className="text-sm">로고를 여기에 드래그하거나 위에서 클릭하세요</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label>크기 조절 ({editorScale}%)</Label>
+                <input
+                  type="range"
+                  min="50"
+                  max="200"
+                  value={editorScale}
+                  onChange={(e) => setEditorScale(Number(e.target.value))}
+                  className="w-full"
+                  data-testid="slider-logo-scale"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>선명도 ({editorSharpness}%)</Label>
+                <input
+                  type="range"
+                  min="50"
+                  max="200"
+                  value={editorSharpness}
+                  onChange={(e) => setEditorSharpness(Number(e.target.value))}
+                  className="w-full"
+                  data-testid="slider-logo-sharpness"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="editorBgColor">배경색</Label>
+                <div className="flex gap-2">
+                  <input
+                    type="color"
+                    id="editorBgColor"
+                    value={editorBackgroundColor}
+                    onChange={(e) => setEditorBackgroundColor(e.target.value)}
+                    className="h-10 w-16 rounded border cursor-pointer"
+                    data-testid="input-logo-bg-color"
+                  />
+                  <Input
+                    value={editorBackgroundColor}
+                    onChange={(e) => setEditorBackgroundColor(e.target.value)}
+                    className="flex-1"
+                    placeholder="#ffffff"
+                  />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setEditorBackgroundColor("transparent")}
+                  >
+                    투명
+                  </Button>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <Switch
+                    checked={editorTextEnabled}
+                    onCheckedChange={setEditorTextEnabled}
+                    data-testid="switch-text-enabled"
+                  />
+                  <Label>텍스트 로고 추가</Label>
+                </div>
+                {editorTextEnabled && (
+                  <div className="space-y-2 mt-2">
+                    <Input
+                      value={editorText}
+                      onChange={(e) => setEditorText(e.target.value)}
+                      placeholder="텍스트 입력"
+                      data-testid="input-logo-text-content"
+                    />
+                    <div className="flex gap-2">
+                      <Label className="flex items-center gap-2">
+                        텍스트 색상
+                        <input
+                          type="color"
+                          value={editorTextColor}
+                          onChange={(e) => setEditorTextColor(e.target.value)}
+                          className="h-8 w-12 rounded border cursor-pointer"
+                          data-testid="input-logo-text-color"
+                        />
+                      </Label>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex gap-2 pt-4">
+                <Button
+                  onClick={async () => {
+                    if (!editorLogoUrl) {
+                      toast({ title: "로고를 선택해주세요", variant: "destructive" });
+                      return;
+                    }
+                    try {
+                      await saveMutation.mutateAsync({ key: "logoImageUrl", value: editorLogoUrl });
+                      await saveMutation.mutateAsync({ key: "logoScale", value: String(editorScale) });
+                      await saveMutation.mutateAsync({ key: "logoSharpness", value: String(editorSharpness) });
+                      await saveMutation.mutateAsync({ key: "logoBackgroundColor", value: editorBackgroundColor });
+                      await saveMutation.mutateAsync({ key: "logoTextEnabled", value: String(editorTextEnabled) });
+                      await saveMutation.mutateAsync({ key: "logoTextContent", value: editorText });
+                      await saveMutation.mutateAsync({ key: "logoTextColor", value: editorTextColor });
+                      setLogoImageUrl(editorLogoUrl);
+                      toast({ title: "로고가 홈페이지에 적용되었습니다!" });
+                    } catch (error) {
+                      toast({ title: "적용 실패", variant: "destructive" });
+                    }
+                  }}
+                  disabled={!editorLogoUrl || saveMutation.isPending}
+                  className="flex-1"
+                  data-testid="button-apply-logo"
+                >
+                  <Check className="h-4 w-4 mr-2" />
+                  홈페이지에 적용
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setEditorLogoUrl("");
+                    setEditorScale(100);
+                    setEditorSharpness(100);
+                    setEditorBackgroundColor("#ffffff");
+                    setEditorTextEnabled(false);
+                    setEditorText("");
+                    setEditorTextColor("#000000");
+                  }}
+                  data-testid="button-reset-editor"
+                >
+                  초기화
+                </Button>
+              </div>
+            </div>
           </div>
         </CardContent>
       </Card>

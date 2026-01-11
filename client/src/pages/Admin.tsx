@@ -1205,6 +1205,39 @@ export default function Admin() {
 
       <Card>
         <CardHeader>
+          <CardTitle>현재 적용된 로고</CardTitle>
+          <CardDescription>홈페이지에 표시되는 로고입니다.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-center p-6 border rounded-lg bg-white dark:bg-slate-900">
+            {logoImageUrl ? (
+              <img 
+                src={logoImageUrl} 
+                alt="현재 로고" 
+                className="h-16 w-auto max-w-[300px] object-contain"
+              />
+            ) : (
+              <div className="flex items-center gap-3" style={{ fontFamily: `${settings.logoFontFamily}, sans-serif` }}>
+                <svg viewBox="0 0 40 40" className="h-12 w-12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="20" cy="20" r="18" stroke={settings.logoColor} strokeWidth="2.5" fill="none"/>
+                  <circle cx="20" cy="20" r="14" stroke={settings.logoColor} strokeWidth="2.5" fill="none"/>
+                  <circle cx="20" cy="20" r="10" stroke={settings.logoColor} strokeWidth="2.5" fill="none"/>
+                  <circle cx="20" cy="20" r="6" stroke={settings.logoColor} strokeWidth="2.5" fill="none"/>
+                  <circle cx="20" cy="20" r="2" fill={settings.logoColor}/>
+                </svg>
+                <div className="flex flex-col leading-tight">
+                  {settings.logoText && <span className="font-bold text-2xl" style={{ color: settings.logoColor }}>{settings.logoText}</span>}
+                  {settings.logoTextKorean && <span className="font-bold text-3xl" style={{ color: settings.logoColor }}>{settings.logoTextKorean}</span>}
+                  {settings.logoTextHanja && <span className="text-sm" style={{ color: settings.logoColor }}>{settings.logoTextHanja}</span>}
+                </div>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
           <CardTitle>로고 스타일 프리셋</CardTitle>
           <CardDescription>미리 정의된 스타일 중 하나를 선택하세요.</CardDescription>
         </CardHeader>

@@ -227,6 +227,8 @@ export default function Admin() {
   const [editingMember, setEditingMember] = useState<User | null>(null);
   const [showEmailModal, setShowEmailModal] = useState(false);
   const [showSmsModal, setShowSmsModal] = useState(false);
+  const [showAddMemberModal, setShowAddMemberModal] = useState(false);
+  const [newMember, setNewMember] = useState({ firstName: "", lastName: "", email: "", isAdmin: 0 });
   const [emailContent, setEmailContent] = useState({ subject: "", body: "" });
   const [smsContent, setSmsContent] = useState("");
   
@@ -409,6 +411,21 @@ export default function Admin() {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
       setSelectedMembers(new Set());
       toast({ title: "회원 삭제 완료" });
+    },
+  });
+
+  const createMemberMutation = useMutation({
+    mutationFn: async (data: { firstName: string; lastName?: string; email?: string; isAdmin?: number }) => {
+      return apiRequest("POST", "/api/admin/users", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      setShowAddMemberModal(false);
+      setNewMember({ firstName: "", lastName: "", email: "", isAdmin: 0 });
+      toast({ title: "회원 추가 완료" });
+    },
+    onError: () => {
+      toast({ title: "회원 추가 실패", variant: "destructive" });
     },
   });
 
@@ -1540,18 +1557,24 @@ export default function Admin() {
           <p className="text-muted-foreground">회원 목록을 관리하고 관리자 권한을 부여합니다.</p>
         </div>
         
-        {selectedMembers.size > 0 && (
-          <div className="flex gap-2">
-            <Button size="sm" variant="outline" onClick={() => setShowEmailModal(true)} data-testid="button-send-email">
-              <Mail className="h-4 w-4 mr-1" />
-              이메일 ({selectedMembers.size})
-            </Button>
-            <Button size="sm" variant="outline" onClick={() => setShowSmsModal(true)} data-testid="button-send-sms">
-              <MessageSquare className="h-4 w-4 mr-1" />
-              문자 ({selectedMembers.size})
-            </Button>
-          </div>
-        )}
+        <div className="flex gap-2 flex-wrap">
+          <Button size="sm" onClick={() => setShowAddMemberModal(true)} data-testid="button-add-member">
+            <Plus className="h-4 w-4 mr-1" />
+            회원 추가
+          </Button>
+          {selectedMembers.size > 0 && (
+            <>
+              <Button size="sm" variant="outline" onClick={() => setShowEmailModal(true)} data-testid="button-send-email">
+                <Mail className="h-4 w-4 mr-1" />
+                이메일 ({selectedMembers.size})
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => setShowSmsModal(true)} data-testid="button-send-sms">
+                <MessageSquare className="h-4 w-4 mr-1" />
+                문자 ({selectedMembers.size})
+              </Button>
+            </>
+          )}
+        </div>
       </div>
 
       <Card>
@@ -1781,6 +1804,64 @@ export default function Admin() {
             <Button onClick={handleSendSms}>
               <MessageSquare className="h-4 w-4 mr-2" />
               발송
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showAddMemberModal} onOpenChange={setShowAddMemberModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>회원 추가</DialogTitle>
+            <DialogDescription>새 회원을 직접 추가합니다.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>이름 (필수)</Label>
+              <Input
+                value={newMember.firstName}
+                onChange={(e) => setNewMember({ ...newMember, firstName: e.target.value })}
+                placeholder="이름"
+                data-testid="input-new-member-firstname"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>성</Label>
+              <Input
+                value={newMember.lastName}
+                onChange={(e) => setNewMember({ ...newMember, lastName: e.target.value })}
+                placeholder="성 (선택사항)"
+                data-testid="input-new-member-lastname"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>이메일</Label>
+              <Input
+                type="email"
+                value={newMember.email}
+                onChange={(e) => setNewMember({ ...newMember, email: e.target.value })}
+                placeholder="이메일 (선택사항)"
+                data-testid="input-new-member-email"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <Switch
+                checked={newMember.isAdmin === 1}
+                onCheckedChange={(checked) => setNewMember({ ...newMember, isAdmin: checked ? 1 : 0 })}
+                data-testid="switch-new-member-admin"
+              />
+              <Label>관리자 권한 부여</Label>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAddMemberModal(false)}>취소</Button>
+            <Button 
+              onClick={() => createMemberMutation.mutate(newMember)}
+              disabled={!newMember.firstName.trim() || createMemberMutation.isPending}
+              data-testid="button-save-new-member"
+            >
+              {createMemberMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Plus className="h-4 w-4 mr-2" />}
+              추가
             </Button>
           </DialogFooter>
         </DialogContent>

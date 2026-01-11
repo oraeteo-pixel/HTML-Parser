@@ -45,6 +45,7 @@ export interface IStorage {
   upsertPageContent(content: InsertPageContent): Promise<PageContent>;
   
   getAllUsers(): Promise<User[]>;
+  createUser(data: { firstName: string; lastName?: string; email?: string; isAdmin?: number }): Promise<User>;
   updateUserAdmin(userId: string, isAdmin: number): Promise<User | null>;
   updateUser(userId: string, data: { firstName?: string; lastName?: string; phone?: string; email?: string }): Promise<User | null>;
   deleteUser(userId: string): Promise<boolean>;
@@ -447,6 +448,16 @@ export class DatabaseStorage implements IStorage {
 
   async getAllUsers(): Promise<User[]> {
     return await db.select().from(users).orderBy(desc(users.createdAt));
+  }
+
+  async createUser(data: { firstName: string; lastName?: string; email?: string; isAdmin?: number }): Promise<User> {
+    const [newUser] = await db.insert(users).values({
+      firstName: data.firstName,
+      lastName: data.lastName || null,
+      email: data.email || null,
+      isAdmin: data.isAdmin || 0,
+    }).returning();
+    return newUser;
   }
 
   async updateUserAdmin(userId: string, isAdmin: number): Promise<User | null> {

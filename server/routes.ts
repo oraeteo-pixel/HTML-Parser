@@ -620,6 +620,32 @@ export async function registerRoutes(
 
   // === User Management Routes ===
   
+  app.post("/api/admin/users", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      const user = await storage.getUser(userId);
+      if (!user || user.isAdmin !== 1) {
+        return res.status(403).json({ message: "관리자만 회원을 추가할 수 있습니다." });
+      }
+
+      const { firstName, lastName, email, isAdmin } = req.body;
+      if (!firstName || firstName.trim() === '') {
+        return res.status(400).json({ message: "이름은 필수입니다." });
+      }
+
+      const newUser = await storage.createUser({
+        firstName: firstName.trim(),
+        lastName: lastName?.trim() || undefined,
+        email: email?.trim() || undefined,
+        isAdmin: isAdmin || 0,
+      });
+      res.status(201).json(newUser);
+    } catch (err) {
+      console.error('User create error:', err);
+      res.status(500).json({ message: "회원 추가 중 오류가 발생했습니다." });
+    }
+  });
+
   app.get("/api/admin/users", isAuthenticated, async (req, res) => {
     try {
       const userId = (req.user as any)?.claims?.sub;

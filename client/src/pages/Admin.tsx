@@ -15,7 +15,8 @@ import {
   Settings, FolderTree, Calendar, FileCode, Users, 
   LayoutDashboard, ChevronRight, ChevronDown, Search,
   Home, Shield, FileText, Palette, Database, Menu, X,
-  Mail, Phone, Check, MessageSquare, Code2, Copy
+  Mail, Phone, Check, MessageSquare, Code2, Copy,
+  Upload, Link2, Image, ExternalLink
 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
@@ -239,6 +240,12 @@ export default function Admin() {
   const [creatingSnippet, setCreatingSnippet] = useState(false);
   const [snippetFilter, setSnippetFilter] = useState<string>("all");
 
+  const [logoImageUrl, setLogoImageUrl] = useState<string>("");
+  const [showLogoUrlInput, setShowLogoUrlInput] = useState(false);
+  const [logoUrlInput, setLogoUrlInput] = useState("");
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [logoDragOver, setLogoDragOver] = useState(false);
+
   const { data: savedSettings, isLoading: settingsLoading } = useQuery<Record<string, string>>({
     queryKey: ["/api/settings"],
   });
@@ -284,6 +291,9 @@ export default function Admin() {
         logoTextKoreanSize: savedSettings.logoTextKoreanSize || DEFAULT_SETTINGS.logoTextKoreanSize,
         logoTextHanjaSize: savedSettings.logoTextHanjaSize || DEFAULT_SETTINGS.logoTextHanjaSize,
       });
+      if (savedSettings.logoImageUrl) {
+        setLogoImageUrl(savedSettings.logoImageUrl);
+      }
     }
   }, [savedSettings]);
 
@@ -533,6 +543,94 @@ export default function Admin() {
   const handleDownloadCalendar = () => {
     window.open("/api/calendar/export", "_blank");
   };
+
+  const uploadLogoFile = async (file: File) => {
+    if (!file.type.startsWith("image/")) {
+      toast({ title: "오류", description: "이미지 파일만 업로드할 수 있습니다.", variant: "destructive" });
+      return;
+    }
+
+    setUploadingLogo(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      });
+      
+      if (!response.ok) throw new Error("업로드 실패");
+      
+      const data = await response.json();
+      const imageUrl = data.url;
+      
+      setLogoImageUrl(imageUrl);
+      await saveMutation.mutateAsync({ key: "logoImageUrl", value: imageUrl });
+      toast({ title: "로고 업로드 완료" });
+    } catch (err) {
+      toast({ title: "오류", description: "로고 업로드에 실패했습니다.", variant: "destructive" });
+    } finally {
+      setUploadingLogo(false);
+    }
+  };
+
+  const handleLogoFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    await uploadLogoFile(file);
+  };
+
+  const handleLogoDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setLogoDragOver(false);
+    const file = e.dataTransfer.files?.[0];
+    if (!file) return;
+    await uploadLogoFile(file);
+  };
+
+  const handleLogoDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setLogoDragOver(true);
+  };
+
+  const handleLogoDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setLogoDragOver(false);
+  };
+
+  const handleLogoUrlSave = async () => {
+    if (!logoUrlInput) return;
+    try {
+      setLogoImageUrl(logoUrlInput);
+      await saveMutation.mutateAsync({ key: "logoImageUrl", value: logoUrlInput });
+      setShowLogoUrlInput(false);
+      setLogoUrlInput("");
+      toast({ title: "로고 URL 저장 완료" });
+    } catch (err) {
+      toast({ title: "오류", description: "로고 URL 저장에 실패했습니다.", variant: "destructive" });
+    }
+  };
+
+  const handleRemoveLogo = async () => {
+    try {
+      setLogoImageUrl("");
+      await saveMutation.mutateAsync({ key: "logoImageUrl", value: "" });
+      toast({ title: "로고 이미지 삭제 완료" });
+    } catch (err) {
+      toast({ title: "오류", description: "로고 삭제에 실패했습니다.", variant: "destructive" });
+    }
+  };
+
+  const freeLogoSites = [
+    { name: "Canva", url: "https://www.canva.com/ko_kr/create/logos/", description: "무료 로고 제작" },
+    { name: "Logomaster.ai", url: "https://logomaster.ai/", description: "AI 로고 생성" },
+    { name: "Hatchful", url: "https://www.shopify.com/tools/logo-maker", description: "Shopify 로고 메이커" },
+    { name: "Looka", url: "https://looka.com/", description: "AI 브랜드 로고" },
+    { name: "Flaticon", url: "https://www.flaticon.com/", description: "무료 아이콘/로고" },
+    { name: "Icons8", url: "https://icons8.com/icons", description: "무료 아이콘" },
+  ];
 
   if (authLoading || settingsLoading) {
     return (
@@ -835,6 +933,123 @@ export default function Admin() {
         <h2 className="text-2xl font-bold">로고 설정</h2>
         <p className="text-muted-foreground">사이트 로고 텍스트와 스타일을 설정합니다.</p>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Image className="h-5 w-5" />
+            로고 이미지 가져오기
+          </CardTitle>
+          <CardDescription>컴퓨터에서 업로드하거나 URL로 로고 이미지를 가져옵니다.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {logoImageUrl && (
+            <div className="flex items-center gap-4 p-4 border rounded-lg bg-muted/30">
+              <img 
+                src={logoImageUrl} 
+                alt="현재 로고" 
+                className="h-16 w-auto max-w-[200px] object-contain"
+              />
+              <div className="flex-1">
+                <p className="text-sm font-medium">현재 로고 이미지</p>
+                <p className="text-xs text-muted-foreground truncate max-w-[300px]">{logoImageUrl}</p>
+              </div>
+              <Button size="sm" variant="outline" onClick={handleRemoveLogo} data-testid="button-remove-logo">
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
+          )}
+
+          <div
+            className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer ${
+              logoDragOver 
+                ? "border-primary bg-primary/10" 
+                : "border-muted-foreground/30 hover:border-muted-foreground/50"
+            }`}
+            onDrop={handleLogoDrop}
+            onDragOver={handleLogoDragOver}
+            onDragLeave={handleLogoDragLeave}
+            data-testid="dropzone-logo"
+          >
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleLogoFileUpload}
+              className="absolute inset-0 opacity-0 cursor-pointer z-10"
+              disabled={uploadingLogo}
+              data-testid="input-logo-file"
+            />
+            {uploadingLogo ? (
+              <div className="flex flex-col items-center gap-2">
+                <Loader2 className="h-10 w-10 animate-spin text-primary" />
+                <p className="text-sm text-muted-foreground">업로드 중...</p>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center gap-3">
+                <Upload className="h-10 w-10 text-muted-foreground" />
+                <div>
+                  <p className="font-medium">이미지를 여기에 드래그 앤 드롭하세요</p>
+                  <p className="text-sm text-muted-foreground">또는 클릭하여 파일 선택</p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="flex items-center gap-4">
+            <div className="flex-1 border-t" />
+            <span className="text-sm text-muted-foreground">또는</span>
+            <div className="flex-1 border-t" />
+          </div>
+
+          <div className="space-y-3">
+            <Label>URL로 가져오기</Label>
+            {showLogoUrlInput ? (
+              <div className="flex gap-2">
+                <Input
+                  value={logoUrlInput}
+                  onChange={(e) => setLogoUrlInput(e.target.value)}
+                  placeholder="https://example.com/logo.png"
+                  className="flex-1"
+                  data-testid="input-logo-url"
+                />
+                <Button size="icon" onClick={handleLogoUrlSave} data-testid="button-save-logo-url">
+                  <Check className="h-4 w-4" />
+                </Button>
+                <Button size="icon" variant="outline" onClick={() => setShowLogoUrlInput(false)}>
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            ) : (
+              <Button variant="outline" onClick={() => setShowLogoUrlInput(true)} className="w-full" data-testid="button-show-url-input">
+                <Link2 className="h-4 w-4 mr-2" />
+                URL 입력
+              </Button>
+            )}
+          </div>
+
+          <div className="pt-4 border-t">
+            <Label className="mb-3 block">무료 로고 제작 사이트</Label>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+              {freeLogoSites.map((site) => (
+                <a
+                  key={site.name}
+                  href={site.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 p-2 border rounded-lg text-sm hover:bg-muted/50 transition-colors"
+                  data-testid={`link-logo-site-${site.name.toLowerCase()}`}
+                >
+                  <ExternalLink className="h-3 w-3 text-muted-foreground" />
+                  <div>
+                    <span className="font-medium">{site.name}</span>
+                    <span className="text-xs text-muted-foreground ml-1">- {site.description}</span>
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>

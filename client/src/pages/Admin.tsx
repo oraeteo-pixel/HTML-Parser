@@ -614,7 +614,11 @@ export default function Admin() {
       
       setLogoImageUrl(imageUrl);
       await saveMutation.mutateAsync({ key: "logoImageUrl", value: imageUrl });
-      toast({ title: "로고 업로드 완료" });
+      
+      const logoName = file.name.replace(/\.[^/.]+$/, "") || "로고";
+      await createLogoMutation.mutateAsync({ name: logoName, objectPath: imageUrl });
+      
+      toast({ title: "로고가 갤러리에 저장되었습니다." });
     } catch (err) {
       toast({ title: "오류", description: "로고 업로드에 실패했습니다.", variant: "destructive" });
     } finally {

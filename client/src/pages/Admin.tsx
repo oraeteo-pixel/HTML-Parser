@@ -992,6 +992,10 @@ export default function Admin() {
       logoTextKorean: preset.korean,
       logoTextHanja: preset.hanja + (preset.suffix ? " " + preset.suffix : ""),
     });
+    const combinedText = [preset.text, preset.korean, preset.hanja, preset.suffix].filter(Boolean).join(" ");
+    setEditorTextEnabled(true);
+    setEditorText(combinedText);
+    setEditorTextColor(settings.logoColor || "#0d7377");
   };
 
   const renderLogoSettings = () => (

@@ -215,19 +215,19 @@ export default function MansionChart() {
         {/* 24 Jeolguk Circular Chart */}
         <JeolgukCircularChart date={today} />
 
-        {/* 81궁 그리드 (9x9) */}
+        {/* 64괘 그리드 (8x8) */}
         <Card className="mt-4 p-4">
-          <h2 className="text-lg font-bold orae-navy text-center mb-3">八十一宮 (81궁)</h2>
-          <div className="grid grid-cols-9 gap-1">
+          <h2 className="text-lg font-bold orae-navy text-center mb-3">六十四卦 (64괘)</h2>
+          <div className="grid grid-cols-8 gap-1">
             {(() => {
-              // 9궁 순서: 곤, 감, 태, 진, 중, 손, 간, 리, 건 (2~10)
-              const nineOrder = [2, 3, 4, 5, 6, 7, 8, 9, 10];
+              // 8괘 순서: 곤, 감, 태, 진, 손, 간, 리, 건 (중궁 제외)
+              const eightOrder = [2, 3, 4, 5, 7, 8, 9, 10];
               const trigramNames: { [key: number]: string } = {
-                2: "坤", 3: "坎", 4: "兌", 5: "震", 6: "中", 7: "巽", 8: "艮", 9: "離", 10: "乾"
+                2: "坤", 3: "坎", 4: "兌", 5: "震", 7: "巽", 8: "艮", 9: "離", 10: "乾"
               };
               // 팔괘 Unicode 기호 (상괘/하괘 표시용)
               const trigramSymbols: { [key: number]: string } = {
-                2: "☷", 3: "☵", 4: "☱", 5: "☳", 6: "☯", 7: "☴", 8: "☶", 9: "☲", 10: "☰"
+                2: "☷", 3: "☵", 4: "☱", 5: "☳", 7: "☴", 8: "☶", 9: "☲", 10: "☰"
               };
               const cells: JSX.Element[] = [];
               
@@ -235,18 +235,13 @@ export default function MansionChart() {
               const currentSogung = todaySogungDaegung.sogung;
               const currentDaegung = todaySogungDaegung.daegung;
               
-              // 9x9 = 81궁 생성 (행: 하괘/대궁, 열: 상괘/소궁)
-              for (let row = 0; row < 9; row++) {
-                const lower = nineOrder[row]; // 하괘 (대궁)
-                for (let col = 0; col < 9; col++) {
-                  const upper = nineOrder[col]; // 상괘 (소궁)
+              // 8x8 = 64괘 생성 (행: 하괘/대궁, 열: 상괘/소궁)
+              for (let row = 0; row < 8; row++) {
+                const lower = eightOrder[row]; // 하괘 (대궁)
+                for (let col = 0; col < 8; col++) {
+                  const upper = eightOrder[col]; // 상괘 (소궁)
                   const hexagram = get64HexagramName(upper, lower);
                   const isCurrentCell = upper === currentSogung && lower === currentDaegung;
-                  
-                  // 중궁(6)이 포함된 경우 특수 표시
-                  const isCenterRow = lower === 6;
-                  const isCenterCol = upper === 6;
-                  const isCenter = isCenterRow && isCenterCol;
                   
                   // 상괘(소궁) + 하괘(대궁) 기호
                   const upperSymbol = trigramSymbols[upper] || "";
@@ -258,11 +253,7 @@ export default function MansionChart() {
                       className={`text-center p-1 border rounded text-xs cursor-pointer transition-all ${
                         isCurrentCell 
                           ? "border-yellow-500 bg-yellow-400/50 text-yellow-900 dark:text-yellow-100 font-bold" 
-                          : isCenter
-                            ? "border-amber-400 bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200"
-                            : (isCenterRow || isCenterCol)
-                              ? "border-border/30 bg-muted/30 text-muted-foreground"
-                              : "border-border/50 hover-elevate"
+                          : "border-border/50 hover-elevate"
                       }`}
                       title={hexagram ? `${hexagram.fullName} (${hexagram.korean})` : `${trigramNames[upper]}之${trigramNames[lower]}`}
                     >
@@ -270,7 +261,7 @@ export default function MansionChart() {
                         <span className="text-sm">{upperSymbol}</span>
                         <span className="text-sm">{lowerSymbol}</span>
                       </div>
-                      <div className="font-bold text-[10px] mt-0.5">{hexagram?.hanja || (isCenter ? "中" : `${trigramNames[upper]}${trigramNames[lower]}`)}</div>
+                      <div className="font-bold text-[10px] mt-0.5">{hexagram?.hanja || `${trigramNames[upper]}${trigramNames[lower]}`}</div>
                     </div>
                   );
                 }

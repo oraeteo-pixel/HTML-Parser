@@ -454,7 +454,7 @@ export class DatabaseStorage implements IStorage {
     const [newUser] = await db.insert(users).values({
       firstName: data.firstName,
       lastName: data.lastName || null,
-      email: data.email || null,
+      email: data.email && data.email.trim() ? data.email.trim() : null,
       isAdmin: data.isAdmin || 0,
     }).returning();
     return newUser;

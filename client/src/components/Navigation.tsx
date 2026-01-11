@@ -128,7 +128,7 @@ export function Navigation() {
           <Link href="/calendar" className="flex items-center gap-2 hover:opacity-80 transition-opacity" data-testid="link-logo">
             {logoImageUrl ? (
               <div 
-                className="flex items-center px-1 rounded"
+                className="flex items-center px-1 rounded overflow-hidden"
                 style={{ 
                   backgroundColor: logoBackgroundColor !== "transparent" ? logoBackgroundColor : undefined,
                   gap: `${logoLogoGap}px`,
@@ -137,19 +137,23 @@ export function Navigation() {
                 <img 
                   src={logoImageUrl} 
                   alt="로고" 
-                  className="h-10 sm:h-14 w-auto max-w-[200px] object-contain"
+                  className="w-auto object-contain flex-shrink-0"
                   style={{
-                    transform: `scale(${logoScale / 100})`,
+                    height: `${Math.round(40 * logoScale / 100)}px`,
+                    maxHeight: '56px',
                     filter: `contrast(${logoSharpness}%)`,
                   }}
                 />
                 {logoTextEnabled && logoTextContent && (
-                  <span style={{ 
-                    color: logoTextColorValue,
-                    fontSize: `${logoTextSizeValue}px`,
-                    fontWeight: logoFontWeightValue,
-                    fontFamily: logoFontFamilyOverlay,
-                  }}>
+                  <span 
+                    className="whitespace-nowrap flex-shrink-0"
+                    style={{ 
+                      color: logoTextColorValue,
+                      fontSize: `${Math.min(logoTextSizeValue, 18)}px`,
+                      fontWeight: logoFontWeightValue,
+                      fontFamily: logoFontFamilyOverlay,
+                    }}
+                  >
                     {logoTextContent}
                   </span>
                 )}

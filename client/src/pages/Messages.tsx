@@ -117,7 +117,7 @@ export default function Messages() {
 
   if (!isAuthenticated) {
     return (
-      <div className="max-w-[990px] mx-auto px-4 py-8">
+      <div className="w-full max-w-[990px] mx-auto px-4 py-8">
         <Card className="p-6 text-center">
           <Mail className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
           <p className="mb-4">쪽지함을 사용하려면 로그인하세요.</p>
@@ -130,7 +130,7 @@ export default function Messages() {
   }
 
   return (
-    <div className="max-w-[990px] mx-auto px-4 py-4">
+    <div className="w-full max-w-[990px] mx-auto px-4 py-4">
       <div className="flex items-center gap-3 mb-4">
         <Button variant="ghost" size="icon" onClick={() => setLocation("/")} data-testid="button-home">
           <Home className="h-5 w-5" />

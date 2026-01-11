@@ -127,7 +127,7 @@ export default function MansionChart() {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <main className="max-w-[990px] mx-auto px-2 py-4">
+      <main className="w-full max-w-[990px] mx-auto px-2 py-4">
         <Card className="p-4 mb-4 bg-gradient-to-r from-slate-50/50 to-slate-100/50 dark:from-slate-900/20 dark:to-slate-800/20">
           <h1 className="text-xl font-bold orae-navy text-center mb-3" data-testid="text-chart-title">
             後天 28宿 周天 星宿 配列圖

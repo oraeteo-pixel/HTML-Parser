@@ -10,7 +10,7 @@ export function Footer() {
   const todayData = getCalendarDayData(today.getFullYear(), today.getMonth() + 1, today.getDate());
 
   return (
-    <footer className="max-w-[990px] mx-auto py-4 text-center" data-testid="footer">
+    <footer className="w-full max-w-[990px] mx-auto py-4 text-center" data-testid="footer">
       <div className="text-sm mb-2" data-testid="footer-date">
         <span className="orae-navy font-bold">{dateStr} {dayName}</span>
         <span className="text-muted-foreground ml-2">

@@ -25,7 +25,7 @@ export function TopBar() {
       className="bg-card border-b border-border fixed top-0 left-0 right-0 z-50"
       style={{ boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}
     >
-      <div className="max-w-[990px] mx-auto h-[50px] flex items-center justify-between px-3">
+      <div className="w-full max-w-[990px] mx-auto h-[50px] flex items-center justify-between px-3">
         <div className="flex items-center gap-2 text-muted-foreground">
           <Calendar className="h-4 w-4 text-primary" />
           <span className="text-sm font-medium">{dateStr}</span>

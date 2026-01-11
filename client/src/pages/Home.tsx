@@ -20,7 +20,7 @@ export default function Home() {
       
       <main 
         id="con-wrap"
-        className="max-w-[990px] mx-auto bg-white border border-border min-h-[850px] relative mt-2 p-4"
+        className="w-full max-w-[990px] mx-auto bg-white border border-border min-h-[850px] relative mt-2 p-4"
         data-testid="main-content"
       >
         <section data-testid="calendar-section">

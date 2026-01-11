@@ -119,7 +119,7 @@ export default function GanjiBoardPage() {
       <TopBar />
       <Navigation />
       
-      <main className="max-w-[990px] mx-auto px-2 py-6">
+      <main className="w-full max-w-[990px] mx-auto px-2 py-6">
         <div className="flex items-center justify-between gap-2 mb-4 flex-wrap">
           <div className="flex items-center gap-2">
             <Link href="/madang">

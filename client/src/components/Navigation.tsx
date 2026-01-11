@@ -123,7 +123,7 @@ export function Navigation() {
 
   return (
     <div className="bg-white dark:bg-card border-b border-border sticky top-0 z-50" style={{ boxShadow: "0 0 15px #ccc" }}>
-      <div className="max-w-[990px] mx-auto px-2">
+      <div className="w-full max-w-[990px] mx-auto px-2">
         <div className="h-[56px] sm:h-[70px] flex items-center justify-between relative">
           <Link href="/calendar" className="flex items-center gap-2 hover:opacity-80 transition-opacity" data-testid="link-logo">
             {logoImageUrl ? (

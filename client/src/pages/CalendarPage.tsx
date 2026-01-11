@@ -34,7 +34,7 @@ export default function CalendarPage() {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <main className="max-w-[990px] mx-auto px-0 sm:px-2 py-2 sm:py-4" data-testid="calendar-main">
+      <main className="w-full max-w-[990px] mx-auto px-0 sm:px-2 py-2 sm:py-4" data-testid="calendar-main">
         <div className="flex justify-end mb-2 px-2">
           <Button
             variant="outline"

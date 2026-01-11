@@ -7,7 +7,7 @@ export default function CommunityPage() {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <main className="max-w-[990px] mx-auto px-2 py-4" data-testid="community-main">
+      <main className="w-full max-w-[990px] mx-auto px-2 py-4" data-testid="community-main">
         <PostList />
       </main>
       

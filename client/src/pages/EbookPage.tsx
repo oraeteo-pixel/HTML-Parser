@@ -266,7 +266,7 @@ export default function EbookPage() {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <main className="max-w-[990px] mx-auto px-0 sm:px-2 py-4" data-testid="ebook-main">
+      <main className="w-full max-w-[990px] mx-auto px-0 sm:px-2 py-4" data-testid="ebook-main">
         <Card className="p-4 mb-4 bg-gradient-to-r from-slate-50/50 to-slate-100/50 dark:from-slate-900/20 dark:to-slate-800/20">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">

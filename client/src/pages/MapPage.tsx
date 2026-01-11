@@ -9,7 +9,7 @@ export default function MapPage() {
       <TopBar />
       <Navigation />
       
-      <main className="max-w-[990px] mx-auto px-2 py-6">
+      <main className="w-full max-w-[990px] mx-auto px-2 py-6">
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">

@@ -8,7 +8,7 @@ export default function StorePage() {
     <div className="min-h-screen bg-background">
       <Navigation />
       
-      <main className="max-w-[990px] mx-auto px-2 py-4" data-testid="store-main">
+      <main className="w-full max-w-[990px] mx-auto px-2 py-4" data-testid="store-main">
         <Card className="p-8 text-center" data-testid="card-store">
           <ShoppingBag className="h-16 w-16 mx-auto mb-4 orae-navy" data-testid="icon-store" />
           <h1 className="text-2xl font-bold orae-navy mb-2" data-testid="text-store-title">문구몰</h1>

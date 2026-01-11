@@ -22,6 +22,12 @@ interface LogoSettings {
   logoTextKoreanSize?: string;
   logoTextHanjaSize?: string;
   logoImageUrl?: string;
+  logoScale?: string;
+  logoSharpness?: string;
+  logoBackgroundColor?: string;
+  logoTextEnabled?: string;
+  logoTextContent?: string;
+  logoTextColor?: string;
 }
 
 const DEFAULT_LOGO: LogoSettings = {
@@ -66,6 +72,12 @@ export function Navigation() {
   const logoTextKoreanSize = siteSettings?.logoTextKoreanSize || DEFAULT_LOGO.logoTextKoreanSize;
   const logoTextHanjaSize = siteSettings?.logoTextHanjaSize || DEFAULT_LOGO.logoTextHanjaSize;
   const logoImageUrl = siteSettings?.logoImageUrl;
+  const logoScale = Number(siteSettings?.logoScale) || 100;
+  const logoSharpness = Number(siteSettings?.logoSharpness) || 100;
+  const logoBackgroundColor = siteSettings?.logoBackgroundColor || "transparent";
+  const logoTextEnabled = siteSettings?.logoTextEnabled === "true";
+  const logoTextContent = siteSettings?.logoTextContent || "";
+  const logoTextColorValue = siteSettings?.logoTextColor || "#000000";
   
   const { data: madangPosts } = useQuery<PostWithAuthor[]>({
     queryKey: ["/api/posts/section/madang"],
@@ -108,11 +120,25 @@ export function Navigation() {
         <div className="h-[56px] sm:h-[70px] flex items-center justify-between relative">
           <Link href="/calendar" className="flex items-center gap-2 hover:opacity-80 transition-opacity" data-testid="link-logo">
             {logoImageUrl ? (
-              <img 
-                src={logoImageUrl} 
-                alt="로고" 
-                className="h-10 sm:h-14 w-auto max-w-[200px] object-contain"
-              />
+              <div 
+                className="flex items-center gap-2 px-1 rounded"
+                style={{ backgroundColor: logoBackgroundColor !== "transparent" ? logoBackgroundColor : undefined }}
+              >
+                <img 
+                  src={logoImageUrl} 
+                  alt="로고" 
+                  className="h-10 sm:h-14 w-auto max-w-[200px] object-contain"
+                  style={{
+                    transform: `scale(${logoScale / 100})`,
+                    filter: `contrast(${logoSharpness}%)`,
+                  }}
+                />
+                {logoTextEnabled && logoTextContent && (
+                  <span className="font-bold text-lg sm:text-xl" style={{ color: logoTextColorValue }}>
+                    {logoTextContent}
+                  </span>
+                )}
+              </div>
             ) : (
               <>
                 <svg viewBox="0 0 40 40" className="h-8 w-8 sm:h-10 sm:w-10" fill="none" xmlns="http://www.w3.org/2000/svg">

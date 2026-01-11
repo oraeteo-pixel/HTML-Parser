@@ -1367,11 +1367,13 @@ export default function Admin() {
                     onChange={(e) => setEditorBackgroundColor(e.target.value)}
                     className="flex-1"
                     placeholder="#ffffff"
+                    data-testid="input-logo-bg-hex"
                   />
                   <Button
                     variant="outline"
                     size="sm"
                     onClick={() => setEditorBackgroundColor("transparent")}
+                    data-testid="button-logo-bg-transparent"
                   >
                     투명
                   </Button>

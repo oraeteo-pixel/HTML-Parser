@@ -153,6 +153,20 @@ export const insertCodeSnippetSchema = createInsertSchema(codeSnippets).omit({ i
 export type CodeSnippet = typeof codeSnippets.$inferSelect;
 export type InsertCodeSnippet = z.infer<typeof insertCodeSnippetSchema>;
 
+export const siteLogos = pgTable("site_logos", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  objectPath: text("object_path").notNull(),
+  isActive: integer("is_active").default(0),
+  createdBy: varchar("created_by").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertSiteLogoSchema = createInsertSchema(siteLogos).omit({ id: true, createdAt: true });
+
+export type SiteLogo = typeof siteLogos.$inferSelect;
+export type InsertSiteLogo = z.infer<typeof insertSiteLogoSchema>;
+
 // Block types for page builder
 export interface LayoutBlock {
   id: string;

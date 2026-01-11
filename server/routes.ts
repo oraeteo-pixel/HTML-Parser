@@ -2,9 +2,13 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { z } from "zod";
+import multer from "multer";
+import { randomUUID } from "crypto";
 import { setupAuth, registerAuthRoutes, isAuthenticated } from "./replit_integrations/auth";
-import { registerObjectStorageRoutes } from "./replit_integrations/object_storage";
+import { registerObjectStorageRoutes, objectStorageService, objectStorageClient } from "./replit_integrations/object_storage";
 import { generateCalendarExcel } from "./calendarExport";
+
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
 
 // 60갑자 계산 함수 (서버사이드)
 const HEAVENLY_STEMS = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"];
@@ -37,6 +41,41 @@ export async function registerRoutes(
 
   // Register object storage routes for file uploads
   registerObjectStorageRoutes(app);
+
+  // File upload endpoint
+  app.post("/api/upload", upload.single("file"), async (req, res) => {
+    try {
+      const file = req.file;
+      if (!file) {
+        return res.status(400).json({ error: "No file uploaded" });
+      }
+
+      const privateObjectDir = objectStorageService.getPrivateObjectDir();
+      const objectId = randomUUID();
+      const ext = file.originalname.split('.').pop() || '';
+      const objectPath = `${privateObjectDir}/uploads/${objectId}${ext ? '.' + ext : ''}`;
+      
+      const pathParts = objectPath.startsWith('/') ? objectPath.slice(1).split('/') : objectPath.split('/');
+      const bucketName = pathParts[0];
+      const objectName = pathParts.slice(1).join('/');
+      
+      const bucket = objectStorageClient.bucket(bucketName);
+      const gcsFile = bucket.file(objectName);
+      
+      await gcsFile.save(file.buffer, {
+        contentType: file.mimetype,
+        metadata: {
+          originalName: file.originalname,
+        },
+      });
+      
+      const url = `/objects/uploads/${objectId}${ext ? '.' + ext : ''}`;
+      res.json({ url, objectPath });
+    } catch (error) {
+      console.error("Upload error:", error);
+      res.status(500).json({ error: "Upload failed" });
+    }
+  });
 
   // === Posts Routes ===
   

@@ -11,6 +11,8 @@ The core philosophy revolves around the "황극력," a proprietary calendrical s
 Preferred communication style: Simple, everyday language.
 The "황극력" calculation method is based on unique, proprietary rules known only to the user. Do not attempt to infer or alter these rules; always confirm with the user if questions arise regarding "황극력" calculations.
 
+**Important Calendar Rule (Both 선천력/음력 and 황극력)**: Days switch to the next day at 23:00 (11 PM) on the previous day. This rule applies to both the lunar calendar (음력/선천력) and the Hwanggeuknyeok calendar (황극력).
+
 ## System Architecture
 
 ### Frontend Architecture

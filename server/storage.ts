@@ -542,12 +542,14 @@ export class DatabaseStorage implements IStorage {
   }
 
   async setActiveLogo(id: number): Promise<SiteLogo | null> {
-    await db.update(siteLogos).set({ isActive: 0 });
-    const [updated] = await db.update(siteLogos)
-      .set({ isActive: 1 })
-      .where(eq(siteLogos.id, id))
-      .returning();
-    return updated || null;
+    return await db.transaction(async (tx) => {
+      await tx.update(siteLogos).set({ isActive: 0 });
+      const [updated] = await tx.update(siteLogos)
+        .set({ isActive: 1 })
+        .where(eq(siteLogos.id, id))
+        .returning();
+      return updated || null;
+    });
   }
 
   async deleteSiteLogo(id: number): Promise<boolean> {

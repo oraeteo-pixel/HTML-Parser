@@ -21,7 +21,7 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { MadangCategory, PageContent, User, PageLayout, LayoutBlock, CodeSnippet } from "@shared/schema";
+import type { MadangCategory, PageContent, User, PageLayout, LayoutBlock, CodeSnippet, SiteLogo } from "@shared/schema";
 import { Link } from "wouter";
 import PageBuilder from "@/components/PageBuilder";
 
@@ -279,6 +279,11 @@ export default function Admin() {
     enabled: isAuthenticated && user?.isAdmin === 1,
   });
 
+  const { data: siteLogos, isLoading: logosLoading } = useQuery<SiteLogo[]>({
+    queryKey: ["/api/admin/logos"],
+    enabled: isAuthenticated && user?.isAdmin === 1,
+  });
+
   useEffect(() => {
     if (savedSettings) {
       setSettings({
@@ -491,6 +496,47 @@ export default function Admin() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/code-snippets"] });
       toast({ title: "코드 스니펫 삭제 완료" });
+    },
+  });
+
+  const createLogoMutation = useMutation({
+    mutationFn: async (data: { name: string; objectPath: string }) => {
+      return apiRequest("POST", "/api/admin/logos", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/logos"] });
+      toast({ title: "로고가 갤러리에 저장되었습니다." });
+    },
+  });
+
+  const activateLogoMutation = useMutation({
+    mutationFn: async (id: number) => {
+      return apiRequest("PUT", `/api/admin/logos/${id}/activate`);
+    },
+    onSuccess: async (data: any) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/logos"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/settings"] });
+      if (data?.objectPath) {
+        setLogoImageUrl(data.objectPath);
+        await saveMutation.mutateAsync({ key: "logoImageUrl", value: data.objectPath });
+      }
+      toast({ title: "활성 로고가 변경되었습니다." });
+    },
+    onError: () => {
+      toast({ title: "오류", description: "로고 활성화에 실패했습니다.", variant: "destructive" });
+    },
+  });
+
+  const deleteLogoMutation = useMutation({
+    mutationFn: async (id: number) => {
+      return apiRequest("DELETE", `/api/admin/logos/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/logos"] });
+      toast({ title: "로고가 삭제되었습니다." });
+    },
+    onError: () => {
+      toast({ title: "오류", description: "로고 삭제에 실패했습니다.", variant: "destructive" });
     },
   });
 
@@ -1048,6 +1094,107 @@ export default function Admin() {
               ))}
             </div>
           </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Image className="h-5 w-5" />
+            로고 갤러리
+          </CardTitle>
+          <CardDescription>여러 로고를 저장하고 원하는 로고를 선택하여 사용할 수 있습니다.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {logosLoading ? (
+            <div className="flex justify-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin" />
+            </div>
+          ) : siteLogos && siteLogos.length > 0 ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {siteLogos.map((logo) => (
+                <div
+                  key={logo.id}
+                  className={`relative border rounded-lg p-4 flex flex-col items-center gap-3 transition-colors ${
+                    logo.isActive === 1 ? "border-primary bg-primary/5" : "hover:bg-muted/50"
+                  }`}
+                >
+                  {logo.isActive === 1 && (
+                    <Badge className="absolute top-2 right-2" data-testid={`badge-active-logo-${logo.id}`}>활성</Badge>
+                  )}
+                  <img
+                    src={logo.objectPath}
+                    alt={logo.name}
+                    className="h-16 w-auto max-w-full object-contain"
+                  />
+                  <p className="text-sm font-medium text-center truncate w-full">{logo.name}</p>
+                  <div className="flex gap-2">
+                    {logo.isActive !== 1 && (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => activateLogoMutation.mutate(logo.id)}
+                        disabled={activateLogoMutation.isPending}
+                        data-testid={`button-activate-logo-${logo.id}`}
+                      >
+                        <Check className="h-3 w-3 mr-1" />
+                        선택
+                      </Button>
+                    )}
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => {
+                        if (confirm(`"${logo.name}" 로고를 삭제하시겠습니까?`)) {
+                          deleteLogoMutation.mutate(logo.id);
+                        }
+                      }}
+                      disabled={deleteLogoMutation.isPending}
+                      data-testid={`button-delete-logo-${logo.id}`}
+                    >
+                      <Trash2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              <Image className="h-12 w-12 mx-auto mb-3 opacity-50" />
+              <p>저장된 로고가 없습니다.</p>
+              <p className="text-sm">위의 업로드 기능을 사용하여 로고를 업로드한 후 갤러리에 저장하세요.</p>
+            </div>
+          )}
+          {logoImageUrl && (
+            <div className="pt-4 border-t">
+              <p className="text-sm text-muted-foreground mb-3">현재 업로드된 로고를 갤러리에 저장합니다.</p>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="로고 이름 (예: 메인 로고, 크리스마스 로고)"
+                  id="new-logo-name"
+                  data-testid="input-new-logo-name"
+                  className="flex-1"
+                />
+                <Button
+                  onClick={() => {
+                    const nameInput = document.getElementById("new-logo-name") as HTMLInputElement;
+                    const name = nameInput?.value?.trim();
+                    if (!name) {
+                      toast({ title: "오류", description: "로고 이름을 입력하세요.", variant: "destructive" });
+                      return;
+                    }
+                    createLogoMutation.mutate({ name, objectPath: logoImageUrl });
+                    if (nameInput) nameInput.value = "";
+                  }}
+                  disabled={createLogoMutation.isPending}
+                  data-testid="button-save-to-gallery"
+                >
+                  <Plus className="h-4 w-4 mr-2" />
+                  갤러리에 저장
+                </Button>
+              </div>
+            </div>
+          )}
         </CardContent>
       </Card>
 

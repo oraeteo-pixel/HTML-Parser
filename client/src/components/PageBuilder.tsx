@@ -66,6 +66,8 @@ import {
   ExternalLink,
   FileCode,
   Globe,
+  Upload,
+  Loader2,
 } from "lucide-react";
 import type { LayoutBlock } from "@shared/schema";
 
@@ -198,6 +200,7 @@ export default function PageBuilder({ initialBlocks = [], initialHtml = "", init
   const [importHtml, setImportHtml] = useState("");
   const [importCss, setImportCss] = useState("");
   const [isImporting, setIsImporting] = useState(false);
+  const [importDragOver, setImportDragOver] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -240,6 +243,72 @@ export default function PageBuilder({ initialBlocks = [], initialHtml = "", init
 
   const deleteBlock = (id: string) => {
     setBlocks(blocks.filter((b) => b.id !== id));
+  };
+
+  // 드래그 앤 드롭으로 파일 가져오기 핸들러
+  const handleImportDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setImportDragOver(true);
+  };
+
+  const handleImportDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setImportDragOver(false);
+  };
+
+  const handleImportDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setImportDragOver(false);
+
+    const files = Array.from(e.dataTransfer.files);
+    if (files.length === 0) return;
+
+    setIsImporting(true);
+    
+    try {
+      for (const file of files) {
+        const ext = file.name.split('.').pop()?.toLowerCase();
+        const content = await file.text();
+        
+        if (ext === 'html' || ext === 'htm') {
+          setImportHtml(prev => prev ? prev + "\n\n" + content : content);
+        } else if (ext === 'css') {
+          setImportCss(prev => prev ? prev + "\n\n" + content : content);
+        }
+      }
+    } catch (error) {
+      console.error("파일 읽기 오류:", error);
+    }
+    
+    setIsImporting(false);
+  };
+
+  const handleImportFileInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    setIsImporting(true);
+    
+    try {
+      for (const file of files) {
+        const ext = file.name.split('.').pop()?.toLowerCase();
+        const content = await file.text();
+        
+        if (ext === 'html' || ext === 'htm') {
+          setImportHtml(prev => prev ? prev + "\n\n" + content : content);
+        } else if (ext === 'css') {
+          setImportCss(prev => prev ? prev + "\n\n" + content : content);
+        }
+      }
+    } catch (error) {
+      console.error("파일 읽기 오류:", error);
+    }
+    
+    setIsImporting(false);
+    e.target.value = "";
   };
 
   const generateHtmlFromBlocks = useCallback(() => {
@@ -1610,16 +1679,62 @@ export default function PageBuilder({ initialBlocks = [], initialHtml = "", init
           </DialogHeader>
           <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
-              아래 추천 사이트에서 원하는 템플릿을 찾아 HTML/CSS 코드를 복사한 후 붙여넣으세요.
+              HTML/CSS 파일을 드래그하여 놓거나, 파일을 선택하거나, 직접 코드를 붙여넣으세요.
             </p>
+
+            <div
+              className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+                importDragOver 
+                  ? "border-primary bg-primary/10" 
+                  : "border-muted-foreground/30 hover:border-primary/50"
+              }`}
+              onDragOver={handleImportDragOver}
+              onDragLeave={handleImportDragLeave}
+              onDrop={handleImportDrop}
+              data-testid="import-drop-zone"
+            >
+              {isImporting ? (
+                <div className="flex flex-col items-center gap-2">
+                  <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                  <p className="text-sm text-muted-foreground">파일 처리 중...</p>
+                </div>
+              ) : (
+                <>
+                  <Upload className="h-10 w-10 mx-auto mb-3 text-muted-foreground" />
+                  <p className="text-sm font-medium mb-1">
+                    HTML/CSS 파일을 여기에 드래그하세요
+                  </p>
+                  <p className="text-xs text-muted-foreground mb-3">
+                    또는 컴퓨터에서 파일 선택
+                  </p>
+                  <label>
+                    <input
+                      type="file"
+                      accept=".html,.htm,.css"
+                      multiple
+                      className="hidden"
+                      onChange={handleImportFileInput}
+                      data-testid="input-import-file"
+                    />
+                    <Button variant="outline" size="sm" asChild>
+                      <span>
+                        <Upload className="h-4 w-4 mr-2" />
+                        파일 선택
+                      </span>
+                    </Button>
+                  </label>
+                </>
+              )}
+            </div>
 
             <div className="space-y-2">
               <Label>HTML 코드</Label>
               <Textarea
                 value={importHtml}
                 onChange={(e) => setImportHtml(e.target.value)}
-                placeholder="HTML 코드를 붙여넣으세요..."
-                className="font-mono text-sm min-h-[200px]"
+                placeholder="HTML 코드를 붙여넣거나 파일을 드롭하세요..."
+                className="font-mono text-sm min-h-[150px]"
+                data-testid="textarea-import-html"
               />
             </div>
             <div className="space-y-2">
@@ -1627,8 +1742,9 @@ export default function PageBuilder({ initialBlocks = [], initialHtml = "", init
               <Textarea
                 value={importCss}
                 onChange={(e) => setImportCss(e.target.value)}
-                placeholder="CSS 코드를 붙여넣으세요..."
+                placeholder="CSS 코드를 붙여넣거나 파일을 드롭하세요..."
                 className="font-mono text-sm min-h-[100px]"
+                data-testid="textarea-import-css"
               />
             </div>
 
@@ -1662,7 +1778,7 @@ export default function PageBuilder({ initialBlocks = [], initialHtml = "", init
               setImportHtml("");
               setImportCss("");
               setImportUrl("");
-            }}>
+            }} data-testid="button-import-cancel">
               취소
             </Button>
             <Button
@@ -1680,6 +1796,7 @@ export default function PageBuilder({ initialBlocks = [], initialHtml = "", init
                 setActiveTab("html");
               }}
               disabled={!importHtml}
+              data-testid="button-import-apply"
             >
               코드 적용
             </Button>

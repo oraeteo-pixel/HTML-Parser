@@ -1023,5 +1023,91 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/admin/logos", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      const user = await storage.getUser(userId);
+      if (!user || user.isAdmin !== 1) {
+        return res.status(403).json({ message: "관리자만 로고를 조회할 수 있습니다." });
+      }
+
+      const logos = await storage.getSiteLogos();
+      res.json(logos);
+    } catch (err) {
+      console.error('Logo fetch error:', err);
+      res.status(500).json({ message: "로고 목록 조회 중 오류가 발생했습니다." });
+    }
+  });
+
+  app.get("/api/active-logo", async (req, res) => {
+    try {
+      const logo = await storage.getActiveLogo();
+      res.json(logo);
+    } catch (err) {
+      console.error('Active logo fetch error:', err);
+      res.status(500).json({ message: "활성 로고 조회 중 오류가 발생했습니다." });
+    }
+  });
+
+  app.post("/api/admin/logos", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      const user = await storage.getUser(userId);
+      if (!user || user.isAdmin !== 1) {
+        return res.status(403).json({ message: "관리자만 로고를 등록할 수 있습니다." });
+      }
+
+      const { name, objectPath } = req.body;
+      if (!name || !objectPath) {
+        return res.status(400).json({ message: "로고 이름과 경로가 필요합니다." });
+      }
+
+      const logo = await storage.createSiteLogo({
+        name,
+        objectPath,
+        createdBy: userId,
+      });
+      res.json(logo);
+    } catch (err) {
+      console.error('Logo create error:', err);
+      res.status(500).json({ message: "로고 등록 중 오류가 발생했습니다." });
+    }
+  });
+
+  app.put("/api/admin/logos/:id/activate", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      const user = await storage.getUser(userId);
+      if (!user || user.isAdmin !== 1) {
+        return res.status(403).json({ message: "관리자만 로고를 활성화할 수 있습니다." });
+      }
+
+      const logo = await storage.setActiveLogo(parseInt(req.params.id));
+      if (!logo) {
+        return res.status(404).json({ message: "로고를 찾을 수 없습니다." });
+      }
+      res.json(logo);
+    } catch (err) {
+      console.error('Logo activate error:', err);
+      res.status(500).json({ message: "로고 활성화 중 오류가 발생했습니다." });
+    }
+  });
+
+  app.delete("/api/admin/logos/:id", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      const user = await storage.getUser(userId);
+      if (!user || user.isAdmin !== 1) {
+        return res.status(403).json({ message: "관리자만 로고를 삭제할 수 있습니다." });
+      }
+
+      await storage.deleteSiteLogo(parseInt(req.params.id));
+      res.json({ success: true });
+    } catch (err) {
+      console.error('Logo delete error:', err);
+      res.status(500).json({ message: "로고 삭제 중 오류가 발생했습니다." });
+    }
+  });
+
   return httpServer;
 }

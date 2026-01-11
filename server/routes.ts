@@ -710,6 +710,20 @@ export async function registerRoutes(
 
   // === Page Contents Routes ===
   
+  // Public page content API (for header info)
+  app.get("/api/pages/:slug", async (req, res) => {
+    try {
+      const page = await storage.getPageContent(req.params.slug);
+      if (!page) {
+        return res.status(404).json({ message: "페이지를 찾을 수 없습니다." });
+      }
+      res.json(page);
+    } catch (err) {
+      console.error('Public page get error:', err);
+      res.status(500).json({ message: "페이지 조회 중 오류가 발생했습니다." });
+    }
+  });
+
   app.get("/api/admin/pages", isAuthenticated, async (req, res) => {
     try {
       const userId = (req.user as any)?.claims?.sub;

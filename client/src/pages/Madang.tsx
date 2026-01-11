@@ -12,7 +12,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useSearch, useLocation } from "wouter";
 import { getDayGanZhi } from "@/lib/calendarData";
-import type { Post, Comment } from "@shared/schema";
+import type { Post, Comment, PageContent } from "@shared/schema";
 
 type PostWithAuthor = Post & { author: string; authorEmail: string | null; commentCount?: number };
 type CommentWithAuthor = Comment & { author: string; authorEmail: string | null };
@@ -459,6 +459,11 @@ export default function Madang() {
     queryKey: ["/api/posts/section/madang"],
   });
 
+  const { data: pageInfo } = useQuery<PageContent>({
+    queryKey: ["/api/pages", "madang"],
+    queryFn: () => fetch("/api/pages/madang").then(res => res.ok ? res.json() : null),
+  });
+
   // Filter posts based on selected ganji or author
   const filteredPosts = useMemo(() => {
     if (!posts) return [];
@@ -645,8 +650,8 @@ export default function Madang() {
             <div className="flex items-center gap-3">
               <MessageSquare className="h-8 w-8 orae-navy" />
               <div>
-                <h1 className="text-xl font-bold orae-navy" data-testid="text-madang-title">마당</h1>
-                <p className="text-sm text-muted-foreground">오리알터닷컴 커뮤니티</p>
+                <h1 className="text-xl font-bold orae-navy" data-testid="text-madang-title">{pageInfo?.title || "마당"}</h1>
+                <p className="text-sm text-muted-foreground">{pageInfo?.content || "오리알터닷컴 커뮤니티"}</p>
               </div>
             </div>
             {!showEditor && (

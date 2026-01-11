@@ -12,7 +12,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useSearch, useLocation } from "wouter";
 import { BookOpen, FileText, Download, Play, Pencil, MessageSquare } from "lucide-react";
-import type { Post } from "@shared/schema";
+import type { Post, PageContent } from "@shared/schema";
 
 type PostWithAuthor = Post & { author: string; authorEmail: string | null; commentCount?: number };
 
@@ -57,6 +57,11 @@ export default function EbookPage() {
   const { data: posts, isLoading } = useQuery<PostWithAuthor[]>({
     queryKey: ["/api/posts/section", "ebook"],
     queryFn: () => fetch("/api/posts/section/ebook").then(res => res.json()),
+  });
+
+  const { data: pageInfo } = useQuery<PageContent>({
+    queryKey: ["/api/pages", "ebook"],
+    queryFn: () => fetch("/api/pages/ebook").then(res => res.ok ? res.json() : null),
   });
 
   const createPost = useMutation({
@@ -272,8 +277,8 @@ export default function EbookPage() {
             <div className="flex items-center gap-3">
               <BookOpen className="h-8 w-8 orae-navy" />
               <div>
-                <h1 className="text-xl font-bold orae-navy" data-testid="text-ebook-title">전자책</h1>
-                <p className="text-sm text-muted-foreground">오리알터닷컴 전자책 컬렉션</p>
+                <h1 className="text-xl font-bold orae-navy" data-testid="text-ebook-title">{pageInfo?.title || "전자책"}</h1>
+                <p className="text-sm text-muted-foreground">{pageInfo?.content || "오리알터닷컴 전자책 컬렉션"}</p>
               </div>
             </div>
             {!showEditor && (

@@ -1,5 +1,5 @@
-import { users, posts, comments, postVotes, messages, siteSettings, madangCategories, pageContents, pageLayouts, codeSnippets, type User, type Post, type Comment, type PostVote, type Message, type SiteSetting, type MadangCategory, type PageContent, type PageLayout, type CodeSnippet } from "@shared/schema";
-import type { InsertPost, InsertComment, InsertPostVote, InsertMessage, InsertMadangCategory, InsertPageContent, InsertPageLayout, InsertCodeSnippet } from "@shared/schema";
+import { users, posts, comments, postVotes, messages, siteSettings, madangCategories, pageContents, pageLayouts, codeSnippets, siteLogos, type User, type Post, type Comment, type PostVote, type Message, type SiteSetting, type MadangCategory, type PageContent, type PageLayout, type CodeSnippet, type SiteLogo } from "@shared/schema";
+import type { InsertPost, InsertComment, InsertPostVote, InsertMessage, InsertMadangCategory, InsertPageContent, InsertPageLayout, InsertCodeSnippet, InsertSiteLogo } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, sql, and, asc } from "drizzle-orm";
 
@@ -62,6 +62,12 @@ export interface IStorage {
   createCodeSnippet(snippet: InsertCodeSnippet): Promise<CodeSnippet>;
   updateCodeSnippet(id: number, data: Partial<InsertCodeSnippet>): Promise<CodeSnippet | null>;
   deleteCodeSnippet(id: number): Promise<boolean>;
+  
+  getSiteLogos(): Promise<SiteLogo[]>;
+  createSiteLogo(logo: InsertSiteLogo): Promise<SiteLogo>;
+  setActiveLogo(id: number): Promise<SiteLogo | null>;
+  deleteSiteLogo(id: number): Promise<boolean>;
+  getActiveLogo(): Promise<SiteLogo | null>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -524,6 +530,34 @@ export class DatabaseStorage implements IStorage {
   async deleteCodeSnippet(id: number): Promise<boolean> {
     await db.delete(codeSnippets).where(eq(codeSnippets.id, id));
     return true;
+  }
+
+  async getSiteLogos(): Promise<SiteLogo[]> {
+    return await db.select().from(siteLogos).orderBy(desc(siteLogos.createdAt));
+  }
+
+  async createSiteLogo(logo: InsertSiteLogo): Promise<SiteLogo> {
+    const [newLogo] = await db.insert(siteLogos).values(logo).returning();
+    return newLogo;
+  }
+
+  async setActiveLogo(id: number): Promise<SiteLogo | null> {
+    await db.update(siteLogos).set({ isActive: 0 });
+    const [updated] = await db.update(siteLogos)
+      .set({ isActive: 1 })
+      .where(eq(siteLogos.id, id))
+      .returning();
+    return updated || null;
+  }
+
+  async deleteSiteLogo(id: number): Promise<boolean> {
+    await db.delete(siteLogos).where(eq(siteLogos.id, id));
+    return true;
+  }
+
+  async getActiveLogo(): Promise<SiteLogo | null> {
+    const [logo] = await db.select().from(siteLogos).where(eq(siteLogos.isActive, 1));
+    return logo || null;
   }
 }
 

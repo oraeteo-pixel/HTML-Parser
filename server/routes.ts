@@ -858,5 +858,131 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/admin/code-snippets", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      const user = await storage.getUser(userId);
+      if (!user || user.isAdmin !== 1) {
+        return res.status(403).json({ message: "관리자만 접근할 수 있습니다." });
+      }
+
+      const snippets = await storage.getCodeSnippets();
+      res.json(snippets);
+    } catch (err) {
+      console.error('Code snippets fetch error:', err);
+      res.status(500).json({ message: "코드 스니펫 조회 중 오류가 발생했습니다." });
+    }
+  });
+
+  app.get("/api/admin/code-snippets/language/:language", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      const user = await storage.getUser(userId);
+      if (!user || user.isAdmin !== 1) {
+        return res.status(403).json({ message: "관리자만 접근할 수 있습니다." });
+      }
+
+      const snippets = await storage.getCodeSnippetsByLanguage(req.params.language);
+      res.json(snippets);
+    } catch (err) {
+      console.error('Code snippets by language fetch error:', err);
+      res.status(500).json({ message: "코드 스니펫 조회 중 오류가 발생했습니다." });
+    }
+  });
+
+  app.get("/api/admin/code-snippets/:id", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      const user = await storage.getUser(userId);
+      if (!user || user.isAdmin !== 1) {
+        return res.status(403).json({ message: "관리자만 접근할 수 있습니다." });
+      }
+
+      const snippet = await storage.getCodeSnippet(parseInt(req.params.id));
+      if (!snippet) {
+        return res.status(404).json({ message: "코드 스니펫을 찾을 수 없습니다." });
+      }
+      res.json(snippet);
+    } catch (err) {
+      console.error('Code snippet fetch error:', err);
+      res.status(500).json({ message: "코드 스니펫 조회 중 오류가 발생했습니다." });
+    }
+  });
+
+  app.post("/api/admin/code-snippets", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      const user = await storage.getUser(userId);
+      if (!user || user.isAdmin !== 1) {
+        return res.status(403).json({ message: "관리자만 코드 스니펫을 생성할 수 있습니다." });
+      }
+
+      const { name, description, language, category, code, tags, isPublic } = req.body;
+      if (!name || !language || !code) {
+        return res.status(400).json({ message: "이름, 언어, 코드는 필수입니다." });
+      }
+
+      const snippet = await storage.createCodeSnippet({
+        name,
+        description,
+        language,
+        category,
+        code,
+        tags: tags || [],
+        isPublic: isPublic !== undefined ? isPublic : 1,
+        createdBy: userId,
+      });
+      res.json(snippet);
+    } catch (err) {
+      console.error('Code snippet create error:', err);
+      res.status(500).json({ message: "코드 스니펫 생성 중 오류가 발생했습니다." });
+    }
+  });
+
+  app.put("/api/admin/code-snippets/:id", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      const user = await storage.getUser(userId);
+      if (!user || user.isAdmin !== 1) {
+        return res.status(403).json({ message: "관리자만 코드 스니펫을 수정할 수 있습니다." });
+      }
+
+      const { name, description, language, category, code, tags, isPublic } = req.body;
+      const snippet = await storage.updateCodeSnippet(parseInt(req.params.id), {
+        name,
+        description,
+        language,
+        category,
+        code,
+        tags,
+        isPublic,
+      });
+      
+      if (!snippet) {
+        return res.status(404).json({ message: "코드 스니펫을 찾을 수 없습니다." });
+      }
+      res.json(snippet);
+    } catch (err) {
+      console.error('Code snippet update error:', err);
+      res.status(500).json({ message: "코드 스니펫 수정 중 오류가 발생했습니다." });
+    }
+  });
+
+  app.delete("/api/admin/code-snippets/:id", isAuthenticated, async (req, res) => {
+    try {
+      const userId = (req.user as any)?.claims?.sub;
+      const user = await storage.getUser(userId);
+      if (!user || user.isAdmin !== 1) {
+        return res.status(403).json({ message: "관리자만 코드 스니펫을 삭제할 수 있습니다." });
+      }
+
+      await storage.deleteCodeSnippet(parseInt(req.params.id));
+      res.json({ success: true });
+    } catch (err) {
+      console.error('Code snippet delete error:', err);
+      res.status(500).json({ message: "코드 스니펫 삭제 중 오류가 발생했습니다." });
+    }
+  });
+
   return httpServer;
 }

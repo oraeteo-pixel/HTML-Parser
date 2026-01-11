@@ -2,271 +2,81 @@
 
 ## Overview
 
-This is a Korean-language community calendar web application ("오리알터닷컴") built with a full-stack TypeScript architecture. The app features a traditional East Asian calendar system displaying Heavenly Stems, Earthly Branches, Twenty-Eight Mansions, and other traditional calendar elements alongside a modern community posting system with user authentication.
+This project is a Korean-language community calendar web application, "오리알터닷컴," built with a full-stack TypeScript architecture. It integrates a unique East Asian calendar system, "황극력" (Hwanggeuknyeok), which goes beyond traditional astronomical and geographical principles to emphasize human-centric destiny management. This calendar displays elements like Heavenly Stems, Earthly Branches, and Twenty-Eight Mansions. Alongside this, the application provides a modern community posting system with user authentication and rich content management capabilities, including code snippets and a messaging system.
 
-## 프로젝트 철학 (Project Philosophy)
-
-### 문명과 역법의 기원
-- **60갑자의 기원**: 10간(天干) + 12지(地支) = 60주기 → 메소포타미아 60진법과 동일 원리
-- **문명 전파**: 천문(天文)과 지리(地理)를 이해한 지도자들이 이동하며 문명 창조
-- **이동 원리**: 지구 세차운동(26,000년 주기), 태양·별의 기운, 기후 패턴에 따라 이동
-
-### 천지인(天地人) 삼원과 시대 전환
-| 시대 | 중심 | 원리 | 역법 |
-|------|------|------|------|
-| 과거 | 天 (하늘) | 하도(河圖) | 천문 중심 역법 |
-| 현재 | 地 (땅) | 낙서(洛書) | 지리 중심 역법 |
-| **미래** | **人 (인간)** | **황극(皇極)** | **인간 중심 역법** |
-
-### 황극력의 의미
-- 과거: 천문·지리를 따르기만 하던 시대
-- 미래: **인간이 스스로 운명을 경영하는 시대**
-- 황극력 = 새로운 문명 패러다임의 표현
-- 이 앱(오리알터닷컴)은 그 정수를 담아내는 것이 목표
-
-### 핵심 법칙 (가장 중요)
-- **황극력**: 황극력만의 고유한 법칙으로 계산 (사용자만 알고 있는 비밀 법칙)
-- **선천력(선천시)**: 기존 동양 시진 방식대로 계산
-- 두 역법은 완전히 별개의 체계이며, 각각의 법칙에 따라 독립적으로 운영됨
-- **중요**: 황극력 계산법에 대해 질문이 있으면 반드시 사용자에게 확인해야 함. 임의로 추측하거나 변경 불가
+The core philosophy revolves around the "황극력," a proprietary calendrical system distinct from conventional East Asian calendars ("선천력"). The application aims to embody the essence of this new paradigm, where humanity actively shapes its destiny.
 
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+The "황극력" calculation method is based on unique, proprietary rules known only to the user. Do not attempt to infer or alter these rules; always confirm with the user if questions arise regarding "황극력" calculations.
 
 ## System Architecture
 
 ### Frontend Architecture
 - **Framework**: React 18 with TypeScript
-- **Routing**: Wouter for lightweight client-side routing
-- **State Management**: TanStack React Query for server state management
-- **UI Components**: Shadcn/ui component library with Radix UI primitives
-- **Styling**: Tailwind CSS with CSS variables for theming, custom Korean fonts (Noto Sans KR, Nanum Gothic)
-- **Build Tool**: Vite with React plugin
+- **Routing**: Wouter
+- **State Management**: TanStack React Query
+- **UI Components**: Shadcn/ui built on Radix UI primitives
+- **Styling**: Tailwind CSS with CSS variables and custom Korean fonts (Noto Sans KR, Nanum Gothic)
+- **Build Tool**: Vite
 
-The frontend follows a component-based architecture with:
-- Pages in `client/src/pages/`
-- Reusable components in `client/src/components/`
-- Custom hooks in `client/src/hooks/`
-- UI primitives in `client/src/components/ui/`
+The frontend employs a component-based structure, separating pages, reusable components, custom hooks, and UI primitives.
 
 ### Backend Architecture
 - **Framework**: Express.js with TypeScript
-- **Runtime**: Node.js with tsx for TypeScript execution
-- **API Design**: RESTful API with typed route definitions in `shared/routes.ts`
-- **Authentication**: Passport.js with Local Strategy, session-based auth using express-session
-- **Password Security**: Scrypt hashing with timing-safe comparison
+- **Runtime**: Node.js with `tsx`
+- **API Design**: RESTful API with typed route definitions shared between client and server using Zod.
+- **Authentication**: Passport.js (Local Strategy, session-based with `express-session`)
+- **Password Security**: Scrypt hashing
 
-The server structure:
-- `server/index.ts` - Express app setup and middleware
-- `server/routes.ts` - API route handlers
-- `server/auth.ts` - Authentication configuration
-- `server/storage.ts` - Database access layer
-- `server/db.ts` - Database connection
+The backend organizes routes, authentication, and database access into distinct modules.
 
 ### Data Storage
 - **Database**: PostgreSQL via Drizzle ORM
-- **Schema Location**: `shared/schema.ts` - shared between client and server
-- **Migrations**: Drizzle Kit with migrations output to `./migrations`
-- **Session Store**: MemoryStore (development), connect-pg-simple available for production
+- **Schema**: Defined in `shared/schema.ts` and used by both client and server.
+- **Migrations**: Drizzle Kit
+- **Session Store**: MemoryStore (development), `connect-pg-simple` (production ready)
 
-Database tables:
-- `users` - User accounts with username, password (hashed), nickname
-- `posts` - Community posts with title, content, author reference
+Key database tables include `users` and `posts`. Additional tables `code_snippets` and `messages` support new features.
 
 ### Shared Code Pattern
-The `shared/` directory contains code used by both frontend and backend:
-- `schema.ts` - Drizzle table definitions and Zod validation schemas
-- `routes.ts` - API contract definitions with typed inputs/outputs using Zod
+The `shared/` directory contains common code like Drizzle table definitions, Zod validation schemas, and API contract definitions, ensuring type safety and consistency across the full stack.
+
+### Core Features & Design
+- **Hwanggeuknyeok Calendar**: Displays traditional East Asian calendar elements, including Heavenly Stems, Earthly Branches, and Twenty-Eight Mansions. Features an 81-palace (81궁) system with dynamic small-palace (소궁) and great-palace (대궁) calculations, and 64 hexagram (64괘) representations. Includes a 60-ganji timetable.
+- **Calendar Export**: Provides an Excel download function for calendar data (1989-2050).
+- **Community Posting System**: Supports rich content editing with image/video uploads, YouTube embeds, and object storage integration.
+- **Code Snippet Repository**: Allows users to save, categorize, and manage code snippets with public/private settings.
+- **Messaging System**: Enables private messaging between users with read status tracking.
+- **UI/UX**: Features a 24-season (24절국) circular chart visualizing 팔괘 (Bagua) and Twenty-Eight Mansions, designed with an intuitive calendar navigation.
 
 ## External Dependencies
 
 ### Database
-- PostgreSQL database required (via `DATABASE_URL` environment variable)
-- Drizzle ORM for database operations
-- Drizzle Zod for automatic schema validation
+- PostgreSQL
+- Drizzle ORM
+- Drizzle Zod
 
 ### Frontend Libraries
-- `@tanstack/react-query` - Data fetching and caching
-- `@radix-ui/*` - Accessible UI primitives (20+ packages)
-- `date-fns` - Date manipulation for calendar
-- `korean-lunar-calendar` - Korean lunar calendar (KARI standard, 1000-2050)
-- `lucide-react` - Icon library
-- `react-hook-form` with `@hookform/resolvers` - Form handling
-- `wouter` - Lightweight routing
-- `framer-motion` - Animations (in requirements)
+- `@tanstack/react-query`
+- `@radix-ui/*`
+- `date-fns`
+- `korean-lunar-calendar`
+- `lucide-react`
+- `react-hook-form` with `@hookform/resolvers`
+- `wouter`
+- `framer-motion`
 
 ### Backend Libraries
-- `express` with `express-session` - Web server and sessions
-- `passport` with `passport-local` - Authentication
-- `drizzle-orm` with `pg` - Database access
-- `zod` - Runtime validation
+- `express`
+- `express-session`
+- `passport`
+- `passport-local`
+- `drizzle-orm` with `pg`
+- `zod`
 
-### Build & Development
-- Vite for frontend bundling
-- esbuild for server bundling (production)
-- tsx for TypeScript execution (development)
-- Replit-specific plugins for development experience
-
-## Recent Changes (2026-01-10)
-
-### 60갑자 시간표 기능 추가
-- **위치**: 황극력 달력 상세 정보 섹션
-- **계산 규칙**:
-  - 황극력 1989년(원년) 1월 1일 오전 = 丁巳(정사)시부터 시작
-  - 매일 12시간씩 진행 (오전 6시간 + 오후 6시간)
-  - 연속 순환: 황극력 1989년 1월 1일부터 현재까지 쭉 이어짐
-- **60갑자 배열**: 甲子(0)~癸亥(59), 丁巳 = 인덱스 53
-- **계산 공식**: `totalDays = (hwYear - 1989) * 366 + monthDays + (hwDay - 1)`, `startIndex = (53 + totalDays * 12) % 60`
-- **표시 형식**: 오전/오후 각 6개씩 박스 형태로 표시
-- **황극력 vs 선천력**: 각각 독립적인 시진 체계, 황극력은 황극력 법칙대로 계산
-
-### 달력 네비게이션 개선
-- 연도/월 선택 시 해당 월 1일 자동 하이라이트
-- 선택된 날짜에 노란색 하이라이트 적용 (today 스타일)
-
-## Recent Changes (2026-01-08)
-
-### 달력 데이터 엑셀 다운로드 기능 추가
-- **API 엔드포인트**: `GET /api/calendar/export`
-- **날짜 범위**: 1989년 1월 1일 ~ 2050년 12월 31일 (약 22,000일)
-- **포함 데이터**:
-  - 날짜, 간지, 28수, 28장
-  - 오전/오후 소궁, 대궁, 81궁 이름
-  - 오전/오후 팔괘(소궁/대궁 기반)
-- **다운로드 버튼**: 달력 페이지 우측 상단에 추가
-- **파일명**: `calendar_1989_2050.xlsx`
-- **구현 파일**: `server/calendarExport.ts`
-
-### 81궁 계산 검증 완료
-- **검증일**: 2026-01-08
-- **두 가지 독립 시스템**:
-  1. **소궁/대궁 (정보창)**: 대궁 반일마다 변화, 소궁 80분마다 변화
-  2. **X之Y (달력 81궁 표기)**: 대궁 4.5일마다 변화, Position 40.5일마다 변화
-- **81궁 달력 표기 계산**:
-  - Epoch: 황극력 1월 1일 전날 23:00 KST (hwanggeukToSolar로 정확한 날짜 계산)
-  - 대궁(Y): 9반일(4.5일)마다 2→3→4→...→10 순환
-  - Position(X): 81반일(40.5일)마다 2→3→4→...→10 순환
-  - 오프셋: calibrationOffset = 0, positionOffset = 0 (1월 1일 = 二之二)
-- **검증된 패턴** (1989년 황극력 원년 기준):
-  - 1월 1~4일: **原** (종일) - 二之二
-  - 1월 5일: **오전 原 / 오후 潛** (전환일)
-  - 1월 6~9일: **潛** (종일) - 二之三
-  - 1월 10일: **오전 潛 / 오후 守** (전환일)
-  - 이후 信→直→蒙→閑→須→厲 순서로 각 4.5일씩
-  - **12월 30~31일**: **尊宮** (연말 마지막 1.5일)
-- **선천력 1989-04-21**: "황극력 원년" 마커 표시
-
-## Changes (2026-01-07)
-
-### 소궁/대궁 (81궁) 공식 계산 완성
-
-#### 철학적 배경 (천지인 삼원)
-- **하도(河圖)** = 天(하늘) - 선천, 생성의 원리, 총합 55
-- **낙서(洛書)** = 地(땅) - 후천, 질서의 원리, 총합 45
-- **황극(皇極)** = 人(인간) - 낙서를 되돌린 것
-- **핵심 공식**: 낙서 숫자 + 황극 숫자 = 11 (보수 관계)
-  - 1↔10, 2↔9, 3↔8, 4↔7, 5↔6
-- **Position 쌍 합 = 12**: 6을 중심으로 대칭
-  - Position 2↔10, 3↔9, 4↔8, 5↔7 (중궁 6)
-- **732 반일**: 1년 = 366일 × 2(오전/오후) = 732 반일
-  - 732 중 몇 번째인지 알면 대궁 결정 가능
-
-#### 계산 공식
-- **모든 시간은 한국 시간(UTC+9) 기준**
-- **시작점(Epoch)**: 황극력 연초 전날 밤 23:00 (양력 4월 20일 23:00 KST)
-- **대궁 계산 공식**:
-  - 반일(12시간=720분) 수 계산: `totalHalfDays = (현재시간 - 시작점) / 720분`
-  - 대궁 = `(totalHalfDays + calibrationOffset) % 9 + 2` (2~10 순환)
-  - calibrationOffset = 3 (2026년 1월 24일 오전: 소궁=9, 대궁=6 맞춤)
-- **Position(24절국) 계산 공식**:
-  - 대궁사이클 수: `daegungCycleNum = totalHalfDays / 9`
-  - Position = `(daegungCycleNum + positionOffset) % 9 + 2` (2~10 순환)
-  - positionOffset = 3
-- **X之Y 표기법 (81궁 이름 시스템)**:
-  - **핵심**: 81궁 이름 = NAMES[position][대궁] (소궁은 영향 없음!)
-  - **4.5일 주기**: 81궁 이름은 대궁과 함께 4.5일간 고정 (소궁 변화 무관)
-  - X = position 값 (2~10), Y = 대궁 값 (2~10)
-  - 9 positions × 9 대궁 = 81개 고유 이름
-- **81궁 완전 명칭 표**:
-  | Position | 대궁2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
-  |---|---|---|---|---|---|---|---|---|---|
-  | 2 | 原 | 潛 | 守 | 信 | 直 | 蒙 | 閑 | 須 | 厲 |
-  | 3 | 成 | 沖 | 振 | 祈 | 常 | 柔 | 易 | 親 | 華 |
-  | 4 | 見 | 獲 | 從 | 交 | 育 | 壯 | 興 | 欣 | 舒 |
-  | 5 | 比 | 開 | 晉 | 公 | 益 | 章 | 盈 | 錫 | 靡 |
-  | 6 | 庶 | 決 | 豫 | 升 | 中 | 伏 | 過 | 疑 | 寡 |
-  | 7 | 飾 | 戾 | 虛 | 昧 | 損 | 用 | 郤 | 翕 | 遠 |
-  | 8 | 迅 | 懼 | 除 | 弱 | 疾 | 競 | 分 | 誦 | 收 |
-  | 9 | 實 | 賓 | 危 | 堅 | 革 | 報 | 止 | 戎 | 結 |
-  | 10 | 養 | 遇 | 勝 | 囚 | 任 | 固 | 移 | 墮 | 終 |
-- **예시**: 七之八 = position 7, 대궁 8 → "郤"
-- **7지8 예시 상세**:
-  - 대궁 싸이클: 7→10→9→4→6→8→3→2→5 (position 7 기준, 9개 순환)
-  - 소궁 싸이클: 8→5→2→9→6→3→10→7→4 (8을 앞세운 9궁 순환)
-  - 오전/오후 나눠 총 9번 운행, 4.5일에 걸쳐 9궁 완전 순환
-- **소궁 계산**:
-  - 시간 슬롯: 23:00부터 80분 간격 (슬롯 1-9 오전, 10-18 오후)
-  - 9차(9번째 슬롯): 09:40 ~ 11:00 (오전 마지막)
-  - 소궁 = SOGUNG_PATTERNS[position][슬롯인덱스]
-- **참조 데이터**:
-  - 소궁대궁.xlsx: 81궁 상태 전환 패턴 표 (사용자 기준)
-  - 구궁도3.xls: 2014년~ 실제 날짜/시간 매핑 (시간 시작: 00:20)
-- **소궁 패턴** (position별, 낙서 기반):
-  - Position 2: [2,3,4,5,6,7,8,9,10]
-  - Position 3: [3,4,7,2,6,10,5,8,9]
-  - Position 4: [4,7,10,3,6,9,2,5,8]
-  - Position 5: [5,2,3,8,6,4,9,10,7]
-  - Position 6: [6,6,6,6,6,6,6,6,6] (중궁)
-  - Position 7: [7,10,9,4,6,8,3,2,5]
-  - Position 8: [8,5,2,9,6,3,10,7,4]
-  - Position 9: [9,8,5,10,6,2,7,4,3]
-  - Position 10: [10,9,8,7,6,5,4,3,2]
-
-### 64괘 표시 기능 추가 (2026-01-07)
-- **소궁/대궁과 64괘 관계**:
-  - 소궁 = 상괘 (위, 흔들리는 것, 변하는 것)
-  - 대궁 = 하괘 (아래, 뿌리, 고정된 것)
-- **숫자 → 팔괘 매핑**:
-  - 2=坤(곤/地), 3=艮(간/山), 4=坎(감/水), 5=震(진/雷)
-  - 6=中(중궁), 7=巽(손/風), 8=離(리/火), 9=兌(태/澤), 10=乾(건/天)
-- **예시**: 소궁 10(乾) + 대궁 7(巽) = 天風姤
-- **시간 슬롯 시작**: 23:20부터 80분 간격
-
-### 24절국 원형 차트 완성 (2026-01-05)
-- **팔괘(八卦) 배치**: 12시-곤(☷), 1시-리(☲), 3시-태(☱), 5시-진(☳), 6시-건(☰), 7시-감(☵), 9시-간(☶), 11시-손(☴) - 모두 중심을 바라보게 회전
-- **28수(二十八宿) 수정**: 
-  - 辰 위치: 壁奎 (double mansion)
-  - 震 위치: 室
-  - 坎 위치: 箕斗 (double mansion)
-- **숫자 화살표 연결**: 1→2→3→4→5→6→7→8→9→10 순서로 낙서(洛書) 패턴 표시
-- **24방 배치**: 亥가 12시 방향, 寅申巳亥가 사방위(90°간격)에 정확히 위치
-- **24절국 회전**: 元和(원화)가 酉(유)방에 오도록 1칸 회전
-
-### 리치 에디터 및 콘텐츠 관리 시스템 (2026-01-06)
-- **RichEditor 컴포넌트**: `client/src/components/RichEditor.tsx`
-  - 드래그 앤 드롭 파일 업로드
-  - 이미지/동영상/파일 업로드 버튼
-  - YouTube URL 임베드 (유튜브 링크 또는 영상 ID 지원)
-  - 파일별 에러 처리 및 토스트 알림
-  - 업로드 중 제출 버튼 비활성화
-- **Object Storage 연동**:
-  - Presigned URL 방식으로 Google Cloud Storage 직접 업로드
-  - public/private 디렉토리 지원
-- **콘텐츠 섹션**:
-  - posts 테이블에 section 필드 추가 (ebook/madang 구분)
-  - youtubeUrls 필드 추가 (YouTube 영상 ID 배열)
-  - `/api/posts/section/:section` 엔드포인트 추가
-
-### 쪽지(메시지) 시스템 추가 (2026-01-08)
-- **messages 테이블**: senderId, receiverId, content, isRead (0/1), createdAt
-- **API 라우트**:
-  - `GET /api/messages/received`: 받은 쪽지 목록 (발신자 이름 포함)
-  - `GET /api/messages/sent`: 보낸 쪽지 목록 (수신자 이름 포함)
-  - `GET /api/messages/unread-count`: 읽지 않은 쪽지 수
-  - `POST /api/messages`: 쪽지 보내기 (receiverId, content)
-  - `POST /api/messages/:id/read`: 읽음 표시
-- **UI 컴포넌트**:
-  - Navigation.tsx에 Mail 아이콘 추가 (읽지 않은 쪽지 배지)
-  - Messages.tsx 페이지: 받은/보낸 탭, 답장 기능
-- **보안**: 모든 메시지 API는 인증 필요, 수신자 확인 후 전송
+### Build & Development Tools
+- Vite
+- esbuild
+- tsx

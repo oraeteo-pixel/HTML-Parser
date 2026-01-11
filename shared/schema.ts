@@ -134,6 +134,25 @@ export const insertPageLayoutSchema = createInsertSchema(pageLayouts).omit({ id:
 export type PageLayout = typeof pageLayouts.$inferSelect;
 export type InsertPageLayout = z.infer<typeof insertPageLayoutSchema>;
 
+export const codeSnippets = pgTable("code_snippets", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+  language: text("language").notNull(), // html, css, javascript, python, etc.
+  category: text("category"), // ui, data, api, utility
+  code: text("code").notNull(),
+  tags: text("tags").array(),
+  isPublic: integer("is_public").default(1),
+  createdBy: varchar("created_by").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertCodeSnippetSchema = createInsertSchema(codeSnippets).omit({ id: true, createdAt: true, updatedAt: true });
+
+export type CodeSnippet = typeof codeSnippets.$inferSelect;
+export type InsertCodeSnippet = z.infer<typeof insertCodeSnippetSchema>;
+
 // Block types for page builder
 export interface LayoutBlock {
   id: string;

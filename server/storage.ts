@@ -1,5 +1,5 @@
-import { users, posts, comments, postVotes, messages, siteSettings, madangCategories, pageContents, pageLayouts, type User, type Post, type Comment, type PostVote, type Message, type SiteSetting, type MadangCategory, type PageContent, type PageLayout } from "@shared/schema";
-import type { InsertPost, InsertComment, InsertPostVote, InsertMessage, InsertMadangCategory, InsertPageContent, InsertPageLayout } from "@shared/schema";
+import { users, posts, comments, postVotes, messages, siteSettings, madangCategories, pageContents, pageLayouts, codeSnippets, type User, type Post, type Comment, type PostVote, type Message, type SiteSetting, type MadangCategory, type PageContent, type PageLayout, type CodeSnippet } from "@shared/schema";
+import type { InsertPost, InsertComment, InsertPostVote, InsertMessage, InsertMadangCategory, InsertPageContent, InsertPageLayout, InsertCodeSnippet } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, sql, and, asc } from "drizzle-orm";
 
@@ -55,6 +55,13 @@ export interface IStorage {
   createPageLayout(layout: InsertPageLayout): Promise<PageLayout>;
   updatePageLayout(id: number, data: Partial<InsertPageLayout>): Promise<PageLayout | null>;
   deletePageLayout(id: number): Promise<boolean>;
+  
+  getCodeSnippets(): Promise<CodeSnippet[]>;
+  getCodeSnippet(id: number): Promise<CodeSnippet | null>;
+  getCodeSnippetsByLanguage(language: string): Promise<CodeSnippet[]>;
+  createCodeSnippet(snippet: InsertCodeSnippet): Promise<CodeSnippet>;
+  updateCodeSnippet(id: number, data: Partial<InsertCodeSnippet>): Promise<CodeSnippet | null>;
+  deleteCodeSnippet(id: number): Promise<boolean>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -480,6 +487,42 @@ export class DatabaseStorage implements IStorage {
 
   async deletePageLayout(id: number): Promise<boolean> {
     await db.delete(pageLayouts).where(eq(pageLayouts.id, id));
+    return true;
+  }
+
+  async getCodeSnippets(): Promise<CodeSnippet[]> {
+    return await db.select().from(codeSnippets).orderBy(desc(codeSnippets.updatedAt));
+  }
+
+  async getCodeSnippet(id: number): Promise<CodeSnippet | null> {
+    const [snippet] = await db.select().from(codeSnippets).where(eq(codeSnippets.id, id));
+    return snippet || null;
+  }
+
+  async getCodeSnippetsByLanguage(language: string): Promise<CodeSnippet[]> {
+    return await db.select().from(codeSnippets)
+      .where(eq(codeSnippets.language, language))
+      .orderBy(desc(codeSnippets.updatedAt));
+  }
+
+  async createCodeSnippet(snippet: InsertCodeSnippet): Promise<CodeSnippet> {
+    const [newSnippet] = await db.insert(codeSnippets).values(snippet).returning();
+    return newSnippet;
+  }
+
+  async updateCodeSnippet(id: number, data: Partial<InsertCodeSnippet>): Promise<CodeSnippet | null> {
+    const filteredData = Object.fromEntries(
+      Object.entries(data).filter(([_, v]) => v !== undefined)
+    );
+    const [updated] = await db.update(codeSnippets)
+      .set({ ...filteredData, updatedAt: new Date() })
+      .where(eq(codeSnippets.id, id))
+      .returning();
+    return updated || null;
+  }
+
+  async deleteCodeSnippet(id: number): Promise<boolean> {
+    await db.delete(codeSnippets).where(eq(codeSnippets.id, id));
     return true;
   }
 }

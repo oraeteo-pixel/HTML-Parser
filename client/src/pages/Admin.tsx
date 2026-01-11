@@ -15,14 +15,143 @@ import {
   Settings, FolderTree, Calendar, FileCode, Users, 
   LayoutDashboard, ChevronRight, ChevronDown, Search,
   Home, Shield, FileText, Palette, Database, Menu, X,
-  Mail, Phone, Check, MessageSquare
+  Mail, Phone, Check, MessageSquare, Code2, Copy
 } from "lucide-react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import type { MadangCategory, PageContent, User, PageLayout, LayoutBlock } from "@shared/schema";
+import type { MadangCategory, PageContent, User, PageLayout, LayoutBlock, CodeSnippet } from "@shared/schema";
 import { Link } from "wouter";
 import PageBuilder from "@/components/PageBuilder";
+
+interface SnippetFormProps {
+  snippet: CodeSnippet | null;
+  languageOptions: { value: string; label: string; color: string }[];
+  categoryOptions: { value: string; label: string }[];
+  onSave: (data: { name: string; description?: string; language: string; category?: string; code: string; tags?: string[]; isPublic?: number }) => void;
+  onCancel: () => void;
+  isPending: boolean;
+}
+
+function SnippetForm({ snippet, languageOptions, categoryOptions, onSave, onCancel, isPending }: SnippetFormProps) {
+  const [name, setName] = useState(snippet?.name || "");
+  const [description, setDescription] = useState(snippet?.description || "");
+  const [language, setLanguage] = useState(snippet?.language || "javascript");
+  const [category, setCategory] = useState(snippet?.category || "");
+  const [code, setCode] = useState(snippet?.code || "");
+  const [tagsInput, setTagsInput] = useState(snippet?.tags?.join(", ") || "");
+  const [isPublic, setIsPublic] = useState(snippet?.isPublic !== 0);
+
+  const handleSubmit = () => {
+    if (!name || !code || !language) return;
+    const tags = tagsInput.split(",").map(t => t.trim()).filter(Boolean);
+    onSave({
+      name,
+      description: description || undefined,
+      language,
+      category: category || undefined,
+      code,
+      tags: tags.length > 0 ? tags : undefined,
+      isPublic: isPublic ? 1 : 0,
+    });
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="space-y-2">
+          <Label htmlFor="snippet-name">이름 *</Label>
+          <Input
+            id="snippet-name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="스니펫 이름"
+            data-testid="input-snippet-name"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="snippet-language">언어 *</Label>
+          <Select value={language} onValueChange={setLanguage}>
+            <SelectTrigger data-testid="select-snippet-language">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {languageOptions.map(lang => (
+                <SelectItem key={lang.value} value={lang.value}>{lang.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="space-y-2">
+          <Label htmlFor="snippet-category">카테고리</Label>
+          <Select value={category} onValueChange={setCategory}>
+            <SelectTrigger data-testid="select-snippet-category">
+              <SelectValue placeholder="카테고리 선택" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="">없음</SelectItem>
+              {categoryOptions.map(cat => (
+                <SelectItem key={cat.value} value={cat.value}>{cat.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="snippet-tags">태그 (쉼표로 구분)</Label>
+          <Input
+            id="snippet-tags"
+            value={tagsInput}
+            onChange={(e) => setTagsInput(e.target.value)}
+            placeholder="태그1, 태그2, 태그3"
+            data-testid="input-snippet-tags"
+          />
+        </div>
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="snippet-description">설명</Label>
+        <Input
+          id="snippet-description"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="스니펫에 대한 설명"
+          data-testid="input-snippet-description"
+        />
+      </div>
+      <div className="space-y-2">
+        <Label htmlFor="snippet-code">코드 *</Label>
+        <Textarea
+          id="snippet-code"
+          value={code}
+          onChange={(e) => setCode(e.target.value)}
+          placeholder="코드를 입력하세요..."
+          rows={12}
+          className="font-mono text-sm"
+          data-testid="textarea-snippet-code"
+        />
+      </div>
+      <div className="flex items-center gap-2">
+        <Switch
+          id="snippet-public"
+          checked={isPublic}
+          onCheckedChange={setIsPublic}
+          data-testid="switch-snippet-public"
+        />
+        <Label htmlFor="snippet-public">공개</Label>
+      </div>
+      <div className="flex gap-2">
+        <Button onClick={handleSubmit} disabled={isPending || !name || !code} data-testid="button-save-snippet">
+          {isPending ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Save className="h-4 w-4 mr-2" />}
+          저장
+        </Button>
+        <Button variant="outline" onClick={onCancel} data-testid="button-cancel-snippet">
+          취소
+        </Button>
+      </div>
+    </div>
+  );
+}
 
 interface LogoSettings {
   logoText: string;
@@ -60,7 +189,7 @@ const getSizeValue = (size: string): string => {
   return sizeMap[size] || '1rem';
 };
 
-type MenuSection = "dashboard" | "logo" | "categories" | "calendar" | "pages" | "members" | "layouts";
+type MenuSection = "dashboard" | "logo" | "categories" | "calendar" | "pages" | "members" | "layouts" | "snippets";
 
 interface MenuItem {
   id: MenuSection;
@@ -75,6 +204,7 @@ const menuItems: MenuItem[] = [
   { id: "members", label: "회원 관리", icon: Users, description: "회원 목록" },
   { id: "categories", label: "마당 카테고리", icon: FolderTree, description: "카테고리 관리" },
   { id: "layouts", label: "페이지 빌더", icon: FileText, description: "드래그앤드롭 편집" },
+  { id: "snippets", label: "코드 스니펫", icon: Code2, description: "코드 저장소" },
   { id: "calendar", label: "달력 데이터", icon: Calendar, description: "엑셀 다운로드" },
   { id: "pages", label: "페이지 관리", icon: FileCode, description: "콘텐츠 편집" },
 ];
@@ -105,6 +235,10 @@ export default function Admin() {
   const [newLayoutSlug, setNewLayoutSlug] = useState("");
   const [newLayoutType, setNewLayoutType] = useState<"madang" | "ebook">("madang");
 
+  const [editingSnippet, setEditingSnippet] = useState<CodeSnippet | null>(null);
+  const [creatingSnippet, setCreatingSnippet] = useState(false);
+  const [snippetFilter, setSnippetFilter] = useState<string>("all");
+
   const { data: savedSettings, isLoading: settingsLoading } = useQuery<Record<string, string>>({
     queryKey: ["/api/settings"],
   });
@@ -130,6 +264,11 @@ export default function Admin() {
 
   const { data: layouts, isLoading: layoutsLoading } = useQuery<PageLayout[]>({
     queryKey: ["/api/admin/layouts"],
+    enabled: isAuthenticated && user?.isAdmin === 1,
+  });
+
+  const { data: codeSnippets, isLoading: snippetsLoading } = useQuery<CodeSnippet[]>({
+    queryKey: ["/api/admin/code-snippets"],
     enabled: isAuthenticated && user?.isAdmin === 1,
   });
 
@@ -310,6 +449,38 @@ export default function Admin() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/layouts"] });
       toast({ title: "레이아웃 삭제 완료" });
+    },
+  });
+
+  const createSnippetMutation = useMutation({
+    mutationFn: async (data: { name: string; description?: string; language: string; category?: string; code: string; tags?: string[]; isPublic?: number }) => {
+      return apiRequest("POST", "/api/admin/code-snippets", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/code-snippets"] });
+      setCreatingSnippet(false);
+      toast({ title: "코드 스니펫 생성 완료" });
+    },
+  });
+
+  const updateSnippetMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: number; data: Partial<{ name: string; description: string; language: string; category: string; code: string; tags: string[]; isPublic: number }> }) => {
+      return apiRequest("PUT", `/api/admin/code-snippets/${id}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/code-snippets"] });
+      setEditingSnippet(null);
+      toast({ title: "코드 스니펫 수정 완료" });
+    },
+  });
+
+  const deleteSnippetMutation = useMutation({
+    mutationFn: async (id: number) => {
+      return apiRequest("DELETE", `/api/admin/code-snippets/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/code-snippets"] });
+      toast({ title: "코드 스니펫 삭제 완료" });
     },
   });
 
@@ -1617,6 +1788,176 @@ export default function Admin() {
     </div>
   );
 
+  const filteredSnippets = codeSnippets?.filter(s => 
+    snippetFilter === "all" || s.language === snippetFilter
+  ) || [];
+
+  const languageOptions = [
+    { value: "html", label: "HTML", color: "bg-orange-500" },
+    { value: "css", label: "CSS", color: "bg-blue-500" },
+    { value: "javascript", label: "JavaScript", color: "bg-yellow-500" },
+    { value: "python", label: "Python", color: "bg-green-500" },
+  ];
+
+  const categoryOptions = [
+    { value: "ui", label: "UI 컴포넌트" },
+    { value: "data", label: "데이터 처리" },
+    { value: "api", label: "API 연동" },
+    { value: "utility", label: "유틸리티" },
+  ];
+
+  const renderSnippets = () => (
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h2 className="text-2xl font-bold">코드 스니펫 관리</h2>
+          <p className="text-muted-foreground">HTML, CSS, JavaScript, Python 코드 저장소</p>
+        </div>
+        <Button onClick={() => setCreatingSnippet(true)} data-testid="button-create-snippet">
+          <Plus className="h-4 w-4 mr-2" />
+          새 스니펫
+        </Button>
+      </div>
+
+      <div className="flex items-center gap-2">
+        <Select value={snippetFilter} onValueChange={setSnippetFilter}>
+          <SelectTrigger className="w-[180px]" data-testid="select-snippet-filter">
+            <SelectValue placeholder="언어 필터" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">전체 언어</SelectItem>
+            {languageOptions.map(lang => (
+              <SelectItem key={lang.value} value={lang.value}>{lang.label}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <span className="text-sm text-muted-foreground">
+          {filteredSnippets.length}개 스니펫
+        </span>
+      </div>
+
+      {(creatingSnippet || editingSnippet) && (
+        <Card>
+          <CardHeader>
+            <CardTitle>{editingSnippet ? "스니펫 수정" : "새 스니펫 생성"}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <SnippetForm
+              snippet={editingSnippet}
+              languageOptions={languageOptions}
+              categoryOptions={categoryOptions}
+              onSave={(data) => {
+                if (editingSnippet) {
+                  updateSnippetMutation.mutate({ id: editingSnippet.id, data });
+                } else {
+                  createSnippetMutation.mutate(data);
+                }
+              }}
+              onCancel={() => {
+                setEditingSnippet(null);
+                setCreatingSnippet(false);
+              }}
+              isPending={createSnippetMutation.isPending || updateSnippetMutation.isPending}
+            />
+          </CardContent>
+        </Card>
+      )}
+
+      {snippetsLoading ? (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        </div>
+      ) : filteredSnippets.length === 0 ? (
+        <Card>
+          <CardContent className="py-12 text-center">
+            <Code2 className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+            <p className="text-muted-foreground">저장된 코드 스니펫이 없습니다.</p>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid gap-4">
+          {filteredSnippets.map((snippet) => {
+            const langInfo = languageOptions.find(l => l.value === snippet.language);
+            return (
+              <Card key={snippet.id} data-testid={`card-snippet-${snippet.id}`}>
+                <CardHeader className="pb-2">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <CardTitle className="text-lg">{snippet.name}</CardTitle>
+                        <Badge className={`${langInfo?.color || "bg-gray-500"} text-white`}>
+                          {langInfo?.label || snippet.language}
+                        </Badge>
+                        {snippet.category && (
+                          <Badge variant="outline">
+                            {categoryOptions.find(c => c.value === snippet.category)?.label || snippet.category}
+                          </Badge>
+                        )}
+                        {snippet.isPublic === 0 && (
+                          <Badge variant="secondary">비공개</Badge>
+                        )}
+                      </div>
+                      {snippet.description && (
+                        <p className="text-sm text-muted-foreground mt-1">{snippet.description}</p>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => {
+                          navigator.clipboard.writeText(snippet.code);
+                          toast({ title: "코드가 클립보드에 복사되었습니다." });
+                        }}
+                        data-testid={`button-copy-snippet-${snippet.id}`}
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => setEditingSnippet(snippet)}
+                        data-testid={`button-edit-snippet-${snippet.id}`}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => {
+                          if (confirm("정말 삭제하시겠습니까?")) {
+                            deleteSnippetMutation.mutate(snippet.id);
+                          }
+                        }}
+                        data-testid={`button-delete-snippet-${snippet.id}`}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <pre className="bg-slate-900 text-slate-100 p-4 rounded-lg overflow-x-auto text-sm max-h-48">
+                    <code>{snippet.code}</code>
+                  </pre>
+                  {snippet.tags && snippet.tags.length > 0 && (
+                    <div className="flex gap-1 mt-3 flex-wrap">
+                      {snippet.tags.map((tag, idx) => (
+                        <Badge key={idx} variant="secondary" className="text-xs">
+                          #{tag}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+
   const renderContent = () => {
     switch (activeSection) {
       case "dashboard":
@@ -1629,6 +1970,8 @@ export default function Admin() {
         return renderCategories();
       case "layouts":
         return renderLayouts();
+      case "snippets":
+        return renderSnippets();
       case "calendar":
         return renderCalendar();
       case "pages":

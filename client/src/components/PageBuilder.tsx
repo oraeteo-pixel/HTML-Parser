@@ -62,6 +62,10 @@ import {
   ChevronDown,
   GalleryHorizontal,
   LogIn,
+  Download,
+  ExternalLink,
+  FileCode,
+  Globe,
 } from "lucide-react";
 import type { LayoutBlock } from "@shared/schema";
 
@@ -188,6 +192,12 @@ export default function PageBuilder({ initialBlocks = [], initialHtml = "", init
   const [activeTab, setActiveTab] = useState<"visual" | "html" | "preview">("visual");
   const [editingBlock, setEditingBlock] = useState<LayoutBlock | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [importType, setImportType] = useState<"url" | "code">("code");
+  const [importUrl, setImportUrl] = useState("");
+  const [importHtml, setImportHtml] = useState("");
+  const [importCss, setImportCss] = useState("");
+  const [isImporting, setIsImporting] = useState(false);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -472,6 +482,32 @@ export default function PageBuilder({ initialBlocks = [], initialHtml = "", init
                         {item.label}
                       </Button>
                     ))}
+                  </div>
+                </div>
+
+                <div className="border-t pt-4 mt-4">
+                  <h4 className="text-xs font-semibold text-muted-foreground mb-2 uppercase">외부 코드</h4>
+                  <div className="space-y-1">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full justify-start bg-accent/50"
+                      onClick={() => setShowImportModal(true)}
+                      data-testid="button-import-external"
+                    >
+                      <Download className="h-4 w-4 mr-2" />
+                      외부 코드 가져오기
+                    </Button>
+                    <div className="text-xs text-muted-foreground mt-2 space-y-1">
+                      <p className="flex items-center gap-1">
+                        <Globe className="h-3 w-3" />
+                        HTML/CSS 템플릿
+                      </p>
+                      <p className="flex items-center gap-1">
+                        <FileCode className="h-3 w-3" />
+                        무료 UI 코드
+                      </p>
+                    </div>
                   </div>
                 </div>
               </CardContent>
@@ -1562,6 +1598,90 @@ export default function PageBuilder({ initialBlocks = [], initialHtml = "", init
             </Button>
             <Button onClick={() => editingBlock && updateBlock(editingBlock)}>
               적용
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showImportModal} onOpenChange={setShowImportModal}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>외부 코드 가져오기</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              아래 추천 사이트에서 원하는 템플릿을 찾아 HTML/CSS 코드를 복사한 후 붙여넣으세요.
+            </p>
+
+            <div className="space-y-2">
+              <Label>HTML 코드</Label>
+              <Textarea
+                value={importHtml}
+                onChange={(e) => setImportHtml(e.target.value)}
+                placeholder="HTML 코드를 붙여넣으세요..."
+                className="font-mono text-sm min-h-[200px]"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>CSS 코드 (선택사항)</Label>
+              <Textarea
+                value={importCss}
+                onChange={(e) => setImportCss(e.target.value)}
+                placeholder="CSS 코드를 붙여넣으세요..."
+                className="font-mono text-sm min-h-[100px]"
+              />
+            </div>
+
+            <div className="bg-muted/50 p-3 rounded-md">
+              <h4 className="text-sm font-medium mb-2">추천 무료 템플릿 사이트</h4>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                <a href="https://html5up.net" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-primary hover:underline">
+                  <ExternalLink className="h-3 w-3" /> HTML5 UP
+                </a>
+                <a href="https://templated.co" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-primary hover:underline">
+                  <ExternalLink className="h-3 w-3" /> Templated
+                </a>
+                <a href="https://bootstrapmade.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-primary hover:underline">
+                  <ExternalLink className="h-3 w-3" /> BootstrapMade
+                </a>
+                <a href="https://codepen.io" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-primary hover:underline">
+                  <ExternalLink className="h-3 w-3" /> CodePen
+                </a>
+                <a href="https://uiverse.io" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-primary hover:underline">
+                  <ExternalLink className="h-3 w-3" /> UIverse
+                </a>
+                <a href="https://tailwindcomponents.com" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-primary hover:underline">
+                  <ExternalLink className="h-3 w-3" /> Tailwind Components
+                </a>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => {
+              setShowImportModal(false);
+              setImportHtml("");
+              setImportCss("");
+              setImportUrl("");
+            }}>
+              취소
+            </Button>
+            <Button
+              onClick={() => {
+                if (importHtml) {
+                  setHtmlContent((prev) => prev + "\n\n" + importHtml);
+                }
+                if (importCss) {
+                  setCssContent((prev) => prev + "\n\n" + importCss);
+                }
+                setShowImportModal(false);
+                setImportHtml("");
+                setImportCss("");
+                setImportUrl("");
+                setActiveTab("html");
+              }}
+              disabled={!importHtml}
+            >
+              코드 적용
             </Button>
           </DialogFooter>
         </DialogContent>

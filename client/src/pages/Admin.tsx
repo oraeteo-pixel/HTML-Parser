@@ -14,8 +14,11 @@ import {
   Loader2, Save, Plus, Trash2, Edit, Download, 
   Settings, FolderTree, Calendar, FileCode, Users, 
   LayoutDashboard, ChevronRight, ChevronDown, Search,
-  Home, Shield, FileText, Palette, Database, Menu, X
+  Home, Shield, FileText, Palette, Database, Menu, X,
+  Mail, Phone, Check, MessageSquare
 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import type { MadangCategory, PageContent, User } from "@shared/schema";
 import { Link } from "wouter";
 
@@ -85,6 +88,13 @@ export default function Admin() {
   const [selectedParentId, setSelectedParentId] = useState<number | null>(null);
   const [addingLevel, setAddingLevel] = useState<1 | 2 | 3>(1);
   const [editingPage, setEditingPage] = useState<PageContent | null>(null);
+  
+  const [selectedMembers, setSelectedMembers] = useState<Set<string>>(new Set());
+  const [editingMember, setEditingMember] = useState<User | null>(null);
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [showSmsModal, setShowSmsModal] = useState(false);
+  const [emailContent, setEmailContent] = useState({ subject: "", body: "" });
+  const [smsContent, setSmsContent] = useState("");
 
   const { data: savedSettings, isLoading: settingsLoading } = useQuery<Record<string, string>>({
     queryKey: ["/api/settings"],
@@ -187,6 +197,73 @@ export default function Admin() {
       toast({ title: "관리자 권한 변경 완료" });
     },
   });
+
+  const updateMemberMutation = useMutation({
+    mutationFn: async ({ userId, data }: { userId: string; data: { firstName?: string; lastName?: string; phone?: string; email?: string } }) => {
+      return apiRequest("PUT", `/api/admin/users/${userId}`, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      setEditingMember(null);
+      toast({ title: "회원 정보 수정 완료" });
+    },
+  });
+
+  const deleteMemberMutation = useMutation({
+    mutationFn: async (userId: string) => {
+      return apiRequest("DELETE", `/api/admin/users/${userId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/users"] });
+      setSelectedMembers(new Set());
+      toast({ title: "회원 삭제 완료" });
+    },
+  });
+
+  const handleSelectMember = (memberId: string, checked: boolean) => {
+    const newSet = new Set(selectedMembers);
+    if (checked) {
+      newSet.add(memberId);
+    } else {
+      newSet.delete(memberId);
+    }
+    setSelectedMembers(newSet);
+  };
+
+  const handleSelectAllMembers = (checked: boolean) => {
+    if (checked && members) {
+      setSelectedMembers(new Set(members.map(m => m.id)));
+    } else {
+      setSelectedMembers(new Set());
+    }
+  };
+
+  const getSelectedMembersData = () => {
+    if (!members) return [];
+    return members.filter(m => selectedMembers.has(m.id));
+  };
+
+  const handleSendEmail = () => {
+    const selectedData = getSelectedMembersData();
+    const emails = selectedData.map(m => m.email).filter(Boolean);
+    toast({ 
+      title: "이메일 발송 준비", 
+      description: `${emails.length}명의 회원에게 이메일을 발송합니다. (기능 준비 중)` 
+    });
+    setShowEmailModal(false);
+    setEmailContent({ subject: "", body: "" });
+  };
+
+  const handleSendSms = () => {
+    const selectedData = getSelectedMembersData();
+    const phones = selectedData.map(m => m.phone).filter(Boolean);
+    toast({ 
+      title: "문자 발송 준비", 
+      description: `${phones.length}명의 회원에게 문자를 발송합니다. (기능 준비 중)` 
+    });
+    setShowSmsModal(false);
+    setSmsContent("");
+  };
 
   const handleSaveSettings = async () => {
     try {
@@ -701,9 +778,24 @@ export default function Admin() {
 
   const renderMembers = () => (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold">회원 관리</h2>
-        <p className="text-muted-foreground">회원 목록을 관리하고 관리자 권한을 부여합니다.</p>
+      <div className="flex items-center justify-between flex-wrap gap-4">
+        <div>
+          <h2 className="text-2xl font-bold">회원 관리</h2>
+          <p className="text-muted-foreground">회원 목록을 관리하고 관리자 권한을 부여합니다.</p>
+        </div>
+        
+        {selectedMembers.size > 0 && (
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" onClick={() => setShowEmailModal(true)} data-testid="button-send-email">
+              <Mail className="h-4 w-4 mr-1" />
+              이메일 ({selectedMembers.size})
+            </Button>
+            <Button size="sm" variant="outline" onClick={() => setShowSmsModal(true)} data-testid="button-send-sms">
+              <MessageSquare className="h-4 w-4 mr-1" />
+              문자 ({selectedMembers.size})
+            </Button>
+          </div>
+        )}
       </div>
 
       <Card>
@@ -712,52 +804,92 @@ export default function Admin() {
             <table className="w-full text-sm">
               <thead className="bg-muted/50">
                 <tr className="border-b">
-                  <th className="text-left py-3 px-4 font-medium">이름</th>
-                  <th className="text-left py-3 px-4 font-medium">이메일</th>
-                  <th className="text-left py-3 px-4 font-medium">가입일</th>
-                  <th className="text-left py-3 px-4 font-medium">권한</th>
-                  <th className="text-left py-3 px-4 font-medium">관리</th>
+                  <th className="py-3 px-2 w-10">
+                    <Checkbox
+                      checked={members && members.length > 0 && selectedMembers.size === members.length}
+                      onCheckedChange={handleSelectAllMembers}
+                      data-testid="checkbox-select-all"
+                    />
+                  </th>
+                  <th className="text-left py-3 px-3 font-medium">이름</th>
+                  <th className="text-left py-3 px-3 font-medium">이메일</th>
+                  <th className="text-left py-3 px-3 font-medium">전화번호</th>
+                  <th className="text-left py-3 px-3 font-medium">가입일</th>
+                  <th className="text-left py-3 px-3 font-medium">관리자</th>
+                  <th className="text-left py-3 px-3 font-medium">관리</th>
                 </tr>
               </thead>
               <tbody>
                 {membersLoading ? (
                   <tr>
-                    <td colSpan={5} className="py-8 text-center">
+                    <td colSpan={7} className="py-8 text-center">
                       <Loader2 className="h-6 w-6 animate-spin mx-auto" />
                     </td>
                   </tr>
                 ) : members?.map((member) => (
-                  <tr key={member.id} className="border-b hover:bg-muted/30">
-                    <td className="py-3 px-4 font-medium">
-                      {member.firstName || member.lastName ? `${member.firstName || ''} ${member.lastName || ''}`.trim() : (member.email || '-')}
+                  <tr key={member.id} className={`border-b hover:bg-muted/30 ${selectedMembers.has(member.id) ? 'bg-muted/20' : ''}`}>
+                    <td className="py-3 px-2">
+                      <Checkbox
+                        checked={selectedMembers.has(member.id)}
+                        onCheckedChange={(checked) => handleSelectMember(member.id, checked as boolean)}
+                        data-testid={`checkbox-member-${member.id}`}
+                      />
                     </td>
-                    <td className="py-3 px-4 text-muted-foreground">{member.email || '-'}</td>
-                    <td className="py-3 px-4 text-muted-foreground">
+                    <td className="py-3 px-3 font-medium">
+                      {member.firstName || member.lastName ? `${member.firstName || ''} ${member.lastName || ''}`.trim() : '-'}
+                    </td>
+                    <td className="py-3 px-3 text-muted-foreground">{member.email || '-'}</td>
+                    <td className="py-3 px-3 text-muted-foreground">{member.phone || '-'}</td>
+                    <td className="py-3 px-3 text-muted-foreground">
                       {member.createdAt ? new Date(member.createdAt).toLocaleDateString('ko-KR') : '-'}
                     </td>
-                    <td className="py-3 px-4">
-                      {member.isAdmin === 1 ? (
-                        <Badge variant="default" className="bg-cyan-600">관리자</Badge>
-                      ) : (
-                        <Badge variant="secondary">일반</Badge>
-                      )}
-                    </td>
-                    <td className="py-3 px-4">
-                      {member.id !== user?.id && (
+                    <td className="py-3 px-3">
+                      {member.id !== user?.id ? (
                         <Switch
                           checked={member.isAdmin === 1}
                           onCheckedChange={(checked) => 
                             toggleAdminMutation.mutate({ userId: member.id, isAdmin: checked ? 1 : 0 })
                           }
                           disabled={toggleAdminMutation.isPending}
+                          data-testid={`switch-admin-${member.id}`}
                         />
+                      ) : (
+                        <Badge variant="default" className="bg-cyan-600">본인</Badge>
                       )}
+                    </td>
+                    <td className="py-3 px-3">
+                      <div className="flex gap-1">
+                        <Button 
+                          size="icon" 
+                          variant="ghost" 
+                          onClick={() => setEditingMember(member)}
+                          data-testid={`button-edit-member-${member.id}`}
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        {member.id !== user?.id && (
+                          <Button 
+                            size="icon" 
+                            variant="ghost" 
+                            className="text-destructive hover:text-destructive"
+                            onClick={() => {
+                              if (confirm('정말 이 회원을 삭제하시겠습니까?')) {
+                                deleteMemberMutation.mutate(member.id);
+                              }
+                            }}
+                            disabled={deleteMemberMutation.isPending}
+                            data-testid={`button-delete-member-${member.id}`}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 ))}
                 {(!members || members.length === 0) && !membersLoading && (
                   <tr>
-                    <td colSpan={5} className="py-8 text-center text-muted-foreground">
+                    <td colSpan={7} className="py-8 text-center text-muted-foreground">
                       회원이 없습니다.
                     </td>
                   </tr>
@@ -767,6 +899,136 @@ export default function Admin() {
           </div>
         </CardContent>
       </Card>
+
+      <Dialog open={!!editingMember} onOpenChange={(open) => !open && setEditingMember(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>회원 정보 수정</DialogTitle>
+            <DialogDescription>회원의 이름, 이메일, 전화번호를 수정합니다.</DialogDescription>
+          </DialogHeader>
+          {editingMember && (
+            <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>이름</Label>
+                  <Input
+                    value={editingMember.firstName || ''}
+                    onChange={(e) => setEditingMember({ ...editingMember, firstName: e.target.value })}
+                    placeholder="이름"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>성</Label>
+                  <Input
+                    value={editingMember.lastName || ''}
+                    onChange={(e) => setEditingMember({ ...editingMember, lastName: e.target.value })}
+                    placeholder="성"
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label>이메일</Label>
+                <Input
+                  value={editingMember.email || ''}
+                  onChange={(e) => setEditingMember({ ...editingMember, email: e.target.value })}
+                  placeholder="이메일"
+                  type="email"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>전화번호</Label>
+                <Input
+                  value={editingMember.phone || ''}
+                  onChange={(e) => setEditingMember({ ...editingMember, phone: e.target.value })}
+                  placeholder="010-0000-0000"
+                />
+              </div>
+            </div>
+          )}
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditingMember(null)}>취소</Button>
+            <Button 
+              onClick={() => editingMember && updateMemberMutation.mutate({
+                userId: editingMember.id,
+                data: {
+                  firstName: editingMember.firstName || undefined,
+                  lastName: editingMember.lastName || undefined,
+                  email: editingMember.email || undefined,
+                  phone: editingMember.phone || undefined,
+                }
+              })}
+              disabled={updateMemberMutation.isPending}
+            >
+              {updateMemberMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+              저장
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showEmailModal} onOpenChange={setShowEmailModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>이메일 작성</DialogTitle>
+            <DialogDescription>{selectedMembers.size}명의 회원에게 이메일을 발송합니다.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>제목</Label>
+              <Input
+                value={emailContent.subject}
+                onChange={(e) => setEmailContent({ ...emailContent, subject: e.target.value })}
+                placeholder="이메일 제목"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>내용</Label>
+              <Textarea
+                value={emailContent.body}
+                onChange={(e) => setEmailContent({ ...emailContent, body: e.target.value })}
+                placeholder="이메일 내용을 입력하세요"
+                rows={6}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowEmailModal(false)}>취소</Button>
+            <Button onClick={handleSendEmail}>
+              <Mail className="h-4 w-4 mr-2" />
+              발송
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showSmsModal} onOpenChange={setShowSmsModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>문자 작성</DialogTitle>
+            <DialogDescription>{selectedMembers.size}명의 회원에게 문자를 발송합니다.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>내용</Label>
+              <Textarea
+                value={smsContent}
+                onChange={(e) => setSmsContent(e.target.value)}
+                placeholder="문자 내용을 입력하세요 (90자 이내)"
+                rows={4}
+                maxLength={90}
+              />
+              <p className="text-xs text-muted-foreground">{smsContent.length}/90자</p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowSmsModal(false)}>취소</Button>
+            <Button onClick={handleSendSms}>
+              <MessageSquare className="h-4 w-4 mr-2" />
+              발송
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 

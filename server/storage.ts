@@ -46,6 +46,8 @@ export interface IStorage {
   
   getAllUsers(): Promise<User[]>;
   updateUserAdmin(userId: string, isAdmin: number): Promise<User | null>;
+  updateUser(userId: string, data: { firstName?: string; lastName?: string; phone?: string; email?: string }): Promise<User | null>;
+  deleteUser(userId: string): Promise<boolean>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -430,6 +432,16 @@ export class DatabaseStorage implements IStorage {
   async updateUserAdmin(userId: string, isAdmin: number): Promise<User | null> {
     const [updated] = await db.update(users).set({ isAdmin }).where(eq(users.id, userId)).returning();
     return updated || null;
+  }
+
+  async updateUser(userId: string, data: { firstName?: string; lastName?: string; phone?: string; email?: string }): Promise<User | null> {
+    const [updated] = await db.update(users).set({ ...data, updatedAt: new Date() }).where(eq(users.id, userId)).returning();
+    return updated || null;
+  }
+
+  async deleteUser(userId: string): Promise<boolean> {
+    await db.delete(users).where(eq(users.id, userId));
+    return true;
   }
 }
 

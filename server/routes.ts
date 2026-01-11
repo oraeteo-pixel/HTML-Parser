@@ -626,6 +626,49 @@ export async function registerRoutes(
     }
   });
 
+  app.put("/api/admin/users/:id", isAuthenticated, async (req, res) => {
+    try {
+      const currentUserId = (req.user as any)?.claims?.sub;
+      const currentUser = await storage.getUser(currentUserId);
+      if (!currentUser || currentUser.isAdmin !== 1) {
+        return res.status(403).json({ message: "관리자만 접근할 수 있습니다." });
+      }
+
+      const { firstName, lastName, phone, email } = req.body;
+      const targetUserId = req.params.id;
+
+      const updatedUser = await storage.updateUser(targetUserId, { firstName, lastName, phone, email });
+      if (!updatedUser) {
+        return res.status(404).json({ message: "사용자를 찾을 수 없습니다." });
+      }
+      res.json(updatedUser);
+    } catch (err) {
+      console.error('User update error:', err);
+      res.status(500).json({ message: "회원 정보 수정 중 오류가 발생했습니다." });
+    }
+  });
+
+  app.delete("/api/admin/users/:id", isAuthenticated, async (req, res) => {
+    try {
+      const currentUserId = (req.user as any)?.claims?.sub;
+      const currentUser = await storage.getUser(currentUserId);
+      if (!currentUser || currentUser.isAdmin !== 1) {
+        return res.status(403).json({ message: "관리자만 접근할 수 있습니다." });
+      }
+
+      const targetUserId = req.params.id;
+      if (targetUserId === currentUserId) {
+        return res.status(400).json({ message: "자신의 계정은 삭제할 수 없습니다." });
+      }
+
+      await storage.deleteUser(targetUserId);
+      res.json({ success: true });
+    } catch (err) {
+      console.error('User delete error:', err);
+      res.status(500).json({ message: "회원 삭제 중 오류가 발생했습니다." });
+    }
+  });
+
   // === Page Contents Routes ===
   
   app.get("/api/admin/pages", isAuthenticated, async (req, res) => {

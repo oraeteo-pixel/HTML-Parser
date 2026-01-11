@@ -1194,6 +1194,7 @@ export default function Admin() {
                     <th className="text-left py-3 px-4 font-medium">이름</th>
                     <th className="text-left py-3 px-4 font-medium">슬러그</th>
                     <th className="text-left py-3 px-4 font-medium">타입</th>
+                    <th className="text-left py-3 px-4 font-medium">발행</th>
                     <th className="text-left py-3 px-4 font-medium">수정일</th>
                     <th className="text-left py-3 px-4 font-medium">관리</th>
                   </tr>
@@ -1201,7 +1202,7 @@ export default function Admin() {
                 <tbody>
                   {layoutsLoading ? (
                     <tr>
-                      <td colSpan={5} className="py-8 text-center">
+                      <td colSpan={6} className="py-8 text-center">
                         <Loader2 className="h-6 w-6 animate-spin mx-auto" />
                       </td>
                     </tr>
@@ -1213,6 +1214,18 @@ export default function Admin() {
                         <Badge variant={layout.slug.startsWith('madang') ? 'default' : 'secondary'}>
                           {layout.slug.startsWith('madang') ? '마당' : '전자책'}
                         </Badge>
+                      </td>
+                      <td className="py-3 px-4">
+                        <Switch
+                          checked={layout.isPublished === 1}
+                          onCheckedChange={(checked) => {
+                            updateLayoutMutation.mutate({
+                              id: layout.id,
+                              data: { isPublished: checked ? 1 : 0 }
+                            });
+                          }}
+                          data-testid={`switch-publish-layout-${layout.id}`}
+                        />
                       </td>
                       <td className="py-3 px-4 text-muted-foreground">
                         {layout.updatedAt ? new Date(layout.updatedAt).toLocaleDateString('ko-KR') : '-'}
@@ -1247,7 +1260,7 @@ export default function Admin() {
                   ))}
                   {(!layouts || layouts.length === 0) && !layoutsLoading && (
                     <tr>
-                      <td colSpan={5} className="py-8 text-center text-muted-foreground">
+                      <td colSpan={6} className="py-8 text-center text-muted-foreground">
                         레이아웃이 없습니다. 새 레이아웃을 만들어보세요.
                       </td>
                     </tr>

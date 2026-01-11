@@ -4,6 +4,12 @@
 @tailwind components;
 @tailwind utilities;
 
+html, body {
+  overflow-x: hidden;
+  width: 100%;
+  max-width: 100vw;
+}
+
 :root {
   --font-display: 'Nanum Gothic', sans-serif;
   --font-body: 'Noto Sans KR', sans-serif;

@@ -1225,41 +1225,8 @@ export default function Admin() {
 
       <Card>
         <CardHeader>
-          <CardTitle>현재 적용된 로고</CardTitle>
-          <CardDescription>홈페이지에 표시되는 로고입니다.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-center p-4 border-2 border-slate-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-900">
-            {logoImageUrl ? (
-              <img 
-                src={logoImageUrl} 
-                alt="현재 로고" 
-                className="h-10 w-auto max-w-[200px] object-contain"
-              />
-            ) : (
-              <div className="flex items-center gap-3" style={{ fontFamily: `${settings.logoFontFamily}, sans-serif` }}>
-                <svg viewBox="0 0 40 40" className="h-12 w-12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <circle cx="20" cy="20" r="18" stroke={settings.logoColor} strokeWidth="2.5" fill="none"/>
-                  <circle cx="20" cy="20" r="14" stroke={settings.logoColor} strokeWidth="2.5" fill="none"/>
-                  <circle cx="20" cy="20" r="10" stroke={settings.logoColor} strokeWidth="2.5" fill="none"/>
-                  <circle cx="20" cy="20" r="6" stroke={settings.logoColor} strokeWidth="2.5" fill="none"/>
-                  <circle cx="20" cy="20" r="2" fill={settings.logoColor}/>
-                </svg>
-                <div className="flex flex-col leading-tight">
-                  {settings.logoText && <span className="font-bold text-2xl" style={{ color: settings.logoColor }}>{settings.logoText}</span>}
-                  {settings.logoTextKorean && <span className="font-bold text-3xl" style={{ color: settings.logoColor }}>{settings.logoTextKorean}</span>}
-                  {settings.logoTextHanja && <span className="text-sm" style={{ color: settings.logoColor }}>{settings.logoTextHanja}</span>}
-                </div>
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
           <CardTitle>로고 편집기</CardTitle>
-          <CardDescription>갤러리에서 로고를 드래그하여 편집 영역에 놓으세요. 크기, 선명도, 색상을 조절할 수 있습니다.</CardDescription>
+          <CardDescription>갤러리에서 로고를 선택하고, 크기/선명도/색상을 조절한 후 홈페이지에 적용하세요.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -1463,191 +1430,25 @@ export default function Admin() {
               </div>
             </div>
           </div>
-        </CardContent>
-      </Card>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>로고 스타일 프리셋</CardTitle>
-          <CardDescription>미리 정의된 스타일 중 하나를 선택하세요.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {logoPresets.map((preset) => (
-              <button
-                key={preset.id}
-                onClick={() => applyPreset(preset)}
-                className="p-4 border rounded-lg text-left hover:bg-muted/50 transition-colors"
-                data-testid={`preset-${preset.id}`}
-              >
-                <div className="text-lg font-bold text-primary mb-1" style={{ color: settings.logoColor }}>
-                  {preset.text} {preset.korean} {preset.hanja} {preset.suffix}
-                </div>
-                <div className="text-sm text-muted-foreground">{preset.name}</div>
-              </button>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardContent className="p-6 space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="logoText">영문 텍스트</Label>
-              <div className="flex gap-2">
-                <Input
-                  id="logoText"
-                  value={settings.logoText}
-                  onChange={(e) => setSettings({ ...settings, logoText: e.target.value })}
-                  placeholder="ORAE"
-                  className="flex-1"
-                  data-testid="input-logo-text"
-                />
-                <select
-                  value={settings.logoTextSize}
-                  onChange={(e) => setSettings({ ...settings, logoTextSize: e.target.value })}
-                  className="w-20 h-10 px-2 rounded-md border border-input bg-background text-sm"
+          <div className="border-t pt-6">
+            <Label className="text-base font-semibold mb-3 block">텍스트 프리셋</Label>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              {logoPresets.map((preset) => (
+                <button
+                  key={preset.id}
+                  onClick={() => applyPreset(preset)}
+                  className="p-2 border rounded-lg text-left hover:bg-muted/50 transition-colors text-sm"
+                  data-testid={`preset-${preset.id}`}
                 >
-                  <option value="xs">XS</option>
-                  <option value="sm">SM</option>
-                  <option value="base">M</option>
-                  <option value="lg">LG</option>
-                  <option value="xl">XL</option>
-                  <option value="2xl">2XL</option>
-                  <option value="3xl">3XL</option>
-                </select>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="logoTextKorean">한글 텍스트</Label>
-              <div className="flex gap-2">
-                <Input
-                  id="logoTextKorean"
-                  value={settings.logoTextKorean}
-                  onChange={(e) => setSettings({ ...settings, logoTextKorean: e.target.value })}
-                  placeholder="오래"
-                  className="flex-1"
-                  data-testid="input-logo-korean"
-                />
-                <select
-                  value={settings.logoTextKoreanSize}
-                  onChange={(e) => setSettings({ ...settings, logoTextKoreanSize: e.target.value })}
-                  className="w-20 h-10 px-2 rounded-md border border-input bg-background text-sm"
-                >
-                  <option value="xs">XS</option>
-                  <option value="sm">SM</option>
-                  <option value="base">M</option>
-                  <option value="lg">LG</option>
-                  <option value="xl">XL</option>
-                  <option value="2xl">2XL</option>
-                  <option value="3xl">3XL</option>
-                </select>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="logoTextHanja">한자 텍스트</Label>
-              <div className="flex gap-2">
-                <Input
-                  id="logoTextHanja"
-                  value={settings.logoTextHanja}
-                  onChange={(e) => setSettings({ ...settings, logoTextHanja: e.target.value })}
-                  placeholder="悠久"
-                  className="flex-1"
-                  data-testid="input-logo-hanja"
-                />
-                <select
-                  value={settings.logoTextHanjaSize}
-                  onChange={(e) => setSettings({ ...settings, logoTextHanjaSize: e.target.value })}
-                  className="w-20 h-10 px-2 rounded-md border border-input bg-background text-sm"
-                >
-                  <option value="xs">XS</option>
-                  <option value="sm">SM</option>
-                  <option value="base">M</option>
-                  <option value="lg">LG</option>
-                  <option value="xl">XL</option>
-                  <option value="2xl">2XL</option>
-                  <option value="3xl">3XL</option>
-                </select>
-              </div>
+                  <div className="font-bold" style={{ color: settings.logoColor }}>
+                    {preset.korean || preset.text}
+                  </div>
+                  <div className="text-xs text-muted-foreground">{preset.name}</div>
+                </button>
+              ))}
             </div>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="logoColor">로고 색상</Label>
-              <div className="flex gap-2">
-                <Input
-                  id="logoColor"
-                  type="color"
-                  value={settings.logoColor}
-                  onChange={(e) => setSettings({ ...settings, logoColor: e.target.value })}
-                  className="w-16 h-10 p-1"
-                  data-testid="input-logo-color"
-                />
-                <Input
-                  value={settings.logoColor}
-                  onChange={(e) => setSettings({ ...settings, logoColor: e.target.value })}
-                  placeholder="#0d7377"
-                  className="flex-1"
-                />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="logoFontFamily">폰트</Label>
-              <select
-                id="logoFontFamily"
-                value={settings.logoFontFamily}
-                onChange={(e) => setSettings({ ...settings, logoFontFamily: e.target.value })}
-                className="w-full h-10 px-3 rounded-md border border-input bg-background"
-                data-testid="select-logo-font"
-              >
-                <option value="Noto Sans KR">Noto Sans KR (고딕)</option>
-                <option value="Nanum Gothic">Nanum Gothic (나눔고딕)</option>
-                <option value="Nanum Myeongjo">Nanum Myeongjo (나눔명조)</option>
-                <option value="serif">명조체 (Serif)</option>
-                <option value="sans-serif">고딕체 (Sans-Serif)</option>
-              </select>
-            </div>
-          </div>
-
-          <div className="space-y-2">
-            <Label>미리보기</Label>
-            <div className="p-4 border rounded-md bg-white dark:bg-card flex items-center gap-3">
-              <svg viewBox="0 0 40 40" className="h-10 w-10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="20" cy="20" r="18" stroke={settings.logoColor} strokeWidth="2.5" fill="none"/>
-                <circle cx="20" cy="20" r="14" stroke={settings.logoColor} strokeWidth="2.5" fill="none"/>
-                <circle cx="20" cy="20" r="10" stroke={settings.logoColor} strokeWidth="2.5" fill="none"/>
-                <circle cx="20" cy="20" r="6" stroke={settings.logoColor} strokeWidth="2.5" fill="none"/>
-                <circle cx="20" cy="20" r="2" fill={settings.logoColor}/>
-                <line x1="20" y1="2" x2="20" y2="10" stroke={settings.logoColor} strokeWidth="2.5"/>
-                <line x1="6" y1="12" x2="12" y2="16" stroke={settings.logoColor} strokeWidth="2.5"/>
-                <line x1="28" y1="16" x2="34" y2="12" stroke={settings.logoColor} strokeWidth="2.5"/>
-                <line x1="8" y1="28" x2="14" y2="24" stroke={settings.logoColor} strokeWidth="2.5"/>
-                <line x1="26" y1="24" x2="32" y2="28" stroke={settings.logoColor} strokeWidth="2.5"/>
-              </svg>
-              <div className="flex flex-col leading-tight" style={{ fontFamily: settings.logoFontFamily }}>
-                {settings.logoText && (
-                  <span className="font-bold" style={{ color: settings.logoColor, fontSize: getSizeValue(settings.logoTextSize) }}>{settings.logoText}</span>
-                )}
-                {settings.logoTextKorean && (
-                  <span className="font-medium" style={{ color: settings.logoColor, fontSize: getSizeValue(settings.logoTextKoreanSize) }}>{settings.logoTextKorean}</span>
-                )}
-                {settings.logoTextHanja && (
-                  <span style={{ color: settings.logoColor, fontSize: getSizeValue(settings.logoTextHanjaSize) }}>{settings.logoTextHanja}</span>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <Button onClick={handleSaveSettings} disabled={saveMutation.isPending} data-testid="button-save-logo">
-            {saveMutation.isPending ? (
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            ) : (
-              <Save className="h-4 w-4 mr-2" />
-            )}
-            저장
-          </Button>
         </CardContent>
       </Card>
     </div>

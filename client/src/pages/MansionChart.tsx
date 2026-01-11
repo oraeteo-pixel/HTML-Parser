@@ -256,7 +256,9 @@ export default function MansionChart() {
                   cells.push(
                     <div 
                       key={`${lower}-${upper}`}
-                      className={`text-center p-1 border rounded text-xs cursor-pointer transition-all ${
+                      className={`text-center p-1 border rounded text-xs cursor-pointer transition-all flex flex-col items-center ${
+                        showSymbols ? "justify-start" : "justify-center"
+                      } ${
                         isCurrentCell 
                           ? "border-yellow-500 bg-yellow-400/50 text-yellow-900 dark:text-yellow-100 font-bold" 
                           : isCenter
@@ -273,7 +275,7 @@ export default function MansionChart() {
                           <span className="text-sm">{lowerSymbol}</span>
                         </div>
                       )}
-                      <div className="font-bold text-[10px] mt-0.5">{hexagram?.hanja || (isCenter ? "中" : `${trigramNames[upper]}${trigramNames[lower]}`)}</div>
+                      <div className={`font-bold text-[10px] ${showSymbols ? "mt-0.5" : ""}`}>{hexagram?.hanja || (isCenter ? "中" : `${trigramNames[upper]}${trigramNames[lower]}`)}</div>
                     </div>
                   );
                 }

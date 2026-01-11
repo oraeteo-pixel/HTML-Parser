@@ -511,14 +511,15 @@ export default function Admin() {
 
   const activateLogoMutation = useMutation({
     mutationFn: async (id: number) => {
-      return apiRequest("PUT", `/api/admin/logos/${id}/activate`);
+      const res = await apiRequest("PUT", `/api/admin/logos/${id}/activate`);
+      return res.json();
     },
     onSuccess: async (data: any) => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/logos"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/settings"] });
       if (data?.objectPath) {
         setLogoImageUrl(data.objectPath);
         await saveMutation.mutateAsync({ key: "logoImageUrl", value: data.objectPath });
+        queryClient.invalidateQueries({ queryKey: ["/api/settings"] });
       }
       toast({ title: "활성 로고가 변경되었습니다." });
     },

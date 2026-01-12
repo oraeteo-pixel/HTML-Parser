@@ -395,8 +395,8 @@ html, body {
 }
 
 .slim-info-bar {
-  background: hsl(0 0% 88%);
-  border: 1px solid hsl(0 0% 78%);
+  background: hsl(210 12% 78%);
+  border: 1px solid hsl(210 12% 68%);
   padding: 0.35rem 0.5rem;
   font-family: var(--font-korean);
   font-size: 0.75rem;
@@ -410,8 +410,18 @@ html, body {
 }
 
 .dark .slim-info-bar {
-  background: hsl(215 30% 20%);
-  border: 1px solid hsl(215 30% 30%);
+  background: hsl(215 30% 25%);
+  border: 1px solid hsl(215 30% 35%);
+}
+
+.talisman-box {
+  background: hsl(210 15% 60%);
+  border: 1px solid hsl(210 15% 50%);
+}
+
+.dark .talisman-box {
+  background: hsl(215 35% 18%);
+  border: 1px solid hsl(215 35% 28%);
 }
 
 .slim-badge-navy {

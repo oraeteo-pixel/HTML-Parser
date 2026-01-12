@@ -588,7 +588,7 @@ export function Calendar() {
         {/* Talisman slide-down - only for hwanggeuk */}
         {calType === "hw" && !infoMansion.isZunkong && (
           <div 
-            className={`overflow-hidden transition-all duration-300 ease-in-out bg-card border border-border rounded-lg ${showTalisman ? 'max-h-[400px] opacity-100 p-4 my-2' : 'max-h-0 opacity-0 p-0 my-0'}`}
+            className={`overflow-hidden transition-all duration-300 ease-in-out talisman-box rounded-lg ${showTalisman ? 'max-h-[400px] opacity-100 p-4 my-2' : 'max-h-0 opacity-0 p-0 my-0'}`}
           >
             <div className="flex flex-col items-center">
               <img 

@@ -156,7 +156,71 @@ export function Calendar() {
     return 0;
   }, [calType, hwMonthData, solarYear, solarMonth]);
 
-  const blanks = Array.from({ length: firstDayOfWeek });
+  // 이전 달 데이터 (빈칸 채우기용)
+  const prevMonthData = useMemo(() => {
+    if (calType === "hw") {
+      const prevHwMonth = hwMonth === 1 ? 12 : hwMonth - 1;
+      const prevHwYear = hwMonth === 1 ? hwYear - 1 : hwYear;
+      if (prevHwYear >= 1989) {
+        return getHwanggeukMonthData(prevHwYear, prevHwMonth);
+      }
+    } else if (calType === "df") {
+      const prevSolarMonth = solarMonth === 1 ? 12 : solarMonth - 1;
+      const prevSolarYear = solarMonth === 1 ? solarYear - 1 : solarYear;
+      const daysInPrevMonth = new Date(prevSolarYear, prevSolarMonth, 0).getDate();
+      const result = [];
+      for (let d = 1; d <= daysInPrevMonth; d++) {
+        const solarDate = new Date(prevSolarYear, prevSolarMonth - 1, d);
+        const dayData = getCalendarDayData(prevSolarYear, prevSolarMonth, d);
+        result.push({ solarDate, dayData, solarDay: d });
+      }
+      return result;
+    }
+    return [];
+  }, [calType, hwYear, hwMonth, solarYear, solarMonth]);
+
+  // 다음 달 데이터 (빈칸 채우기용)
+  const nextMonthData = useMemo(() => {
+    if (calType === "hw") {
+      const nextHwMonth = hwMonth === 12 ? 1 : hwMonth + 1;
+      const nextHwYear = hwMonth === 12 ? hwYear + 1 : hwYear;
+      if (nextHwYear <= 2050) {
+        return getHwanggeukMonthData(nextHwYear, nextHwMonth);
+      }
+    } else if (calType === "df") {
+      const nextSolarMonth = solarMonth === 12 ? 1 : solarMonth + 1;
+      const nextSolarYear = solarMonth === 12 ? solarYear + 1 : solarYear;
+      const daysInNextMonth = new Date(nextSolarYear, nextSolarMonth, 0).getDate();
+      const result = [];
+      for (let d = 1; d <= daysInNextMonth; d++) {
+        const solarDate = new Date(nextSolarYear, nextSolarMonth - 1, d);
+        const dayData = getCalendarDayData(nextSolarYear, nextSolarMonth, d);
+        result.push({ solarDate, dayData, solarDay: d });
+      }
+      return result;
+    }
+    return [];
+  }, [calType, hwYear, hwMonth, solarYear, solarMonth]);
+
+  // 이전 달 빈칸에 표시할 날짜들
+  const prevMonthBlanks = useMemo(() => {
+    if (firstDayOfWeek === 0) return [];
+    const prevDays = prevMonthData.slice(-firstDayOfWeek);
+    return prevDays;
+  }, [firstDayOfWeek, prevMonthData]);
+
+  // 다음 달 빈칸에 표시할 날짜 개수 계산
+  const totalCellsInMonth = useMemo(() => {
+    const currentMonthDays = calType === "hw" ? hwMonthData.length : solarMonthData.length;
+    const totalCells = firstDayOfWeek + currentMonthDays;
+    const remainder = totalCells % 7;
+    return remainder === 0 ? 0 : 7 - remainder;
+  }, [calType, hwMonthData.length, solarMonthData.length, firstDayOfWeek]);
+
+  const nextMonthBlanks = useMemo(() => {
+    if (totalCellsInMonth === 0) return [];
+    return nextMonthData.slice(0, totalCellsInMonth);
+  }, [totalCellsInMonth, nextMonthData]);
 
   const displayDate = useMemo(() => {
     if (selectedDay) {
@@ -670,9 +734,45 @@ export function Calendar() {
       </div>
 
       <div className="calendar-grid">
-        {blanks.map((_, i) => (
-          <div key={`blank-${i}`} className="calendar-cell inactive" />
-        ))}
+        {/* 이전 달 날짜 */}
+        {calType === "hw" ? (
+          prevMonthBlanks.map((dayInfo: any, i: number) => {
+            const { hwDay, solarDate, dayData } = dayInfo;
+            const hwDate = getHwanggeukDate(solarDate.getFullYear(), solarDate.getMonth() + 1, solarDate.getDate());
+            const cellMansion = getHwanggeuk28Mansion(hwDate.year, hwDate.month, hwDate.day);
+            return (
+              <div 
+                key={`prev-hw-${i}`} 
+                className="calendar-cell inactive opacity-40"
+              >
+                <div className="flex justify-between items-start mb-1">
+                  <span className="day-number text-muted-foreground">{hwDay}</span>
+                  <span className="solar-day text-muted-foreground">{solarDate.getDate()}</span>
+                </div>
+                <div className="ganji-box mb-1 opacity-60">{dayData.dayGanZhi}</div>
+                <div className="flex-1 flex flex-col justify-end space-y-0.5">
+                  <div className="mansion-info opacity-60">{cellMansion.mansion},{cellMansion.general}</div>
+                </div>
+              </div>
+            );
+          })
+        ) : (
+          prevMonthBlanks.map((dayInfo: any, i: number) => {
+            const { solarDate, dayData, solarDay } = dayInfo;
+            return (
+              <div 
+                key={`prev-solar-${i}`} 
+                className="calendar-cell inactive opacity-40"
+              >
+                <div className="flex justify-between items-start mb-1">
+                  <span className="day-number text-muted-foreground">{solarDay}</span>
+                  <span className="solar-day text-purple-400">{dayData.lunarDay}</span>
+                </div>
+                <div className="ganji-box mb-1 opacity-60">{dayData.dayGanZhi}</div>
+              </div>
+            );
+          })
+        )}
         
         {calType === "hw" ? (
           hwMonthData.map((dayInfo) => {
@@ -783,6 +883,46 @@ export function Calendar() {
                     </span>
                   </div>
                 )}
+              </div>
+            );
+          })
+        )}
+        
+        {/* 다음 달 날짜 */}
+        {calType === "hw" ? (
+          nextMonthBlanks.map((dayInfo: any, i: number) => {
+            const { hwDay, solarDate, dayData } = dayInfo;
+            const hwDate = getHwanggeukDate(solarDate.getFullYear(), solarDate.getMonth() + 1, solarDate.getDate());
+            const cellMansion = getHwanggeuk28Mansion(hwDate.year, hwDate.month, hwDate.day);
+            return (
+              <div 
+                key={`next-hw-${i}`} 
+                className="calendar-cell inactive opacity-40"
+              >
+                <div className="flex justify-between items-start mb-1">
+                  <span className="day-number text-muted-foreground">{hwDay}</span>
+                  <span className="solar-day text-muted-foreground">{solarDate.getDate()}</span>
+                </div>
+                <div className="ganji-box mb-1 opacity-60">{dayData.dayGanZhi}</div>
+                <div className="flex-1 flex flex-col justify-end space-y-0.5">
+                  <div className="mansion-info opacity-60">{cellMansion.mansion},{cellMansion.general}</div>
+                </div>
+              </div>
+            );
+          })
+        ) : (
+          nextMonthBlanks.map((dayInfo: any, i: number) => {
+            const { solarDate, dayData, solarDay } = dayInfo;
+            return (
+              <div 
+                key={`next-solar-${i}`} 
+                className="calendar-cell inactive opacity-40"
+              >
+                <div className="flex justify-between items-start mb-1">
+                  <span className="day-number text-muted-foreground">{solarDay}</span>
+                  <span className="solar-day text-purple-400">{dayData.lunarDay}</span>
+                </div>
+                <div className="ganji-box mb-1 opacity-60">{dayData.dayGanZhi}</div>
               </div>
             );
           })

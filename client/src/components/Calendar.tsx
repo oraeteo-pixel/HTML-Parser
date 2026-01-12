@@ -664,7 +664,7 @@ export function Calendar() {
           </div>
         )}
 
-        <div className="flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap py-0.5 sm:py-2">
+        <div className="flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap py-1 sm:py-2 bg-gray-100 dark:bg-gray-800 rounded">
           <Button variant="ghost" size="icon" className="h-5 w-5 sm:h-8 sm:w-8" onClick={handlePrevYear} data-testid="button-prev-year">
             <ChevronLeft className="h-3 w-3 sm:h-4 sm:w-4" />
           </Button>
@@ -747,7 +747,7 @@ export function Calendar() {
             return (
               <div 
                 key={`prev-hw-${i}`} 
-                className="calendar-cell group cursor-pointer bg-gray-50 dark:bg-gray-900/30"
+                className="calendar-cell group cursor-pointer bg-orange-50 dark:bg-orange-900/20"
                 onClick={() => handleDayClick(solarDate)}
               >
                 <div className="flex justify-between items-start mb-1">
@@ -781,7 +781,7 @@ export function Calendar() {
             return (
               <div 
                 key={`prev-solar-${i}`} 
-                className="calendar-cell group cursor-pointer bg-gray-50 dark:bg-gray-900/30"
+                className="calendar-cell group cursor-pointer bg-orange-50 dark:bg-orange-900/20"
                 onClick={() => handleDayClick(solarDate)}
               >
                 <div className="flex justify-between items-start mb-1">
@@ -928,7 +928,7 @@ export function Calendar() {
             return (
               <div 
                 key={`next-hw-${i}`} 
-                className="calendar-cell group cursor-pointer bg-gray-50 dark:bg-gray-900/30"
+                className="calendar-cell group cursor-pointer bg-orange-50 dark:bg-orange-900/20"
                 onClick={() => handleDayClick(solarDate)}
               >
                 <div className="flex justify-between items-start mb-1">
@@ -962,7 +962,7 @@ export function Calendar() {
             return (
               <div 
                 key={`next-solar-${i}`} 
-                className="calendar-cell group cursor-pointer bg-gray-50 dark:bg-gray-900/30"
+                className="calendar-cell group cursor-pointer bg-orange-50 dark:bg-orange-900/20"
                 onClick={() => handleDayClick(solarDate)}
               >
                 <div className="flex justify-between items-start mb-1">

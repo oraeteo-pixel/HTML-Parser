@@ -649,10 +649,7 @@ export default function Madang() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <MessageSquare className="h-8 w-8 orae-navy" />
-              <div>
-                <h1 className="text-xl font-bold orae-navy" data-testid="text-madang-title">{pageInfo?.title || "마당"}</h1>
-                <p className="text-sm text-muted-foreground">{pageInfo?.content || "오리알터닷컴 커뮤니티"}</p>
-              </div>
+              <h1 className="text-xl font-bold orae-navy" data-testid="text-madang-title">{pageInfo?.title || "마당"}</h1>
             </div>
             {!showEditor && (
               <Button

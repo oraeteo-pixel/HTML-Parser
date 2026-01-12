@@ -276,10 +276,7 @@ export default function EbookPage() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <BookOpen className="h-8 w-8 orae-navy" />
-              <div>
-                <h1 className="text-xl font-bold orae-navy" data-testid="text-ebook-title">{pageInfo?.title || "전자책"}</h1>
-                <p className="text-sm text-muted-foreground">{pageInfo?.content || "오리알터닷컴 전자책 컬렉션"}</p>
-              </div>
+              <h1 className="text-xl font-bold orae-navy" data-testid="text-ebook-title">{pageInfo?.title || "현무경"}</h1>
             </div>
             {!showEditor && (
               <Button

@@ -122,13 +122,13 @@ export function Navigation() {
   };
 
   return (
-    <div className="bg-gray-100 dark:bg-gray-800 border-b border-border" style={{ boxShadow: "0 0 10px #ddd" }}>
+    <div className="sticky top-0 z-50 w-full bg-gray-100 dark:bg-gray-800 border-b border-border" style={{ boxShadow: "0 0 10px #ddd" }}>
       <div className="w-full max-w-[990px] mx-auto px-2">
         <div className="h-[56px] sm:h-[70px] flex items-center justify-between relative">
           <div className="flex items-center gap-2">
             {logoImageUrl ? (
               <div 
-                className="flex items-center px-1 rounded"
+                className="flex items-center px-1 rounded bg-gray-100 dark:bg-gray-800"
                 style={{ 
                   gap: `${logoLogoGap}px`,
                 }}
@@ -161,7 +161,7 @@ export function Navigation() {
                 )}
               </div>
             ) : (
-              <div className="flex items-center gap-2 px-1 rounded">
+              <div className="flex items-center gap-2 px-1 rounded bg-gray-100 dark:bg-gray-800">
                 <a href="https://cafe.daum.net/pusan7777/5yGr/68" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity" data-testid="link-logo">
                   <svg viewBox="0 0 40 40" className="h-8 w-8 sm:h-10 sm:w-10" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="20" cy="20" r="18" stroke={logoColor} strokeWidth="2.5" fill="none"/>

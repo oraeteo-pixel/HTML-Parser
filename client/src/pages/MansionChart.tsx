@@ -194,13 +194,13 @@ export default function MansionChart() {
                   : 'translate(0, -50%)'
           }}
         >
-          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl border-2 border-[hsl(var(--orae-navy))] p-2">
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl border-2 border-[hsl(var(--orae-navy))] p-1.5 sm:p-2 w-[100px] sm:w-[130px]">
             <img
               src={`/img/${MANSION_IMAGES[hoveredMansion]}.jpg`}
               alt={`${hoveredMansion} ${MANSION_GENERALS[hoveredMansion]} 부적`}
-              className="w-32 h-auto object-contain"
+              className="w-full h-auto object-contain"
             />
-            <div className="text-center mt-1 text-sm font-bold orae-navy">
+            <div className="text-center mt-1 text-[10px] sm:text-sm font-bold orae-navy">
               {hoveredMansion}宿 {MANSION_GENERALS[hoveredMansion]}
             </div>
           </div>

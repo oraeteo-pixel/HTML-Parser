@@ -128,7 +128,7 @@ export function Navigation() {
           <div className="flex items-center gap-2">
             {logoImageUrl ? (
               <div 
-                className="flex items-center px-1 rounded"
+                className="flex items-center px-1 rounded bg-gray-100 dark:bg-gray-800"
                 style={{ 
                   backgroundColor: logoBackgroundColor !== "transparent" ? logoBackgroundColor : undefined,
                   gap: `${logoLogoGap}px`,
@@ -162,7 +162,7 @@ export function Navigation() {
                 )}
               </div>
             ) : (
-              <>
+              <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 px-1 rounded">
                 <a href="https://cafe.daum.net/pusan7777/5yGr/68" target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity" data-testid="link-logo">
                   <svg viewBox="0 0 40 40" className="h-8 w-8 sm:h-10 sm:w-10" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <circle cx="20" cy="20" r="18" stroke={logoColor} strokeWidth="2.5" fill="none"/>
@@ -184,7 +184,7 @@ export function Navigation() {
                     {logoTextHanja && <span style={{ color: logoColor, fontSize: getSizeValue(logoTextHanjaSize) }}>{logoTextHanja}</span>}
                   </div>
                 </Link>
-              </>
+              </div>
             )}
           </div>
 

@@ -738,20 +738,37 @@ export function Calendar() {
         {calType === "hw" ? (
           prevMonthBlanks.map((dayInfo: any, i: number) => {
             const { hwDay, solarDate, dayData } = dayInfo;
+            const isSun = solarDate.getDay() === 0;
+            const isSat = solarDate.getDay() === 6;
             const hwDate = getHwanggeukDate(solarDate.getFullYear(), solarDate.getMonth() + 1, solarDate.getDate());
             const cellMansion = getHwanggeuk28Mansion(hwDate.year, hwDate.month, hwDate.day);
+            const cellTrigram = get8Trigram(solarDate.getFullYear(), solarDate.getMonth() + 1, solarDate.getDate());
+            const cell81 = getPositionDaegungForDate(solarDate.getFullYear(), solarDate.getMonth() + 1, solarDate.getDate());
             return (
               <div 
                 key={`prev-hw-${i}`} 
-                className="calendar-cell inactive opacity-40"
+                className="calendar-cell group cursor-pointer bg-gray-50 dark:bg-gray-900/30"
+                onClick={() => handleDayClick(solarDate)}
               >
                 <div className="flex justify-between items-start mb-1">
-                  <span className="day-number text-muted-foreground">{hwDay}</span>
+                  <span className={`day-number text-muted-foreground ${isSun ? "!text-red-400" : isSat ? "!text-blue-400" : ""}`}>{hwDay}</span>
                   <span className="solar-day text-muted-foreground">{solarDate.getDate()}</span>
                 </div>
-                <div className="ganji-box mb-1 opacity-60">{dayData.dayGanZhi}</div>
+                <div className="ganji-box mb-1">{dayData.dayGanZhi}</div>
                 <div className="flex-1 flex flex-col justify-end space-y-0.5">
-                  <div className="mansion-info opacity-60">{cellMansion.mansion},{cellMansion.general}</div>
+                  <div className="trigram-text">{cellTrigram.trigram}</div>
+                  <div className="mansion-info">{cellMansion.mansion},{cellMansion.general}</div>
+                  {cell81.isJongungAM && cell81.isJongungPM ? (
+                    <>
+                      <div className="palace-81-name text-xs font-bold text-amber-600 dark:text-amber-400">尊宮</div>
+                      <div className="palace-81-notation text-[10px] text-muted-foreground">{cell81.notationAM}</div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="palace-81-name text-xs font-bold text-amber-600 dark:text-amber-400">{cell81.nameAM}</div>
+                      <div className="palace-81-notation text-[10px] text-muted-foreground">{cell81.notationAM}</div>
+                    </>
+                  )}
                 </div>
               </div>
             );
@@ -759,16 +776,26 @@ export function Calendar() {
         ) : (
           prevMonthBlanks.map((dayInfo: any, i: number) => {
             const { solarDate, dayData, solarDay } = dayInfo;
+            const isSun = solarDate.getDay() === 0;
+            const isSat = solarDate.getDay() === 6;
             return (
               <div 
                 key={`prev-solar-${i}`} 
-                className="calendar-cell inactive opacity-40"
+                className="calendar-cell group cursor-pointer bg-gray-50 dark:bg-gray-900/30"
+                onClick={() => handleDayClick(solarDate)}
               >
                 <div className="flex justify-between items-start mb-1">
-                  <span className="day-number text-muted-foreground">{solarDay}</span>
+                  <span className={`day-number text-muted-foreground ${isSun ? "!text-red-400" : isSat ? "!text-blue-400" : ""}`}>{solarDay}</span>
                   <span className="solar-day text-purple-400">{dayData.lunarDay}</span>
                 </div>
-                <div className="ganji-box mb-1 opacity-60">{dayData.dayGanZhi}</div>
+                <div className="ganji-box mb-1">{dayData.dayGanZhi}</div>
+                {dayData.solarTerm && (
+                  <div className="flex-1 flex items-end">
+                    <span className="text-xs px-1 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200">
+                      {dayData.solarTerm.korean}
+                    </span>
+                  </div>
+                )}
               </div>
             );
           })
@@ -892,20 +919,37 @@ export function Calendar() {
         {calType === "hw" ? (
           nextMonthBlanks.map((dayInfo: any, i: number) => {
             const { hwDay, solarDate, dayData } = dayInfo;
+            const isSun = solarDate.getDay() === 0;
+            const isSat = solarDate.getDay() === 6;
             const hwDate = getHwanggeukDate(solarDate.getFullYear(), solarDate.getMonth() + 1, solarDate.getDate());
             const cellMansion = getHwanggeuk28Mansion(hwDate.year, hwDate.month, hwDate.day);
+            const cellTrigram = get8Trigram(solarDate.getFullYear(), solarDate.getMonth() + 1, solarDate.getDate());
+            const cell81 = getPositionDaegungForDate(solarDate.getFullYear(), solarDate.getMonth() + 1, solarDate.getDate());
             return (
               <div 
                 key={`next-hw-${i}`} 
-                className="calendar-cell inactive opacity-40"
+                className="calendar-cell group cursor-pointer bg-gray-50 dark:bg-gray-900/30"
+                onClick={() => handleDayClick(solarDate)}
               >
                 <div className="flex justify-between items-start mb-1">
-                  <span className="day-number text-muted-foreground">{hwDay}</span>
+                  <span className={`day-number text-muted-foreground ${isSun ? "!text-red-400" : isSat ? "!text-blue-400" : ""}`}>{hwDay}</span>
                   <span className="solar-day text-muted-foreground">{solarDate.getDate()}</span>
                 </div>
-                <div className="ganji-box mb-1 opacity-60">{dayData.dayGanZhi}</div>
+                <div className="ganji-box mb-1">{dayData.dayGanZhi}</div>
                 <div className="flex-1 flex flex-col justify-end space-y-0.5">
-                  <div className="mansion-info opacity-60">{cellMansion.mansion},{cellMansion.general}</div>
+                  <div className="trigram-text">{cellTrigram.trigram}</div>
+                  <div className="mansion-info">{cellMansion.mansion},{cellMansion.general}</div>
+                  {cell81.isJongungAM && cell81.isJongungPM ? (
+                    <>
+                      <div className="palace-81-name text-xs font-bold text-amber-600 dark:text-amber-400">尊宮</div>
+                      <div className="palace-81-notation text-[10px] text-muted-foreground">{cell81.notationAM}</div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="palace-81-name text-xs font-bold text-amber-600 dark:text-amber-400">{cell81.nameAM}</div>
+                      <div className="palace-81-notation text-[10px] text-muted-foreground">{cell81.notationAM}</div>
+                    </>
+                  )}
                 </div>
               </div>
             );
@@ -913,16 +957,26 @@ export function Calendar() {
         ) : (
           nextMonthBlanks.map((dayInfo: any, i: number) => {
             const { solarDate, dayData, solarDay } = dayInfo;
+            const isSun = solarDate.getDay() === 0;
+            const isSat = solarDate.getDay() === 6;
             return (
               <div 
                 key={`next-solar-${i}`} 
-                className="calendar-cell inactive opacity-40"
+                className="calendar-cell group cursor-pointer bg-gray-50 dark:bg-gray-900/30"
+                onClick={() => handleDayClick(solarDate)}
               >
                 <div className="flex justify-between items-start mb-1">
-                  <span className="day-number text-muted-foreground">{solarDay}</span>
+                  <span className={`day-number text-muted-foreground ${isSun ? "!text-red-400" : isSat ? "!text-blue-400" : ""}`}>{solarDay}</span>
                   <span className="solar-day text-purple-400">{dayData.lunarDay}</span>
                 </div>
-                <div className="ganji-box mb-1 opacity-60">{dayData.dayGanZhi}</div>
+                <div className="ganji-box mb-1">{dayData.dayGanZhi}</div>
+                {dayData.solarTerm && (
+                  <div className="flex-1 flex items-end">
+                    <span className="text-xs px-1 py-0.5 rounded bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-200">
+                      {dayData.solarTerm.korean}
+                    </span>
+                  </div>
+                )}
               </div>
             );
           })

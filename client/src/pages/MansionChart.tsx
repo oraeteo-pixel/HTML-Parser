@@ -13,6 +13,13 @@ const MANSION_GENERALS: { [key: string]: string } = {
   "井": "邳肜", "鬼": "銚期", "柳": "劉植", "星": "耿純", "張": "藏宮", "翼": "馬武", "軫": "劉隆"
 };
 
+const MANSION_IMAGES: { [key: string]: string } = {
+  "角": "_등우", "亢": "_마성", "氐": "_오한", "房": "_왕량", "心": "_가복", "尾": "_진준", "箕": "_경감",
+  "斗": "_두무", "牛": "_구순", "女": "_부준", "虛": "_잠팽", "危": "_견심", "室": "_풍이", "壁": "_왕패",
+  "奎": "_주우", "婁": "_임광", "胃": "_제준", "昴": "_이충", "畢": "_경단", "觜": "_만수", "參": "_개연",
+  "井": "_비융", "鬼": "_요기", "柳": "_유식", "星": "_경순", "張": "_장궁", "翼": "_마무", "軫": "_유융"
+};
+
 const ZUNKONG_MANSIONS = ["星", "尾", "昴", "女"];
 
 const LEFT_COLUMN = ["角", "亢", "氐", "房", "心", "尾", "箕"];
@@ -24,6 +31,8 @@ const CENTER_GANJI = ["己酉", "庚戌", "己卯", "庚辰"];
 
 export default function MansionChart() {
   const [currentTime, setCurrentTime] = useState(getKoreanTime());
+  const [hoveredMansion, setHoveredMansion] = useState<string | null>(null);
+  const [popupPosition, setPopupPosition] = useState<{ x: number; y: number } | null>(null);
   
   useEffect(() => {
     const timer = setInterval(() => {
@@ -31,6 +40,19 @@ export default function MansionChart() {
     }, 60000);
     return () => clearInterval(timer);
   }, []);
+
+  const handleMansionHover = (mansion: string, event: React.MouseEvent | React.TouchEvent) => {
+    const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+    const x = rect.left + rect.width / 2;
+    const y = rect.top;
+    setPopupPosition({ x, y });
+    setHoveredMansion(mansion);
+  };
+
+  const handleMansionLeave = () => {
+    setHoveredMansion(null);
+    setPopupPosition(null);
+  };
   
   const today = currentTime;
   const todayGanZhi = getDayGanZhi(today.getFullYear(), today.getMonth() + 1, today.getDate());
@@ -65,12 +87,16 @@ export default function MansionChart() {
     return (
       <div 
         className={`
-          p-1 rounded-md text-center min-h-[90px] flex flex-col transition-all
+          p-1 rounded-md text-center min-h-[90px] flex flex-col transition-all cursor-pointer
           ${isToday 
             ? 'ring-2 ring-[hsl(var(--orae-navy))] bg-gradient-to-br from-slate-100 to-slate-50 dark:from-slate-800/40 dark:to-slate-700/20' 
             : 'bg-[var(--ganji-surface)] hover-elevate'}
         `}
         data-testid={`mansion-cell-${mansion}`}
+        onMouseEnter={(e) => handleMansionHover(mansion, e)}
+        onMouseLeave={handleMansionLeave}
+        onTouchStart={(e) => handleMansionHover(mansion, e)}
+        onTouchEnd={handleMansionLeave}
       >
         {layout === "vertical" ? (
           <>
@@ -126,6 +152,29 @@ export default function MansionChart() {
   return (
     <div className="min-h-screen bg-background">
       <Navigation />
+      
+      {/* 28수 부적 이미지 팝업 */}
+      {hoveredMansion && popupPosition && (
+        <div
+          className="fixed z-50 pointer-events-none"
+          style={{
+            left: `${popupPosition.x}px`,
+            top: `${popupPosition.y - 10}px`,
+            transform: 'translate(-50%, -100%)'
+          }}
+        >
+          <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl border-2 border-[hsl(var(--orae-navy))] p-2">
+            <img
+              src={`/img/${MANSION_IMAGES[hoveredMansion]}.jpg`}
+              alt={`${hoveredMansion} ${MANSION_GENERALS[hoveredMansion]} 부적`}
+              className="w-32 h-auto object-contain"
+            />
+            <div className="text-center mt-1 text-sm font-bold orae-navy">
+              {hoveredMansion}宿 {MANSION_GENERALS[hoveredMansion]}
+            </div>
+          </div>
+        </div>
+      )}
       
       <main className="w-full max-w-[990px] mx-auto px-2 py-4">
         <Card className="p-4 mb-4 bg-gradient-to-r from-slate-50/50 to-slate-100/50 dark:from-slate-900/20 dark:to-slate-800/20">

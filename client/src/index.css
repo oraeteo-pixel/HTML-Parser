@@ -395,8 +395,8 @@ html, body {
 }
 
 .slim-info-bar {
-  background: #fce4ec;
-  border: 1px solid #f8bbd9;
+  background: #e8e8e8;
+  border: 1px solid #d0d0d0;
   padding: 0.35rem 0.5rem;
   font-family: var(--font-korean);
   font-size: 0.75rem;
@@ -410,8 +410,8 @@ html, body {
 }
 
 .dark .slim-info-bar {
-  background: hsl(340 30% 20%);
-  border: 1px solid hsl(340 30% 30%);
+  background: hsl(0 0% 25%);
+  border: 1px solid hsl(0 0% 35%);
 }
 
 .talisman-box {

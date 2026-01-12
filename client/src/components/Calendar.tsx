@@ -721,7 +721,7 @@ export function Calendar() {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-card border-t border-l border-border">
+      <div className="bg-white dark:bg-card">
         <div className="grid grid-cols-7 bg-gray-100 dark:bg-gray-800 text-center font-bold text-sm">
         {WEEKDAYS.map((day, i) => (
           <div 

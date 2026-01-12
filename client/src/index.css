@@ -242,7 +242,7 @@ html, body {
 .calendar-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  @apply border-t border-l border-border bg-white dark:bg-card;
+  @apply bg-white dark:bg-card;
 }
 
 .calendar-cell {

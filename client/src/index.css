@@ -272,7 +272,7 @@ html, body {
 }
 
 .calendar-cell.prev-month {
-  @apply bg-gray-200 dark:bg-gray-800/50;
+  @apply bg-gray-100 dark:bg-gray-800/50;
 }
 
 .calendar-cell.next-month {
@@ -403,8 +403,8 @@ html, body {
 }
 
 .slim-info-bar {
-  background: #d0d0d0;
-  border: 1px solid #b8b8b8;
+  background: #e8e8e8;
+  border: 1px solid #d0d0d0;
   padding: 0.35rem 0.5rem;
   font-family: var(--font-korean);
   font-size: 0.75rem;

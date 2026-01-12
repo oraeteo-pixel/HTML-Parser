@@ -32,7 +32,7 @@ const CENTER_GANJI = ["己酉", "庚戌", "己卯", "庚辰"];
 export default function MansionChart() {
   const [currentTime, setCurrentTime] = useState(getKoreanTime());
   const [hoveredMansion, setHoveredMansion] = useState<string | null>(null);
-  const [popupPosition, setPopupPosition] = useState<{ x: number; y: number } | null>(null);
+  const [popupPosition, setPopupPosition] = useState<{ x: number; y: number; direction: 'top' | 'bottom' | 'left' | 'right' } | null>(null);
   
   useEffect(() => {
     const timer = setInterval(() => {
@@ -43,9 +43,34 @@ export default function MansionChart() {
 
   const handleMansionHover = (mansion: string, event: React.MouseEvent | React.TouchEvent) => {
     const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
-    const x = rect.left + rect.width / 2;
-    const y = rect.top;
-    setPopupPosition({ x, y });
+    
+    // 셀 위치에 따라 팝업 방향 결정
+    let x: number, y: number;
+    let direction: 'top' | 'bottom' | 'left' | 'right' = 'top';
+    
+    if (LEFT_COLUMN.includes(mansion)) {
+      // 왼쪽 열: 오른쪽으로 팝업
+      x = rect.right + 10;
+      y = rect.top + rect.height / 2;
+      direction = 'right';
+    } else if (RIGHT_COLUMN.includes(mansion)) {
+      // 오른쪽 열: 왼쪽으로 팝업
+      x = rect.left - 10;
+      y = rect.top + rect.height / 2;
+      direction = 'left';
+    } else if (TOP_ROW.includes(mansion)) {
+      // 상단 행: 아래로 팝업
+      x = rect.left + rect.width / 2;
+      y = rect.bottom + 10;
+      direction = 'bottom';
+    } else {
+      // 하단 행: 위로 팝업
+      x = rect.left + rect.width / 2;
+      y = rect.top - 10;
+      direction = 'top';
+    }
+    
+    setPopupPosition({ x, y, direction });
     setHoveredMansion(mansion);
   };
 
@@ -159,8 +184,14 @@ export default function MansionChart() {
           className="fixed z-50 pointer-events-none"
           style={{
             left: `${popupPosition.x}px`,
-            top: `${popupPosition.y - 10}px`,
-            transform: 'translate(-50%, -100%)'
+            top: `${popupPosition.y}px`,
+            transform: popupPosition.direction === 'top' 
+              ? 'translate(-50%, -100%)'
+              : popupPosition.direction === 'bottom'
+                ? 'translate(-50%, 0)'
+                : popupPosition.direction === 'left'
+                  ? 'translate(-100%, -50%)'
+                  : 'translate(0, -50%)'
           }}
         >
           <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl border-2 border-[hsl(var(--orae-navy))] p-2">

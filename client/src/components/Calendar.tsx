@@ -747,7 +747,7 @@ export function Calendar() {
             return (
               <div 
                 key={`prev-hw-${i}`} 
-                className="calendar-cell group cursor-pointer bg-gray-200 dark:bg-gray-800/50"
+                className="calendar-cell prev-month group cursor-pointer"
                 onClick={() => handleDayClick(solarDate)}
               >
                 <div className="flex justify-between items-start mb-1">
@@ -781,7 +781,7 @@ export function Calendar() {
             return (
               <div 
                 key={`prev-solar-${i}`} 
-                className="calendar-cell group cursor-pointer bg-gray-200 dark:bg-gray-800/50"
+                className="calendar-cell prev-month group cursor-pointer"
                 onClick={() => handleDayClick(solarDate)}
               >
                 <div className="flex justify-between items-start mb-1">
@@ -928,7 +928,7 @@ export function Calendar() {
             return (
               <div 
                 key={`next-hw-${i}`} 
-                className="calendar-cell group cursor-pointer bg-orange-50 dark:bg-orange-900/20"
+                className="calendar-cell next-month group cursor-pointer"
                 onClick={() => handleDayClick(solarDate)}
               >
                 <div className="flex justify-between items-start mb-1">
@@ -962,7 +962,7 @@ export function Calendar() {
             return (
               <div 
                 key={`next-solar-${i}`} 
-                className="calendar-cell group cursor-pointer bg-orange-50 dark:bg-orange-900/20"
+                className="calendar-cell next-month group cursor-pointer"
                 onClick={() => handleDayClick(solarDate)}
               >
                 <div className="flex justify-between items-start mb-1">

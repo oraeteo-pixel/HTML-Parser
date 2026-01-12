@@ -556,18 +556,18 @@ export function Calendar() {
             <>
               {/* Mobile: 2 lines */}
               <div className="sm:hidden flex flex-col gap-0.5">
-                <div className="flex items-center gap-1.5 text-base whitespace-nowrap">
+                <div className="flex items-center gap-1.5 text-base flex-wrap">
                   <span className="font-bold text-gray-700 dark:text-gray-200">
                     {infoHwanggeuk.year}.{infoHwanggeuk.month}.{infoHwanggeuk.day}
                   </span>
                   <span className="font-semibold text-gray-600 dark:text-gray-300">
                     {WEEKDAYS_HANJA[infoDate.getDay()]}
                   </span>
-                  <span className="font-semibold text-gray-600 dark:text-gray-300">
+                  <span className="font-semibold text-gray-600 dark:text-gray-300 whitespace-nowrap">
                     {infoHwanggeuk.yearGanZhi} {infoHwanggeuk.monthGanZhi} {infoDayGanZhi} {infoHourGanZhi}
                   </span>
                 </div>
-                <div className="flex items-center gap-1.5 text-base whitespace-nowrap">
+                <div className="flex items-center gap-1.5 text-base flex-wrap">
                   <span className="font-bold text-gray-700 dark:text-gray-200">{infoJeolguk.name}</span>
                   <span className="font-semibold text-gray-600 dark:text-gray-300">&lt;소궁,대궁&gt;{infoSogungDaegung.isZungung ? "존궁" : `${infoSogungDaegung.sogung},${infoSogungDaegung.daegung}`}{(() => { const hex = get64HexagramName(infoSogungDaegung.sogung, infoSogungDaegung.daegung); return hex ? ` ${hex.fullName}` : ""; })()}</span>
                   <button 
@@ -607,7 +607,7 @@ export function Calendar() {
             <>
               {/* Mobile: 2 lines */}
               <div className="sm:hidden flex flex-col gap-0.5">
-                <div className="flex items-center gap-1.5 text-base whitespace-nowrap">
+                <div className="flex items-center gap-1.5 text-base flex-wrap">
                   <span className="font-bold text-gray-700 dark:text-gray-200">
                     {infoYear}.{infoMonth}.{infoDay}
                   </span>
@@ -617,11 +617,11 @@ export function Calendar() {
                   <span className="font-semibold text-gray-600 dark:text-gray-300">
                     (음{infoSeoncheonData.lunarMonth}.{infoSeoncheonData.lunarDay})
                   </span>
-                  <span className="font-semibold text-gray-600 dark:text-gray-300">
+                  <span className="font-semibold text-gray-600 dark:text-gray-300 whitespace-nowrap">
                     {infoSeoncheonData.yearGanZhi} {infoSeoncheonData.monthGanZhi} {infoSeoncheonData.dayGanZhi} {infoSeoncheonHourGanZhi}
                   </span>
                 </div>
-                <div className="flex items-center gap-1.5 text-base whitespace-nowrap">
+                <div className="flex items-center gap-1.5 text-base">
                   <span className="font-bold text-gray-700 dark:text-gray-200">{infoSeoncheonData.currentTerm.hanja}</span>
                   <span className="slim-badge-navy">{infoSeoncheonData.currentTerm.general}</span>
                 </div>

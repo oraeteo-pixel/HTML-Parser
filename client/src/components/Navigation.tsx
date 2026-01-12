@@ -125,7 +125,7 @@ export function Navigation() {
     <div className="bg-white dark:bg-card border-b border-border sticky top-0 z-50" style={{ boxShadow: "0 0 15px #ccc" }}>
       <div className="w-full max-w-[990px] mx-auto px-2">
         <div className="h-[56px] sm:h-[70px] flex items-center justify-between relative">
-          <Link href="/calendar" className="flex items-center gap-2 hover:opacity-80 transition-opacity" data-testid="link-logo">
+          <a href="https://cafe.daum.net/pusan7777/5yGr/68" target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 hover:opacity-80 transition-opacity" data-testid="link-logo">
             {logoImageUrl ? (
               <div 
                 className="flex items-center px-1 rounded"
@@ -178,7 +178,7 @@ export function Navigation() {
                 </div>
               </>
             )}
-          </Link>
+          </a>
 
           <div className="flex gap-2 sm:gap-4 items-end pb-1">
             {menuItems.map((item) => (

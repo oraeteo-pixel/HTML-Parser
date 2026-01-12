@@ -641,10 +641,11 @@ export default function Madang() {
   };
 
   return (
-    <div className="min-h-screen bg-background" style={{ fontFamily: "'Malgun Gothic', '맑은 고딕', sans-serif" }}>
+    <div className="flex flex-col h-screen bg-background" style={{ fontFamily: "'Malgun Gothic', '맑은 고딕', sans-serif" }}>
       <Navigation />
       
-      <main className="w-full max-w-[990px] mx-auto px-0 sm:px-2 py-4 text-base" data-testid="madang-main">
+      <main className="flex-1 overflow-auto">
+        <div className="w-full max-w-[990px] mx-auto px-0 sm:px-2 py-4 text-base" data-testid="madang-main">
         <Card className="p-4 mb-4 bg-gradient-to-r from-slate-50/50 to-slate-100/50 dark:from-slate-900/20 dark:to-slate-800/20">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -1067,6 +1068,7 @@ export default function Madang() {
             )}
           </Card>
         )}
+        </div>
       </main>
     </div>
   );

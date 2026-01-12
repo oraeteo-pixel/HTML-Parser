@@ -150,7 +150,7 @@ export default function MansionChart() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="flex flex-col h-screen bg-background">
       <Navigation />
       
       {/* 28수 부적 이미지 팝업 */}
@@ -176,7 +176,8 @@ export default function MansionChart() {
         </div>
       )}
       
-      <main className="w-full max-w-[990px] mx-auto px-2 py-4">
+      <main className="flex-1 overflow-auto">
+        <div className="w-full max-w-[990px] mx-auto px-2 py-4">
         <Card className="p-4 mb-4 bg-gradient-to-r from-slate-50/50 to-slate-100/50 dark:from-slate-900/20 dark:to-slate-800/20">
           <h1 className="text-xl font-bold orae-navy text-center mb-3" data-testid="text-chart-title">
             後天 28宿 周天 星宿 配列圖
@@ -333,9 +334,9 @@ export default function MansionChart() {
             })()}
           </div>
         </Card>
+        </div>
+        <Footer />
       </main>
-      
-      <Footer />
     </div>
   );
 }

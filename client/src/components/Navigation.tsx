@@ -122,7 +122,7 @@ export function Navigation() {
   };
 
   return (
-    <div className="sticky top-0 z-50 w-full bg-gray-100 dark:bg-gray-800 border-b border-border" style={{ boxShadow: "0 0 10px #ddd" }}>
+    <div className="w-full bg-gray-100 dark:bg-gray-800 border-b border-border flex-shrink-0" style={{ boxShadow: "0 0 10px #ddd" }}>
       <div className="w-full max-w-[990px] mx-auto px-2">
         <div className="h-[56px] sm:h-[70px] flex items-center justify-between relative">
           <div className="flex items-center gap-2">

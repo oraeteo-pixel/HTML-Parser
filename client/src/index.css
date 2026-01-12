@@ -246,7 +246,11 @@ html, body {
 }
 
 .calendar-cell {
-  @apply bg-white dark:bg-card p-0.5 min-h-[68px] border-r border-b border-border flex flex-col relative;
+  @apply bg-white dark:bg-card p-0.5 min-h-[68px] border-t border-r border-border flex flex-col relative;
+}
+
+.calendar-cell:nth-child(7n) {
+  @apply border-r-0;
 }
 
 @media (min-width: 640px) {

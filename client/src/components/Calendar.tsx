@@ -721,12 +721,12 @@ export function Calendar() {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-card">
+      <div className="bg-white dark:bg-card border border-border rounded-sm overflow-hidden">
         <div className="grid grid-cols-7 bg-gray-100 dark:bg-gray-800 text-center font-bold text-sm">
         {WEEKDAYS.map((day, i) => (
           <div 
             key={day} 
-            className={`py-2 border-b border-r border-border ${i === 0 ? "text-red-500" : i === 6 ? "text-blue-500" : ""}`}
+            className={`py-2 ${i < 6 ? "border-r border-border" : ""} ${i === 0 ? "text-red-500" : i === 6 ? "text-blue-500" : ""}`}
           >
             {day}
           </div>

@@ -517,8 +517,8 @@ export function Calendar() {
   const months = Array.from({ length: 12 }, (_, i) => i + 1);
 
   return (
-    <div data-testid="calendar">
-      <div className="space-y-2 mb-2">
+    <div data-testid="calendar" className="bg-white dark:bg-background">
+      <div className="space-y-2 mb-2 bg-white dark:bg-background">
         <div className="flex gap-2 ml-1 sm:ml-0">
           <Button 
             size="sm"

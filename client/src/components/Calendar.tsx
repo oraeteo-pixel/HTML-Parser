@@ -664,7 +664,7 @@ export function Calendar() {
           </div>
         )}
 
-        <div className="flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap py-1 sm:py-2 bg-white dark:bg-card rounded">
+        <div className="flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap py-1 sm:py-2 bg-white dark:bg-background rounded">
           <Button variant="ghost" size="icon" className="h-5 w-5 sm:h-8 sm:w-8" onClick={handlePrevYear} data-testid="button-prev-year">
             <ChevronLeft className="h-3 w-3 sm:h-4 sm:w-4" />
           </Button>
@@ -673,7 +673,7 @@ export function Calendar() {
             value={String(calType === "hw" ? hwYear : solarYear)} 
             onValueChange={(v) => handleYearSelect(Number(v))}
           >
-            <SelectTrigger className="w-[68px] sm:w-[100px] h-5 sm:h-8 text-xs sm:text-sm px-1.5" data-testid="select-year">
+            <SelectTrigger className="w-[68px] sm:w-[100px] h-5 sm:h-8 text-xs sm:text-sm px-1.5 bg-white dark:bg-card" data-testid="select-year">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -705,7 +705,7 @@ export function Calendar() {
             value={String(calType === "hw" ? hwMonth : solarMonth)} 
             onValueChange={(v) => handleMonthSelect(Number(v))}
           >
-            <SelectTrigger className="w-[56px] sm:w-[80px] h-5 sm:h-8 text-xs sm:text-sm px-1.5" data-testid="select-month">
+            <SelectTrigger className="w-[56px] sm:w-[80px] h-5 sm:h-8 text-xs sm:text-sm px-1.5 bg-white dark:bg-card" data-testid="select-month">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>

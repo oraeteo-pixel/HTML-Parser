@@ -32,7 +32,7 @@ const CENTER_GANJI = ["己酉", "庚戌", "己卯", "庚辰"];
 export default function MansionChart() {
   const [currentTime, setCurrentTime] = useState(getKoreanTime());
   const [hoveredMansion, setHoveredMansion] = useState<string | null>(null);
-  const [popupPosition, setPopupPosition] = useState<{ x: number; y: number } | null>(null);
+  const [popupPosition, setPopupPosition] = useState<{ x: number; y: number; position: 'top' | 'bottom' | 'left' | 'right' } | null>(null);
   
   useEffect(() => {
     const timer = setInterval(() => {
@@ -43,9 +43,33 @@ export default function MansionChart() {
 
   const handleMansionHover = (mansion: string, event: React.MouseEvent | React.TouchEvent) => {
     const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
-    const x = rect.left + rect.width / 2;
-    const y = rect.top;
-    setPopupPosition({ x, y });
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const popupWidth = 150; // 예상 팝업 너비
+    const popupHeight = 200; // 예상 팝업 높이
+    
+    let x = rect.left + rect.width / 2;
+    let y = rect.top;
+    let position: 'top' | 'bottom' | 'left' | 'right' = 'top';
+    
+    // 상단 여백이 부족하면 하단에 표시
+    if (rect.top < popupHeight + 20) {
+      y = rect.bottom;
+      position = 'bottom';
+    }
+    
+    // 좌우 경계 체크 및 조정
+    if (x - popupWidth / 2 < 10) {
+      x = rect.right + 10;
+      y = rect.top + rect.height / 2;
+      position = 'right';
+    } else if (x + popupWidth / 2 > viewportWidth - 10) {
+      x = rect.left - 10;
+      y = rect.top + rect.height / 2;
+      position = 'left';
+    }
+    
+    setPopupPosition({ x, y, position } as any);
     setHoveredMansion(mansion);
   };
 
@@ -159,8 +183,14 @@ export default function MansionChart() {
           className="fixed z-50 pointer-events-none"
           style={{
             left: `${popupPosition.x}px`,
-            top: `${popupPosition.y - 10}px`,
-            transform: 'translate(-50%, -100%)'
+            top: `${popupPosition.y}px`,
+            transform: popupPosition.position === 'top' 
+              ? 'translate(-50%, calc(-100% - 10px))'
+              : popupPosition.position === 'bottom'
+                ? 'translate(-50%, 10px)'
+                : popupPosition.position === 'left'
+                  ? 'translate(calc(-100% - 10px), -50%)'
+                  : 'translate(10px, -50%)'
           }}
         >
           <div className="bg-white dark:bg-slate-800 rounded-lg shadow-xl border-2 border-[hsl(var(--orae-navy))] p-2">

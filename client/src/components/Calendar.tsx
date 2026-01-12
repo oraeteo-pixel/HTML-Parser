@@ -592,14 +592,10 @@ export function Calendar() {
           >
             <div className="flex flex-col items-center">
               <img 
-                src={`/img/28j_${infoMansion.image}.jpg`}
+                src={`/img/${infoMansion.image}.jpg`}
                 alt={`${infoMansion.mansion} 부적`}
                 className="max-w-[200px] max-h-[280px] object-contain border border-border rounded-lg shadow-lg bg-white"
               />
-              <div className="mt-3 text-center">
-                <div className="font-bold text-lg">{infoMansion.mansion}{infoMansion.general}</div>
-                <div className="text-muted-foreground">{infoMansion.description}</div>
-              </div>
             </div>
           </div>
         )}

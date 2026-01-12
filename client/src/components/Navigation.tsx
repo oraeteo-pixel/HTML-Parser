@@ -109,8 +109,8 @@ export function Navigation() {
   const menuItems = [
     { icon: CalendarDays, label: "Calendar", korLabel: "달력", href: "/calendar", hasUserContent: false },
     { icon: Star, label: "28su", korLabel: "28수", href: "/28su", hasUserContent: false },
-    { icon: Users, label: "Community", korLabel: "마당", href: "/madang", hasUserContent: userHasMadangPosts },
-    { icon: BookOpen, label: "Ebook", korLabel: "전자책", href: "/ebook", hasUserContent: userHasEbookPosts },
+    { icon: BookOpen, label: "Ebook", korLabel: "현무경", href: "/ebook", hasUserContent: userHasEbookPosts },
+    { icon: Users, label: "Community", korLabel: "공유마당", href: "/madang", hasUserContent: userHasMadangPosts },
   ];
 
   const handleLogin = () => {

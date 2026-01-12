@@ -4,10 +4,10 @@ import { Calendar } from "@/components/Calendar";
 
 export default function CalendarPage() {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-white dark:bg-background">
       <Navigation />
       
-      <main className="w-full max-w-[990px] mx-auto px-0 sm:px-2 py-2 sm:py-4" data-testid="calendar-main">
+      <main className="w-full max-w-[990px] mx-auto px-0 sm:px-2 py-2 sm:py-4 bg-white dark:bg-background" data-testid="calendar-main">
         <Calendar />
       </main>
       

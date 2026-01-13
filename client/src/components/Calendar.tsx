@@ -613,7 +613,7 @@ export function Calendar() {
             <>
               {/* Mobile: 2 lines */}
               <div className="sm:hidden flex flex-col gap-0.5">
-                <div className="flex items-center gap-1.5 text-base flex-wrap">
+                <div className="flex items-center gap-1.5 text-sm whitespace-nowrap overflow-x-auto">
                   <span className="font-bold text-gray-700 dark:text-gray-200">
                     {infoYear}.{infoMonth}.{infoDay}
                   </span>
@@ -623,11 +623,9 @@ export function Calendar() {
                   <span className="font-semibold text-gray-600 dark:text-gray-300">
                     (음{infoSeoncheonData.lunarMonth}.{infoSeoncheonData.lunarDay})
                   </span>
-                  <span className="font-semibold text-gray-600 dark:text-gray-300 whitespace-nowrap">
+                  <span className="font-semibold text-gray-600 dark:text-gray-300">
                     {infoSeoncheonData.yearGanZhi} {infoSeoncheonData.monthGanZhi} {infoSeoncheonData.dayGanZhi} {infoSeoncheonHourGanZhi}
                   </span>
-                </div>
-                <div className="flex items-center gap-1.5 text-base">
                   <span className="font-bold text-gray-700 dark:text-gray-200">{infoSeoncheonData.currentTerm.hanja}</span>
                   <span className="slim-badge-navy">{infoSeoncheonData.currentTerm.general}</span>
                 </div>

@@ -1684,7 +1684,7 @@ export default function Admin() {
                   <th className="text-left py-3 px-3 font-medium">전화번호</th>
                   <th className="text-left py-3 px-3 font-medium">가입일</th>
                   <th className="text-left py-3 px-3 font-medium">관리자</th>
-                  <th className="text-left py-3 px-3 font-medium">관리</th>
+                  <th className="text-left py-3 px-3 font-medium hidden sm:table-cell">관리</th>
                 </tr>
               </thead>
               <tbody>
@@ -1695,8 +1695,12 @@ export default function Admin() {
                     </td>
                   </tr>
                 ) : members?.map((member) => (
-                  <tr key={member.id} className={`border-b hover:bg-muted/30 ${selectedMembers.has(member.id) ? 'bg-muted/20' : ''}`}>
-                    <td className="py-3 px-2">
+                  <tr 
+                    key={member.id} 
+                    className={`border-b hover:bg-muted/30 cursor-pointer ${selectedMembers.has(member.id) ? 'bg-muted/20' : ''}`}
+                    onClick={() => setEditingMember(member)}
+                  >
+                    <td className="py-3 px-2" onClick={(e) => e.stopPropagation()}>
                       <Checkbox
                         checked={selectedMembers.has(member.id)}
                         onCheckedChange={(checked) => handleSelectMember(member.id, checked as boolean)}
@@ -1711,7 +1715,7 @@ export default function Admin() {
                     <td className="py-3 px-3 text-muted-foreground">
                       {member.createdAt ? new Date(member.createdAt).toLocaleDateString('ko-KR') : '-'}
                     </td>
-                    <td className="py-3 px-3">
+                    <td className="py-3 px-3" onClick={(e) => e.stopPropagation()}>
                       {member.id !== user?.id ? (
                         <Switch
                           checked={member.isAdmin === 1}
@@ -1725,7 +1729,7 @@ export default function Admin() {
                         <Badge variant="default" className="bg-cyan-600">본인</Badge>
                       )}
                     </td>
-                    <td className="py-3 px-3">
+                    <td className="py-3 px-3 hidden sm:table-cell" onClick={(e) => e.stopPropagation()}>
                       <div className="flex gap-1">
                         <Button 
                           size="icon" 

@@ -326,10 +326,16 @@ export function Calendar() {
   }, [currentTime]);
   
   const liveSeoncheonData = useMemo(() => {
+    // 23:00 이후면 다음날로 계산
+    let adjustedDate = currentTime;
+    if (currentTime.getHours() >= 23) {
+      adjustedDate = new Date(currentTime);
+      adjustedDate.setDate(adjustedDate.getDate() + 1);
+    }
     return getCalendarDayData(
-      currentTime.getFullYear(),
-      currentTime.getMonth() + 1,
-      currentTime.getDate()
+      adjustedDate.getFullYear(),
+      adjustedDate.getMonth() + 1,
+      adjustedDate.getDate()
     );
   }, [currentTime]);
 
@@ -366,8 +372,18 @@ export function Calendar() {
   }, [infoDate]);
 
   const infoSeoncheonData = useMemo(() => {
-    return getCalendarDayData(infoYear, infoMonth, infoDay);
-  }, [infoYear, infoMonth, infoDay]);
+    // 23:00 이후면 다음날로 계산
+    let adjustedYear = infoYear;
+    let adjustedMonth = infoMonth;
+    let adjustedDay = infoDay;
+    if (currentTime.getHours() >= 23) {
+      const nextDate = new Date(infoYear, infoMonth - 1, infoDay + 1);
+      adjustedYear = nextDate.getFullYear();
+      adjustedMonth = nextDate.getMonth() + 1;
+      adjustedDay = nextDate.getDate();
+    }
+    return getCalendarDayData(adjustedYear, adjustedMonth, adjustedDay);
+  }, [infoYear, infoMonth, infoDay, currentTime]);
 
   const infoMansion = useMemo(() => {
     return getHwanggeuk28Mansion(infoHwanggeuk.year, infoHwanggeuk.month, infoHwanggeuk.day);

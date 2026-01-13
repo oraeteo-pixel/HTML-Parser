@@ -1303,19 +1303,30 @@ export function getLunarGanZhi(year: number, month: number, day: number): { year
   return { year: '-', month: '-', day: '-' };
 }
 
-export function getCalendarDayData(year: number, month: number, day: number): CalendarDayData {
-  const lunar = solarToLunar(year, month, day);
+export function getCalendarDayData(year: number, month: number, day: number, hour?: number): CalendarDayData {
+  // 23:00 이후면 다음날로 계산
+  let adjustedYear = year;
+  let adjustedMonth = month;
+  let adjustedDay = day;
+  if (hour !== undefined && hour >= 23) {
+    const nextDate = new Date(year, month - 1, day + 1);
+    adjustedYear = nextDate.getFullYear();
+    adjustedMonth = nextDate.getMonth() + 1;
+    adjustedDay = nextDate.getDate();
+  }
+  
+  const lunar = solarToLunar(adjustedYear, adjustedMonth, adjustedDay);
   // 음력 기반 간지 (korean-lunar-calendar 라이브러리 사용) - 참조용
-  const lunarGanZhi = getLunarGanZhi(year, month, day);
-  // 선천력 간지는 절기 기반으로 계산 (자정 기준 날짜 전환)
-  const yearGanZhi = getYearGanZhi(year, month, day);
-  const monthGanZhi = getMonthGanZhi(year, month, day);
-  const dayGanZhi = getDayGanZhi(year, month, day);
-  const mansion = get28Mansion(year, month, day);
-  const trigram = get8Trigram(year, month, day);
-  const solarTerm = getSolarTerm(month, day);
-  const currentTerm = getCurrentSolarTerm(month, day);
-  const hwanggeuk = getHwanggeukDate(year, month, day);
+  const lunarGanZhi = getLunarGanZhi(adjustedYear, adjustedMonth, adjustedDay);
+  // 선천력 간지는 절기 기반으로 계산 (23시 기준 날짜 전환)
+  const yearGanZhi = getYearGanZhi(adjustedYear, adjustedMonth, adjustedDay);
+  const monthGanZhi = getMonthGanZhi(adjustedYear, adjustedMonth, adjustedDay);
+  const dayGanZhi = getDayGanZhi(adjustedYear, adjustedMonth, adjustedDay);
+  const mansion = get28Mansion(adjustedYear, adjustedMonth, adjustedDay);
+  const trigram = get8Trigram(adjustedYear, adjustedMonth, adjustedDay);
+  const solarTerm = getSolarTerm(adjustedMonth, adjustedDay);
+  const currentTerm = getCurrentSolarTerm(adjustedMonth, adjustedDay);
+  const hwanggeuk = getHwanggeukDate(adjustedYear, adjustedMonth, adjustedDay);
   
   return {
     solarYear: year,

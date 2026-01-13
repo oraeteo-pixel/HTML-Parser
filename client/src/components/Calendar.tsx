@@ -88,9 +88,14 @@ function get60GanziHours(hwYear: number, hwMonth: number, hwDay: number): { am: 
 
 function isTodayKorean(date: Date): boolean {
   const koreanNow = getKoreanTime();
-  return date.getFullYear() === koreanNow.getFullYear() &&
-         date.getMonth() === koreanNow.getMonth() &&
-         date.getDate() === koreanNow.getDate();
+  // 23:00 이후에는 다음날을 "오늘"로 표시
+  let targetDate = new Date(koreanNow);
+  if (koreanNow.getHours() >= 23) {
+    targetDate = new Date(koreanNow.getFullYear(), koreanNow.getMonth(), koreanNow.getDate() + 1);
+  }
+  return date.getFullYear() === targetDate.getFullYear() &&
+         date.getMonth() === targetDate.getMonth() &&
+         date.getDate() === targetDate.getDate();
 }
 
 export function Calendar() {

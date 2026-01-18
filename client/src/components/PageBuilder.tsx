@@ -68,6 +68,9 @@ import {
   Globe,
   Upload,
   Loader2,
+  MousePointerClick,
+  Navigation,
+  Menu as MenuIcon,
 } from "lucide-react";
 import type { LayoutBlock } from "@shared/schema";
 
@@ -92,6 +95,7 @@ const LAYOUT_BLOCKS: BlockPaletteItem[] = [
 const CONTENT_BLOCKS: BlockPaletteItem[] = [
   { type: "text", label: "텍스트", icon: Type, defaultProps: { content: "텍스트를 입력하세요", fontSize: "16px", fontWeight: "normal" } },
   { type: "image", label: "이미지", icon: Image, defaultProps: { src: "", alt: "", width: "100%", borderRadius: "0" } },
+  { type: "button", label: "버튼", icon: MousePointerClick, defaultProps: { text: "버튼", linkUrl: "#", variant: "primary", size: "medium", backgroundColor: "#0d7377", textColor: "#ffffff", borderRadius: "4px", fullWidth: false, openNewTab: false } },
   { type: "table", label: "테이블", icon: Table, defaultProps: { rows: 3, cols: 3, data: [] } },
   { type: "html", label: "HTML", icon: Code, defaultProps: { html: "<div>HTML 코드</div>" } },
   { type: "banner", label: "배너", icon: ImageIcon, defaultProps: { imageUrl: "", linkUrl: "", altText: "배너", height: "200px" } },
@@ -106,6 +110,7 @@ const CONTENT_BLOCKS: BlockPaletteItem[] = [
 ];
 
 const WIDGET_BLOCKS: BlockPaletteItem[] = [
+  { type: "navigation", label: "네비게이션", icon: Navigation, defaultProps: { items: [{ label: "홈", url: "/", icon: "" }, { label: "달력", url: "/calendar", icon: "" }], style: "horizontal", backgroundColor: "transparent", textColor: "#333333", hoverColor: "#0d7377", fontSize: "14px", gap: "16px" } },
   { type: "madang-posts", label: "마당 게시판", icon: Newspaper, defaultProps: { limit: 10, showPagination: true, style: "list", categoryId: null } },
   { type: "ebook-posts", label: "전자책 목록", icon: BookOpen, defaultProps: { limit: 10, showPagination: true, style: "grid" } },
   { type: "recent-posts", label: "최신글", icon: Clock, defaultProps: { limit: 5, section: "all", showDate: true } },
@@ -413,6 +418,24 @@ export default function PageBuilder({ initialBlocks = [], initialHtml = "", init
           break;
         case "accordion":
           html += `<div class="accordion-widget" data-items='${JSON.stringify(block.props.items || [])}'>\n  <!-- 아코디언 (서버에서 렌더링) -->\n</div>\n\n`;
+          break;
+        case "button":
+          const btnTarget = block.props.openNewTab ? ' target="_blank" rel="noopener noreferrer"' : '';
+          const btnWidth = block.props.fullWidth ? 'width: 100%;' : '';
+          html += `<a href="${block.props.linkUrl || '#'}" class="button-block button-${block.props.variant || 'primary'} button-${block.props.size || 'medium'}" style="display: inline-block; text-decoration: none; padding: ${block.props.size === 'small' ? '8px 16px' : block.props.size === 'large' ? '16px 32px' : '12px 24px'}; background-color: ${block.props.backgroundColor || '#0d7377'}; color: ${block.props.textColor || '#ffffff'}; border-radius: ${block.props.borderRadius || '4px'}; font-weight: 500; text-align: center; ${btnWidth}"${btnTarget}>\n  ${block.props.text || '버튼'}\n</a>\n\n`;
+          break;
+        case "navigation":
+          const navId = `nav-${block.id}`;
+          const navHoverColor = block.props.hoverColor || '#0d7377';
+          const navTextColor = block.props.textColor || '#333333';
+          const navFontSize = block.props.fontSize || '14px';
+          const navBgColor = block.props.backgroundColor || 'transparent';
+          const navGap = block.props.gap || '16px';
+          const navDirection = block.props.style === 'vertical' ? 'flex; flex-direction: column;' : 'flex;';
+          const navItemsHtml = (block.props.items || []).map((item: { label: string; url: string; icon?: string }) => 
+            `<a href="${item.url}" class="${navId}-link">${item.label}</a>`
+          ).join('\n    ');
+          html += `<style>\n  .${navId}-link { color: ${navTextColor}; text-decoration: none; font-size: ${navFontSize}; transition: color 0.2s; }\n  .${navId}-link:hover { color: ${navHoverColor}; }\n</style>\n<nav class="navigation-widget navigation-${block.props.style || 'horizontal'}" id="${navId}" style="display: ${navDirection} gap: ${navGap}; background-color: ${navBgColor};">\n    ${navItemsHtml}\n</nav>\n\n`;
           break;
       }
     });
@@ -1489,6 +1512,447 @@ export default function PageBuilder({ initialBlocks = [], initialHtml = "", init
                         })
                       }
                     />
+                  </div>
+                </>
+              )}
+
+              {editingBlock.type === "button" && (
+                <>
+                  <div className="space-y-2">
+                    <Label>버튼 텍스트</Label>
+                    <Input
+                      value={editingBlock.props.text || "버튼"}
+                      onChange={(e) =>
+                        setEditingBlock({
+                          ...editingBlock,
+                          props: { ...editingBlock.props, text: e.target.value },
+                        })
+                      }
+                      placeholder="버튼에 표시할 텍스트"
+                      data-testid="input-button-text"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>링크 URL</Label>
+                    <Input
+                      value={editingBlock.props.linkUrl || "#"}
+                      onChange={(e) =>
+                        setEditingBlock({
+                          ...editingBlock,
+                          props: { ...editingBlock.props, linkUrl: e.target.value },
+                        })
+                      }
+                      placeholder="https://..."
+                      data-testid="input-button-url"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>스타일</Label>
+                      <Select
+                        value={editingBlock.props.variant || "primary"}
+                        onValueChange={(v) =>
+                          setEditingBlock({
+                            ...editingBlock,
+                            props: { ...editingBlock.props, variant: v },
+                          })
+                        }
+                      >
+                        <SelectTrigger data-testid="select-button-variant">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="primary">기본</SelectItem>
+                          <SelectItem value="secondary">보조</SelectItem>
+                          <SelectItem value="outline">아웃라인</SelectItem>
+                          <SelectItem value="ghost">고스트</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>크기</Label>
+                      <Select
+                        value={editingBlock.props.size || "medium"}
+                        onValueChange={(v) =>
+                          setEditingBlock({
+                            ...editingBlock,
+                            props: { ...editingBlock.props, size: v },
+                          })
+                        }
+                      >
+                        <SelectTrigger data-testid="select-button-size">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="small">작게</SelectItem>
+                          <SelectItem value="medium">보통</SelectItem>
+                          <SelectItem value="large">크게</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>배경색</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          type="color"
+                          value={editingBlock.props.backgroundColor || "#0d7377"}
+                          onChange={(e) =>
+                            setEditingBlock({
+                              ...editingBlock,
+                              props: { ...editingBlock.props, backgroundColor: e.target.value },
+                            })
+                          }
+                          className="w-12 h-9 p-1"
+                          data-testid="input-button-bg-color"
+                        />
+                        <Input
+                          value={editingBlock.props.backgroundColor || "#0d7377"}
+                          onChange={(e) =>
+                            setEditingBlock({
+                              ...editingBlock,
+                              props: { ...editingBlock.props, backgroundColor: e.target.value },
+                            })
+                          }
+                          className="flex-1"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>글자색</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          type="color"
+                          value={editingBlock.props.textColor || "#ffffff"}
+                          onChange={(e) =>
+                            setEditingBlock({
+                              ...editingBlock,
+                              props: { ...editingBlock.props, textColor: e.target.value },
+                            })
+                          }
+                          className="w-12 h-9 p-1"
+                          data-testid="input-button-text-color"
+                        />
+                        <Input
+                          value={editingBlock.props.textColor || "#ffffff"}
+                          onChange={(e) =>
+                            setEditingBlock({
+                              ...editingBlock,
+                              props: { ...editingBlock.props, textColor: e.target.value },
+                            })
+                          }
+                          className="flex-1"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>모서리 둥글기</Label>
+                      <Input
+                        value={editingBlock.props.borderRadius || "4px"}
+                        onChange={(e) =>
+                          setEditingBlock({
+                            ...editingBlock,
+                            props: { ...editingBlock.props, borderRadius: e.target.value },
+                          })
+                        }
+                        placeholder="4px"
+                        data-testid="input-button-radius"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>전체 너비</Label>
+                      <Select
+                        value={editingBlock.props.fullWidth ? "true" : "false"}
+                        onValueChange={(v) =>
+                          setEditingBlock({
+                            ...editingBlock,
+                            props: { ...editingBlock.props, fullWidth: v === "true" },
+                          })
+                        }
+                      >
+                        <SelectTrigger data-testid="select-button-fullwidth">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="true">전체 너비</SelectItem>
+                          <SelectItem value="false">자동</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>새 창에서 열기</Label>
+                    <Select
+                      value={editingBlock.props.openNewTab ? "true" : "false"}
+                      onValueChange={(v) =>
+                        setEditingBlock({
+                          ...editingBlock,
+                          props: { ...editingBlock.props, openNewTab: v === "true" },
+                        })
+                      }
+                    >
+                      <SelectTrigger data-testid="select-button-newtab">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="true">새 창</SelectItem>
+                        <SelectItem value="false">현재 창</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="p-3 bg-muted rounded-md">
+                    <Label className="text-xs text-muted-foreground mb-2 block">미리보기</Label>
+                    <a
+                      href="#"
+                      onClick={(e) => e.preventDefault()}
+                      style={{
+                        display: 'inline-block',
+                        padding: editingBlock.props.size === 'small' ? '8px 16px' : editingBlock.props.size === 'large' ? '16px 32px' : '12px 24px',
+                        backgroundColor: editingBlock.props.backgroundColor || '#0d7377',
+                        color: editingBlock.props.textColor || '#ffffff',
+                        borderRadius: editingBlock.props.borderRadius || '4px',
+                        textDecoration: 'none',
+                        fontWeight: 500,
+                        width: editingBlock.props.fullWidth ? '100%' : 'auto',
+                        textAlign: 'center',
+                      }}
+                    >
+                      {editingBlock.props.text || '버튼'}
+                    </a>
+                  </div>
+                </>
+              )}
+
+              {editingBlock.type === "navigation" && (
+                <>
+                  <div className="space-y-2">
+                    <Label>네비게이션 항목</Label>
+                    <div className="space-y-2 max-h-48 overflow-y-auto border rounded-md p-2">
+                      {(editingBlock.props.items || []).map((item: { label: string; url: string }, idx: number) => (
+                        <div key={idx} className="flex gap-2 items-center">
+                          <Input
+                            value={item.label}
+                            onChange={(e) => {
+                              const newItems = [...(editingBlock.props.items || [])];
+                              newItems[idx] = { ...newItems[idx], label: e.target.value };
+                              setEditingBlock({
+                                ...editingBlock,
+                                props: { ...editingBlock.props, items: newItems },
+                              });
+                            }}
+                            placeholder="메뉴 이름"
+                            className="flex-1"
+                            data-testid={`input-nav-label-${idx}`}
+                          />
+                          <Input
+                            value={item.url}
+                            onChange={(e) => {
+                              const newItems = [...(editingBlock.props.items || [])];
+                              newItems[idx] = { ...newItems[idx], url: e.target.value };
+                              setEditingBlock({
+                                ...editingBlock,
+                                props: { ...editingBlock.props, items: newItems },
+                              });
+                            }}
+                            placeholder="/path"
+                            className="flex-1"
+                            data-testid={`input-nav-url-${idx}`}
+                          />
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="text-destructive"
+                            onClick={() => {
+                              const newItems = (editingBlock.props.items || []).filter((_: any, i: number) => i !== idx);
+                              setEditingBlock({
+                                ...editingBlock,
+                                props: { ...editingBlock.props, items: newItems },
+                              });
+                            }}
+                            data-testid={`button-remove-nav-${idx}`}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        const newItems = [...(editingBlock.props.items || []), { label: "새 메뉴", url: "/" }];
+                        setEditingBlock({
+                          ...editingBlock,
+                          props: { ...editingBlock.props, items: newItems },
+                        });
+                      }}
+                      data-testid="button-add-nav-item"
+                    >
+                      <Plus className="h-4 w-4 mr-1" /> 항목 추가
+                    </Button>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>방향</Label>
+                      <Select
+                        value={editingBlock.props.style || "horizontal"}
+                        onValueChange={(v) =>
+                          setEditingBlock({
+                            ...editingBlock,
+                            props: { ...editingBlock.props, style: v },
+                          })
+                        }
+                      >
+                        <SelectTrigger data-testid="select-nav-style">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="horizontal">가로</SelectItem>
+                          <SelectItem value="vertical">세로</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>간격</Label>
+                      <Input
+                        value={editingBlock.props.gap || "16px"}
+                        onChange={(e) =>
+                          setEditingBlock({
+                            ...editingBlock,
+                            props: { ...editingBlock.props, gap: e.target.value },
+                          })
+                        }
+                        placeholder="16px"
+                        data-testid="input-nav-gap"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>배경색</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          type="color"
+                          value={editingBlock.props.backgroundColor || "#ffffff"}
+                          onChange={(e) =>
+                            setEditingBlock({
+                              ...editingBlock,
+                              props: { ...editingBlock.props, backgroundColor: e.target.value },
+                            })
+                          }
+                          className="w-12 h-9 p-1"
+                          data-testid="input-nav-bg-color"
+                        />
+                        <Input
+                          value={editingBlock.props.backgroundColor || "transparent"}
+                          onChange={(e) =>
+                            setEditingBlock({
+                              ...editingBlock,
+                              props: { ...editingBlock.props, backgroundColor: e.target.value },
+                            })
+                          }
+                          className="flex-1"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>글자색</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          type="color"
+                          value={editingBlock.props.textColor || "#333333"}
+                          onChange={(e) =>
+                            setEditingBlock({
+                              ...editingBlock,
+                              props: { ...editingBlock.props, textColor: e.target.value },
+                            })
+                          }
+                          className="w-12 h-9 p-1"
+                          data-testid="input-nav-text-color"
+                        />
+                        <Input
+                          value={editingBlock.props.textColor || "#333333"}
+                          onChange={(e) =>
+                            setEditingBlock({
+                              ...editingBlock,
+                              props: { ...editingBlock.props, textColor: e.target.value },
+                            })
+                          }
+                          className="flex-1"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>호버 색상</Label>
+                      <div className="flex gap-2">
+                        <Input
+                          type="color"
+                          value={editingBlock.props.hoverColor || "#0d7377"}
+                          onChange={(e) =>
+                            setEditingBlock({
+                              ...editingBlock,
+                              props: { ...editingBlock.props, hoverColor: e.target.value },
+                            })
+                          }
+                          className="w-12 h-9 p-1"
+                          data-testid="input-nav-hover-color"
+                        />
+                        <Input
+                          value={editingBlock.props.hoverColor || "#0d7377"}
+                          onChange={(e) =>
+                            setEditingBlock({
+                              ...editingBlock,
+                              props: { ...editingBlock.props, hoverColor: e.target.value },
+                            })
+                          }
+                          className="flex-1"
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>글자 크기</Label>
+                      <Input
+                        value={editingBlock.props.fontSize || "14px"}
+                        onChange={(e) =>
+                          setEditingBlock({
+                            ...editingBlock,
+                            props: { ...editingBlock.props, fontSize: e.target.value },
+                          })
+                        }
+                        placeholder="14px"
+                        data-testid="input-nav-font-size"
+                      />
+                    </div>
+                  </div>
+                  <div className="p-3 bg-muted rounded-md">
+                    <Label className="text-xs text-muted-foreground mb-2 block">미리보기</Label>
+                    <nav style={{
+                      display: 'flex',
+                      flexDirection: editingBlock.props.style === 'vertical' ? 'column' : 'row',
+                      gap: editingBlock.props.gap || '16px',
+                      backgroundColor: editingBlock.props.backgroundColor || 'transparent',
+                      padding: '8px',
+                    }}>
+                      {(editingBlock.props.items || []).map((item: { label: string; url: string }, idx: number) => (
+                        <a
+                          key={idx}
+                          href="#"
+                          onClick={(e) => e.preventDefault()}
+                          style={{
+                            color: editingBlock.props.textColor || '#333333',
+                            textDecoration: 'none',
+                            fontSize: editingBlock.props.fontSize || '14px',
+                          }}
+                        >
+                          {item.label}
+                        </a>
+                      ))}
+                    </nav>
                   </div>
                 </>
               )}

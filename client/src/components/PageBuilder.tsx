@@ -71,6 +71,8 @@ import {
   MousePointerClick,
   Navigation,
   Menu as MenuIcon,
+  MapPin,
+  FileEdit,
 } from "lucide-react";
 import type { LayoutBlock } from "@shared/schema";
 
@@ -94,6 +96,7 @@ const LAYOUT_BLOCKS: BlockPaletteItem[] = [
 
 const CONTENT_BLOCKS: BlockPaletteItem[] = [
   { type: "text", label: "텍스트", icon: Type, defaultProps: { content: "텍스트를 입력하세요", fontSize: "16px", fontWeight: "normal" } },
+  { type: "editor", label: "에디터", icon: FileEdit, defaultProps: { content: "<p>내용을 입력하세요</p>", height: "300px", placeholder: "내용을 작성하세요..." } },
   { type: "image", label: "이미지", icon: Image, defaultProps: { src: "", alt: "", width: "100%", borderRadius: "0" } },
   { type: "button", label: "버튼", icon: MousePointerClick, defaultProps: { text: "버튼", linkUrl: "#", variant: "primary", size: "medium", backgroundColor: "#0d7377", textColor: "#ffffff", borderRadius: "4px", fullWidth: false, openNewTab: false } },
   { type: "table", label: "테이블", icon: Table, defaultProps: { rows: 3, cols: 3, data: [] } },
@@ -111,6 +114,7 @@ const CONTENT_BLOCKS: BlockPaletteItem[] = [
 
 const WIDGET_BLOCKS: BlockPaletteItem[] = [
   { type: "navigation", label: "네비게이션", icon: Navigation, defaultProps: { items: [{ label: "홈", url: "/", icon: "" }, { label: "달력", url: "/calendar", icon: "" }], style: "horizontal", backgroundColor: "transparent", textColor: "#333333", hoverColor: "#0d7377", fontSize: "14px", gap: "16px" } },
+  { type: "google-map", label: "구글 지도", icon: MapPin, defaultProps: { address: "서울특별시 중구 세종대로 110", zoom: 15, width: "100%", height: "400px", mapType: "roadmap" } },
   { type: "madang-posts", label: "마당 게시판", icon: Newspaper, defaultProps: { limit: 10, showPagination: true, style: "list", categoryId: null } },
   { type: "ebook-posts", label: "전자책 목록", icon: BookOpen, defaultProps: { limit: 10, showPagination: true, style: "grid" } },
   { type: "recent-posts", label: "최신글", icon: Clock, defaultProps: { limit: 5, section: "all", showDate: true } },
@@ -436,6 +440,20 @@ export default function PageBuilder({ initialBlocks = [], initialHtml = "", init
             `<a href="${item.url}" class="${navId}-link">${item.label}</a>`
           ).join('\n    ');
           html += `<style>\n  .${navId}-link { color: ${navTextColor}; text-decoration: none; font-size: ${navFontSize}; transition: color 0.2s; }\n  .${navId}-link:hover { color: ${navHoverColor}; }\n</style>\n<nav class="navigation-widget navigation-${block.props.style || 'horizontal'}" id="${navId}" style="display: ${navDirection} gap: ${navGap}; background-color: ${navBgColor};">\n    ${navItemsHtml}\n</nav>\n\n`;
+          break;
+        case "editor":
+          const editorContent = block.props.content && block.props.content.trim() !== '' 
+            ? block.props.content 
+            : `<p class="editor-placeholder" style="color: #999;">${block.props.placeholder || '내용을 작성하세요...'}</p>`;
+          html += `<div class="editor-content" style="min-height: ${block.props.height || '300px'};">\n  ${editorContent}\n</div>\n\n`;
+          break;
+        case "google-map":
+          const mapAddress = encodeURIComponent(block.props.address || '서울특별시 중구 세종대로 110');
+          const mapZoom = block.props.zoom || 15;
+          const mapWidth = block.props.width || '100%';
+          const mapHeight = block.props.height || '400px';
+          const mapType = block.props.mapType || 'roadmap';
+          html += `<div class="google-map-widget" style="width: ${mapWidth}; height: ${mapHeight};">\n  <iframe src="https://maps.google.com/maps?q=${mapAddress}&z=${mapZoom}&t=${mapType === 'satellite' ? 'k' : 'm'}&output=embed" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>\n</div>\n\n`;
           break;
       }
     });
@@ -1953,6 +1971,170 @@ export default function PageBuilder({ initialBlocks = [], initialHtml = "", init
                         </a>
                       ))}
                     </nav>
+                  </div>
+                </>
+              )}
+
+              {editingBlock.type === "editor" && (
+                <>
+                  <div className="space-y-2">
+                    <Label>내용 (HTML)</Label>
+                    <Textarea
+                      value={editingBlock.props.content || "<p>내용을 입력하세요</p>"}
+                      onChange={(e) =>
+                        setEditingBlock({
+                          ...editingBlock,
+                          props: { ...editingBlock.props, content: e.target.value },
+                        })
+                      }
+                      rows={10}
+                      placeholder="HTML 형식으로 내용을 작성하세요..."
+                      data-testid="input-editor-content"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>최소 높이</Label>
+                      <Input
+                        value={editingBlock.props.height || "300px"}
+                        onChange={(e) =>
+                          setEditingBlock({
+                            ...editingBlock,
+                            props: { ...editingBlock.props, height: e.target.value },
+                          })
+                        }
+                        placeholder="300px"
+                        data-testid="input-editor-height"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>플레이스홀더</Label>
+                      <Input
+                        value={editingBlock.props.placeholder || "내용을 작성하세요..."}
+                        onChange={(e) =>
+                          setEditingBlock({
+                            ...editingBlock,
+                            props: { ...editingBlock.props, placeholder: e.target.value },
+                          })
+                        }
+                        placeholder="플레이스홀더 텍스트"
+                        data-testid="input-editor-placeholder"
+                      />
+                    </div>
+                  </div>
+                  <div className="p-3 bg-muted rounded-md">
+                    <Label className="text-xs text-muted-foreground mb-2 block">미리보기</Label>
+                    <div 
+                      className="prose prose-sm max-w-none bg-background p-3 rounded border"
+                      style={{ minHeight: editingBlock.props.height || '300px' }}
+                      dangerouslySetInnerHTML={{ 
+                        __html: editingBlock.props.content && editingBlock.props.content.trim() !== '' 
+                          ? editingBlock.props.content 
+                          : `<p style="color: #999;">${editingBlock.props.placeholder || '내용을 작성하세요...'}</p>` 
+                      }}
+                    />
+                  </div>
+                </>
+              )}
+
+              {editingBlock.type === "google-map" && (
+                <>
+                  <div className="space-y-2">
+                    <Label>주소</Label>
+                    <Input
+                      value={editingBlock.props.address || "서울특별시 중구 세종대로 110"}
+                      onChange={(e) =>
+                        setEditingBlock({
+                          ...editingBlock,
+                          props: { ...editingBlock.props, address: e.target.value },
+                        })
+                      }
+                      placeholder="주소를 입력하세요"
+                      data-testid="input-map-address"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>줌 레벨</Label>
+                      <Input
+                        type="number"
+                        min={1}
+                        max={20}
+                        value={editingBlock.props.zoom || 15}
+                        onChange={(e) => {
+                          const val = parseInt(e.target.value);
+                          setEditingBlock({
+                            ...editingBlock,
+                            props: { ...editingBlock.props, zoom: isNaN(val) ? 15 : val },
+                          });
+                        }}
+                        data-testid="input-map-zoom"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>지도 유형</Label>
+                      <Select
+                        value={editingBlock.props.mapType || "roadmap"}
+                        onValueChange={(v) =>
+                          setEditingBlock({
+                            ...editingBlock,
+                            props: { ...editingBlock.props, mapType: v },
+                          })
+                        }
+                      >
+                        <SelectTrigger data-testid="select-map-type">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="roadmap">일반</SelectItem>
+                          <SelectItem value="satellite">위성</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>너비</Label>
+                      <Input
+                        value={editingBlock.props.width || "100%"}
+                        onChange={(e) =>
+                          setEditingBlock({
+                            ...editingBlock,
+                            props: { ...editingBlock.props, width: e.target.value },
+                          })
+                        }
+                        placeholder="100%"
+                        data-testid="input-map-width"
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>높이</Label>
+                      <Input
+                        value={editingBlock.props.height || "400px"}
+                        onChange={(e) =>
+                          setEditingBlock({
+                            ...editingBlock,
+                            props: { ...editingBlock.props, height: e.target.value },
+                          })
+                        }
+                        placeholder="400px"
+                        data-testid="input-map-height"
+                      />
+                    </div>
+                  </div>
+                  <div className="p-3 bg-muted rounded-md">
+                    <Label className="text-xs text-muted-foreground mb-2 block">미리보기</Label>
+                    <div style={{ width: editingBlock.props.width || '100%', height: '200px' }}>
+                      <iframe
+                        src={`https://maps.google.com/maps?q=${encodeURIComponent(editingBlock.props.address || '서울특별시 중구 세종대로 110')}&z=${editingBlock.props.zoom || 15}&t=${editingBlock.props.mapType === 'satellite' ? 'k' : 'm'}&output=embed`}
+                        width="100%"
+                        height="100%"
+                        style={{ border: 0 }}
+                        allowFullScreen
+                        loading="lazy"
+                        referrerPolicy="no-referrer-when-downgrade"
+                      />
+                    </div>
                   </div>
                 </>
               )}

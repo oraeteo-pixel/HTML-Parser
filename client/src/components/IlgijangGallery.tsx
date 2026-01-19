@@ -137,106 +137,105 @@ export function IlgijangGallery() {
     setIsZoomed(false);
   };
 
-  const DiaryContent = ({ scale = 1, isFullscreen = false }: { scale?: number; isFullscreen?: boolean }) => {
-    const baseWidth = isFullscreen ? 500 : 400;
-    const width = baseWidth * scale;
-    
+  const DiaryContent = ({ scale = 1 }: { scale?: number }) => {
     return (
       <div 
         className="relative bg-white border border-gray-300 rounded-lg overflow-hidden"
         style={{ 
-          width,
+          width: 700 * scale,
           padding: 16 * scale,
           fontFamily: "'Noto Sans KR', 'Nanum Gothic', sans-serif"
         }}
       >
-        <div className="flex justify-center mb-2">
-          <img 
-            src={talismanGeneral} 
-            alt="장군" 
-            style={{ 
-              height: 80 * scale,
-              objectFit: 'contain'
-            }}
-          />
-        </div>
+        <div className="flex items-start gap-4" style={{ gap: 16 * scale }}>
+          <div className="flex-shrink-0">
+            <img 
+              src={talismanGeneral} 
+              alt="장군" 
+              style={{ 
+                height: 100 * scale,
+                objectFit: 'contain'
+              }}
+            />
+          </div>
 
-        <div 
-          className="text-center font-bold text-black mb-1"
-          style={{ fontSize: 16 * scale }}
-        >
-          {hwanggeuk.yearGanZhi}年 {hwanggeuk.monthGanZhi}月 {solarTerm?.hanja || ''}節局
-        </div>
-
-        <div 
-          className="text-center font-bold text-black mb-3"
-          style={{ fontSize: 16 * scale }}
-        >
-          {dayGanZhi}日 {hwHourGanZhi}時 {trigram.trigram}之{mansion.mansion}
-        </div>
-
-        <div className="space-y-2">
-          {hourBranches.map((branch, idx) => (
+          <div className="flex-1">
             <div 
-              key={idx} 
-              className="flex items-center justify-center gap-2"
-              style={{ minHeight: 60 * scale }}
+              className="font-bold text-black mb-1"
+              style={{ fontSize: 14 * scale }}
             >
-              <div 
-                className="font-bold text-black text-center"
-                style={{ 
-                  fontSize: 14 * scale,
-                  minWidth: 50 * scale
-                }}
-              >
-                {sixSpirits[idx]}
-              </div>
-              
-              <img 
-                src={BRANCH_TALISMANS[branch] || talismanSa}
-                alt={`${branch} 부적`}
-                style={{ 
-                  height: 55 * scale,
-                  objectFit: 'contain'
-                }}
-              />
-              
-              <div 
-                className="font-bold text-black text-center"
-                style={{ 
-                  fontSize: 12 * scale,
-                  minWidth: 20 * scale
-                }}
-              >
-                {branch}
-              </div>
+              {hwanggeuk.yearGanZhi}年 {hwanggeuk.monthGanZhi}月 {solarTerm?.hanja || ''}節局
             </div>
-          ))}
+
+            <div 
+              className="font-bold text-black mb-2"
+              style={{ fontSize: 14 * scale }}
+            >
+              {dayGanZhi}日 {hwHourGanZhi}時 {trigram.trigram}之{mansion.mansion}
+            </div>
+
+            <div 
+              className="grid grid-cols-6 gap-1"
+              style={{ gap: 8 * scale }}
+            >
+              {hourBranches.map((branch, idx) => (
+                <div 
+                  key={idx} 
+                  className="flex flex-col items-center"
+                >
+                  <div 
+                    className="font-bold text-black text-center"
+                    style={{ fontSize: 10 * scale }}
+                  >
+                    {sixSpirits[idx]}
+                  </div>
+                  
+                  <img 
+                    src={BRANCH_TALISMANS[branch] || talismanSa}
+                    alt={`${branch} 부적`}
+                    style={{ 
+                      height: 70 * scale,
+                      objectFit: 'contain'
+                    }}
+                  />
+                  
+                  <div 
+                    className="font-bold text-black text-center"
+                    style={{ fontSize: 10 * scale }}
+                  >
+                    {sixSpirits[idx]}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
-        <div 
-          className="text-center mt-4 text-black"
-          style={{ fontSize: 12 * scale }}
-        >
-          侍天主造化定永世不忘萬事知
-        </div>
-        <div 
-          className="text-center text-black"
-          style={{ fontSize: 12 * scale }}
-        >
-          至氣今至願爲大降
-        </div>
-        <div 
-          className="text-center text-black"
-          style={{ fontSize: 10 * scale }}
-        >
-          天文地理風雲造化八門遁甲六丁六甲智慧勇力
-        </div>
-        <div 
-          className="text-center mt-2 text-black"
-          style={{ fontSize: 12 * scale }}
-        >
-          所願成就
+        <div className="mt-3 text-center">
+          <div 
+            className="text-black"
+            style={{ fontSize: 11 * scale }}
+          >
+            侍天主造化定永世不忘萬事知
+          </div>
+          <div 
+            className="text-black"
+            style={{ fontSize: 11 * scale }}
+          >
+            至氣今至願爲大降
+          </div>
+          <div 
+            className="text-black"
+            style={{ fontSize: 10 * scale }}
+          >
+            天文地理風雲造化八門遁甲六丁六甲智慧勇力
+          </div>
+          <div 
+            className="mt-1 text-black font-bold"
+            style={{ fontSize: 11 * scale }}
+          >
+            所願成就
+          </div>
         </div>
       </div>
     );
@@ -245,7 +244,7 @@ export function IlgijangGallery() {
   return (
     <div className="w-full" data-testid="ilgijang-gallery">
       <div 
-        className="bg-white rounded-md overflow-hidden cursor-pointer hover-elevate flex items-center justify-center py-4"
+        className="bg-white rounded-md overflow-hidden cursor-pointer hover-elevate flex items-center justify-center py-4 overflow-x-auto"
         onClick={openFullscreen}
         data-testid="gallery-ilgijang-page-1"
       >
@@ -317,7 +316,7 @@ export function IlgijangGallery() {
             </Button>
 
             <div className={`transition-transform duration-300 ${isZoomed ? 'scale-125' : ''}`}>
-              <DiaryContent scale={isZoomed ? 1.3 : 1.1} isFullscreen={true} />
+              <DiaryContent scale={isZoomed ? 1.4 : 1.1} />
             </div>
           </div>
         </DialogContent>

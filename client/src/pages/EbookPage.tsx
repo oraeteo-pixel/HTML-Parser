@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { RichEditor, type MediaItem, type TextStyle, getFontFamilyCSS } from "@/components/RichEditor";
 import { PdfViewer } from "@/components/PdfViewer";
 import { HyunmugyeongGallery } from "@/components/HyunmugyeongGallery";
+import { SomyeoleumhaebuGallery } from "@/components/SomyeoleumhaebuGallery";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -424,6 +425,12 @@ export default function EbookPage() {
         {(currentSection === "hyunmugyeong" || currentSection === "") && (
           <Card className="p-4 mb-4">
             <HyunmugyeongGallery />
+          </Card>
+        )}
+
+        {currentSection === "somyeoleumhaebu" && (
+          <Card className="p-4 mb-4">
+            <SomyeoleumhaebuGallery />
           </Card>
         )}
 

@@ -327,9 +327,9 @@ export function IlgijangGallery() {
           皇極曆年月{hwanggeuk.yearGanZhi}{hwanggeuk.monthGanZhi}24節局{solarTerm?.hanja || ''}
         </div>
 
-        {/* 황극력 일시 */}
+        {/* 황극력 일시 + 64괘 (한 열) */}
         <div style={{ ...colStyle, fontSize: fs(cfg.mainFontSize) }}>
-          皇極曆<br/>日時<br/><br/>{dayGanZhi}<br/>{hwHourGanZhi}
+          皇極曆日時{dayGanZhi}{hwHourGanZhi}64卦{hexagram64?.hanja || ''}
         </div>
 
         {/* 28수 */}

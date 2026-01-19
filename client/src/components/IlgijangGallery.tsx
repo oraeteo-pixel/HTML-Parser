@@ -362,10 +362,10 @@ export function IlgijangGallery() {
         <div style={{ ...colStyle, fontSize: fs(cfg.incantationFontSize) }}>
           天文地理風雲造化八門遁甲六丁六甲智慧勇力
         </div>
-        <div style={{ ...colStyle, fontSize: fs(cfg.incantationFontSize) }}>
+        <div style={{ ...colStyle, fontSize: fs(cfg.incantationFontSize), marginTop: sp(80) }}>
           朴判守
         </div>
-        <div style={{ ...colStyle, fontSize: fs(cfg.incantationFontSize) }}>
+        <div style={{ ...colStyle, fontSize: fs(cfg.incantationFontSize), marginTop: sp(100) }}>
           所願成就
         </div>
       </div>

@@ -339,14 +339,14 @@ export function IlgijangGallery() {
           {hwDayGanZhi}日{hwHourGanZhi}時{hexagram64?.fullName || ''}
         </div>
 
-        {/* 6개 부적 - 육신 이름 + 이미지 */}
+        {/* 6개 부적 - 오늘의 육신(현무) + 이미지 */}
         {sixBranches.map((branch, idx) => (
           <div key={idx} style={{ ...colStyle, textAlign: 'center' }}>
-            <span style={{ fontSize: fs(cfg.talismanLabelFontSize) }}>{sixSpirits[idx]}</span>
+            <span style={{ fontSize: fs(cfg.talismanLabelFontSize) }}>{sixSpirits[0]}</span>
             <br/>
             <img 
               src={BRANCH_TALISMANS[branch]}
-              alt={`${sixSpirits[idx]}${branch}부`}
+              alt={`${sixSpirits[0]}${branch}부`}
               style={{ height: sp(cfg.talismanImageHeight), objectFit: 'contain', marginTop: sp(cfg.talismanImageMarginTop) }}
             />
           </div>

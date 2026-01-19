@@ -249,6 +249,13 @@ export function IlgijangGallery() {
           </div>
         </div>
 
+        {/* 28수부 */}
+        <div style={{ ...colStyle, textAlign: 'center' }}>
+          <span style={{ fontSize: fs(cfg.talismanLabelFontSize) }}>28宿부</span>
+          <br/>
+          <span style={{ fontSize: fs(cfg.mainFontSize) }}>{mansion.mansion}</span>
+        </div>
+
         {/* 황극력 년월 */}
         <div style={{ ...colStyle, fontSize: fs(cfg.mainFontSize) }}>
           皇極曆<br/>年月<br/><br/>{hwanggeuk.yearGanZhi}<br/>{hwanggeuk.monthGanZhi}

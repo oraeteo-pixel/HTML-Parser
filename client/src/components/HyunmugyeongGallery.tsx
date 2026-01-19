@@ -58,7 +58,6 @@ export function HyunmugyeongGallery() {
 
   const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
   const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
-  const scrollTo = useCallback((index: number) => emblaApi?.scrollTo(index), [emblaApi]);
 
   const onSelect = useCallback(() => {
     if (!emblaApi) return;
@@ -116,7 +115,7 @@ export function HyunmugyeongGallery() {
             {pages.map((page, index) => (
               <div
                 key={index}
-                className="flex-[0_0_100%] sm:flex-[0_0_50%] md:flex-[0_0_33.333%] lg:flex-[0_0_25%] min-w-0 px-1"
+                className="flex-[0_0_100%] min-w-0 px-1"
               >
                 <div 
                   className="aspect-[3/4] bg-slate-100 dark:bg-slate-800 rounded-md overflow-hidden cursor-pointer hover-elevate"
@@ -130,7 +129,6 @@ export function HyunmugyeongGallery() {
                     loading="lazy"
                   />
                 </div>
-                <p className="text-center text-sm text-muted-foreground mt-1">{index + 1}쪽</p>
               </div>
             ))}
           </div>
@@ -159,24 +157,10 @@ export function HyunmugyeongGallery() {
         </Button>
       </div>
 
-      <div className="flex items-center justify-center gap-2 mt-4 flex-wrap">
-        <span className="text-sm text-muted-foreground mr-2">
+      <div className="flex items-center justify-center mt-4">
+        <span className="text-sm text-muted-foreground">
           {selectedIndex + 1} / {pages.length}
         </span>
-        <div className="flex gap-1 flex-wrap justify-center">
-          {Array.from({ length: Math.ceil(pages.length / 4) }).map((_, groupIdx) => (
-            <Button
-              key={groupIdx}
-              size="sm"
-              variant={Math.floor(selectedIndex / 4) === groupIdx ? "default" : "ghost"}
-              className="h-7 w-7 p-0 text-xs"
-              onClick={() => scrollTo(groupIdx * 4)}
-              data-testid={`button-page-group-${groupIdx + 1}`}
-            >
-              {groupIdx * 4 + 1}
-            </Button>
-          ))}
-        </div>
       </div>
 
       <Dialog open={fullscreenImage !== null} onOpenChange={() => closeFullscreen()}>

@@ -28,8 +28,68 @@ import talismanYu from "@assets/talisman-yu.jpg";
 import talismanSul from "@assets/talisman-sul.png";
 import talismanHae from "@assets/talisman-hae.png";
 
+import mansion28_deungwoo from "@assets/28mansions/_등우.jpg";
+import mansion28_masung from "@assets/28mansions/_마성.jpg";
+import mansion28_ohan from "@assets/28mansions/_오한.jpg";
+import mansion28_wangryang from "@assets/28mansions/_왕량.jpg";
+import mansion28_gabok from "@assets/28mansions/_가복.jpg";
+import mansion28_jinjun from "@assets/28mansions/_진준.jpg";
+import mansion28_gyunggam from "@assets/28mansions/_경감.jpg";
+import mansion28_dumu from "@assets/28mansions/_두무.jpg";
+import mansion28_gusun from "@assets/28mansions/_구순.jpg";
+import mansion28_bujun from "@assets/28mansions/_부준.jpg";
+import mansion28_jampaeng from "@assets/28mansions/_잠팽.jpg";
+import mansion28_gyunsim from "@assets/28mansions/_견심.jpg";
+import mansion28_poongee from "@assets/28mansions/_풍이.jpg";
+import mansion28_wangpae from "@assets/28mansions/_왕패.jpg";
+import mansion28_joowoo from "@assets/28mansions/_주우.jpg";
+import mansion28_imgwang from "@assets/28mansions/_임광.jpg";
+import mansion28_jejun from "@assets/28mansions/_제준.jpg";
+import mansion28_eechung from "@assets/28mansions/_이충.jpg";
+import mansion28_gyungdan from "@assets/28mansions/_경단.jpg";
+import mansion28_mansoo from "@assets/28mansions/_만수.jpg";
+import mansion28_gaeyeon from "@assets/28mansions/_개연.jpg";
+import mansion28_biyoong from "@assets/28mansions/_비융.jpg";
+import mansion28_yogi from "@assets/28mansions/_요기.jpg";
+import mansion28_yoosik from "@assets/28mansions/_유식.jpg";
+import mansion28_gyungsoon from "@assets/28mansions/_경순.jpg";
+import mansion28_janggung from "@assets/28mansions/_장궁.jpg";
+import mansion28_mamu from "@assets/28mansions/_마무.jpg";
+import mansion28_yooyoong from "@assets/28mansions/_유융.jpg";
+
 const EARTHLY_BRANCHES = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
 const SIX_SPIRITS = ["靑龍", "朱雀", "句陳", "螣蛇", "白虎", "玄武"];
+
+const MANSION_28_TALISMANS: { [key: string]: string } = {
+  "角": mansion28_deungwoo,
+  "亢": mansion28_masung,
+  "氐": mansion28_ohan,
+  "房": mansion28_wangryang,
+  "心": mansion28_gabok,
+  "尾": mansion28_jinjun,
+  "箕": mansion28_gyunggam,
+  "斗": mansion28_dumu,
+  "牛": mansion28_gusun,
+  "女": mansion28_bujun,
+  "虛": mansion28_jampaeng,
+  "危": mansion28_gyunsim,
+  "室": mansion28_poongee,
+  "壁": mansion28_wangpae,
+  "奎": mansion28_joowoo,
+  "婁": mansion28_imgwang,
+  "胃": mansion28_jejun,
+  "昴": mansion28_eechung,
+  "畢": mansion28_gyungdan,
+  "觜": mansion28_mansoo,
+  "參": mansion28_gaeyeon,
+  "井": mansion28_biyoong,
+  "鬼": mansion28_yogi,
+  "柳": mansion28_yoosik,
+  "星": mansion28_gyungsoon,
+  "張": mansion28_janggung,
+  "翼": mansion28_mamu,
+  "軫": mansion28_yooyoong,
+};
 
 // ========================================
 // 일기장 레이아웃 설정 (여기서 수정하세요)
@@ -251,9 +311,15 @@ export function IlgijangGallery() {
 
         {/* 28수부 */}
         <div style={{ ...colStyle, textAlign: 'center' }}>
-          <span style={{ fontSize: fs(cfg.talismanLabelFontSize) }}>28宿부</span>
+          <span style={{ fontSize: fs(cfg.talismanLabelFontSize) }}>{mansion.mansion}宿부</span>
           <br/>
-          <span style={{ fontSize: fs(cfg.mainFontSize) }}>{mansion.mansion}</span>
+          {MANSION_28_TALISMANS[mansion.mansion] && (
+            <img 
+              src={MANSION_28_TALISMANS[mansion.mansion]}
+              alt={`${mansion.mansion}수부`}
+              style={{ height: sp(cfg.talismanImageHeight), objectFit: 'contain', marginTop: sp(cfg.talismanImageMarginTop) }}
+            />
+          )}
         </div>
 
         {/* 황극력 년월 */}

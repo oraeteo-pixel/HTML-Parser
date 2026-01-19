@@ -165,56 +165,57 @@ export function IlgijangGallery() {
     <div 
       className="bg-white border border-gray-200 rounded-lg p-6"
       style={{ 
-        width: 850 * scale,
+        width: 900 * scale,
+        minHeight: 500 * scale,
         fontFamily: "'Noto Sans KR', 'Nanum Gothic', sans-serif"
       }}
     >
-      <div className="flex flex-row-reverse justify-between items-start gap-4">
-        <div className="flex flex-col items-center" style={{ writingMode: 'vertical-rl' }}>
-          <div className="font-bold text-black" style={{ fontSize: 14 * scale }}>
+      <div className="flex flex-row-reverse justify-between items-stretch gap-6" style={{ height: 450 * scale }}>
+        <div className="flex flex-col justify-start" style={{ writingMode: 'vertical-rl' }}>
+          <div className="font-bold text-black" style={{ fontSize: 16 * scale }}>
             {hwanggeuk.yearGanZhi}年
           </div>
-          <div className="font-bold text-black" style={{ fontSize: 14 * scale }}>
+          <div className="font-bold text-black" style={{ fontSize: 16 * scale }}>
             {hwanggeuk.monthGanZhi}月
           </div>
-          <div className="font-bold text-black" style={{ fontSize: 14 * scale }}>
+          <div className="font-bold text-black" style={{ fontSize: 16 * scale }}>
             {solarTerm?.hanja || ''}節局
           </div>
-          <div className="font-bold text-black mt-2" style={{ fontSize: 14 * scale }}>
+          <div className="font-bold text-black mt-4" style={{ fontSize: 16 * scale }}>
             {dayGanZhi}日
           </div>
-          <div className="font-bold text-black" style={{ fontSize: 14 * scale }}>
+          <div className="font-bold text-black" style={{ fontSize: 16 * scale }}>
             {hwHourGanZhi}時
           </div>
-          <div className="font-bold text-black mt-2" style={{ fontSize: 13 * scale }}>
+          <div className="font-bold text-black mt-4" style={{ fontSize: 14 * scale }}>
             {sogungDaegung.sogung}宮
           </div>
-          <div className="font-bold text-black" style={{ fontSize: 12 * scale }}>
+          <div className="font-bold text-black" style={{ fontSize: 14 * scale }}>
             {trigram.trigram}之{mansion.mansion}
           </div>
         </div>
 
-        <div className="flex flex-col items-center" style={{ writingMode: 'vertical-rl' }}>
-          <div className="font-bold text-black" style={{ fontSize: 12 * scale }}>
+        <div className="flex flex-col justify-start" style={{ writingMode: 'vertical-rl' }}>
+          <div className="font-bold text-black" style={{ fontSize: 14 * scale }}>
             翼子三偶
           </div>
-          <div className="font-bold text-black" style={{ fontSize: 12 * scale }}>
+          <div className="font-bold text-black" style={{ fontSize: 14 * scale }}>
             損子三偶
           </div>
-          <div className="font-bold text-black mt-2" style={{ fontSize: 12 * scale }}>
+          <div className="font-bold text-black mt-6" style={{ fontSize: 14 * scale }}>
             奇西
           </div>
-          <div className="font-bold text-black" style={{ fontSize: 12 * scale }}>
+          <div className="font-bold text-black" style={{ fontSize: 14 * scale }}>
             財振
           </div>
         </div>
 
-        <div className="flex flex-row items-end gap-3" style={{ gap: 12 * scale }}>
+        <div className="flex flex-row items-end gap-4" style={{ gap: 16 * scale }}>
           {sixBranches.map((branch, idx) => (
             <div key={idx} className="flex flex-col items-center">
               <div 
-                className="font-bold text-black text-center mb-1" 
-                style={{ fontSize: 11 * scale, writingMode: 'vertical-rl' }}
+                className="font-bold text-black text-center mb-2" 
+                style={{ fontSize: 13 * scale, writingMode: 'vertical-rl' }}
               >
                 {sixSpirits[0]}
               </div>
@@ -222,7 +223,7 @@ export function IlgijangGallery() {
                 src={BRANCH_TALISMANS[branch]}
                 alt={`${branch}부`}
                 style={{ 
-                  height: 100 * scale,
+                  height: 150 * scale,
                   objectFit: 'contain'
                 }}
               />
@@ -231,16 +232,16 @@ export function IlgijangGallery() {
         </div>
 
         <div 
-          className="flex flex-col items-center text-black font-bold"
-          style={{ writingMode: 'vertical-rl', fontSize: 10 * scale }}
+          className="flex flex-col justify-start text-black font-bold"
+          style={{ writingMode: 'vertical-rl', fontSize: 12 * scale }}
         >
           <div>侍天主造化定</div>
           <div>永世不忘萬事知</div>
-          <div className="mt-2">至氣今至願爲大降</div>
-          <div className="mt-2" style={{ fontSize: 9 * scale }}>天文地理風雲造化</div>
-          <div style={{ fontSize: 9 * scale }}>八門遁甲六丁六甲</div>
-          <div style={{ fontSize: 9 * scale }}>智慧勇力</div>
-          <div className="mt-2">所願成就</div>
+          <div className="mt-4">至氣今至願爲大降</div>
+          <div className="mt-4" style={{ fontSize: 11 * scale }}>天文地理風雲造化</div>
+          <div style={{ fontSize: 11 * scale }}>八門遁甲六丁六甲</div>
+          <div style={{ fontSize: 11 * scale }}>智慧勇力</div>
+          <div className="mt-4">所願成就</div>
         </div>
       </div>
     </div>

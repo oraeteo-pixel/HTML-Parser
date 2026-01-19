@@ -203,11 +203,12 @@ export function IlgijangGallery() {
     const sogungDaegung = getSogungDaegung(new Date());
     const hexagram64 = get64HexagramName(sogungDaegung.sogung, sogungDaegung.daegung);
 
-    const dayStem = dayGanZhi[0];
-    const dayBranch = dayGanZhi[1];
+    // 황극력 기준 일간/일지로 육신과 부적 순서 결정
+    const hwDayStem = hwDayGanZhi[0];
+    const hwDayBranch = hwDayGanZhi[1];
     
-    const sixSpirits = getSixSpiritsForDay(dayStem);
-    const sixBranches = getSixBranchesFromDayBranch(dayBranch);
+    const sixSpirits = getSixSpiritsForDay(hwDayStem);
+    const sixBranches = getSixBranchesFromDayBranch(hwDayBranch);
     
     const jeolgukData = getJeolguk(hwanggeuk.year, hwanggeuk.month, hwanggeuk.day);
     const jeolguk = jeolgukData.name;
@@ -218,11 +219,8 @@ export function IlgijangGallery() {
       hwanggeuk,
       hwDayGanZhi,
       hwHourGanZhi,
-      dayGanZhi,
       sixSpirits,
       sixBranches,
-      dayStem,
-      dayBranch,
       sogungDaegung,
       hexagram64,
       jeolguk,
@@ -230,7 +228,7 @@ export function IlgijangGallery() {
     };
   }, [currentTime]);
 
-  const { trigram, mansion, hwanggeuk, hwDayGanZhi, hwHourGanZhi, dayGanZhi, sixSpirits, sixBranches, sogungDaegung, hexagram64, jeolguk } = calendarData;
+  const { trigram, mansion, hwanggeuk, hwDayGanZhi, hwHourGanZhi, sixSpirits, sixBranches, sogungDaegung, hexagram64, jeolguk } = calendarData;
 
   const openFullscreen = () => {
     setFullscreenOpen(true);

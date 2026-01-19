@@ -14,6 +14,7 @@ import {
   getSogungDaegung,
   get64HexagramName,
   getJeolguk,
+  WEEKDAYS_HANJA,
 } from "@/lib/calendarData";
 
 import talismanJa from "@assets/talisman-ja.png";
@@ -370,8 +371,33 @@ export function IlgijangGallery() {
     );
   };
 
+  // 요일 계산용
+  const weekdayHanja = WEEKDAYS_HANJA[new Date().getDay()];
+
   return (
     <div className="w-full" data-testid="ilgijang-gallery">
+      {/* 황극력 정보박스 */}
+      <div className="slim-info-bar mb-4" data-testid="ilgijang-info-bar">
+        <div className="flex flex-wrap items-center gap-1.5 text-base">
+          <span className="font-bold text-gray-700 dark:text-gray-200">
+            {hwanggeuk.year}.{hwanggeuk.month}.{hwanggeuk.day}
+          </span>
+          <span className="font-semibold text-gray-600 dark:text-gray-300">
+            {weekdayHanja}
+          </span>
+          <span className="font-semibold text-gray-600 dark:text-gray-300">
+            ({hwanggeuk.yearGanZhi}年 {hwanggeuk.monthGanZhi}月 {hwDayGanZhi}日 {hwHourGanZhi}時)
+          </span>
+          <span className="font-bold text-gray-700 dark:text-gray-200">{jeolguk}</span>
+          <span className="font-semibold text-gray-600 dark:text-gray-300">
+            &lt;소궁,대궁&gt;{sogungDaegung.isZungung ? "존궁" : `${sogungDaegung.sogung},${sogungDaegung.daegung}`} {hexagram64?.fullName || ''}
+          </span>
+          <span className="slim-badge-cyan">
+            {mansion.isZunkong ? mansion.mansion : `${mansion.mansion}, ${mansion.general}`}
+          </span>
+        </div>
+      </div>
+
       <div 
         className="bg-white rounded-md overflow-auto cursor-pointer hover-elevate flex items-center justify-center py-8"
         onClick={openFullscreen}

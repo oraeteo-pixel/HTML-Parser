@@ -352,9 +352,12 @@ export function IlgijangGallery() {
           </div>
         ))}
 
-        {/* 주문 - 세로 한 줄 */}
+        {/* 주문 - 세로 한 줄씩 */}
         <div style={{ ...colStyle, fontSize: fs(cfg.incantationFontSize) }}>
           侍天主造化定永世不忘萬事知
+        </div>
+        <div style={{ ...colStyle, fontSize: fs(cfg.incantationFontSize) }}>
+          至氣今至願爲大降
         </div>
       </div>
     );

@@ -182,7 +182,8 @@ export function IlgijangGallery() {
           fontFamily: "'Noto Sans KR', 'Nanum Gothic', sans-serif",
           padding: sp(24),
           whiteSpace: 'nowrap',
-          direction: 'rtl'
+          direction: 'rtl',
+          minHeight: sp(500)
         }}
       >
         {/* 맨 오른쪽: 익자삼우 */}
@@ -229,7 +230,7 @@ export function IlgijangGallery() {
             <img 
               src={BRANCH_TALISMANS[branch]}
               alt={`${branch}부`}
-              style={{ height: sp(80), objectFit: 'contain', marginTop: sp(4) }}
+              style={{ height: sp(120), objectFit: 'contain', marginTop: sp(4) }}
             />
           </div>
         ))}

@@ -3,7 +3,7 @@ import { X, ZoomIn, ZoomOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 
-import page1 from "@assets/deukchaebu-final.jpg";
+import page1 from "@assets/deukchaebu-final.png";
 
 export function DeukchaebuGallery() {
   const [fullscreenOpen, setFullscreenOpen] = useState(false);

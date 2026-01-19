@@ -84,14 +84,15 @@ export function DeukchaebuGallery() {
                 className="flex-[0_0_100%] min-w-0 px-1"
               >
                 <div 
-                  className="min-h-[85vh] bg-white rounded-md overflow-hidden cursor-pointer hover-elevate flex items-center justify-center"
+                  className="min-h-[50vh] bg-white rounded-md overflow-hidden cursor-pointer hover-elevate flex items-center justify-center py-8"
                   onClick={() => openFullscreen(index)}
                   data-testid={`gallery-deukchae-page-${index + 1}`}
                 >
                   <img
                     src={page}
                     alt={`득체부 ${index + 1}쪽`}
-                    className="w-full h-auto max-h-[85vh] object-contain"
+                    className="h-auto object-contain"
+                    style={{ maxWidth: '100%' }}
                     loading="lazy"
                   />
                 </div>
@@ -178,7 +179,7 @@ export function DeukchaebuGallery() {
                 <img
                   src={pages[fullscreenImage]}
                   alt={`득체부 ${fullscreenImage + 1}쪽`}
-                  className={`transition-transform duration-300 ${isZoomed ? 'scale-150 cursor-move' : 'max-h-[85vh] max-w-full object-contain cursor-zoom-in'}`}
+                  className={`transition-transform duration-300 ${isZoomed ? 'scale-150 cursor-move' : 'max-w-full object-contain cursor-zoom-in'}`}
                   onClick={() => !isZoomed && setIsZoomed(true)}
                   data-testid="img-deukchae-fullscreen"
                 />

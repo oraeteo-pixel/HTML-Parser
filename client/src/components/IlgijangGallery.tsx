@@ -329,9 +329,9 @@ export function IlgijangGallery() {
           {hwanggeuk.yearGanZhi}{hwanggeuk.monthGanZhi}{jeolguk}
         </div>
 
-        {/* 일시간지 + 64괘 (한 열) */}
+        {/* 일간지 시간지 64괘 (한 열) */}
         <div style={{ ...colStyle, fontSize: fs(cfg.mainFontSize) }}>
-          {dayGanZhi}{hwHourGanZhi}{hexagram64?.hanja || ''}
+          {hwanggeuk.dayGanZhi}{hwHourGanZhi}{hexagram64?.hanja || ''}
         </div>
 
         {/* 육신 */}

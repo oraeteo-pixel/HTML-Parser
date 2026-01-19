@@ -4,9 +4,15 @@ import { ChevronLeft, ChevronRight, X, ZoomIn, ZoomOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 
-import page1 from "@assets/deukchae-1-trimmed.jpg";
+import page1 from "@assets/deukchae-new-1.jpg";
+import page2 from "@assets/deukchae-new-2.jpg";
+import page3 from "@assets/deukchae-new-3.jpg";
+import page4 from "@assets/deukchae-new-4.jpg";
+import page5 from "@assets/deukchae-new-5.jpg";
+import page6 from "@assets/deukchae-new-6.jpg";
+import page7 from "@assets/deukchae-new-7.jpg";
 
-const pages = [page1];
+const pages = [page1, page2, page3, page4, page5, page6, page7];
 
 export function DeukchaebuGallery() {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: false, dragFree: false });
@@ -94,31 +100,27 @@ export function DeukchaebuGallery() {
           </div>
         </div>
 
-        {pages.length > 1 && (
-          <>
-            <Button
-              size="icon"
-              variant="secondary"
-              className="absolute left-1 top-1/2 -translate-y-1/2 z-10 opacity-80 hover:opacity-100"
-              onClick={scrollPrev}
-              disabled={!canScrollPrev}
-              data-testid="button-deukchae-gallery-prev"
-            >
-              <ChevronLeft className="h-5 w-5" />
-            </Button>
+        <Button
+          size="icon"
+          variant="secondary"
+          className="absolute left-1 top-1/2 -translate-y-1/2 z-10 opacity-80 hover:opacity-100"
+          onClick={scrollPrev}
+          disabled={!canScrollPrev}
+          data-testid="button-deukchae-gallery-prev"
+        >
+          <ChevronLeft className="h-5 w-5" />
+        </Button>
 
-            <Button
-              size="icon"
-              variant="secondary"
-              className="absolute right-1 top-1/2 -translate-y-1/2 z-10 opacity-80 hover:opacity-100"
-              onClick={scrollNext}
-              disabled={!canScrollNext}
-              data-testid="button-deukchae-gallery-next"
-            >
-              <ChevronRight className="h-5 w-5" />
-            </Button>
-          </>
-        )}
+        <Button
+          size="icon"
+          variant="secondary"
+          className="absolute right-1 top-1/2 -translate-y-1/2 z-10 opacity-80 hover:opacity-100"
+          onClick={scrollNext}
+          disabled={!canScrollNext}
+          data-testid="button-deukchae-gallery-next"
+        >
+          <ChevronRight className="h-5 w-5" />
+        </Button>
       </div>
 
       <Dialog open={fullscreenImage !== null} onOpenChange={() => closeFullscreen()}>

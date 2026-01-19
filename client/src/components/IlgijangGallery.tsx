@@ -70,8 +70,12 @@ function getSixBranchesFromDayBranch(dayBranch: string): string[] {
   const startIdx = EARTHLY_BRANCHES.indexOf(dayBranch);
   const branches: string[] = [];
   
+  const isYang = startIdx % 2 === 0;
+  const step = isYang ? 2 : -2;
+  
   for (let i = 0; i < 6; i++) {
-    branches.push(EARTHLY_BRANCHES[(startIdx + i * 2) % 12]);
+    const idx = ((startIdx + i * step) % 12 + 12) % 12;
+    branches.push(EARTHLY_BRANCHES[idx]);
   }
   
   return branches;

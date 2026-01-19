@@ -185,7 +185,7 @@ export function IlgijangGallery() {
         {sixBranches.map((branch, idx) => (
           <div key={idx} className="flex flex-col items-center">
             <div className="font-bold text-black text-center" style={{ fontSize: 11 * scale }}>
-              {sixSpirits[idx]}
+              {sixSpirits[0]}
             </div>
             <img 
               src={BRANCH_TALISMANS[branch]}
@@ -195,9 +195,6 @@ export function IlgijangGallery() {
                 objectFit: 'contain'
               }}
             />
-            <div className="font-bold text-black text-center" style={{ fontSize: 11 * scale }}>
-              {sixSpirits[idx]}
-            </div>
           </div>
         ))}
       </div>

@@ -228,8 +228,8 @@ export function IlgijangGallery() {
             </div>
           </div>
           
-          {/* 중간: 基瑞在震 (오른쪽 정렬) */}
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: sp(16) }}>
+          {/* 중간: 基瑞在震 (가운데 정렬 - 神 위) */}
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: sp(16) }}>
             <div style={{ writingMode: 'vertical-rl', textOrientation: 'upright', fontSize: fs(cfg.titleFontSize), color: 'black', fontWeight: 'bold' }}>
               基瑞在{trigram.trigram}
             </div>

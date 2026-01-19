@@ -331,12 +331,12 @@ export function IlgijangGallery() {
 
         {/* 년월간지 + 절국 (세로 한 열) */}
         <div style={{ ...colStyle, fontSize: fs(cfg.mainFontSize) }}>
-          년월{hwanggeuk.yearGanZhi}{hwanggeuk.monthGanZhi}{jeolguk}
+          {hwanggeuk.yearGanZhi}年{hwanggeuk.monthGanZhi}月{jeolguk}
         </div>
 
         {/* 일시간지 + 64괘 (세로 한 열, 달력과 동일 로직) */}
         <div style={{ ...colStyle, fontSize: fs(cfg.mainFontSize) }}>
-          일시{hwDayGanZhi}{hwHourGanZhi}{hexagram64?.fullName || ''}
+          {hwDayGanZhi}日{hwHourGanZhi}時{hexagram64?.fullName || ''}
         </div>
 
         {/* 육신 */}

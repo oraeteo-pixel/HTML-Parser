@@ -334,21 +334,6 @@ export function IlgijangGallery() {
           {dayGanZhi}{hwHourGanZhi}{hexagram64?.hanja || ''}
         </div>
 
-        {/* 28수 */}
-        <div style={{ ...colStyle, fontSize: fs(cfg.mainFontSize) }}>
-          28宿<br/><br/>{mansion.mansion}
-        </div>
-
-        {/* 24절국 */}
-        <div style={{ ...colStyle, fontSize: fs(cfg.mainFontSize) }}>
-          24節局<br/><br/>{solarTerm?.hanja || ''}
-        </div>
-
-        {/* 소궁 대궁 64괘 */}
-        <div style={{ ...colStyle, fontSize: fs(cfg.mainFontSize) }}>
-          小宮<br/>大宮<br/>64卦<br/><br/>{sogungDaegung.sogung}<br/>{sogungDaegung.daegung}<br/>{hexagram64?.hanja || ''}
-        </div>
-
         {/* 육신 */}
         <div style={{ ...colStyle, fontSize: fs(cfg.mainFontSize) }}>
           {sixSpirits[0]}<br/>{sixSpirits[1]}<br/>{sixSpirits[2]}<br/>{sixSpirits[3]}<br/>{sixSpirits[4]}<br/>{sixSpirits[5]}

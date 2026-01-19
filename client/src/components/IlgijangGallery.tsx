@@ -322,9 +322,9 @@ export function IlgijangGallery() {
           )}
         </div>
 
-        {/* 황극력 년월 */}
+        {/* 황극력 년월 + 24절국 (한 열) */}
         <div style={{ ...colStyle, fontSize: fs(cfg.mainFontSize) }}>
-          皇極曆<br/>年月<br/><br/>{hwanggeuk.yearGanZhi}<br/>{hwanggeuk.monthGanZhi}
+          皇極曆年月{hwanggeuk.yearGanZhi}{hwanggeuk.monthGanZhi}24節局{solarTerm?.hanja || ''}
         </div>
 
         {/* 황극력 일시 */}

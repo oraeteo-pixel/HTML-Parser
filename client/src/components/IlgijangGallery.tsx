@@ -60,6 +60,18 @@ import mansion28_yooyoong from "@assets/28mansions/_유융.jpg";
 const EARTHLY_BRANCHES = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
 const SIX_SPIRITS = ["靑龍", "朱雀", "句陳", "螣蛇", "白虎", "玄武"];
 
+const STEM_ELEMENT: { [key: string]: string } = {
+  "甲": "甲木", "乙": "乙木",
+  "丙": "丙火", "丁": "丁火",
+  "戊": "戊土", "己": "己土",
+  "庚": "庚金", "辛": "辛金",
+  "壬": "壬水", "癸": "癸水"
+};
+
+function getJeolgukFromStem(stem: string): string {
+  return (STEM_ELEMENT[stem] || "") + "節局";
+}
+
 const MANSION_28_TALISMANS: { [key: string]: string } = {
   "角": mansion28_deungwoo,
   "亢": mansion28_masung,
@@ -205,6 +217,8 @@ export function IlgijangGallery() {
     
     const sixSpirits = getSixSpiritsForDay(dayStem);
     const sixBranches = getSixBranchesFromDayBranch(dayBranch);
+    
+    const jeolguk = getJeolgukFromStem(dayStem);
 
     return {
       trigram,
@@ -219,11 +233,12 @@ export function IlgijangGallery() {
       dayBranch,
       sogungDaegung,
       hexagram64,
+      jeolguk,
       koreanDate: { year: adjustedYear, month: adjustedMonth, day: adjustedDay, hours, minutes }
     };
   }, [currentTime]);
 
-  const { trigram, mansion, hwanggeuk, hwHourGanZhi, dayGanZhi, solarTerm, sixSpirits, sixBranches, sogungDaegung, hexagram64 } = calendarData;
+  const { trigram, mansion, hwanggeuk, hwHourGanZhi, dayGanZhi, solarTerm, sixSpirits, sixBranches, sogungDaegung, hexagram64, jeolguk } = calendarData;
 
   const openFullscreen = () => {
     setFullscreenOpen(true);
@@ -322,14 +337,14 @@ export function IlgijangGallery() {
           )}
         </div>
 
-        {/* 년월간지 + 24절국 (한 열) */}
+        {/* 년월간지 + 절국 (한 열) */}
         <div style={{ ...colStyle, fontSize: fs(cfg.mainFontSize) }}>
-          {hwanggeuk.yearGanZhi}{hwanggeuk.monthGanZhi}24節局{solarTerm?.hanja || ''}
+          {hwanggeuk.yearGanZhi}{hwanggeuk.monthGanZhi}{jeolguk}
         </div>
 
         {/* 일시간지 + 64괘 (한 열) */}
         <div style={{ ...colStyle, fontSize: fs(cfg.mainFontSize) }}>
-          {dayGanZhi}{hwHourGanZhi}64卦{hexagram64?.hanja || ''}
+          {dayGanZhi}{hwHourGanZhi}{hexagram64?.hanja || ''}
         </div>
 
         {/* 28수 */}

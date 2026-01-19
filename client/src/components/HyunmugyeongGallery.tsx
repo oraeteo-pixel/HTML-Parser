@@ -118,14 +118,14 @@ export function HyunmugyeongGallery() {
                 className="flex-[0_0_100%] min-w-0 px-1"
               >
                 <div 
-                  className="min-h-[70vh] bg-white rounded-md overflow-hidden cursor-pointer hover-elevate flex items-center justify-center"
+                  className="min-h-[85vh] bg-white rounded-md overflow-hidden cursor-pointer hover-elevate flex items-center justify-center"
                   onClick={() => openFullscreen(index)}
                   data-testid={`gallery-page-${index + 1}`}
                 >
                   <img
                     src={page}
                     alt={`현무경 ${index + 1}쪽`}
-                    className="max-w-full max-h-[70vh] object-contain"
+                    className="w-full h-auto max-h-[85vh] object-contain"
                     loading="lazy"
                   />
                 </div>

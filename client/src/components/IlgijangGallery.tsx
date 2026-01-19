@@ -329,14 +329,14 @@ export function IlgijangGallery() {
           )}
         </div>
 
-        {/* 년월간지 + 절국 (한 열) */}
+        {/* 년월간지 + 절국 (세로 한 열) */}
         <div style={{ ...colStyle, fontSize: fs(cfg.mainFontSize) }}>
-          {hwanggeuk.yearGanZhi}{hwanggeuk.monthGanZhi}{jeolguk}
+          년월{hwanggeuk.yearGanZhi}{hwanggeuk.monthGanZhi}{jeolguk}
         </div>
 
-        {/* 일간지 시간지 64괘 (한 열) - 세로로 각각 표시 (달력과 동일 로직) */}
+        {/* 일시간지 + 64괘 (세로 한 열, 달력과 동일 로직) */}
         <div style={{ ...colStyle, fontSize: fs(cfg.mainFontSize) }}>
-          {hwDayGanZhi}<br/>{hwHourGanZhi}<br/>{hexagram64?.fullName || ''}
+          일시{hwDayGanZhi}{hwHourGanZhi}{hexagram64?.fullName || ''}
         </div>
 
         {/* 육신 */}

@@ -31,6 +31,29 @@ import talismanHae from "@assets/talisman-hae.png";
 const EARTHLY_BRANCHES = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
 const SIX_SPIRITS = ["靑龍", "朱雀", "句陳", "螣蛇", "白虎", "玄武"];
 
+// ========================================
+// 일기장 레이아웃 설정 (여기서 수정하세요)
+// ========================================
+const DIARY_CONFIG = {
+  // 전체 컨테이너
+  containerMinHeight: 500,      // 전체 높이 (px)
+  containerPadding: 24,         // 여백 (px)
+  
+  // 열 간격
+  columnSpacing: 8,             // 열 사이 간격 (px)
+  
+  // 글자 크기
+  titleFontSize: 14,            // 익자삼우, 손자삼우 글자 크기
+  mainFontSize: 13,             // 본문 글자 크기
+  incantationFontSize: 12,      // 주문 글자 크기
+  talismanLabelFontSize: 11,    // 부적 라벨(子부, 丑부 등) 글자 크기
+  
+  // 부적 이미지
+  talismanImageHeight: 120,     // 부적 이미지 높이 (px)
+  talismanImageMarginTop: 4,    // 부적 이미지 위 간격 (px)
+};
+// ========================================
+
 const BRANCH_TALISMANS: { [key: string]: string } = {
   "子": talismanJa,
   "丑": talismanChuk,
@@ -162,6 +185,7 @@ export function IlgijangGallery() {
   }, [fullscreenOpen]);
 
   const DiaryContent = ({ scale = 1 }: { scale?: number }) => {
+    const cfg = DIARY_CONFIG;
     const fs = (size: number) => size * scale;
     const sp = (size: number) => size * scale;
     
@@ -170,7 +194,7 @@ export function IlgijangGallery() {
       verticalAlign: 'top',
       writingMode: 'vertical-rl',
       textOrientation: 'upright',
-      marginLeft: sp(8),
+      marginLeft: sp(cfg.columnSpacing),
       color: 'black',
       fontWeight: 'bold'
     };
@@ -180,73 +204,73 @@ export function IlgijangGallery() {
         className="bg-white border border-gray-200 rounded-lg overflow-auto"
         style={{ 
           fontFamily: "'Noto Sans KR', 'Nanum Gothic', sans-serif",
-          padding: sp(24),
+          padding: sp(cfg.containerPadding),
           whiteSpace: 'nowrap',
           direction: 'rtl',
-          minHeight: sp(500)
+          minHeight: sp(cfg.containerMinHeight)
         }}
       >
         {/* 맨 오른쪽: 익자삼우 */}
-        <div style={{ ...colStyle, fontSize: fs(14) }}>益者三友</div>
+        <div style={{ ...colStyle, fontSize: fs(cfg.titleFontSize) }}>益者三友</div>
 
         {/* 손자삼우 */}
-        <div style={{ ...colStyle, fontSize: fs(14) }}>損者三友</div>
+        <div style={{ ...colStyle, fontSize: fs(cfg.titleFontSize) }}>損者三友</div>
 
         {/* 황극력 년월 */}
-        <div style={{ ...colStyle, fontSize: fs(13) }}>
+        <div style={{ ...colStyle, fontSize: fs(cfg.mainFontSize) }}>
           皇極曆<br/>年月<br/><br/>{hwanggeuk.yearGanZhi}<br/>{hwanggeuk.monthGanZhi}
         </div>
 
         {/* 황극력 일시 */}
-        <div style={{ ...colStyle, fontSize: fs(13) }}>
+        <div style={{ ...colStyle, fontSize: fs(cfg.mainFontSize) }}>
           皇極曆<br/>日時<br/><br/>{dayGanZhi}<br/>{hwHourGanZhi}
         </div>
 
         {/* 28수 */}
-        <div style={{ ...colStyle, fontSize: fs(13) }}>
+        <div style={{ ...colStyle, fontSize: fs(cfg.mainFontSize) }}>
           28宿<br/><br/>{mansion.mansion}
         </div>
 
         {/* 24절국 */}
-        <div style={{ ...colStyle, fontSize: fs(13) }}>
+        <div style={{ ...colStyle, fontSize: fs(cfg.mainFontSize) }}>
           24節局<br/><br/>{solarTerm?.hanja || ''}
         </div>
 
         {/* 소궁 대궁 64괘 */}
-        <div style={{ ...colStyle, fontSize: fs(13) }}>
+        <div style={{ ...colStyle, fontSize: fs(cfg.mainFontSize) }}>
           小宮<br/>大宮<br/>64卦<br/><br/>{sogungDaegung.sogung}<br/>{sogungDaegung.daegung}<br/>{hexagram64?.hanja || ''}
         </div>
 
         {/* 육신 */}
-        <div style={{ ...colStyle, fontSize: fs(13) }}>
+        <div style={{ ...colStyle, fontSize: fs(cfg.mainFontSize) }}>
           {sixSpirits[0]}<br/>{sixSpirits[1]}<br/>{sixSpirits[2]}<br/>{sixSpirits[3]}<br/>{sixSpirits[4]}<br/>{sixSpirits[5]}
         </div>
 
         {/* 6개 부적 */}
         {sixBranches.map((branch, idx) => (
           <div key={idx} style={{ ...colStyle, textAlign: 'center' }}>
-            <span style={{ fontSize: fs(11) }}>{branch}부</span>
+            <span style={{ fontSize: fs(cfg.talismanLabelFontSize) }}>{branch}부</span>
             <br/>
             <img 
               src={BRANCH_TALISMANS[branch]}
               alt={`${branch}부`}
-              style={{ height: sp(120), objectFit: 'contain', marginTop: sp(4) }}
+              style={{ height: sp(cfg.talismanImageHeight), objectFit: 'contain', marginTop: sp(cfg.talismanImageMarginTop) }}
             />
           </div>
         ))}
 
         {/* 주문 */}
-        <div style={{ ...colStyle, fontSize: fs(12) }}>
+        <div style={{ ...colStyle, fontSize: fs(cfg.incantationFontSize) }}>
           侍天主造化定<br/>永世不忘萬事知
         </div>
-        <div style={{ ...colStyle, fontSize: fs(12) }}>至氣今至願爲大降</div>
-        <div style={{ ...colStyle, fontSize: fs(12) }}>
+        <div style={{ ...colStyle, fontSize: fs(cfg.incantationFontSize) }}>至氣今至願爲大降</div>
+        <div style={{ ...colStyle, fontSize: fs(cfg.incantationFontSize) }}>
           天文地理風雲造化<br/>八門遁甲六丁六甲<br/>智慧勇力
         </div>
-        <div style={{ ...colStyle, fontSize: fs(12) }}>所願成就</div>
+        <div style={{ ...colStyle, fontSize: fs(cfg.incantationFontSize) }}>所願成就</div>
 
         {/* 기서, 언청, 신, 계용 */}
-        <div style={{ ...colStyle, fontSize: fs(13) }}>
+        <div style={{ ...colStyle, fontSize: fs(cfg.mainFontSize) }}>
           基祥西在{trigram.trigram}<br/><br/><br/>言聽<br/><br/>神<br/><br/>計用
         </div>
       </div>

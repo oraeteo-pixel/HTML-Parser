@@ -9,6 +9,7 @@ import { PdfViewer } from "@/components/PdfViewer";
 import { HyunmugyeongGallery } from "@/components/HyunmugyeongGallery";
 import { SomyeoleumhaebuGallery } from "@/components/SomyeoleumhaebuGallery";
 import { DeukchaebuGallery } from "@/components/DeukchaebuGallery";
+import { IlgijangGallery } from "@/components/IlgijangGallery";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -438,6 +439,12 @@ export default function EbookPage() {
         {currentSection === "deukchaebu" && (
           <Card className="p-4 mb-4">
             <DeukchaebuGallery />
+          </Card>
+        )}
+
+        {currentSection === "ilgijang" && (
+          <Card className="p-4 mb-4">
+            <IlgijangGallery />
           </Card>
         )}
 

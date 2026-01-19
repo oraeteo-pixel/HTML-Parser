@@ -4,7 +4,7 @@ import { ChevronLeft, ChevronRight, X, ZoomIn, ZoomOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 
-import page1 from "@assets/somyeol-1.jpg";
+import page1 from "@assets/somyeol-1-trimmed.jpg";
 
 const pages = [page1];
 

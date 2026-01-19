@@ -171,6 +171,7 @@ export function IlgijangGallery() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [fullscreenOpen, setFullscreenOpen] = useState(false);
   const [isZoomed, setIsZoomed] = useState(false);
+  const [showTalisman, setShowTalisman] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -395,11 +396,30 @@ export function IlgijangGallery() {
           <span className="font-semibold text-gray-600 dark:text-gray-300">
             &lt;소궁,대궁&gt;{sogungDaegung.isZungung ? "존궁" : `${sogungDaegung.sogung},${sogungDaegung.daegung}`} {hexagram64?.fullName || ''}
           </span>
-          <span className="slim-badge-cyan">
+          <button 
+            className="slim-badge-cyan cursor-pointer"
+            onClick={() => setShowTalisman(!showTalisman)}
+            data-testid="button-mansion-toggle"
+          >
             {hwMansion.isZunkong ? hwMansion.mansion : `${hwMansion.mansion}, ${hwMansion.general}`}
-          </span>
+          </button>
         </div>
       </div>
+
+      {/* 28장 부적 표시 */}
+      {!hwMansion.isZunkong && (
+        <div 
+          className={`overflow-hidden transition-all duration-300 ease-in-out talisman-box rounded-lg ${showTalisman ? 'max-h-[400px] opacity-100 p-4 my-2' : 'max-h-0 opacity-0 p-0 my-0'}`}
+        >
+          <div className="flex flex-col items-center">
+            <img 
+              src={`/img/${hwMansion.image}.jpg`}
+              alt={`${hwMansion.mansion} 부적`}
+              className="max-w-[200px] max-h-[280px] object-contain border border-border rounded-lg shadow-lg bg-white"
+            />
+          </div>
+        </div>
+      )}
 
       <div 
         className="bg-white rounded-md overflow-auto cursor-pointer hover-elevate flex items-center justify-center py-8"

@@ -27,6 +27,7 @@ export function SomyeoleumhaebuGallery() {
   const [fullscreenImage, setFullscreenImage] = useState<number | null>(null);
   const [isZoomed, setIsZoomed] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
+  const [showTalisman, setShowTalisman] = useState(false);
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 60000);
@@ -125,11 +126,30 @@ export function SomyeoleumhaebuGallery() {
           <span className="font-semibold text-gray-600 dark:text-gray-300">
             &lt;소궁,대궁&gt;{calendarData.sogungDaegung.isZungung ? "존궁" : `${calendarData.sogungDaegung.sogung},${calendarData.sogungDaegung.daegung}`} {calendarData.hexagram64?.fullName || ''}
           </span>
-          <span className="slim-badge-cyan">
+          <button 
+            className="slim-badge-cyan cursor-pointer"
+            onClick={() => setShowTalisman(!showTalisman)}
+            data-testid="button-mansion-toggle"
+          >
             {calendarData.mansion.isZunkong ? calendarData.mansion.mansion : `${calendarData.mansion.mansion}, ${calendarData.mansion.general}`}
-          </span>
+          </button>
         </div>
       </div>
+
+      {/* 28장 부적 표시 */}
+      {!calendarData.mansion.isZunkong && (
+        <div 
+          className={`overflow-hidden transition-all duration-300 ease-in-out talisman-box rounded-lg ${showTalisman ? 'max-h-[400px] opacity-100 p-4 my-2' : 'max-h-0 opacity-0 p-0 my-0'}`}
+        >
+          <div className="flex flex-col items-center">
+            <img 
+              src={`/img/${calendarData.mansion.image}.jpg`}
+              alt={`${calendarData.mansion.mansion} 부적`}
+              className="max-w-[200px] max-h-[280px] object-contain border border-border rounded-lg shadow-lg bg-white"
+            />
+          </div>
+        </div>
+      )}
 
       <div className="relative">
         <div className="overflow-hidden" ref={emblaRef}>

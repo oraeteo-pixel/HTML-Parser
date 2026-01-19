@@ -242,11 +242,13 @@ export function IlgijangGallery() {
           {sixBranches.map((branch, idx) => (
             <div key={idx} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: sp(4) }}>
               <span style={{ fontSize: fs(11) }}>{branch}부</span>
-              <img 
-                src={BRANCH_TALISMANS[branch]}
-                alt={`${branch}부`}
-                style={{ width: sp(60), objectFit: 'contain', writingMode: 'horizontal-tb' }}
-              />
+              <div style={{ writingMode: 'horizontal-tb', textOrientation: 'mixed' }}>
+                <img 
+                  src={BRANCH_TALISMANS[branch]}
+                  alt={`${branch}부`}
+                  style={{ height: sp(80), objectFit: 'contain' }}
+                />
+              </div>
             </div>
           ))}
 

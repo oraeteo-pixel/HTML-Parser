@@ -164,52 +164,96 @@ export function IlgijangGallery() {
   const DiaryContent = ({ scale = 1 }: { scale?: number }) => (
     <div 
       className="bg-white border border-gray-200 rounded-lg p-8"
-      style={{ 
-        fontFamily: "'Noto Sans KR', 'Nanum Gothic', sans-serif"
-      }}
+      style={{ fontFamily: "'Noto Sans KR', 'Nanum Gothic', sans-serif" }}
     >
-      <table style={{ borderCollapse: 'collapse' }}>
+      <table style={{ borderCollapse: 'collapse', direction: 'rtl' }}>
         <tbody>
           <tr style={{ verticalAlign: 'top' }}>
-            <td style={{ writingMode: 'vertical-rl', padding: `0 ${6*scale}px`, fontSize: 13*scale, fontWeight: 'bold', color: 'black' }}>
-              <div>侍天主造化定</div>
-              <div>永世不忘萬事知</div>
-              <div style={{ marginTop: 12*scale }}>至氣今至願爲大降</div>
-              <div style={{ marginTop: 12*scale }}>天文地理風雲造化</div>
-              <div>八門遁甲六丁六甲</div>
-              <div>智慧勇力</div>
-              <div style={{ marginTop: 12*scale }}>所願成就</div>
+            {/* 맨 오른쪽: 익자삼우 */}
+            <td style={{ writingMode: 'vertical-rl', padding: `0 ${8*scale}px`, fontSize: 14*scale, fontWeight: 'bold', color: 'black', direction: 'ltr' }}>
+              <div>益者三友</div>
             </td>
+            {/* 손자삼우 */}
+            <td style={{ writingMode: 'vertical-rl', padding: `0 ${8*scale}px`, fontSize: 14*scale, fontWeight: 'bold', color: 'black', direction: 'ltr' }}>
+              <div>損者三友</div>
+            </td>
+            {/* 황극력 년월 */}
+            <td style={{ writingMode: 'vertical-rl', padding: `0 ${6*scale}px`, fontSize: 13*scale, fontWeight: 'bold', color: 'black', direction: 'ltr' }}>
+              <div>皇極曆</div>
+              <div>年月</div>
+              <div style={{ marginTop: 8*scale }}>{hwanggeuk.yearGanZhi}</div>
+              <div>{hwanggeuk.monthGanZhi}</div>
+            </td>
+            {/* 황극력 일시 */}
+            <td style={{ writingMode: 'vertical-rl', padding: `0 ${6*scale}px`, fontSize: 13*scale, fontWeight: 'bold', color: 'black', direction: 'ltr' }}>
+              <div>皇極曆</div>
+              <div>日時</div>
+              <div style={{ marginTop: 8*scale }}>{dayGanZhi}</div>
+              <div>{hwHourGanZhi}</div>
+            </td>
+            {/* 28수 */}
+            <td style={{ writingMode: 'vertical-rl', padding: `0 ${6*scale}px`, fontSize: 13*scale, fontWeight: 'bold', color: 'black', direction: 'ltr' }}>
+              <div>28宿</div>
+              <div style={{ marginTop: 8*scale }}>{mansion.mansion}</div>
+            </td>
+            {/* 24절국 */}
+            <td style={{ writingMode: 'vertical-rl', padding: `0 ${6*scale}px`, fontSize: 13*scale, fontWeight: 'bold', color: 'black', direction: 'ltr' }}>
+              <div>24節局</div>
+              <div style={{ marginTop: 8*scale }}>{solarTerm?.hanja || ''}</div>
+            </td>
+            {/* 소궁 대궁 64괘 */}
+            <td style={{ writingMode: 'vertical-rl', padding: `0 ${6*scale}px`, fontSize: 13*scale, fontWeight: 'bold', color: 'black', direction: 'ltr' }}>
+              <div>小宮</div>
+              <div>大宮</div>
+              <div>64卦</div>
+              <div style={{ marginTop: 8*scale }}>{sogungDaegung.sogung}</div>
+              <div>{sogungDaegung.daegung}</div>
+              <div>{hexagram64?.hanja || ''}</div>
+            </td>
+            {/* 육신 */}
+            <td style={{ writingMode: 'vertical-rl', padding: `0 ${6*scale}px`, fontSize: 13*scale, fontWeight: 'bold', color: 'black', direction: 'ltr' }}>
+              <div>{sixSpirits[0]}</div>
+              <div>{sixSpirits[1]}</div>
+              <div>{sixSpirits[2]}</div>
+              <div>{sixSpirits[3]}</div>
+              <div>{sixSpirits[4]}</div>
+              <div>{sixSpirits[5]}</div>
+            </td>
+            {/* 6개 부적 */}
             {sixBranches.map((branch, idx) => (
-              <td key={idx} style={{ writingMode: 'vertical-rl', padding: `0 ${4*scale}px`, textAlign: 'center' }}>
-                <div style={{ fontWeight: 'bold', color: 'black', fontSize: 12*scale, marginBottom: 4*scale }}>
-                  {sixSpirits[0]}
+              <td key={idx} style={{ padding: `0 ${4*scale}px`, textAlign: 'center', direction: 'ltr' }}>
+                <div style={{ writingMode: 'vertical-rl', fontWeight: 'bold', color: 'black', fontSize: 11*scale, marginBottom: 4*scale }}>
+                  {branch}부
                 </div>
                 <img 
                   src={BRANCH_TALISMANS[branch]}
                   alt={`${branch}부`}
-                  style={{ height: 100*scale, objectFit: 'contain' }}
+                  style={{ height: 90*scale, objectFit: 'contain' }}
                 />
               </td>
             ))}
-            <td style={{ writingMode: 'vertical-rl', padding: `0 ${6*scale}px`, fontSize: 13*scale, fontWeight: 'bold', color: 'black' }}>
-              <div>言聽</div>
+            {/* 주문 왼쪽 */}
+            <td style={{ writingMode: 'vertical-rl', padding: `0 ${6*scale}px`, fontSize: 12*scale, fontWeight: 'bold', color: 'black', direction: 'ltr' }}>
+              <div>侍天主造化定</div>
+              <div>永世不忘萬事知</div>
+            </td>
+            <td style={{ writingMode: 'vertical-rl', padding: `0 ${6*scale}px`, fontSize: 12*scale, fontWeight: 'bold', color: 'black', direction: 'ltr' }}>
+              <div>至氣今至願爲大降</div>
+            </td>
+            <td style={{ writingMode: 'vertical-rl', padding: `0 ${6*scale}px`, fontSize: 12*scale, fontWeight: 'bold', color: 'black', direction: 'ltr' }}>
+              <div>天文地理風雲造化</div>
+              <div>八門遁甲六丁六甲</div>
+              <div>智慧勇力</div>
+            </td>
+            <td style={{ writingMode: 'vertical-rl', padding: `0 ${6*scale}px`, fontSize: 12*scale, fontWeight: 'bold', color: 'black', direction: 'ltr' }}>
+              <div>所願成就</div>
+            </td>
+            {/* 기서재리, 언청, 신, 계용 */}
+            <td style={{ writingMode: 'vertical-rl', padding: `0 ${6*scale}px`, fontSize: 13*scale, fontWeight: 'bold', color: 'black', direction: 'ltr' }}>
+              <div>基祥西在{trigram.trigram}</div>
+              <div style={{ marginTop: 16*scale }}>言聽</div>
               <div style={{ marginTop: 8*scale }}>神</div>
-              <div style={{ marginTop: 16*scale }}>計用</div>
-            </td>
-            <td style={{ writingMode: 'vertical-rl', padding: `0 ${6*scale}px`, fontSize: 13*scale, fontWeight: 'bold', color: 'black' }}>
-              <div>益者三友</div>
-              <div style={{ marginTop: 8*scale }}>損者三友</div>
-              <div style={{ marginTop: 16*scale }}>基西在震</div>
-            </td>
-            <td style={{ writingMode: 'vertical-rl', padding: `0 ${8*scale}px`, fontSize: 14*scale, fontWeight: 'bold', color: 'black' }}>
-              <div>{hwanggeuk.yearGanZhi}年</div>
-              <div>{hwanggeuk.monthGanZhi}月</div>
-              <div>{solarTerm?.hanja || ''}節局</div>
-              <div style={{ marginTop: 12*scale }}>{dayGanZhi}日</div>
-              <div>{hwHourGanZhi}時</div>
-              <div style={{ marginTop: 12*scale }}>{sogungDaegung.sogung}宮</div>
-              <div>{trigram.trigram}之{mansion.mansion}</div>
+              <div style={{ marginTop: 8*scale }}>計用</div>
             </td>
           </tr>
         </tbody>

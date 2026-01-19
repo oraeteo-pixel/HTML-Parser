@@ -8,6 +8,7 @@ import { RichEditor, type MediaItem, type TextStyle, getFontFamilyCSS } from "@/
 import { PdfViewer } from "@/components/PdfViewer";
 import { HyunmugyeongGallery } from "@/components/HyunmugyeongGallery";
 import { SomyeoleumhaebuGallery } from "@/components/SomyeoleumhaebuGallery";
+import { DeukchaebuGallery } from "@/components/DeukchaebuGallery";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -431,6 +432,12 @@ export default function EbookPage() {
         {currentSection === "somyeoleumhaebu" && (
           <Card className="p-4 mb-4">
             <SomyeoleumhaebuGallery />
+          </Card>
+        )}
+
+        {currentSection === "deukchaebu" && (
+          <Card className="p-4 mb-4">
+            <DeukchaebuGallery />
           </Card>
         )}
 

@@ -3,7 +3,7 @@ import { X, ZoomIn, ZoomOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 
-import page1 from "@assets/ilgijang-final.png";
+import page1 from "@assets/ilgijang-trimmed.png";
 
 export function IlgijangGallery() {
   const [fullscreenOpen, setFullscreenOpen] = useState(false);

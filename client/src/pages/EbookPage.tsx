@@ -421,11 +421,13 @@ export default function EbookPage() {
         )}
 
 
-        {currentSection === "hyunmugyeong" || currentSection === "" ? (
-          <Card className="p-4">
+        {(currentSection === "hyunmugyeong" || currentSection === "") && (
+          <Card className="p-4 mb-4">
             <HyunmugyeongGallery />
           </Card>
-        ) : isLoading ? (
+        )}
+
+        {isLoading ? (
           <Card className="p-8 text-center">
             <p className="text-muted-foreground">로딩 중...</p>
           </Card>

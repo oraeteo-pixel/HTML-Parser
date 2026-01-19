@@ -118,7 +118,7 @@ export function HyunmugyeongGallery() {
                 className="flex-[0_0_100%] min-w-0 px-1"
               >
                 <div 
-                  className="aspect-[3/4] bg-slate-100 dark:bg-slate-800 rounded-md overflow-hidden cursor-pointer hover-elevate"
+                  className="aspect-[3/4] bg-white rounded-md overflow-hidden cursor-pointer hover-elevate"
                   onClick={() => openFullscreen(index)}
                   data-testid={`gallery-page-${index + 1}`}
                 >

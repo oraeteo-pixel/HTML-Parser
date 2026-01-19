@@ -344,14 +344,14 @@ export function IlgijangGallery() {
           {sixSpirits[0]}<br/>{sixSpirits[1]}<br/>{sixSpirits[2]}<br/>{sixSpirits[3]}<br/>{sixSpirits[4]}<br/>{sixSpirits[5]}
         </div>
 
-        {/* 6개 부적 */}
+        {/* 6개 부적 - 육신 이름 + 지지 부적 */}
         {sixBranches.map((branch, idx) => (
           <div key={idx} style={{ ...colStyle, textAlign: 'center' }}>
-            <span style={{ fontSize: fs(cfg.talismanLabelFontSize) }}>{branch}부</span>
+            <span style={{ fontSize: fs(cfg.talismanLabelFontSize) }}>{sixSpirits[idx]}{branch}부</span>
             <br/>
             <img 
               src={BRANCH_TALISMANS[branch]}
-              alt={`${branch}부`}
+              alt={`${sixSpirits[idx]}${branch}부`}
               style={{ height: sp(cfg.talismanImageHeight), objectFit: 'contain', marginTop: sp(cfg.talismanImageMarginTop) }}
             />
           </div>

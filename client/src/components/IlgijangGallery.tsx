@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
-import ilgijangImage from "@assets/ilgijang-final.png";
+import ilgijangImage from "@assets/ilgijang-horizontal.png";
 
 export function IlgijangGallery() {
   const [fullscreenOpen, setFullscreenOpen] = useState(false);
@@ -36,14 +36,13 @@ export function IlgijangGallery() {
         onClick={openFullscreen}
         data-testid="gallery-ilgijang-page-1"
       >
-        <div className="flex justify-center" style={{ minWidth: 'max-content' }}>
+        <div className="flex justify-center items-center" style={{ height: '400px' }}>
           <img
             src={ilgijangImage}
             alt="황극력 일기장"
             style={{ 
-              height: '500px',
-              width: 'auto',
-              transform: 'rotate(90deg)',
+              maxHeight: '100%',
+              maxWidth: '100%',
               objectFit: 'contain'
             }}
           />
@@ -80,9 +79,9 @@ export function IlgijangGallery() {
               src={ilgijangImage}
               alt="황극력 일기장"
               style={{ 
-                height: isZoomed ? '140vh' : '90vh',
-                width: 'auto',
-                transform: 'rotate(90deg)',
+                maxHeight: isZoomed ? '150%' : '85vh',
+                maxWidth: isZoomed ? '150%' : '90vw',
+                objectFit: 'contain',
                 transition: 'all 0.3s ease'
               }}
               data-testid="img-ilgijang-fullscreen"

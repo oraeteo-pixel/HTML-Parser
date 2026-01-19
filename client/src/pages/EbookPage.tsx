@@ -442,7 +442,7 @@ export default function EbookPage() {
           </Card>
         )}
 
-        {currentSection === "ilgijang" && (
+        {currentSection === "diary" && (
           <Card className="p-4 mb-4">
             <IlgijangGallery />
           </Card>

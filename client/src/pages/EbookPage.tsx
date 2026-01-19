@@ -34,6 +34,7 @@ export default function EbookPage() {
   const searchString = useSearch();
   const params = new URLSearchParams(searchString);
   const writeMode = params.get("write") === "true";
+  const currentSection = params.get("section") || "";
   
   const [showEditor, setShowEditor] = useState(false);
   const [title, setTitle] = useState("");
@@ -297,6 +298,54 @@ export default function EbookPage() {
           </div>
         </Card>
 
+        <Card className="p-4 mb-4">
+          <h2 className="text-lg font-semibold mb-3 orae-navy">현무경과 황극력 일기장</h2>
+          <div className="flex flex-wrap gap-2">
+            <Button 
+              variant={currentSection === "hyunmugyeong" ? "default" : "outline"} 
+              onClick={() => setLocation("/ebook?section=hyunmugyeong")}
+              data-testid="button-nav-hyunmugyeong"
+            >
+              현무경
+            </Button>
+            <Button 
+              variant={currentSection === "somyeoleumhaebu" ? "default" : "outline"} 
+              onClick={() => setLocation("/ebook?section=somyeoleumhaebu")}
+              data-testid="button-nav-somyeoleumhaebu"
+            >
+              소멸음해부
+            </Button>
+            <Button 
+              variant={currentSection === "deukchaebu" ? "default" : "outline"} 
+              onClick={() => setLocation("/ebook?section=deukchaebu")}
+              data-testid="button-nav-deukchaebu"
+            >
+              득체부
+            </Button>
+            <Button 
+              variant={currentSection === "gugunghaengdo" ? "default" : "outline"} 
+              onClick={() => setLocation("/ebook?section=gugunghaengdo")}
+              data-testid="button-nav-gugunghaengdo"
+            >
+              구궁행로도
+            </Button>
+            <Button 
+              variant={currentSection === "diary" ? "default" : "outline"} 
+              onClick={() => setLocation("/ebook?section=diary")}
+              data-testid="button-nav-diary"
+            >
+              일기장
+            </Button>
+            <Button 
+              variant={currentSection === "gwangjechansaengbu" ? "default" : "outline"} 
+              onClick={() => setLocation("/ebook?section=gwangjechansaengbu")}
+              data-testid="button-nav-gwangjechansaengbu"
+            >
+              광제창생부
+            </Button>
+          </div>
+        </Card>
+
         {showEditor && user && (
           <div className="mb-4">
             <div className="flex justify-end mb-2">
@@ -366,6 +415,27 @@ export default function EbookPage() {
               />
             </DialogContent>
           </Dialog>
+        )}
+
+        {currentSection && (
+          <Card className="p-4 mb-4 bg-gradient-to-r from-amber-50/50 to-yellow-50/50 dark:from-amber-950/20 dark:to-yellow-950/20 border-amber-200/50 dark:border-amber-800/50">
+            <h3 className="text-lg font-semibold orae-navy" data-testid="text-current-section">
+              {currentSection === "hyunmugyeong" && "현무경"}
+              {currentSection === "somyeoleumhaebu" && "소멸음해부"}
+              {currentSection === "deukchaebu" && "득체부"}
+              {currentSection === "gugunghaengdo" && "구궁행로도"}
+              {currentSection === "diary" && "일기장"}
+              {currentSection === "gwangjechansaengbu" && "광제창생부"}
+            </h3>
+            <p className="text-sm text-muted-foreground mt-1">
+              {currentSection === "hyunmugyeong" && "현무경 관련 자료입니다."}
+              {currentSection === "somyeoleumhaebu" && "소멸음해부 관련 자료입니다."}
+              {currentSection === "deukchaebu" && "득체부 관련 자료입니다."}
+              {currentSection === "gugunghaengdo" && "구궁행로도 관련 자료입니다."}
+              {currentSection === "diary" && "황극력 일기장 관련 자료입니다."}
+              {currentSection === "gwangjechansaengbu" && "광제창생부 관련 자료입니다."}
+            </p>
+          </Card>
         )}
 
         {isLoading ? (

@@ -339,18 +339,15 @@ export function IlgijangGallery() {
           {hwDayGanZhi}日{hwHourGanZhi}時{hexagram64?.fullName || ''}
         </div>
 
-        {/* 육신 */}
-        <div style={{ ...colStyle, fontSize: fs(cfg.mainFontSize) }}>
-          {sixSpirits[0]}<br/>{sixSpirits[1]}<br/>{sixSpirits[2]}<br/>{sixSpirits[3]}<br/>{sixSpirits[4]}<br/>{sixSpirits[5]}
-        </div>
-
-        {/* 6개 부적 - 이미지만 */}
+        {/* 6개 부적 - 육신 이름 + 이미지 */}
         {sixBranches.map((branch, idx) => (
           <div key={idx} style={{ ...colStyle, textAlign: 'center' }}>
+            <span style={{ fontSize: fs(cfg.talismanLabelFontSize) }}>{sixSpirits[idx]}</span>
+            <br/>
             <img 
               src={BRANCH_TALISMANS[branch]}
-              alt={`${branch}부`}
-              style={{ height: sp(cfg.talismanImageHeight), objectFit: 'contain' }}
+              alt={`${sixSpirits[idx]}${branch}부`}
+              style={{ height: sp(cfg.talismanImageHeight), objectFit: 'contain', marginTop: sp(cfg.talismanImageMarginTop) }}
             />
           </div>
         ))}

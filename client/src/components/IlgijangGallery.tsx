@@ -210,23 +210,44 @@ export function IlgijangGallery() {
           minHeight: sp(cfg.containerMinHeight)
         }}
       >
-        {/* 익자삼우 */}
-        <div style={{ ...colStyle, fontSize: fs(cfg.titleFontSize) }}>益者三友</div>
-        
-        {/* 언청 */}
-        <div style={{ ...colStyle, fontSize: fs(cfg.titleFontSize) }}>言聽</div>
-        
-        {/* 기서재괘 */}
-        <div style={{ ...colStyle, fontSize: fs(cfg.titleFontSize) }}>基瑞在{trigram.trigram}</div>
-        
-        {/* 신 */}
-        <div style={{ ...colStyle, fontSize: fs(cfg.titleFontSize) }}>神</div>
-        
-        {/* 손자삼우 */}
-        <div style={{ ...colStyle, fontSize: fs(cfg.titleFontSize) }}>損者三友</div>
-        
-        {/* 계용 */}
-        <div style={{ ...colStyle, fontSize: fs(cfg.titleFontSize) }}>計用</div>
+        {/* 익자삼우 / 손자삼우 / 기서재괘 / 언청신계용 - 이미지 레이아웃 */}
+        <div style={{ 
+          display: 'inline-block', 
+          verticalAlign: 'top',
+          marginLeft: sp(cfg.columnSpacing),
+          direction: 'ltr'
+        }}>
+          {/* 상단: 益者三友 ... 損者三友 */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: sp(16) }}>
+            <div style={{ writingMode: 'vertical-rl', textOrientation: 'upright', fontSize: fs(cfg.titleFontSize), color: 'black', fontWeight: 'bold' }}>
+              益者三友
+            </div>
+            <div style={{ width: sp(40) }}></div>
+            <div style={{ writingMode: 'vertical-rl', textOrientation: 'upright', fontSize: fs(cfg.titleFontSize), color: 'black', fontWeight: 'bold' }}>
+              損者三友
+            </div>
+          </div>
+          
+          {/* 중간: 基瑞在震 (오른쪽 정렬) */}
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: sp(16) }}>
+            <div style={{ writingMode: 'vertical-rl', textOrientation: 'upright', fontSize: fs(cfg.titleFontSize), color: 'black', fontWeight: 'bold' }}>
+              基瑞在{trigram.trigram}
+            </div>
+          </div>
+          
+          {/* 하단: 言聽 神 計用 */}
+          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <div style={{ writingMode: 'vertical-rl', textOrientation: 'upright', fontSize: fs(cfg.titleFontSize), color: 'black', fontWeight: 'bold' }}>
+              言聽
+            </div>
+            <div style={{ writingMode: 'vertical-rl', textOrientation: 'upright', fontSize: fs(cfg.titleFontSize), color: 'black', fontWeight: 'bold' }}>
+              神
+            </div>
+            <div style={{ writingMode: 'vertical-rl', textOrientation: 'upright', fontSize: fs(cfg.titleFontSize), color: 'black', fontWeight: 'bold' }}>
+              計用
+            </div>
+          </div>
+        </div>
 
         {/* 황극력 년월 */}
         <div style={{ ...colStyle, fontSize: fs(cfg.mainFontSize) }}>

@@ -322,14 +322,14 @@ export function IlgijangGallery() {
           )}
         </div>
 
-        {/* 년월 + 24절국 (한 열) */}
+        {/* 년월간지 + 24절국 (한 열) */}
         <div style={{ ...colStyle, fontSize: fs(cfg.mainFontSize) }}>
-          年月{hwanggeuk.yearGanZhi}{hwanggeuk.monthGanZhi}24節局{solarTerm?.hanja || ''}
+          {hwanggeuk.yearGanZhi}{hwanggeuk.monthGanZhi}24節局{solarTerm?.hanja || ''}
         </div>
 
-        {/* 일시 + 64괘 (한 열) */}
+        {/* 일시간지 + 64괘 (한 열) */}
         <div style={{ ...colStyle, fontSize: fs(cfg.mainFontSize) }}>
-          日時{dayGanZhi}{hwHourGanZhi}64卦{hexagram64?.hanja || ''}
+          {dayGanZhi}{hwHourGanZhi}64卦{hexagram64?.hanja || ''}
         </div>
 
         {/* 28수 */}

@@ -275,74 +275,76 @@ export default function EbookPage() {
       <main className="flex-1 overflow-auto">
         <div className="w-full max-w-[990px] mx-auto px-0 sm:px-2 py-4" data-testid="ebook-main">
         <Card className="p-4 mb-4 bg-gradient-to-r from-slate-50/50 to-slate-100/50 dark:from-slate-900/20 dark:to-slate-800/20">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between flex-wrap gap-2">
             <div className="flex items-center gap-3">
               <BookOpen className="h-8 w-8 orae-navy" />
               <h1 className="text-xl font-bold orae-navy" data-testid="text-ebook-title">{pageInfo?.title || "현무경"}</h1>
             </div>
-            {!showEditor && (
-              <Button
-                size="icon"
-                onClick={() => {
-                  if (!user) {
-                    toast({ title: "로그인이 필요합니다.", description: "전자책을 등록하려면 로그인해 주세요." });
-                    return;
-                  }
-                  setShowEditor(true);
-                }}
-                data-testid="button-write-ebook"
+            <div className="flex items-center gap-1 flex-wrap">
+              <Button 
+                size="sm"
+                variant={currentSection === "hyunmugyeong" ? "default" : "ghost"} 
+                onClick={() => setLocation("/ebook?section=hyunmugyeong")}
+                data-testid="button-nav-hyunmugyeong"
               >
-                <Pencil className="h-5 w-5" />
+                현무경
               </Button>
-            )}
-          </div>
-        </Card>
-
-        <Card className="p-4 mb-4">
-          <h2 className="text-lg font-semibold mb-3 orae-navy">현무경과 황극력 일기장</h2>
-          <div className="flex flex-wrap gap-2">
-            <Button 
-              variant={currentSection === "hyunmugyeong" ? "default" : "outline"} 
-              onClick={() => setLocation("/ebook?section=hyunmugyeong")}
-              data-testid="button-nav-hyunmugyeong"
-            >
-              현무경
-            </Button>
-            <Button 
-              variant={currentSection === "somyeoleumhaebu" ? "default" : "outline"} 
-              onClick={() => setLocation("/ebook?section=somyeoleumhaebu")}
-              data-testid="button-nav-somyeoleumhaebu"
-            >
-              소멸음해부
-            </Button>
-            <Button 
-              variant={currentSection === "deukchaebu" ? "default" : "outline"} 
-              onClick={() => setLocation("/ebook?section=deukchaebu")}
-              data-testid="button-nav-deukchaebu"
-            >
-              득체부
-            </Button>
-            <Button 
-              variant={currentSection === "gugunghaengdo" ? "default" : "outline"} 
-              onClick={() => setLocation("/ebook?section=gugunghaengdo")}
-              data-testid="button-nav-gugunghaengdo"
-            >
-              구궁행로도
-            </Button>
-            <Button 
-              variant={currentSection === "diary" ? "default" : "outline"} 
-              onClick={() => setLocation("/ebook?section=diary")}
-              data-testid="button-nav-diary"
-            >
-              일기장
-            </Button>
-            <Button 
-              variant={currentSection === "gwangjechansaengbu" ? "default" : "outline"} 
-              onClick={() => setLocation("/ebook?section=gwangjechansaengbu")}
-              data-testid="button-nav-gwangjechansaengbu"
-            >
-              광제창생부
-            </Button>
+              <Button 
+                size="sm"
+                variant={currentSection === "somyeoleumhaebu" ? "default" : "ghost"} 
+                onClick={() => setLocation("/ebook?section=somyeoleumhaebu")}
+                data-testid="button-nav-somyeoleumhaebu"
+              >
+                소멸음해부
+              </Button>
+              <Button 
+                size="sm"
+                variant={currentSection === "deukchaebu" ? "default" : "ghost"} 
+                onClick={() => setLocation("/ebook?section=deukchaebu")}
+                data-testid="button-nav-deukchaebu"
+              >
+                득체부
+              </Button>
+              <Button 
+                size="sm"
+                variant={currentSection === "gugunghaengdo" ? "default" : "ghost"} 
+                onClick={() => setLocation("/ebook?section=gugunghaengdo")}
+                data-testid="button-nav-gugunghaengdo"
+              >
+                구궁행로도
+              </Button>
+              <Button 
+                size="sm"
+                variant={currentSection === "diary" ? "default" : "ghost"} 
+                onClick={() => setLocation("/ebook?section=diary")}
+                data-testid="button-nav-diary"
+              >
+                일기장
+              </Button>
+              <Button 
+                size="sm"
+                variant={currentSection === "gwangjechansaengbu" ? "default" : "ghost"} 
+                onClick={() => setLocation("/ebook?section=gwangjechansaengbu")}
+                data-testid="button-nav-gwangjechansaengbu"
+              >
+                광제창생부
+              </Button>
+              {!showEditor && (
+                <Button
+                  size="icon"
+                  onClick={() => {
+                    if (!user) {
+                      toast({ title: "로그인이 필요합니다.", description: "전자책을 등록하려면 로그인해 주세요." });
+                      return;
+                    }
+                    setShowEditor(true);
+                  }}
+                  data-testid="button-write-ebook"
+                >
+                  <Pencil className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
           </div>
         </Card>
 
@@ -417,26 +419,6 @@ export default function EbookPage() {
           </Dialog>
         )}
 
-        {currentSection && (
-          <Card className="p-4 mb-4 bg-gradient-to-r from-amber-50/50 to-yellow-50/50 dark:from-amber-950/20 dark:to-yellow-950/20 border-amber-200/50 dark:border-amber-800/50">
-            <h3 className="text-lg font-semibold orae-navy" data-testid="text-current-section">
-              {currentSection === "hyunmugyeong" && "현무경"}
-              {currentSection === "somyeoleumhaebu" && "소멸음해부"}
-              {currentSection === "deukchaebu" && "득체부"}
-              {currentSection === "gugunghaengdo" && "구궁행로도"}
-              {currentSection === "diary" && "일기장"}
-              {currentSection === "gwangjechansaengbu" && "광제창생부"}
-            </h3>
-            <p className="text-sm text-muted-foreground mt-1">
-              {currentSection === "hyunmugyeong" && "현무경 관련 자료입니다."}
-              {currentSection === "somyeoleumhaebu" && "소멸음해부 관련 자료입니다."}
-              {currentSection === "deukchaebu" && "득체부 관련 자료입니다."}
-              {currentSection === "gugunghaengdo" && "구궁행로도 관련 자료입니다."}
-              {currentSection === "diary" && "황극력 일기장 관련 자료입니다."}
-              {currentSection === "gwangjechansaengbu" && "광제창생부 관련 자료입니다."}
-            </p>
-          </Card>
-        )}
 
         {isLoading ? (
           <Card className="p-8 text-center">

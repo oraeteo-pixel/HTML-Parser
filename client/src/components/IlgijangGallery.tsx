@@ -32,27 +32,30 @@ export function IlgijangGallery() {
   return (
     <div className="w-full" data-testid="ilgijang-gallery">
       <div 
-        className="bg-white rounded-md overflow-hidden cursor-pointer hover-elevate flex items-center justify-center py-4"
+        className="bg-white rounded-md overflow-auto cursor-pointer hover-elevate py-4"
         onClick={openFullscreen}
         data-testid="gallery-ilgijang-page-1"
-        style={{ transform: 'rotate(90deg)', transformOrigin: 'center center' }}
       >
-        <img
-          src={ilgijangImage}
-          alt="황극력 일기장"
-          style={{ 
-            maxHeight: '60vw',
-            objectFit: 'contain'
-          }}
-        />
+        <div className="flex justify-center" style={{ minWidth: 'max-content' }}>
+          <img
+            src={ilgijangImage}
+            alt="황극력 일기장"
+            style={{ 
+              height: '500px',
+              width: 'auto',
+              transform: 'rotate(90deg)',
+              objectFit: 'contain'
+            }}
+          />
+        </div>
       </div>
 
       <Dialog open={fullscreenOpen} onOpenChange={() => closeFullscreen()}>
-        <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 bg-black/95 border-none">
+        <DialogContent className="max-w-[98vw] max-h-[98vh] p-0 bg-black/95 border-none">
           <VisuallyHidden>
             <DialogTitle>황극력 일기장</DialogTitle>
           </VisuallyHidden>
-          <div className="relative w-full h-[90vh] flex items-center justify-center overflow-auto">
+          <div className="relative w-full h-[95vh] flex items-center justify-center overflow-auto">
             <Button
               size="icon"
               variant="ghost"
@@ -73,17 +76,17 @@ export function IlgijangGallery() {
               {isZoomed ? <ZoomOut className="h-5 w-5" /> : <ZoomIn className="h-5 w-5" />}
             </Button>
 
-            <div 
-              className={`transition-transform duration-300 ${isZoomed ? 'scale-150' : ''}`}
-              style={{ transform: `rotate(90deg) ${isZoomed ? 'scale(1.5)' : ''}` }}
-            >
-              <img
-                src={ilgijangImage}
-                alt="황극력 일기장"
-                className="max-h-[85vh] object-contain"
-                data-testid="img-ilgijang-fullscreen"
-              />
-            </div>
+            <img
+              src={ilgijangImage}
+              alt="황극력 일기장"
+              style={{ 
+                height: isZoomed ? '140vh' : '90vh',
+                width: 'auto',
+                transform: 'rotate(90deg)',
+                transition: 'all 0.3s ease'
+              }}
+              data-testid="img-ilgijang-fullscreen"
+            />
           </div>
         </DialogContent>
       </Dialog>

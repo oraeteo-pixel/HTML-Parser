@@ -84,7 +84,7 @@ export function IlgijangGallery() {
                 className="flex-[0_0_100%] min-w-0 px-1"
               >
                 <div 
-                  className="min-h-[50vh] bg-white rounded-md overflow-hidden cursor-pointer hover-elevate flex items-center justify-center py-8"
+                  className="bg-white rounded-md overflow-hidden cursor-pointer hover-elevate flex items-center justify-center py-8"
                   onClick={() => openFullscreen(index)}
                   data-testid={`gallery-ilgijang-page-${index + 1}`}
                 >

@@ -165,7 +165,7 @@ export function IlgijangGallery() {
     <div 
       className="bg-white border border-gray-200 rounded-lg p-6"
       style={{ 
-        width: 800 * scale,
+        width: 850 * scale,
         fontFamily: "'Noto Sans KR', 'Nanum Gothic', sans-serif"
       }}
     >
@@ -191,6 +191,21 @@ export function IlgijangGallery() {
           </div>
           <div className="font-bold text-black" style={{ fontSize: 12 * scale }}>
             {trigram.trigram}之{mansion.mansion}
+          </div>
+        </div>
+
+        <div className="flex flex-col items-center" style={{ writingMode: 'vertical-rl' }}>
+          <div className="font-bold text-black" style={{ fontSize: 12 * scale }}>
+            翼子三偶
+          </div>
+          <div className="font-bold text-black" style={{ fontSize: 12 * scale }}>
+            損子三偶
+          </div>
+          <div className="font-bold text-black mt-2" style={{ fontSize: 12 * scale }}>
+            奇西
+          </div>
+          <div className="font-bold text-black" style={{ fontSize: 12 * scale }}>
+            財振
           </div>
         </div>
 

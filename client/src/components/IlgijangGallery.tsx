@@ -10,28 +10,39 @@ import {
   getHwanggeukDate,
   getHwanggeukHourGanZhi,
   getDayGanZhi,
+  getCurrentSolarTerm,
 } from "@/lib/calendarData";
 
-import backgroundImg from "@assets/ilgijang-background.png";
+import talismanGeneral from "@assets/talisman-general.jpg";
+import talismanSa from "@assets/talisman-sa.png";
+import talismanMyo from "@assets/talisman-myo.jpg";
+import talismanChuk from "@assets/talisman-chuk.png";
+import talismanHae from "@assets/talisman-hae.png";
+import talismanYu from "@assets/talisman-yu.jpg";
+import talismanMi from "@assets/talisman-mi.png";
 
 const HEAVENLY_STEMS = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"];
-
-const TRIGRAM_KOREAN: { [key: string]: string } = {
-  "乾": "건", "兌": "태", "離": "리", "震": "진",
-  "巽": "손", "坎": "감", "艮": "간", "坤": "곤", "中": "중"
-};
-
-const MANSION_KOREAN: { [key: string]: string } = {
-  "角": "각", "亢": "항", "氐": "저", "房": "방", "心": "심", "尾": "미", "箕": "기",
-  "斗": "두", "牛": "우", "女": "녀", "虛": "허", "危": "위", "室": "실", "壁": "벽",
-  "奎": "규", "婁": "루", "胃": "위", "昴": "묘", "畢": "필", "觜": "자", "參": "삼",
-  "井": "정", "鬼": "귀", "柳": "류", "星": "성", "張": "장", "翼": "익", "軫": "진"
-};
+const EARTHLY_BRANCHES = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
 
 const SIX_SPIRITS = ["靑龍", "朱雀", "句陳", "螣蛇", "白虎", "玄武"];
 
-function getSixSpiritForDayStem(dayStem: string): string {
-  const stemGroups: { [key: string]: number } = {
+const BRANCH_TALISMANS: { [key: string]: string } = {
+  "子": talismanChuk,
+  "丑": talismanChuk,
+  "寅": talismanMyo,
+  "卯": talismanMyo,
+  "辰": talismanSa,
+  "巳": talismanSa,
+  "午": talismanMi,
+  "未": talismanMi,
+  "申": talismanYu,
+  "酉": talismanYu,
+  "戌": talismanHae,
+  "亥": talismanHae,
+};
+
+function getSixSpiritsForDay(dayStem: string): string[] {
+  const stemStartMap: { [key: string]: number } = {
     "甲": 0, "乙": 0,
     "丙": 1, "丁": 1,
     "戊": 2,
@@ -39,7 +50,26 @@ function getSixSpiritForDayStem(dayStem: string): string {
     "庚": 4, "辛": 4,
     "壬": 5, "癸": 5
   };
-  return SIX_SPIRITS[stemGroups[dayStem] || 0];
+  
+  const startIdx = stemStartMap[dayStem] || 0;
+  const spirits: string[] = [];
+  
+  for (let i = 0; i < 6; i++) {
+    spirits.push(SIX_SPIRITS[(startIdx + i) % 6]);
+  }
+  
+  return spirits;
+}
+
+function getHourBranches(hourBranch: string): string[] {
+  const startIdx = EARTHLY_BRANCHES.indexOf(hourBranch);
+  const branches: string[] = [];
+  
+  for (let i = 0; i < 6; i++) {
+    branches.push(EARTHLY_BRANCHES[(startIdx + i) % 12]);
+  }
+  
+  return branches;
 }
 
 export function IlgijangGallery() {
@@ -73,9 +103,13 @@ export function IlgijangGallery() {
     const hwanggeuk = getHwanggeukDate(year, month, day, hours);
     const hwHourGanZhi = getHwanggeukHourGanZhi(year, month, day, hours, minutes);
     const dayGanZhi = getDayGanZhi(adjustedYear, adjustedMonth, adjustedDay);
+    const solarTerm = getCurrentSolarTerm(adjustedMonth, adjustedDay);
 
     const dayStem = dayGanZhi[0];
-    const sixSpirit = getSixSpiritForDayStem(dayStem);
+    const hourBranch = hwHourGanZhi[1];
+    
+    const sixSpirits = getSixSpiritsForDay(dayStem);
+    const hourBranches = getHourBranches(hourBranch);
 
     return {
       trigram,
@@ -83,16 +117,15 @@ export function IlgijangGallery() {
       hwanggeuk,
       hwHourGanZhi,
       dayGanZhi,
-      sixSpirit,
+      solarTerm,
+      sixSpirits,
+      hourBranches,
       dayStem,
       koreanDate: { year: adjustedYear, month: adjustedMonth, day: adjustedDay, hours, minutes }
     };
   }, [currentTime]);
 
-  const { trigram, mansion, hwanggeuk, hwHourGanZhi, dayGanZhi, sixSpirit } = calendarData;
-
-  const yearMonthText = `${hwanggeuk.yearGanZhi}年 ${hwanggeuk.monthGanZhi}月`;
-  const dayHourTrigramText = `${dayGanZhi}日 ${hwHourGanZhi}時 ${trigram.trigram}之${mansion.mansion}`;
+  const { trigram, mansion, hwanggeuk, hwHourGanZhi, dayGanZhi, solarTerm, sixSpirits, hourBranches } = calendarData;
 
   const openFullscreen = () => {
     setFullscreenOpen(true);
@@ -104,77 +137,110 @@ export function IlgijangGallery() {
     setIsZoomed(false);
   };
 
-  const DiaryContent = ({ scale = 1 }: { scale?: number }) => (
-    <div 
-      className="relative bg-white"
-      style={{ 
-        width: 724 * scale, 
-        height: 1024 * scale,
-        fontSize: `${scale}em`
-      }}
-    >
-      <img
-        src={backgroundImg}
-        alt="황극력 일기장"
-        className="absolute inset-0 w-full h-full object-contain"
-      />
-      
+  const DiaryContent = ({ scale = 1, isFullscreen = false }: { scale?: number; isFullscreen?: boolean }) => {
+    const baseWidth = isFullscreen ? 500 : 400;
+    const width = baseWidth * scale;
+    
+    return (
       <div 
-        className="absolute text-black font-bold"
-        style={{
-          top: `${15.5 * scale}%`,
-          left: '50%',
-          transform: 'translateX(-50%)',
-          fontSize: `${14 * scale}px`,
-          letterSpacing: `${2 * scale}px`,
-          whiteSpace: 'nowrap'
+        className="relative bg-white border border-gray-300 rounded-lg overflow-hidden"
+        style={{ 
+          width,
+          padding: 16 * scale,
+          fontFamily: "'Noto Sans KR', 'Nanum Gothic', sans-serif"
         }}
       >
-        {yearMonthText}
-      </div>
-      
-      <div 
-        className="absolute text-black font-bold"
-        style={{
-          top: `${17.5 * scale}%`,
-          left: '50%',
-          transform: 'translateX(-50%)',
-          fontSize: `${14 * scale}px`,
-          letterSpacing: `${2 * scale}px`,
-          whiteSpace: 'nowrap'
-        }}
-      >
-        {dayHourTrigramText}
-      </div>
-
-      <div 
-        className="absolute text-black font-semibold"
-        style={{
-          top: `${20 * scale}%`,
-          left: '50%',
-          transform: 'translateX(-50%)',
-          fontSize: `${12 * scale}px`
-        }}
-      >
-        {sixSpirit}
-      </div>
-
-      {[25, 31.5, 38, 44.5, 51, 57.5].map((topPercent, idx) => (
-        <div 
-          key={idx}
-          className="absolute text-black font-semibold"
-          style={{
-            top: `${topPercent * scale}%`,
-            left: '50%',
-            transform: 'translateX(-50%)',
-            fontSize: `${10 * scale}px`
-          }}
-        >
-          {sixSpirit}
+        <div className="flex justify-center mb-2">
+          <img 
+            src={talismanGeneral} 
+            alt="장군" 
+            style={{ 
+              height: 80 * scale,
+              objectFit: 'contain'
+            }}
+          />
         </div>
-      ))}
-    </div>
-  );
+
+        <div 
+          className="text-center font-bold text-black mb-1"
+          style={{ fontSize: 16 * scale }}
+        >
+          {hwanggeuk.yearGanZhi}年 {hwanggeuk.monthGanZhi}月 {solarTerm?.hanja || ''}節局
+        </div>
+
+        <div 
+          className="text-center font-bold text-black mb-3"
+          style={{ fontSize: 16 * scale }}
+        >
+          {dayGanZhi}日 {hwHourGanZhi}時 {trigram.trigram}之{mansion.mansion}
+        </div>
+
+        <div className="space-y-2">
+          {hourBranches.map((branch, idx) => (
+            <div 
+              key={idx} 
+              className="flex items-center justify-center gap-2"
+              style={{ minHeight: 60 * scale }}
+            >
+              <div 
+                className="font-bold text-black text-center"
+                style={{ 
+                  fontSize: 14 * scale,
+                  minWidth: 50 * scale
+                }}
+              >
+                {sixSpirits[idx]}
+              </div>
+              
+              <img 
+                src={BRANCH_TALISMANS[branch] || talismanSa}
+                alt={`${branch} 부적`}
+                style={{ 
+                  height: 55 * scale,
+                  objectFit: 'contain'
+                }}
+              />
+              
+              <div 
+                className="font-bold text-black text-center"
+                style={{ 
+                  fontSize: 12 * scale,
+                  minWidth: 20 * scale
+                }}
+              >
+                {branch}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div 
+          className="text-center mt-4 text-black"
+          style={{ fontSize: 12 * scale }}
+        >
+          侍天主造化定永世不忘萬事知
+        </div>
+        <div 
+          className="text-center text-black"
+          style={{ fontSize: 12 * scale }}
+        >
+          至氣今至願爲大降
+        </div>
+        <div 
+          className="text-center text-black"
+          style={{ fontSize: 10 * scale }}
+        >
+          天文地理風雲造化八門遁甲六丁六甲智慧勇力
+        </div>
+        <div 
+          className="text-center mt-2 text-black"
+          style={{ fontSize: 12 * scale }}
+        >
+          所願成就
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="w-full" data-testid="ilgijang-gallery">
@@ -183,9 +249,7 @@ export function IlgijangGallery() {
         onClick={openFullscreen}
         data-testid="gallery-ilgijang-page-1"
       >
-        <div className="max-w-full overflow-hidden flex justify-center">
-          <DiaryContent scale={0.6} />
-        </div>
+        <DiaryContent scale={0.85} />
       </div>
 
       <div className="mt-4 p-4 bg-amber-50 dark:bg-amber-950/30 rounded-lg border border-amber-200 dark:border-amber-800">
@@ -209,15 +273,19 @@ export function IlgijangGallery() {
           </div>
           <div className="bg-white dark:bg-gray-900 rounded p-2 text-center">
             <div className="text-xs text-muted-foreground">8괘</div>
-            <div className="font-bold text-red-600 dark:text-red-400">{trigram.trigram} ({TRIGRAM_KOREAN[trigram.trigram]})</div>
+            <div className="font-bold text-red-600 dark:text-red-400">{trigram.trigram}</div>
           </div>
           <div className="bg-white dark:bg-gray-900 rounded p-2 text-center">
             <div className="text-xs text-muted-foreground">28수</div>
-            <div className="font-bold text-blue-600 dark:text-blue-400">{mansion.mansion} ({MANSION_KOREAN[mansion.mansion]})</div>
+            <div className="font-bold text-blue-600 dark:text-blue-400">{mansion.mansion}</div>
           </div>
-          <div className="bg-white dark:bg-gray-900 rounded p-2 text-center md:col-span-2">
+          <div className="bg-white dark:bg-gray-900 rounded p-2 text-center">
+            <div className="text-xs text-muted-foreground">절기</div>
+            <div className="font-bold text-emerald-700 dark:text-emerald-300">{solarTerm?.hanja}</div>
+          </div>
+          <div className="bg-white dark:bg-gray-900 rounded p-2 text-center">
             <div className="text-xs text-muted-foreground">육신</div>
-            <div className="font-bold text-amber-700 dark:text-amber-300">{sixSpirit}</div>
+            <div className="font-bold text-amber-700 dark:text-amber-300">{sixSpirits[0]}</div>
           </div>
         </div>
       </div>
@@ -248,8 +316,8 @@ export function IlgijangGallery() {
               {isZoomed ? <ZoomOut className="h-5 w-5" /> : <ZoomIn className="h-5 w-5" />}
             </Button>
 
-            <div className={`transition-transform duration-300 ${isZoomed ? 'scale-150' : ''}`}>
-              <DiaryContent scale={isZoomed ? 1.2 : 0.85} />
+            <div className={`transition-transform duration-300 ${isZoomed ? 'scale-125' : ''}`}>
+              <DiaryContent scale={isZoomed ? 1.3 : 1.1} isFullscreen={true} />
             </div>
           </div>
         </DialogContent>

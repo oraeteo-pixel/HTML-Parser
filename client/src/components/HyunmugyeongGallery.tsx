@@ -1,8 +1,19 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { ChevronLeft, ChevronRight, X, ZoomIn, ZoomOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  getKoreanDate,
+  getHwanggeuk28Mansion,
+  getHwanggeukDate,
+  getHwanggeukHourGanZhi,
+  getHwanggeukDayGanZhi,
+  getSogungDaegung,
+  get64HexagramName,
+  getJeolguk,
+  WEEKDAYS_HANJA,
+} from "@/lib/calendarData";
 
 import page1 from "@assets/玄武經1쪽_1768798346130.jpg";
 import page2 from "@assets/玄武經2쪽_1768798346131.jpg";
@@ -55,6 +66,35 @@ export function HyunmugyeongGallery() {
   const [canScrollNext, setCanScrollNext] = useState(true);
   const [fullscreenImage, setFullscreenImage] = useState<number | null>(null);
   const [isZoomed, setIsZoomed] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 60000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const calendarData = useMemo(() => {
+    const koreanDate = getKoreanDate();
+    const { year, month, day, hours, minutes } = koreanDate;
+    let adjustedYear = year;
+    let adjustedMonth = month;
+    let adjustedDay = day;
+    if (hours >= 23) {
+      const nextDate = new Date(year, month - 1, day + 1);
+      adjustedYear = nextDate.getFullYear();
+      adjustedMonth = nextDate.getMonth() + 1;
+      adjustedDay = nextDate.getDate();
+    }
+    const hwanggeuk = getHwanggeukDate(year, month, day, hours);
+    const hwDayGanZhi = getHwanggeukDayGanZhi(hwanggeuk.year, hwanggeuk.month, hwanggeuk.day);
+    const hwHourGanZhi = getHwanggeukHourGanZhi(year, month, day, hours, minutes);
+    const jeolgukData = getJeolguk(hwanggeuk.year, hwanggeuk.month, hwanggeuk.day);
+    const sogungDaegung = getSogungDaegung(new Date());
+    const hexagram64 = get64HexagramName(sogungDaegung.sogung, sogungDaegung.daegung);
+    const mansion = getHwanggeuk28Mansion(hwanggeuk.year, hwanggeuk.month, hwanggeuk.day);
+    const weekdayHanja = WEEKDAYS_HANJA[new Date().getDay()];
+    return { hwanggeuk, hwDayGanZhi, hwHourGanZhi, jeolguk: jeolgukData.name, sogungDaegung, hexagram64, mansion, weekdayHanja };
+  }, [currentTime]);
 
   const scrollPrev = useCallback(() => emblaApi?.scrollPrev(), [emblaApi]);
   const scrollNext = useCallback(() => emblaApi?.scrollNext(), [emblaApi]);
@@ -109,6 +149,28 @@ export function HyunmugyeongGallery() {
 
   return (
     <div className="w-full" data-testid="hyunmugyeong-gallery">
+      {/* 황극력 정보박스 */}
+      <div className="slim-info-bar mb-4" data-testid="hyunmugyeong-info-bar">
+        <div className="flex flex-wrap items-center gap-1.5 text-base">
+          <span className="font-bold text-gray-700 dark:text-gray-200">
+            {calendarData.hwanggeuk.year}.{calendarData.hwanggeuk.month}.{calendarData.hwanggeuk.day}
+          </span>
+          <span className="font-semibold text-gray-600 dark:text-gray-300">
+            {calendarData.weekdayHanja}
+          </span>
+          <span className="font-semibold text-gray-600 dark:text-gray-300">
+            ({calendarData.hwanggeuk.yearGanZhi}年 {calendarData.hwanggeuk.monthGanZhi}月 {calendarData.hwDayGanZhi}日 {calendarData.hwHourGanZhi}時)
+          </span>
+          <span className="font-bold text-gray-700 dark:text-gray-200">{calendarData.jeolguk}</span>
+          <span className="font-semibold text-gray-600 dark:text-gray-300">
+            &lt;소궁,대궁&gt;{calendarData.sogungDaegung.isZungung ? "존궁" : `${calendarData.sogungDaegung.sogung},${calendarData.sogungDaegung.daegung}`} {calendarData.hexagram64?.fullName || ''}
+          </span>
+          <span className="slim-badge-cyan">
+            {calendarData.mansion.isZunkong ? calendarData.mansion.mansion : `${calendarData.mansion.mansion}, ${calendarData.mansion.general}`}
+          </span>
+        </div>
+      </div>
+
       <div className="relative">
         <div className="overflow-hidden" ref={emblaRef}>
           <div className="flex">

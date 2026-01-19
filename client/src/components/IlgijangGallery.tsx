@@ -7,6 +7,7 @@ import {
   getKoreanDate,
   get8Trigram,
   get28Mansion,
+  getHwanggeuk28Mansion,
   getHwanggeukDate,
   getHwanggeukHourGanZhi,
   getHwanggeukDayGanZhi,
@@ -195,6 +196,7 @@ export function IlgijangGallery() {
     const trigram = get8Trigram(adjustedYear, adjustedMonth, adjustedDay);
     const mansion = get28Mansion(adjustedYear, adjustedMonth, adjustedDay);
     const hwanggeuk = getHwanggeukDate(year, month, day, hours);
+    const hwMansion = getHwanggeuk28Mansion(hwanggeuk.year, hwanggeuk.month, hwanggeuk.day);
     
     // 황극력 기준 일진 (달력과 동일한 로직)
     const hwDayGanZhi = getHwanggeukDayGanZhi(hwanggeuk.year, hwanggeuk.month, hwanggeuk.day);
@@ -217,6 +219,7 @@ export function IlgijangGallery() {
     return {
       trigram,
       mansion,
+      hwMansion,
       hwanggeuk,
       hwDayGanZhi,
       hwHourGanZhi,
@@ -229,7 +232,7 @@ export function IlgijangGallery() {
     };
   }, [currentTime]);
 
-  const { trigram, mansion, hwanggeuk, hwDayGanZhi, hwHourGanZhi, sixSpirits, sixBranches, sogungDaegung, hexagram64, jeolguk } = calendarData;
+  const { trigram, mansion, hwMansion, hwanggeuk, hwDayGanZhi, hwHourGanZhi, sixSpirits, sixBranches, sogungDaegung, hexagram64, jeolguk } = calendarData;
 
   const openFullscreen = () => {
     setFullscreenOpen(true);
@@ -393,7 +396,7 @@ export function IlgijangGallery() {
             &lt;소궁,대궁&gt;{sogungDaegung.isZungung ? "존궁" : `${sogungDaegung.sogung},${sogungDaegung.daegung}`} {hexagram64?.fullName || ''}
           </span>
           <span className="slim-badge-cyan">
-            {mansion.isZunkong ? mansion.mansion : `${mansion.mansion}, ${mansion.general}`}
+            {hwMansion.isZunkong ? hwMansion.mansion : `${hwMansion.mansion}, ${hwMansion.general}`}
           </span>
         </div>
       </div>

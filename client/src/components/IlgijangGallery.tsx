@@ -195,18 +195,28 @@ export function IlgijangGallery() {
           </div>
         </div>
 
-        <div className="flex flex-col justify-start" style={{ writingMode: 'vertical-rl' }}>
-          <div className="font-bold text-black" style={{ fontSize: 14 * scale }}>
-            翼子三偶
+        <div className="flex flex-row-reverse gap-2" style={{ writingMode: 'vertical-rl' }}>
+          <div className="flex flex-col justify-start">
+            <div className="font-bold text-black" style={{ fontSize: 14 * scale }}>
+              益者三友
+            </div>
+            <div className="font-bold text-black mt-4" style={{ fontSize: 14 * scale }}>
+              損者三友
+            </div>
+            <div className="font-bold text-black mt-6" style={{ fontSize: 14 * scale }}>
+              基西在震
+            </div>
           </div>
-          <div className="font-bold text-black" style={{ fontSize: 14 * scale }}>
-            損子三偶
-          </div>
-          <div className="font-bold text-black mt-6" style={{ fontSize: 14 * scale }}>
-            奇西
-          </div>
-          <div className="font-bold text-black" style={{ fontSize: 14 * scale }}>
-            財振
+          <div className="flex flex-col justify-start">
+            <div className="font-bold text-black" style={{ fontSize: 14 * scale }}>
+              言聽
+            </div>
+            <div className="font-bold text-black mt-4" style={{ fontSize: 14 * scale }}>
+              神
+            </div>
+            <div className="font-bold text-black mt-6" style={{ fontSize: 14 * scale }}>
+              計用
+            </div>
           </div>
         </div>
 

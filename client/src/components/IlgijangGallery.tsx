@@ -1,10 +1,9 @@
 import { useState, useEffect } from "react";
 import { X, ZoomIn, ZoomOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
-import ilgijangImage from "@assets/ilgijang-horizontal.png";
+import page1 from "@assets/ilgijang-horizontal.png";
 
 export function IlgijangGallery() {
   const [fullscreenOpen, setFullscreenOpen] = useState(false);
@@ -32,29 +31,21 @@ export function IlgijangGallery() {
   return (
     <div className="w-full" data-testid="ilgijang-gallery">
       <div 
-        className="bg-white rounded-md overflow-auto cursor-pointer hover-elevate py-4"
+        className="bg-white rounded-md overflow-hidden cursor-pointer hover-elevate flex items-center justify-center py-8"
         onClick={openFullscreen}
         data-testid="gallery-ilgijang-page-1"
       >
-        <div className="flex justify-center items-center" style={{ height: '400px' }}>
-          <img
-            src={ilgijangImage}
-            alt="황극력 일기장"
-            style={{ 
-              maxHeight: '100%',
-              maxWidth: '100%',
-              objectFit: 'contain'
-            }}
-          />
-        </div>
+        <img
+          src={page1}
+          alt="일기장"
+          className="h-auto object-contain"
+          style={{ maxWidth: '100%' }}
+        />
       </div>
 
       <Dialog open={fullscreenOpen} onOpenChange={() => closeFullscreen()}>
-        <DialogContent className="max-w-[98vw] max-h-[98vh] p-0 bg-black/95 border-none">
-          <VisuallyHidden>
-            <DialogTitle>황극력 일기장</DialogTitle>
-          </VisuallyHidden>
-          <div className="relative w-full h-[95vh] flex items-center justify-center overflow-auto">
+        <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 bg-black/95 border-none">
+          <div className="relative w-full h-[90vh] flex items-center justify-center">
             <Button
               size="icon"
               variant="ghost"
@@ -75,17 +66,18 @@ export function IlgijangGallery() {
               {isZoomed ? <ZoomOut className="h-5 w-5" /> : <ZoomIn className="h-5 w-5" />}
             </Button>
 
-            <img
-              src={ilgijangImage}
-              alt="황극력 일기장"
-              style={{ 
-                maxHeight: isZoomed ? '150%' : '85vh',
-                maxWidth: isZoomed ? '150%' : '90vw',
-                objectFit: 'contain',
-                transition: 'all 0.3s ease'
-              }}
-              data-testid="img-ilgijang-fullscreen"
-            />
+            <div 
+              className={`transition-transform duration-300 ${isZoomed ? 'overflow-auto' : 'overflow-hidden'}`}
+              style={{ maxWidth: '100%', maxHeight: '100%' }}
+            >
+              <img
+                src={page1}
+                alt="일기장"
+                className={`transition-transform duration-300 ${isZoomed ? 'scale-150 cursor-move' : 'max-w-full object-contain cursor-zoom-in'}`}
+                onClick={() => !isZoomed && setIsZoomed(true)}
+                data-testid="img-ilgijang-fullscreen"
+              />
+            </div>
           </div>
         </DialogContent>
       </Dialog>

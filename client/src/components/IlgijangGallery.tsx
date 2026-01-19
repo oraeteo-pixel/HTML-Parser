@@ -163,47 +163,70 @@ export function IlgijangGallery() {
 
   const DiaryContent = ({ scale = 1 }: { scale?: number }) => (
     <div 
-      className="bg-white border border-gray-200 rounded-lg p-4"
+      className="bg-white border border-gray-200 rounded-lg p-6"
       style={{ 
-        width: 650 * scale,
+        width: 800 * scale,
         fontFamily: "'Noto Sans KR', 'Nanum Gothic', sans-serif"
       }}
     >
-      <div className="text-center mb-2">
-        <div className="font-bold text-black" style={{ fontSize: 14 * scale }}>
-          {hwanggeuk.yearGanZhi}年 {hwanggeuk.monthGanZhi}月 {solarTerm?.hanja || ''}節局
-        </div>
-        <div className="font-bold text-black" style={{ fontSize: 14 * scale }}>
-          {dayGanZhi}日 {hwHourGanZhi}時 {trigram.trigram}之{mansion.mansion}
-        </div>
-        <div className="font-bold text-black" style={{ fontSize: 13 * scale }}>
-          {sogungDaegung.sogung}宮 {hexagram64?.fullName || ''} ({hexagram64?.korean || ''})
-        </div>
-      </div>
-
-      <div className="flex justify-center gap-2" style={{ gap: 8 * scale }}>
-        {sixBranches.map((branch, idx) => (
-          <div key={idx} className="flex flex-col items-center">
-            <div className="font-bold text-black text-center" style={{ fontSize: 11 * scale }}>
-              {sixSpirits[0]}
-            </div>
-            <img 
-              src={BRANCH_TALISMANS[branch]}
-              alt={`${branch}부`}
-              style={{ 
-                height: 80 * scale,
-                objectFit: 'contain'
-              }}
-            />
+      <div className="flex flex-row-reverse justify-between items-start gap-4">
+        <div className="flex flex-col items-center" style={{ writingMode: 'vertical-rl' }}>
+          <div className="font-bold text-black" style={{ fontSize: 14 * scale }}>
+            {hwanggeuk.yearGanZhi}年
           </div>
-        ))}
-      </div>
+          <div className="font-bold text-black" style={{ fontSize: 14 * scale }}>
+            {hwanggeuk.monthGanZhi}月
+          </div>
+          <div className="font-bold text-black" style={{ fontSize: 14 * scale }}>
+            {solarTerm?.hanja || ''}節局
+          </div>
+          <div className="font-bold text-black mt-2" style={{ fontSize: 14 * scale }}>
+            {dayGanZhi}日
+          </div>
+          <div className="font-bold text-black" style={{ fontSize: 14 * scale }}>
+            {hwHourGanZhi}時
+          </div>
+          <div className="font-bold text-black mt-2" style={{ fontSize: 13 * scale }}>
+            {sogungDaegung.sogung}宮
+          </div>
+          <div className="font-bold text-black" style={{ fontSize: 12 * scale }}>
+            {trigram.trigram}之{mansion.mansion}
+          </div>
+        </div>
 
-      <div className="text-center mt-3" style={{ fontSize: 10 * scale }}>
-        <div className="text-black">侍天主造化定永世不忘萬事知</div>
-        <div className="text-black">至氣今至願爲大降</div>
-        <div className="text-black" style={{ fontSize: 9 * scale }}>天文地理風雲造化八門遁甲六丁六甲智慧勇力</div>
-        <div className="text-black font-bold mt-1">所願成就</div>
+        <div className="flex flex-row items-end gap-3" style={{ gap: 12 * scale }}>
+          {sixBranches.map((branch, idx) => (
+            <div key={idx} className="flex flex-col items-center">
+              <div 
+                className="font-bold text-black text-center mb-1" 
+                style={{ fontSize: 11 * scale, writingMode: 'vertical-rl' }}
+              >
+                {sixSpirits[0]}
+              </div>
+              <img 
+                src={BRANCH_TALISMANS[branch]}
+                alt={`${branch}부`}
+                style={{ 
+                  height: 100 * scale,
+                  objectFit: 'contain'
+                }}
+              />
+            </div>
+          ))}
+        </div>
+
+        <div 
+          className="flex flex-col items-center text-black font-bold"
+          style={{ writingMode: 'vertical-rl', fontSize: 10 * scale }}
+        >
+          <div>侍天主造化定</div>
+          <div>永世不忘萬事知</div>
+          <div className="mt-2">至氣今至願爲大降</div>
+          <div className="mt-2" style={{ fontSize: 9 * scale }}>天文地理風雲造化</div>
+          <div style={{ fontSize: 9 * scale }}>八門遁甲六丁六甲</div>
+          <div style={{ fontSize: 9 * scale }}>智慧勇力</div>
+          <div className="mt-2">所願成就</div>
+        </div>
       </div>
     </div>
   );

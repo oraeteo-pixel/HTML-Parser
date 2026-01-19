@@ -210,11 +210,23 @@ export function IlgijangGallery() {
           minHeight: sp(cfg.containerMinHeight)
         }}
       >
-        {/* 맨 오른쪽: 익자삼우 */}
+        {/* 익자삼우 */}
         <div style={{ ...colStyle, fontSize: fs(cfg.titleFontSize) }}>益者三友</div>
-
+        
+        {/* 언청 */}
+        <div style={{ ...colStyle, fontSize: fs(cfg.titleFontSize) }}>言聽</div>
+        
+        {/* 기서재괘 */}
+        <div style={{ ...colStyle, fontSize: fs(cfg.titleFontSize) }}>基瑞在{trigram.trigram}</div>
+        
+        {/* 신 */}
+        <div style={{ ...colStyle, fontSize: fs(cfg.titleFontSize) }}>神</div>
+        
         {/* 손자삼우 */}
         <div style={{ ...colStyle, fontSize: fs(cfg.titleFontSize) }}>損者三友</div>
+        
+        {/* 계용 */}
+        <div style={{ ...colStyle, fontSize: fs(cfg.titleFontSize) }}>計用</div>
 
         {/* 황극력 년월 */}
         <div style={{ ...colStyle, fontSize: fs(cfg.mainFontSize) }}>
@@ -268,11 +280,6 @@ export function IlgijangGallery() {
           天文地理風雲造化<br/>八門遁甲六丁六甲<br/>智慧勇力
         </div>
         <div style={{ ...colStyle, fontSize: fs(cfg.incantationFontSize) }}>所願成就</div>
-
-        {/* 기서, 언청, 신, 계용 */}
-        <div style={{ ...colStyle, fontSize: fs(cfg.mainFontSize) }}>
-          基祥西在{trigram.trigram}<br/><br/><br/>言聽<br/><br/>神<br/><br/>計用
-        </div>
       </div>
     );
   };

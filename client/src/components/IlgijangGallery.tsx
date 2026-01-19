@@ -165,93 +165,61 @@ export function IlgijangGallery() {
     <div 
       className="bg-white border border-gray-200 rounded-lg p-6"
       style={{ 
-        width: 900 * scale,
-        minHeight: 500 * scale,
+        width: 750 * scale,
         fontFamily: "'Noto Sans KR', 'Nanum Gothic', sans-serif"
       }}
     >
-      <div className="flex flex-row-reverse justify-between items-stretch gap-6" style={{ height: 450 * scale }}>
-        <div className="flex flex-col justify-start" style={{ writingMode: 'vertical-rl' }}>
-          <div className="font-bold text-black" style={{ fontSize: 16 * scale }}>
-            {hwanggeuk.yearGanZhi}年
-          </div>
-          <div className="font-bold text-black" style={{ fontSize: 16 * scale }}>
-            {hwanggeuk.monthGanZhi}月
-          </div>
-          <div className="font-bold text-black" style={{ fontSize: 16 * scale }}>
-            {solarTerm?.hanja || ''}節局
-          </div>
-          <div className="font-bold text-black mt-4" style={{ fontSize: 16 * scale }}>
-            {dayGanZhi}日
-          </div>
-          <div className="font-bold text-black" style={{ fontSize: 16 * scale }}>
-            {hwHourGanZhi}時
-          </div>
-          <div className="font-bold text-black mt-4" style={{ fontSize: 14 * scale }}>
-            {sogungDaegung.sogung}宮
-          </div>
-          <div className="font-bold text-black" style={{ fontSize: 14 * scale }}>
-            {trigram.trigram}之{mansion.mansion}
-          </div>
+      <div 
+        className="flex flex-row-reverse justify-start gap-3" 
+        style={{ writingMode: 'vertical-rl', textOrientation: 'upright' }}
+      >
+        <div className="flex flex-col font-bold text-black" style={{ fontSize: 14 * scale }}>
+          <span>{hwanggeuk.yearGanZhi}年</span>
+          <span>{hwanggeuk.monthGanZhi}月</span>
+          <span>{solarTerm?.hanja || ''}節局</span>
+          <span className="mt-2">{dayGanZhi}日</span>
+          <span>{hwHourGanZhi}時</span>
+          <span className="mt-2">{sogungDaegung.sogung}宮</span>
+          <span>{trigram.trigram}之{mansion.mansion}</span>
         </div>
 
-        <div className="flex flex-row-reverse gap-2" style={{ writingMode: 'vertical-rl' }}>
-          <div className="flex flex-col justify-start">
-            <div className="font-bold text-black" style={{ fontSize: 14 * scale }}>
-              益者三友
-            </div>
-            <div className="font-bold text-black mt-4" style={{ fontSize: 14 * scale }}>
-              損者三友
-            </div>
-            <div className="font-bold text-black mt-6" style={{ fontSize: 14 * scale }}>
-              基西在震
-            </div>
-          </div>
-          <div className="flex flex-col justify-start">
-            <div className="font-bold text-black" style={{ fontSize: 14 * scale }}>
-              言聽
-            </div>
-            <div className="font-bold text-black mt-4" style={{ fontSize: 14 * scale }}>
-              神
-            </div>
-            <div className="font-bold text-black mt-6" style={{ fontSize: 14 * scale }}>
-              計用
-            </div>
-          </div>
+        <div className="flex flex-col font-bold text-black" style={{ fontSize: 13 * scale }}>
+          <span>益者三友</span>
+          <span className="mt-2">損者三友</span>
+          <span className="mt-4">基西在震</span>
         </div>
 
-        <div className="flex flex-row items-end gap-4" style={{ gap: 16 * scale }}>
-          {sixBranches.map((branch, idx) => (
-            <div key={idx} className="flex flex-col items-center">
-              <div 
-                className="font-bold text-black text-center mb-2" 
-                style={{ fontSize: 13 * scale, writingMode: 'vertical-rl' }}
-              >
-                {sixSpirits[0]}
-              </div>
-              <img 
-                src={BRANCH_TALISMANS[branch]}
-                alt={`${branch}부`}
-                style={{ 
-                  height: 150 * scale,
-                  objectFit: 'contain'
-                }}
-              />
-            </div>
-          ))}
+        <div className="flex flex-col font-bold text-black" style={{ fontSize: 13 * scale }}>
+          <span>言聽</span>
+          <span className="mt-2">神</span>
+          <span className="mt-4">計用</span>
         </div>
 
-        <div 
-          className="flex flex-col justify-start text-black font-bold"
-          style={{ writingMode: 'vertical-rl', fontSize: 12 * scale }}
-        >
-          <div>侍天主造化定</div>
-          <div>永世不忘萬事知</div>
-          <div className="mt-4">至氣今至願爲大降</div>
-          <div className="mt-4" style={{ fontSize: 11 * scale }}>天文地理風雲造化</div>
-          <div style={{ fontSize: 11 * scale }}>八門遁甲六丁六甲</div>
-          <div style={{ fontSize: 11 * scale }}>智慧勇力</div>
-          <div className="mt-4">所願成就</div>
+        {sixBranches.map((branch, idx) => (
+          <div key={idx} className="flex flex-col items-center">
+            <span className="font-bold text-black" style={{ fontSize: 12 * scale }}>
+              {sixSpirits[0]}
+            </span>
+            <img 
+              src={BRANCH_TALISMANS[branch]}
+              alt={`${branch}부`}
+              style={{ 
+                height: 120 * scale,
+                objectFit: 'contain',
+                marginTop: 4 * scale
+              }}
+            />
+          </div>
+        ))}
+
+        <div className="flex flex-col font-bold text-black" style={{ fontSize: 12 * scale }}>
+          <span>侍天主造化定</span>
+          <span>永世不忘萬事知</span>
+          <span className="mt-2">至氣今至願爲大降</span>
+          <span className="mt-2">天文地理風雲造化</span>
+          <span>八門遁甲六丁六甲</span>
+          <span>智慧勇力</span>
+          <span className="mt-2">所願成就</span>
         </div>
       </div>
     </div>

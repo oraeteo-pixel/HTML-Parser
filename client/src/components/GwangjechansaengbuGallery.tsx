@@ -221,6 +221,32 @@ export function GwangjechansaengbuGallery() {
           minHeight: sp(cfg.containerMinHeight)
         }}
       >
+        {threeBranches.map((branch, idx) => (
+          <div key={idx} style={{ ...colStyle, textAlign: 'center' }}>
+            <span style={{ fontSize: fs(cfg.talismanLabelFontSize) }}>{sixSpirits[idx]}</span>
+            <br/>
+            <img 
+              src={BRANCH_TALISMANS[branch]}
+              alt={`${sixSpirits[idx]}${branch}부`}
+              style={{ height: sp(cfg.talismanImageHeight), objectFit: 'contain', marginTop: sp(cfg.talismanImageMarginTop) }}
+            />
+          </div>
+        ))}
+
+        <div style={{ ...colStyle, fontSize: fs(cfg.mainFontSize) }}>
+          {hwanggeuk.yearGanZhi}年{hwanggeuk.monthGanZhi}月{hwDayGanZhi}日{hwHourGanZhi}時
+        </div>
+
+        <div style={{ ...colStyle, textAlign: 'center' }}>
+          {MANSION_28_TALISMANS[hwMansion.mansion] && (
+            <img 
+              src={MANSION_28_TALISMANS[hwMansion.mansion]}
+              alt={`${hwMansion.mansion}수부`}
+              style={{ height: sp(cfg.talismanImageHeight), objectFit: 'contain' }}
+            />
+          )}
+        </div>
+
         <div style={{ ...colStyle, fontSize: fs(cfg.incantationFontSize) }}>
           侍天主造化定永世不忘萬事知
         </div>
@@ -239,32 +265,6 @@ export function GwangjechansaengbuGallery() {
         <div style={{ ...colStyle, fontSize: fs(cfg.incantationFontSize) }}>
           朴判守伏祝
         </div>
-
-        <div style={{ ...colStyle, textAlign: 'center' }}>
-          {MANSION_28_TALISMANS[hwMansion.mansion] && (
-            <img 
-              src={MANSION_28_TALISMANS[hwMansion.mansion]}
-              alt={`${hwMansion.mansion}수부`}
-              style={{ height: sp(cfg.talismanImageHeight), objectFit: 'contain' }}
-            />
-          )}
-        </div>
-
-        <div style={{ ...colStyle, fontSize: fs(cfg.mainFontSize) }}>
-          {hwanggeuk.yearGanZhi}年{hwanggeuk.monthGanZhi}月{hwDayGanZhi}日{hwHourGanZhi}時
-        </div>
-
-        {threeBranches.map((branch, idx) => (
-          <div key={idx} style={{ ...colStyle, textAlign: 'center' }}>
-            <span style={{ fontSize: fs(cfg.talismanLabelFontSize) }}>{sixSpirits[idx]}</span>
-            <br/>
-            <img 
-              src={BRANCH_TALISMANS[branch]}
-              alt={`${sixSpirits[idx]}${branch}부`}
-              style={{ height: sp(cfg.talismanImageHeight), objectFit: 'contain', marginTop: sp(cfg.talismanImageMarginTop) }}
-            />
-          </div>
-        ))}
       </div>
     );
   };

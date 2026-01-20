@@ -10,6 +10,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { useToast } from "@/hooks/use-toast";
+import { MessagesDialog } from "@/components/MessagesDialog";
 import type { Post } from "@shared/schema";
 
 interface BeforeInstallPromptEvent extends Event {
@@ -70,6 +71,7 @@ export function Navigation() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+  const [messagesOpen, setMessagesOpen] = useState(false);
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -248,8 +250,8 @@ export function Navigation() {
               </div>
             ) : isAuthenticated && user ? (
               <>
-              <Link
-                href="/messages"
+              <button
+                onClick={() => setMessagesOpen(true)}
                 className="flex flex-col items-center gap-0 group cursor-pointer relative"
                 data-testid="nav-messages"
               >
@@ -259,7 +261,8 @@ export function Navigation() {
                     {unreadCount.count > 9 ? '9+' : unreadCount.count}
                   </span>
                 ) : null}
-              </Link>
+              </button>
+              <MessagesDialog open={messagesOpen} onOpenChange={setMessagesOpen} />
               <Popover>
                 <PopoverTrigger asChild>
                   <button 

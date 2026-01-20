@@ -332,7 +332,7 @@ export function JeolgukCircularChart({ date }: JeolgukCircularChartProps) {
             
             {/* Outer stems in octagon - smaller radius */}
             <text x="0" y="-55" textAnchor="middle" fontSize="16" fontWeight={todayStem === '庚' ? "bold" : "normal"} fill={todayStem === '庚' ? "#1a365d" : "#2d3748"}>庚</text>
-            <text x="15" y="-55" textAnchor="middle" fontSize="10" fill="#718096">7</text>
+            <text x="15" y="-55" textAnchor="middle" fontSize="10" fill="#718096">2</text>
             
             <text x="40" y="-40" textAnchor="middle" fontSize="16" fontWeight={todayStem === '丁' ? "bold" : "normal"} fill={todayStem === '丁' ? "#1a365d" : "#2d3748"}>丁</text>
             <text x="55" y="-50" textAnchor="middle" fontSize="10" fill="#718096">9</text>

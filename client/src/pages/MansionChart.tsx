@@ -361,7 +361,7 @@ export default function MansionChart() {
                           <span className="text-sm">{lowerSymbol}</span>
                         </div>
                       )}
-                      <div className={`font-bold text-[10px] ${showSymbols ? "mt-0.5" : ""}`}>{hexagram?.hanja || (isCenter ? "中" : `${trigramNames[upper]}${trigramNames[lower]}`)}</div>
+                      <div className={`font-bold text-[10px] ${showSymbols ? "mt-0.5" : ""}`}>{hexagram?.fullName || (isCenter ? "中" : `${trigramNames[upper]}${trigramNames[lower]}`)}</div>
                     </div>
                   );
                 }

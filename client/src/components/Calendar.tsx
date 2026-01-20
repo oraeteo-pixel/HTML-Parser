@@ -1040,7 +1040,7 @@ export function Calendar() {
                       onClick={() => hasInterpretation && setSelectedHexagram({ sogung: upper, daegung: lower })}
                       data-testid={`hexagram-${lower}-${upper}`}
                     >
-                      <div className="font-bold">{hexagram?.hanja || (isCenter ? "中" : `${trigramNames[upper]}${trigramNames[lower]}`)}</div>
+                      <div className="font-bold">{hexagram?.fullName || (isCenter ? "中" : `${trigramNames[upper]}${trigramNames[lower]}`)}</div>
                     </div>
                   );
                 }

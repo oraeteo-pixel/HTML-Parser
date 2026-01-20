@@ -1,7 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import {
   getKoreanDate,
-  get8Trigram,
   getHwanggeuk28Mansion,
   getHwanggeukDate,
   getHwanggeukHourGanZhi,
@@ -171,7 +170,6 @@ export function GwangjechansaengbuGallery() {
       adjustedDay = nextDate.getDate();
     }
 
-    const trigram = get8Trigram(adjustedYear, adjustedMonth, adjustedDay);
     const hwanggeuk = getHwanggeukDate(year, month, day, hours);
     const hwMansion = getHwanggeuk28Mansion(hwanggeuk.year, hwanggeuk.month, hwanggeuk.day);
     
@@ -185,7 +183,6 @@ export function GwangjechansaengbuGallery() {
     const threeBranches = getThreeBranchesFromDayBranch(hwDayBranch);
 
     return {
-      trigram,
       hwMansion,
       hwanggeuk,
       hwDayGanZhi,
@@ -196,7 +193,7 @@ export function GwangjechansaengbuGallery() {
     };
   }, [currentTime]);
 
-  const { trigram, hwMansion, hwanggeuk, hwDayGanZhi, hwHourGanZhi, sixSpirits, threeBranches } = calendarData;
+  const { hwMansion, hwanggeuk, hwDayGanZhi, hwHourGanZhi, sixSpirits, threeBranches } = calendarData;
 
   const DiaryContent = ({ scale = 1 }: { scale?: number }) => {
     const cfg = DIARY_CONFIG;
@@ -224,39 +221,23 @@ export function GwangjechansaengbuGallery() {
           minHeight: sp(cfg.containerMinHeight)
         }}
       >
-        <div style={{ 
-          display: 'inline-block', 
-          verticalAlign: 'top',
-          marginLeft: sp(cfg.columnSpacing),
-          direction: 'ltr'
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: sp(16) }}>
-            <div style={{ writingMode: 'vertical-rl', textOrientation: 'upright', fontSize: fs(cfg.titleFontSize), color: 'black', fontWeight: 'bold' }}>
-              益者三友
-            </div>
-            <div style={{ width: sp(40) }}></div>
-            <div style={{ writingMode: 'vertical-rl', textOrientation: 'upright', fontSize: fs(cfg.titleFontSize), color: 'black', fontWeight: 'bold' }}>
-              損者三友
-            </div>
-          </div>
-          
-          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: sp(16) }}>
-            <div style={{ writingMode: 'vertical-rl', textOrientation: 'upright', fontSize: fs(cfg.titleFontSize), color: 'black', fontWeight: 'bold' }}>
-              基瑞在{trigram.trigram}
-            </div>
-          </div>
-          
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            <div style={{ writingMode: 'vertical-rl', textOrientation: 'upright', fontSize: fs(cfg.titleFontSize), color: 'black', fontWeight: 'bold' }}>
-              言聽
-            </div>
-            <div style={{ writingMode: 'vertical-rl', textOrientation: 'upright', fontSize: fs(cfg.titleFontSize), color: 'black', fontWeight: 'bold' }}>
-              神
-            </div>
-            <div style={{ writingMode: 'vertical-rl', textOrientation: 'upright', fontSize: fs(cfg.titleFontSize), color: 'black', fontWeight: 'bold' }}>
-              計用
-            </div>
-          </div>
+        <div style={{ ...colStyle, fontSize: fs(cfg.incantationFontSize) }}>
+          侍天主造化定永世不忘萬事知
+        </div>
+        <div style={{ ...colStyle, fontSize: fs(cfg.incantationFontSize) }}>
+          至氣今至願爲大降
+        </div>
+        <div style={{ ...colStyle, fontSize: fs(cfg.incantationFontSize) }}>
+          廣濟蒼生
+        </div>
+        <div style={{ ...colStyle, fontSize: fs(cfg.incantationFontSize) }}>
+          所願成就
+        </div>
+        <div style={{ ...colStyle, fontSize: fs(cfg.incantationFontSize) }}>
+          各自圖生住所
+        </div>
+        <div style={{ ...colStyle, fontSize: fs(cfg.incantationFontSize) }}>
+          朴判守伏祝
         </div>
 
         <div style={{ ...colStyle, textAlign: 'center' }}>
@@ -284,19 +265,6 @@ export function GwangjechansaengbuGallery() {
             />
           </div>
         ))}
-
-        <div style={{ ...colStyle, fontSize: fs(cfg.incantationFontSize) }}>
-          廣濟蒼生
-        </div>
-        <div style={{ ...colStyle, fontSize: fs(cfg.incantationFontSize) }}>
-          至氣今至願爲大降
-        </div>
-        <div style={{ ...colStyle, fontSize: fs(cfg.incantationFontSize), marginTop: sp(80) }}>
-          朴判守
-        </div>
-        <div style={{ ...colStyle, fontSize: fs(cfg.incantationFontSize), marginTop: sp(100) }}>
-          所願成就
-        </div>
       </div>
     );
   };

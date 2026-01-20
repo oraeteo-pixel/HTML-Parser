@@ -179,6 +179,7 @@ export function HyunmugyeongGallery() {
                     src={page}
                     alt={`현무경 ${index + 1}쪽`}
                     className="w-full h-auto max-h-[85vh] object-contain"
+                    style={(index === 0 || index === 1) ? { marginLeft: '1%' } : undefined}
                     loading="lazy"
                   />
                   {(index === 0 || index === 1) && (
@@ -187,7 +188,7 @@ export function HyunmugyeongGallery() {
                       style={{ 
                         fontFamily: "'Noto Serif KR', 'Batang', serif",
                         top: '28%',
-                        paddingLeft: '3%'
+                        paddingLeft: '1%'
                       }}
                     >
                       <p className="text-sm md:text-base font-bold text-gray-900 tracking-wide">

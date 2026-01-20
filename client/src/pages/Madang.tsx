@@ -23,7 +23,9 @@ import {
   getJeolguk,
   WEEKDAYS_HANJA,
 } from "@/lib/calendarData";
-import samindonghaeng from "@assets/3인동행_1768891330083.pdf";
+import choisuun from "@assets/최수운_1768891647413.jpg";
+import cheonjunim from "@assets/천주님_1768891653091.jpg";
+import yu from "@assets/사본_-_yu_1768891659139.jpg";
 import type { Post, Comment, PageContent } from "@shared/schema";
 
 type PostWithAuthor = Post & { author: string; authorEmail: string | null; commentCount?: number };
@@ -748,12 +750,10 @@ export default function Madang() {
           </div>
         )}
 
-        <div className="bg-white rounded-none overflow-hidden flex items-center justify-center py-4 mb-4">
-          <embed 
-            src={samindonghaeng} 
-            type="application/pdf" 
-            className="w-full max-w-[600px] h-[400px]"
-          />
+        <div className="bg-white rounded-none overflow-hidden flex items-center justify-center gap-4 py-4 mb-4 flex-wrap">
+          <img src={choisuun} alt="최수운" className="max-w-[150px] h-auto object-contain" />
+          <img src={cheonjunim} alt="천주님" className="max-w-[150px] h-auto object-contain" />
+          <img src={yu} alt="유" className="max-w-[150px] h-auto object-contain" />
         </div>
 
         {showEditor && user && (

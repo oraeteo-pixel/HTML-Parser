@@ -228,7 +228,7 @@ export default function MansionChart() {
                 {todayMansion.mansion}{todayMansion.isZunkong ? "" : "宿"}
               </Badge>
               <Badge className="badge-slate">
-                {todayJeolguk.name}{todayJeolgukHexagram ? ` (${todayJeolgukHexagram.upperTrigram}${todayJeolgukHexagram.lowerTrigram} ${todayJeolgukHexagram.fullName})` : ''}
+                {todayJeolguk.name}{todayJeolgukHexagram ? ` (${todayJeolgukHexagram.fullName})` : ''}
               </Badge>
               <Badge className="badge-navy">
                 {todaySogungDaegung.isZungung 

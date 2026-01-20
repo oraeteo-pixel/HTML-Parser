@@ -204,10 +204,16 @@ export function HyunmugyeongGallery() {
                 className="flex-[0_0_100%] min-w-0 px-0"
               >
                 <div 
-                  className="min-h-[85vh] bg-white rounded-none overflow-hidden cursor-pointer hover-elevate flex items-center justify-center"
+                  className="min-h-[85vh] bg-white rounded-none overflow-hidden cursor-pointer hover-elevate flex flex-col items-center justify-center"
                   onClick={() => openFullscreen(index)}
                   data-testid={`gallery-page-${index + 1}`}
                 >
+                  {(index === 0 || index === 1) && (
+                    <div className="text-center py-2" style={{ fontFamily: "'Nanum Myeongjo', serif" }}>
+                      <p className="text-lg md:text-xl text-gray-800 mb-1">普濟蒼生君不知</p>
+                      <p className="text-lg md:text-xl text-gray-800">符書以外別無通</p>
+                    </div>
+                  )}
                   <img
                     src={page}
                     alt={`현무경 ${index + 1}쪽`}

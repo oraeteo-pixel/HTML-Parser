@@ -399,7 +399,7 @@ export function IlgijangGallery() {
       )}
 
       <div 
-        className="bg-white rounded-none overflow-hidden cursor-pointer hover-elevate flex items-center justify-center"
+        className="bg-white rounded-none overflow-hidden cursor-pointer hover-elevate flex items-center justify-center py-4"
         data-testid="gallery-ilgijang-page-1"
       >
         <DiaryContent scale={0.9} />

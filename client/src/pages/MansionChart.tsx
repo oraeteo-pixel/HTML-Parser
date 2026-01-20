@@ -1,7 +1,8 @@
 import { useMemo, useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { getHwanggeuk28Mansion, getHwanggeukDate, getDayGanZhi, getKoreanTime, getJeolguk, getSogungDaegung, getMansionGanjiMap, SIXTY_GANJI, getHwanggeukHourGanZhi, get64HexagramName } from "@/lib/calendarData";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { getHwanggeuk28Mansion, getHwanggeukDate, getDayGanZhi, getKoreanTime, getJeolguk, getSogungDaegung, getMansionGanjiMap, SIXTY_GANJI, getHwanggeukHourGanZhi, get64HexagramName, getHexagramInterpretation, HEXAGRAM_ORDER } from "@/lib/calendarData";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { JeolgukCircularChart } from "@/components/JeolgukCircularChart";
@@ -33,6 +34,7 @@ export default function MansionChart() {
   const [currentTime, setCurrentTime] = useState(getKoreanTime());
   const [hoveredMansion, setHoveredMansion] = useState<string | null>(null);
   const [popupPosition, setPopupPosition] = useState<{ x: number; y: number; direction: 'top' | 'bottom' | 'left' | 'right' } | null>(null);
+  const [selectedHexagram, setSelectedHexagram] = useState<{ sogung: number; daegung: number } | null>(null);
   
   useEffect(() => {
     const timer = setInterval(() => {
@@ -84,6 +86,7 @@ export default function MansionChart() {
   const todayHwDate = getHwanggeukDate(today.getFullYear(), today.getMonth() + 1, today.getDate());
   const todayMansion = getHwanggeuk28Mansion(todayHwDate.year, todayHwDate.month, todayHwDate.day);
   const todayJeolguk = getJeolguk(todayHwDate.year, todayHwDate.month, todayHwDate.day);
+  const todayJeolgukHexagram = get64HexagramName(todayJeolguk.sogung, todayJeolguk.daegung);
   const todaySogungDaegung = getSogungDaegung(currentTime);
   const todayHourGanZhi = getHwanggeukHourGanZhi(today.getFullYear(), today.getMonth() + 1, today.getDate(), today.getHours(), today.getMinutes());
   
@@ -225,7 +228,7 @@ export default function MansionChart() {
                 {todayMansion.mansion}{todayMansion.isZunkong ? "" : "宿"}
               </Badge>
               <Badge className="badge-slate">
-                {todayJeolguk.name}
+                {todayJeolguk.name}{todayJeolgukHexagram ? ` (${todayJeolgukHexagram.upperTrigram}${todayJeolgukHexagram.lowerTrigram} ${todayJeolgukHexagram.fullName})` : ''}
               </Badge>
               <Badge className="badge-navy">
                 {todaySogungDaegung.isZungung 
@@ -334,6 +337,7 @@ export default function MansionChart() {
                   const upperSymbol = trigramSymbols[upper] || "";
                   const lowerSymbol = trigramSymbols[lower] || "";
                   
+                  const hasInterpretation = getHexagramInterpretation(upper, lower) !== null;
                   cells.push(
                     <div 
                       key={`${lower}-${upper}`}
@@ -348,7 +352,8 @@ export default function MansionChart() {
                               ? "border-border/30 bg-muted/30 text-muted-foreground"
                               : "border-border/50 hover-elevate"
                       }`}
-                      title={hexagram ? `${hexagram.fullName} (${hexagram.korean})` : `${trigramNames[upper]}之${trigramNames[lower]}`}
+                      title={hexagram ? `${hexagram.fullName} (${hexagram.korean}) - 클릭하여 주역 풀이 보기` : `${trigramNames[upper]}之${trigramNames[lower]}`}
+                      onClick={() => hasInterpretation && setSelectedHexagram({ sogung: upper, daegung: lower })}
                     >
                       {showSymbols && (
                         <div className="flex flex-col items-center leading-none">
@@ -368,6 +373,85 @@ export default function MansionChart() {
         </div>
         <Footer />
       </main>
+
+      {/* 64괘 주역 풀이 모달 */}
+      <Dialog open={!!selectedHexagram} onOpenChange={(open) => !open && setSelectedHexagram(null)}>
+        <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-center">
+              {(() => {
+                if (!selectedHexagram) return "";
+                const interp = getHexagramInterpretation(selectedHexagram.sogung, selectedHexagram.daegung);
+                if (!interp) return "주역 풀이";
+                const key = `${selectedHexagram.sogung}-${selectedHexagram.daegung}`;
+                const orderNum = HEXAGRAM_ORDER[key] || 0;
+                return (
+                  <div className="space-y-1">
+                    <div className="text-2xl font-bold">{orderNum}. {interp.fullName}</div>
+                    <div className="text-lg text-muted-foreground">({interp.korean})</div>
+                  </div>
+                );
+              })()}
+            </DialogTitle>
+          </DialogHeader>
+          {selectedHexagram && (() => {
+            const interp = getHexagramInterpretation(selectedHexagram.sogung, selectedHexagram.daegung);
+            if (!interp) return <p className="text-center text-muted-foreground">풀이 정보가 없습니다.</p>;
+            return (
+              <div className="space-y-4">
+                {/* 괘 심볼 */}
+                <div className="flex justify-center items-center gap-4 py-3 bg-muted/30 rounded-lg">
+                  <div className="text-center">
+                    <div className="text-3xl">{interp.upperTrigram.symbol}</div>
+                    <div className="text-xs text-muted-foreground">상괘: {interp.upperTrigram.name}</div>
+                  </div>
+                  <div className="text-2xl text-muted-foreground">+</div>
+                  <div className="text-center">
+                    <div className="text-3xl">{interp.lowerTrigram.symbol}</div>
+                    <div className="text-xs text-muted-foreground">하괘: {interp.lowerTrigram.name}</div>
+                  </div>
+                </div>
+                
+                {/* 기본 설명 */}
+                {interp.description && (
+                  <div className="space-y-1">
+                    <div className="text-sm font-medium text-muted-foreground">괘 설명</div>
+                    <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-400">{interp.description}</p>
+                  </div>
+                )}
+                
+                {/* 괘사 */}
+                <div className="p-3 border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30 rounded-lg">
+                  <div className="text-sm font-medium text-amber-800 dark:text-amber-300 mb-1">괘사 (卦辭)</div>
+                  <div className="text-base font-serif">{interp.guasa}</div>
+                </div>
+                
+                {/* 의미 */}
+                <div className="space-y-1">
+                  <div className="text-sm font-medium text-muted-foreground">의미</div>
+                  <p className="text-sm leading-relaxed">{interp.meaning}</p>
+                </div>
+                
+                {/* 조언 */}
+                <div className="p-3 bg-slate-100 dark:bg-slate-800 rounded-lg">
+                  <div className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">풀이</div>
+                  <p className="text-sm leading-relaxed">{interp.advice}</p>
+                </div>
+                
+                {/* 원문 */}
+                {interp.wonmun && (
+                  <div className="space-y-1">
+                    <div className="text-sm font-medium text-muted-foreground">원문 (原文)</div>
+                    <div className="p-4 bg-amber-50/50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg w-full max-w-none">
+                      <pre className="text-sm leading-relaxed whitespace-pre-wrap font-serif">{interp.wonmun}</pre>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -53,6 +53,18 @@ export default function EbookPage() {
   const [editMediaItems, setEditMediaItems] = useState<MediaItem[]>([]);
   const [textStyle, setTextStyle] = useState<TextStyle>({ fontFamily: "noto-sans", fontSize: "16px", lineHeight: "1.5", fontWeight: "400" });
   const [editTextStyle, setEditTextStyle] = useState<TextStyle>({ fontFamily: "noto-sans", fontSize: "16px", lineHeight: "1.5", fontWeight: "400" });
+  const mainRef = useRef<HTMLElement>(null);
+
+  // Restore scroll position when returning to page
+  useEffect(() => {
+    const savedPosition = sessionStorage.getItem('ebook-scroll-position');
+    if (savedPosition && mainRef.current) {
+      setTimeout(() => {
+        mainRef.current?.scrollTo(0, parseInt(savedPosition, 10));
+        sessionStorage.removeItem('ebook-scroll-position');
+      }, 100);
+    }
+  }, []);
 
   // Auto-open editor when write=true
   useEffect(() => {
@@ -187,6 +199,10 @@ export default function EbookPage() {
   const openEbookViewer = (post: PostWithAuthor) => {
     const data = parseEbookData(post);
     if (data.file || data.youtubeVideos.length > 0) {
+      // Save scroll position before navigating
+      if (mainRef.current) {
+        sessionStorage.setItem('ebook-scroll-position', mainRef.current.scrollTop.toString());
+      }
       setLocation(`/ebook/${post.id}`);
     }
   };
@@ -278,7 +294,7 @@ export default function EbookPage() {
     <div className="flex flex-col h-screen bg-background">
       <Navigation />
       
-      <main className="flex-1 overflow-auto">
+      <main ref={mainRef} className="flex-1 overflow-auto">
         <div className="w-full max-w-[990px] mx-auto px-0 sm:px-2 py-4" data-testid="ebook-main">
         <Card className="p-2 sm:p-4 mb-2 bg-gradient-to-r from-slate-50/50 to-slate-100/50 dark:from-slate-900/20 dark:to-slate-800/20">
           <div className="flex items-center justify-between flex-wrap gap-1.5">
@@ -551,7 +567,7 @@ export default function EbookPage() {
                         {post.content}
                       </p>
                     )}
-                    {user && (user.id === post.userId || user.isAdmin) && (
+                    {user && (user.id === post.authorId || user.isAdmin) && (
                       <div className="flex items-center gap-1 mt-2">
                         <Button
                           size="sm"

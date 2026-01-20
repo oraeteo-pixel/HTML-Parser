@@ -367,10 +367,6 @@ export function Calendar() {
     return getJeolguk(infoHwanggeuk.year, infoHwanggeuk.month, infoHwanggeuk.day);
   }, [infoHwanggeuk]);
 
-  const infoJeolgukHexagram = useMemo(() => {
-    return get64HexagramName(infoJeolguk.sogung, infoJeolguk.daegung);
-  }, [infoJeolguk]);
-
   const infoSogungDaegung = useMemo(() => {
     return getSogungDaegung(infoDate);
   }, [infoDate]);
@@ -578,7 +574,7 @@ export function Calendar() {
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5 text-base flex-wrap">
-                  <span className="font-bold text-gray-700 dark:text-gray-200">{infoJeolguk.name}{infoJeolgukHexagram ? ` (${infoJeolgukHexagram.fullName})` : ''}</span>
+                  <span className="font-bold text-gray-700 dark:text-gray-200">{infoJeolguk.name}</span>
                   <span className="font-semibold text-gray-600 dark:text-gray-300">&lt;소궁,대궁&gt;{infoSogungDaegung.isZungung ? "존궁" : `${infoSogungDaegung.sogung},${infoSogungDaegung.daegung}`}{(() => { const hex = get64HexagramName(infoSogungDaegung.sogung, infoSogungDaegung.daegung); return hex ? ` ${hex.fullName}` : ""; })()}</span>
                   <button 
                     className="slim-badge-cyan cursor-pointer"
@@ -601,7 +597,7 @@ export function Calendar() {
                   <span className="font-semibold text-gray-600 dark:text-gray-300">
                     ({infoHwanggeuk.yearGanZhi}年 {infoHwanggeuk.monthGanZhi}月 {infoDayGanZhi}日 {infoHourGanZhi}時)
                   </span>
-                  <span className="font-bold text-gray-700 dark:text-gray-200">{infoJeolguk.name}{infoJeolgukHexagram ? ` (${infoJeolgukHexagram.fullName})` : ''}</span>
+                  <span className="font-bold text-gray-700 dark:text-gray-200">{infoJeolguk.name}</span>
                   <span className="font-semibold text-gray-600 dark:text-gray-300">&lt;소궁,대궁&gt;{infoSogungDaegung.isZungung ? "존궁" : `${infoSogungDaegung.sogung},${infoSogungDaegung.daegung}`}{(() => { const hex = get64HexagramName(infoSogungDaegung.sogung, infoSogungDaegung.daegung); return hex ? ` ${hex.fullName}` : ""; })()}</span>
                   <button 
                     className="slim-badge-cyan cursor-pointer"

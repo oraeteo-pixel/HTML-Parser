@@ -86,7 +86,6 @@ export default function MansionChart() {
   const todayHwDate = getHwanggeukDate(today.getFullYear(), today.getMonth() + 1, today.getDate());
   const todayMansion = getHwanggeuk28Mansion(todayHwDate.year, todayHwDate.month, todayHwDate.day);
   const todayJeolguk = getJeolguk(todayHwDate.year, todayHwDate.month, todayHwDate.day);
-  const todayJeolgukHexagram = get64HexagramName(todayJeolguk.sogung, todayJeolguk.daegung);
   const todaySogungDaegung = getSogungDaegung(currentTime);
   const todayHourGanZhi = getHwanggeukHourGanZhi(today.getFullYear(), today.getMonth() + 1, today.getDate(), today.getHours(), today.getMinutes());
   
@@ -228,7 +227,7 @@ export default function MansionChart() {
                 {todayMansion.mansion}{todayMansion.isZunkong ? "" : "宿"}
               </Badge>
               <Badge className="badge-slate">
-                {todayJeolguk.name}{todayJeolgukHexagram ? ` (${todayJeolgukHexagram.fullName})` : ''}
+                {todayJeolguk.name}
               </Badge>
               <Badge className="badge-navy">
                 {todaySogungDaegung.isZungung 

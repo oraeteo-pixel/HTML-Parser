@@ -111,8 +111,8 @@ export function SomyeoleumhaebuGallery() {
   return (
     <div className="w-full" data-testid="somyeoleumhaebu-gallery">
       {/* 황극력 정보박스 */}
-      <div className="slim-info-bar mb-2 mx-0 py-1.5 px-2" data-testid="somyeoleumhaebu-info-bar">
-        <div className="flex flex-col gap-0.5 text-sm">
+      <div className="slim-info-bar mb-2 mx-0 py-1 px-2" data-testid="somyeoleumhaebu-info-bar">
+        <div className="flex flex-col gap-0.5 text-xs">
           <div className="flex flex-wrap items-center gap-1">
             <span className="font-bold text-gray-700 dark:text-gray-200">
               {calendarData.hwanggeuk.year}.{calendarData.hwanggeuk.month}.{calendarData.hwanggeuk.day}
@@ -143,13 +143,13 @@ export function SomyeoleumhaebuGallery() {
       {/* 28장 부적 표시 */}
       {!calendarData.mansion.isZunkong && (
         <div 
-          className={`overflow-hidden transition-all duration-300 ease-in-out talisman-box rounded-lg ${showTalisman ? 'max-h-[400px] opacity-100 p-4 my-2' : 'max-h-0 opacity-0 p-0 my-0'}`}
+          className={`overflow-hidden transition-all duration-300 ease-in-out talisman-box rounded-lg ${showTalisman ? 'max-h-[200px] opacity-100 p-2 my-1' : 'max-h-0 opacity-0 p-0 my-0'}`}
         >
           <div className="flex flex-col items-center">
             <img 
               src={`/img/${calendarData.mansion.image}.jpg`}
               alt={`${calendarData.mansion.mansion} 부적`}
-              className="max-w-[200px] max-h-[280px] object-contain border border-border rounded-lg shadow-lg bg-white"
+              className="max-w-[100px] max-h-[140px] object-contain border border-border rounded-md shadow-md bg-white"
             />
           </div>
         </div>

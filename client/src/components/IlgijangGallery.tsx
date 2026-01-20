@@ -246,7 +246,7 @@ export function IlgijangGallery() {
     
     return (
       <div 
-        className="bg-white border border-gray-200 rounded-lg overflow-auto"
+        className="bg-white rounded-none overflow-auto"
         style={{ 
           fontFamily: "'Noto Sans KR', 'Nanum Gothic', sans-serif",
           padding: sp(cfg.containerPadding),

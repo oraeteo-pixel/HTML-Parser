@@ -17,7 +17,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useSearch, useLocation } from "wouter";
-import { BookOpen, FileText, Download, Play, Pencil, MessageSquare } from "lucide-react";
+import { BookOpen, FileText, Download, Play, Pencil, MessageSquare, Trash2 } from "lucide-react";
 import type { Post, PageContent } from "@shared/schema";
 
 type PostWithAuthor = Post & { author: string; authorEmail: string | null; commentCount?: number };
@@ -550,6 +550,28 @@ export default function EbookPage() {
                       <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
                         {post.content}
                       </p>
+                    )}
+                    {user && (user.id === post.userId || user.isAdmin) && (
+                      <div className="flex items-center gap-1 mt-2">
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-7 w-7 p-0"
+                          onClick={(e) => { e.stopPropagation(); startEdit(post); }}
+                          data-testid={`button-edit-ebook-${post.id}`}
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-7 w-7 p-0 text-destructive hover:text-destructive"
+                          onClick={(e) => { e.stopPropagation(); handleDelete(post); }}
+                          data-testid={`button-delete-ebook-${post.id}`}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
                     )}
                   </CardHeader>
                 </Card>

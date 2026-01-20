@@ -164,15 +164,14 @@ export function SomyeoleumhaebuGallery() {
                 className="flex-[0_0_100%] min-w-0 px-0"
               >
                 <div 
-                  className="py-2 bg-background rounded-none overflow-hidden cursor-pointer flex items-center justify-center"
+                  className="bg-white rounded-none overflow-hidden cursor-pointer hover-elevate flex items-center justify-center py-1"
                   onClick={() => openFullscreen(index)}
                   data-testid={`gallery-somyeol-page-${index + 1}`}
                 >
                   <img
                     src={page}
                     alt={`소멸음해부 ${index + 1}쪽`}
-                    className="w-1/2 h-auto object-contain border border-gray-800 bg-white"
-                    style={{ imageRendering: 'crisp-edges' }}
+                    className="w-1/2 h-auto object-contain"
                     loading="lazy"
                   />
                 </div>

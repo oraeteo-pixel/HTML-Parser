@@ -253,13 +253,13 @@ export function GwangjechansaengbuGallery() {
         <div style={{ ...colStyle, fontSize: fs(cfg.incantationFontSize) }}>
           至氣今至願爲大降
         </div>
-        <div style={{ ...colStyle, fontSize: fs(cfg.incantationFontSize), marginTop: sp(60) }}>
+        <div style={{ ...colStyle, fontSize: fs(cfg.incantationFontSize), marginTop: sp(30) }}>
           廣濟蒼生
         </div>
-        <div style={{ ...colStyle, fontSize: fs(cfg.incantationFontSize) }}>
+        <div style={{ ...colStyle, fontSize: fs(cfg.incantationFontSize), marginTop: sp(30) }}>
           所願成就
         </div>
-        <div style={{ ...colStyle, fontSize: fs(cfg.incantationFontSize), marginTop: sp(60) }}>
+        <div style={{ ...colStyle, fontSize: fs(cfg.incantationFontSize) }}>
           各自道生住所
         </div>
         <div style={{ ...colStyle, fontSize: fs(cfg.incantationFontSize), marginTop: sp(60) }}>

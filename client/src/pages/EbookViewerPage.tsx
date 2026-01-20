@@ -211,6 +211,13 @@ export default function EbookViewerPage() {
   const [, setLocation] = useLocation();
   const { user } = useAuth();
   const { toast } = useToast();
+  
+  const specialSections = ["hyunmugyeong", "someolyeumhaebu", "deukchaebu", "gugunghaengdo", "ilgijang", "gwangjechangsaeng"];
+  if (params.id && specialSections.includes(params.id)) {
+    setLocation(`/ebook?section=${params.id}`);
+    return null;
+  }
+  
   const postId = parseInt(params.id || "0", 10);
 
   const { data: posts, isLoading } = useQuery<PostWithAuthor[]>({

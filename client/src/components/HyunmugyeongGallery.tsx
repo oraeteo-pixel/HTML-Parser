@@ -186,12 +186,12 @@ export function HyunmugyeongGallery() {
                       className="absolute text-center" 
                       style={{ 
                         fontFamily: "'Noto Serif KR', 'Batang', serif",
-                        top: '18%',
+                        top: '24%',
                         left: '50%',
                         transform: 'translateX(-50%)'
                       }}
                     >
-                      <p className="text-base md:text-lg font-bold text-gray-900 tracking-wide">
+                      <p className="text-sm md:text-base font-bold text-gray-900 tracking-wide">
                         普濟蒼生君不知 符書以外別無通
                       </p>
                     </div>

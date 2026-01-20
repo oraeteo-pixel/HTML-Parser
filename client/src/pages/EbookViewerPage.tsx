@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navigation } from "@/components/Navigation";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -213,10 +213,13 @@ export default function EbookViewerPage() {
   const { toast } = useToast();
   
   const specialSections = ["hyunmugyeong", "someolyeumhaebu", "deukchaebu", "gugunghaengdo", "ilgijang", "gwangjechangsaeng"];
-  if (params.id && specialSections.includes(params.id)) {
-    setLocation(`/ebook?section=${params.id}`);
-    return null;
-  }
+  const isSpecialSection = params.id && specialSections.includes(params.id);
+  
+  useEffect(() => {
+    if (isSpecialSection && params.id) {
+      setLocation(`/ebook?section=${params.id}`);
+    }
+  }, [isSpecialSection, params.id, setLocation]);
   
   const postId = parseInt(params.id || "0", 10);
 
@@ -290,7 +293,7 @@ export default function EbookViewerPage() {
     return { file, coverImage, youtubeVideos };
   };
 
-  if (isLoading) {
+  if (isLoading || isSpecialSection) {
     return (
       <div className="min-h-screen bg-background">
         <Navigation />

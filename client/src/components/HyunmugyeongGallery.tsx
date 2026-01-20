@@ -151,28 +151,32 @@ export function HyunmugyeongGallery() {
   return (
     <div className="w-full" data-testid="hyunmugyeong-gallery">
       {/* 황극력 정보박스 */}
-      <div className="slim-info-bar mb-2 mx-0" data-testid="hyunmugyeong-info-bar">
-        <div className="flex flex-wrap items-center gap-1.5 text-base">
-          <span className="font-bold text-gray-700 dark:text-gray-200">
-            {calendarData.hwanggeuk.year}.{calendarData.hwanggeuk.month}.{calendarData.hwanggeuk.day}
-          </span>
-          <span className="font-semibold text-gray-600 dark:text-gray-300">
-            {calendarData.weekdayHanja}
-          </span>
-          <span className="font-semibold text-gray-600 dark:text-gray-300">
-            ({calendarData.hwanggeuk.yearGanZhi}年 {calendarData.hwanggeuk.monthGanZhi}月 {calendarData.hwDayGanZhi}日 {calendarData.hwHourGanZhi}時)
-          </span>
-          <span className="font-bold text-gray-700 dark:text-gray-200">{calendarData.jeolguk}</span>
-          <span className="font-semibold text-gray-600 dark:text-gray-300">
-            &lt;소궁,대궁&gt;{calendarData.sogungDaegung.isZungung ? "존궁" : `${calendarData.sogungDaegung.sogung},${calendarData.sogungDaegung.daegung}`} {calendarData.hexagram64?.fullName || ''}
-          </span>
-          <button 
-            className="slim-badge-cyan cursor-pointer"
-            onClick={() => setShowTalisman(!showTalisman)}
-            data-testid="button-mansion-toggle"
-          >
-            {calendarData.mansion.isZunkong ? calendarData.mansion.mansion : `${calendarData.mansion.mansion}, ${calendarData.mansion.general}`}
-          </button>
+      <div className="slim-info-bar mb-2 mx-0 py-1.5 px-2" data-testid="hyunmugyeong-info-bar">
+        <div className="flex flex-col gap-0.5 text-sm">
+          <div className="flex flex-wrap items-center gap-1">
+            <span className="font-bold text-gray-700 dark:text-gray-200">
+              {calendarData.hwanggeuk.year}.{calendarData.hwanggeuk.month}.{calendarData.hwanggeuk.day}
+            </span>
+            <span className="font-semibold text-gray-600 dark:text-gray-300">
+              {calendarData.weekdayHanja}
+            </span>
+            <span className="font-semibold text-gray-600 dark:text-gray-300">
+              ({calendarData.hwanggeuk.yearGanZhi}年 {calendarData.hwanggeuk.monthGanZhi}月 {calendarData.hwDayGanZhi}日 {calendarData.hwHourGanZhi}時)
+            </span>
+          </div>
+          <div className="flex flex-wrap items-center gap-1">
+            <span className="font-bold text-gray-700 dark:text-gray-200">{calendarData.jeolguk}</span>
+            <span className="font-semibold text-gray-600 dark:text-gray-300">
+              &lt;소궁,대궁&gt;{calendarData.sogungDaegung.isZungung ? "존궁" : `${calendarData.sogungDaegung.sogung},${calendarData.sogungDaegung.daegung}`} {calendarData.hexagram64?.fullName || ''}
+            </span>
+            <button 
+              className="slim-badge-cyan cursor-pointer text-xs"
+              onClick={() => setShowTalisman(!showTalisman)}
+              data-testid="button-mansion-toggle"
+            >
+              {calendarData.mansion.isZunkong ? calendarData.mansion.mansion : `${calendarData.mansion.mansion}, ${calendarData.mansion.general}`}
+            </button>
+          </div>
         </div>
       </div>
 

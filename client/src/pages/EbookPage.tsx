@@ -432,27 +432,27 @@ export default function EbookPage() {
         )}
 
         {currentSection === "somyeoleumhaebu" && (
-          <Card className="p-4 mb-4">
+          <div className="mb-2">
             <SomyeoleumhaebuGallery />
-          </Card>
+          </div>
         )}
 
         {currentSection === "deukchaebu" && (
-          <Card className="p-4 mb-4">
+          <div className="mb-2">
             <DeukchaebuGallery />
-          </Card>
+          </div>
         )}
 
         {currentSection === "diary" && (
-          <Card className="p-4 mb-4">
+          <div className="mb-2">
             <IlgijangGallery />
-          </Card>
+          </div>
         )}
 
         {currentSection === "gwangjechansaengbu" && (
-          <Card className="p-4 mb-4">
+          <div className="mb-2">
             <GwangjechansaengbuGallery />
-          </Card>
+          </div>
         )}
 
         {isLoading ? (

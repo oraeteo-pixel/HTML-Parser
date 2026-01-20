@@ -354,28 +354,32 @@ export function IlgijangGallery() {
   return (
     <div className="w-full" data-testid="ilgijang-gallery">
       {/* 황극력 정보박스 */}
-      <div className="slim-info-bar mb-4" data-testid="ilgijang-info-bar">
-        <div className="flex flex-wrap items-center gap-1.5 text-base">
-          <span className="font-bold text-gray-700 dark:text-gray-200">
-            {hwanggeuk.year}.{hwanggeuk.month}.{hwanggeuk.day}
-          </span>
-          <span className="font-semibold text-gray-600 dark:text-gray-300">
-            {weekdayHanja}
-          </span>
-          <span className="font-semibold text-gray-600 dark:text-gray-300">
-            ({hwanggeuk.yearGanZhi}年 {hwanggeuk.monthGanZhi}月 {hwDayGanZhi}日 {hwHourGanZhi}時)
-          </span>
-          <span className="font-bold text-gray-700 dark:text-gray-200">{jeolguk}</span>
-          <span className="font-semibold text-gray-600 dark:text-gray-300">
-            &lt;소궁,대궁&gt;{sogungDaegung.isZungung ? "존궁" : `${sogungDaegung.sogung},${sogungDaegung.daegung}`} {hexagram64?.fullName || ''}
-          </span>
-          <button 
-            className="slim-badge-cyan cursor-pointer"
-            onClick={() => setShowTalisman(!showTalisman)}
-            data-testid="button-mansion-toggle"
-          >
-            {hwMansion.isZunkong ? hwMansion.mansion : `${hwMansion.mansion}, ${hwMansion.general}`}
-          </button>
+      <div className="slim-info-bar mb-2 mx-0 py-1.5 px-2" data-testid="ilgijang-info-bar">
+        <div className="flex flex-col gap-0.5 text-sm">
+          <div className="flex flex-wrap items-center gap-1">
+            <span className="font-bold text-gray-700 dark:text-gray-200">
+              {hwanggeuk.year}.{hwanggeuk.month}.{hwanggeuk.day}
+            </span>
+            <span className="font-semibold text-gray-600 dark:text-gray-300">
+              {weekdayHanja}
+            </span>
+            <span className="font-semibold text-gray-600 dark:text-gray-300">
+              ({hwanggeuk.yearGanZhi}年 {hwanggeuk.monthGanZhi}月 {hwDayGanZhi}日 {hwHourGanZhi}時)
+            </span>
+          </div>
+          <div className="flex flex-wrap items-center gap-1">
+            <span className="font-bold text-gray-700 dark:text-gray-200">{jeolguk}</span>
+            <span className="font-semibold text-gray-600 dark:text-gray-300">
+              &lt;소궁,대궁&gt;{sogungDaegung.isZungung ? "존궁" : `${sogungDaegung.sogung},${sogungDaegung.daegung}`} {hexagram64?.fullName || ''}
+            </span>
+            <button 
+              className="slim-badge-cyan cursor-pointer text-xs"
+              onClick={() => setShowTalisman(!showTalisman)}
+              data-testid="button-mansion-toggle"
+            >
+              {hwMansion.isZunkong ? hwMansion.mansion : `${hwMansion.mansion}, ${hwMansion.general}`}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -395,7 +399,7 @@ export function IlgijangGallery() {
       )}
 
       <div 
-        className="bg-white rounded-md overflow-auto flex items-center justify-center py-8"
+        className="bg-white rounded-none overflow-auto flex items-center justify-center py-4"
         data-testid="gallery-ilgijang-page-1"
       >
         <DiaryContent scale={0.9} />

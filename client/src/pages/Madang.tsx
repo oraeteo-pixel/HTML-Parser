@@ -692,7 +692,9 @@ export default function Madang() {
               <h1 className="text-xl font-bold orae-navy" data-testid="text-madang-title">도담넷</h1>
             </div>
             <div className="flex items-center gap-2">
-              <img src={circleLogoIcon} alt="원로고" className="h-6 w-6 object-contain" />
+              <a href="https://cafe.daum.net/pusan7777/6pBc" target="_blank" rel="noopener noreferrer">
+                <img src={circleLogoIcon} alt="원로고" className="h-6 w-6 object-contain hover:opacity-80 transition-opacity" />
+              </a>
               <img src={moakroLogo} alt="모악로" className="h-6 w-6 object-contain" />
               {!showEditor && (
                 <Button

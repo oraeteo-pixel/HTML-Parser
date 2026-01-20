@@ -11,6 +11,7 @@ import { SomyeoleumhaebuGallery } from "@/components/SomyeoleumhaebuGallery";
 import { DeukchaebuGallery } from "@/components/DeukchaebuGallery";
 import { IlgijangGallery } from "@/components/IlgijangGallery";
 import { GwangjechansaengbuGallery } from "@/components/GwangjechansaengbuGallery";
+import { GugunghaengdoGallery } from "@/components/GugunghaengdoGallery";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -452,6 +453,12 @@ export default function EbookPage() {
         {currentSection === "gwangjechansaengbu" && (
           <div className="mb-2">
             <GwangjechansaengbuGallery />
+          </div>
+        )}
+
+        {currentSection === "gugunghaengdo" && (
+          <div className="mb-2">
+            <GugunghaengdoGallery />
           </div>
         )}
 

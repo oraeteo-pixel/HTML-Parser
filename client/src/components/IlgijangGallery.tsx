@@ -355,7 +355,7 @@ export function IlgijangGallery() {
     <div className="w-full" data-testid="ilgijang-gallery">
       {/* 황극력 정보박스 */}
       <div className="slim-info-bar mb-2 mx-0 py-1.5 px-2" data-testid="ilgijang-info-bar">
-        <div className="flex flex-col gap-0.5 text-sm">
+        <div className="flex flex-col md:flex-row md:flex-wrap md:items-center gap-0.5 md:gap-2 text-sm">
           <div className="flex flex-wrap items-center gap-1">
             <span className="font-bold text-gray-700 dark:text-gray-200">
               {hwanggeuk.year}.{hwanggeuk.month}.{hwanggeuk.day}

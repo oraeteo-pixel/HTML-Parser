@@ -15,7 +15,7 @@ import {
   WEEKDAYS_HANJA,
 } from "@/lib/calendarData";
 
-import page1 from "@assets/somyeol-1-trimmed.jpg";
+import page1 from "@assets/image_1768886387533.png";
 
 const pages = [page1];
 

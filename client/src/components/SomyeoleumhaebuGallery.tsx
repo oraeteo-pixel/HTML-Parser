@@ -164,8 +164,7 @@ export function SomyeoleumhaebuGallery() {
                 className="flex-[0_0_100%] min-w-0 px-0"
               >
                 <div 
-                  className="bg-white rounded-none overflow-hidden cursor-pointer hover-elevate flex items-center justify-center py-4"
-                  onClick={() => openFullscreen(index)}
+                  className="bg-white rounded-none overflow-hidden flex items-center justify-center py-4"
                   data-testid={`gallery-somyeol-page-${index + 1}`}
                 >
                   <img

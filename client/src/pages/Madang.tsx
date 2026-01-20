@@ -685,25 +685,51 @@ export default function Madang() {
         <Card className="p-4 mb-4 bg-gradient-to-r from-slate-50/50 to-slate-100/50 dark:from-slate-900/20 dark:to-slate-800/20">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <MessageSquare className="h-8 w-8 orae-navy" />
-              <h1 className="text-xl font-bold orae-navy" data-testid="text-madang-title">{pageInfo?.title || "마당"}</h1>
+              <svg viewBox="0 0 40 40" className="w-8 h-8" style={{ color: "#0d7377" }}>
+                <circle cx="20" cy="20" r="18" stroke="currentColor" strokeWidth="2.5" fill="none"/>
+                <circle cx="20" cy="20" r="14" stroke="currentColor" strokeWidth="2.5" fill="none"/>
+                <circle cx="20" cy="20" r="10" stroke="currentColor" strokeWidth="2.5" fill="none"/>
+                <circle cx="20" cy="20" r="6" stroke="currentColor" strokeWidth="2.5" fill="none"/>
+                <circle cx="20" cy="20" r="2" fill="currentColor"/>
+                <line x1="20" y1="2" x2="20" y2="10" stroke="currentColor" strokeWidth="2.5"/>
+                <line x1="6" y1="12" x2="12" y2="16" stroke="currentColor" strokeWidth="2.5"/>
+                <line x1="28" y1="16" x2="34" y2="12" stroke="currentColor" strokeWidth="2.5"/>
+                <line x1="8" y1="28" x2="14" y2="24" stroke="currentColor" strokeWidth="2.5"/>
+                <line x1="26" y1="24" x2="32" y2="28" stroke="currentColor" strokeWidth="2.5"/>
+              </svg>
+              <h1 className="text-xl font-bold orae-navy" data-testid="text-madang-title">도담넷</h1>
             </div>
-            {!showEditor && (
-              <Button
-                size="icon"
-                onClick={() => {
-                  if (!user) {
-                    toast({ title: "로그인이 필요합니다.", description: "글을 작성하려면 로그인해 주세요." });
-                    return;
-                  }
-                  setGanji(todayGanji);
-                  setShowEditor(true);
-                }}
-                data-testid="button-write-post"
-              >
-                <Pencil className="h-5 w-5" />
-              </Button>
-            )}
+            <div className="flex items-center gap-2">
+              <svg viewBox="0 0 40 40" className="w-6 h-6" style={{ color: "#0d7377" }}>
+                <circle cx="20" cy="20" r="18" stroke="currentColor" strokeWidth="2.5" fill="none"/>
+                <circle cx="20" cy="20" r="14" stroke="currentColor" strokeWidth="2.5" fill="none"/>
+                <circle cx="20" cy="20" r="10" stroke="currentColor" strokeWidth="2.5" fill="none"/>
+                <circle cx="20" cy="20" r="6" stroke="currentColor" strokeWidth="2.5" fill="none"/>
+                <circle cx="20" cy="20" r="2" fill="currentColor"/>
+                <line x1="20" y1="2" x2="20" y2="10" stroke="currentColor" strokeWidth="2.5"/>
+                <line x1="6" y1="12" x2="12" y2="16" stroke="currentColor" strokeWidth="2.5"/>
+                <line x1="28" y1="16" x2="34" y2="12" stroke="currentColor" strokeWidth="2.5"/>
+                <line x1="8" y1="28" x2="14" y2="24" stroke="currentColor" strokeWidth="2.5"/>
+                <line x1="26" y1="24" x2="32" y2="28" stroke="currentColor" strokeWidth="2.5"/>
+              </svg>
+              <MessageSquare className="h-5 w-5 orae-navy" />
+              {!showEditor && (
+                <Button
+                  size="icon"
+                  onClick={() => {
+                    if (!user) {
+                      toast({ title: "로그인이 필요합니다.", description: "글을 작성하려면 로그인해 주세요." });
+                      return;
+                    }
+                    setGanji(todayGanji);
+                    setShowEditor(true);
+                  }}
+                  data-testid="button-write-post"
+                >
+                  <Pencil className="h-5 w-5" />
+                </Button>
+              )}
+            </div>
           </div>
         </Card>
 

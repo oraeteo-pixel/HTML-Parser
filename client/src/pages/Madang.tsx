@@ -701,7 +701,7 @@ export default function Madang() {
               {!showEditor && (
                 <Button
                   size="sm"
-                  className="h-6 w-6 p-0"
+                  className="h-7 w-7 p-0"
                   onClick={() => {
                     if (!user) {
                       toast({ title: "로그인이 필요합니다.", description: "글을 작성하려면 로그인해 주세요." });
@@ -712,7 +712,7 @@ export default function Madang() {
                   }}
                   data-testid="button-write-post"
                 >
-                  <Pencil className="h-3 w-3" />
+                  <Pencil className="h-4 w-4" />
                 </Button>
               )}
             </div>

@@ -338,7 +338,7 @@ export default function EbookPage() {
               {!showEditor && (
                 <Button
                   size="sm"
-                  className="h-6 w-6 p-0"
+                  className="h-7 w-7 p-0"
                   onClick={() => {
                     if (!user) {
                       toast({ title: "로그인이 필요합니다.", description: "전자책을 등록하려면 로그인해 주세요." });
@@ -348,7 +348,7 @@ export default function EbookPage() {
                   }}
                   data-testid="button-write-ebook"
                 >
-                  <Pencil className="h-3 w-3" />
+                  <Pencil className="h-4 w-4" />
                 </Button>
               )}
             </div>

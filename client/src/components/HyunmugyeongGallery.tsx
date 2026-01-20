@@ -183,12 +183,10 @@ export function HyunmugyeongGallery() {
                   />
                   {(index === 0 || index === 1) && (
                     <div 
-                      className="absolute text-center" 
+                      className="absolute text-center w-full" 
                       style={{ 
                         fontFamily: "'Noto Serif KR', 'Batang', serif",
-                        top: '24%',
-                        left: '50%',
-                        transform: 'translateX(-50%)'
+                        top: '22%'
                       }}
                     >
                       <p className="text-sm md:text-base font-bold text-gray-900 tracking-wide">

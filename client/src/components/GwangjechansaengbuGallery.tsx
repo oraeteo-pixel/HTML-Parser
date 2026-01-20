@@ -89,7 +89,7 @@ const MANSION_28_TALISMANS: { [key: string]: string } = {
 
 const DIARY_CONFIG = {
   containerMinHeight: 500,
-  containerPadding: 24,
+  containerPadding: 8,
   columnSpacing: 8,
   titleFontSize: 14,
   mainFontSize: 13,

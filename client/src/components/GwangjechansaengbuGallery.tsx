@@ -221,6 +221,20 @@ export function GwangjechansaengbuGallery() {
           minHeight: sp(cfg.containerMinHeight)
         }}
       >
+        <div style={{ ...colStyle, textAlign: 'center' }}>
+          {MANSION_28_TALISMANS[hwMansion.mansion] && (
+            <img 
+              src={MANSION_28_TALISMANS[hwMansion.mansion]}
+              alt={`${hwMansion.mansion}수부`}
+              style={{ height: sp(cfg.talismanImageHeight), objectFit: 'contain' }}
+            />
+          )}
+        </div>
+
+        <div style={{ ...colStyle, fontSize: fs(cfg.mainFontSize) }}>
+          {hwanggeuk.yearGanZhi}年{hwanggeuk.monthGanZhi}月{hwDayGanZhi}日{hwHourGanZhi}時
+        </div>
+
         {threeBranches.map((branch, idx) => (
           <div key={idx} style={{ ...colStyle, textAlign: 'center' }}>
             <span style={{ fontSize: fs(cfg.talismanLabelFontSize) }}>{sixSpirits[idx]}</span>
@@ -232,20 +246,6 @@ export function GwangjechansaengbuGallery() {
             />
           </div>
         ))}
-
-        <div style={{ ...colStyle, fontSize: fs(cfg.mainFontSize) }}>
-          {hwanggeuk.yearGanZhi}年{hwanggeuk.monthGanZhi}月{hwDayGanZhi}日{hwHourGanZhi}時
-        </div>
-
-        <div style={{ ...colStyle, textAlign: 'center' }}>
-          {MANSION_28_TALISMANS[hwMansion.mansion] && (
-            <img 
-              src={MANSION_28_TALISMANS[hwMansion.mansion]}
-              alt={`${hwMansion.mansion}수부`}
-              style={{ height: sp(cfg.talismanImageHeight), objectFit: 'contain' }}
-            />
-          )}
-        </div>
 
         <div style={{ ...colStyle, fontSize: fs(cfg.incantationFontSize) }}>
           侍天主造化定永世不忘萬事知

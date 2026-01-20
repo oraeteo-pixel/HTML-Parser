@@ -695,7 +695,9 @@ export default function Madang() {
               <a href="https://cafe.daum.net/pusan7777/6pBc" target="_blank" rel="noopener noreferrer">
                 <img src={circleLogoIcon} alt="원로고" className="h-6 w-6 object-contain hover:opacity-80 transition-opacity" />
               </a>
-              <img src={moakroLogo} alt="모악로" className="h-6 w-6 object-contain" />
+              <a href="https://moakro.com" target="_blank" rel="noopener noreferrer">
+                <img src={moakroLogo} alt="모악로" className="h-6 w-6 object-contain hover:opacity-80 transition-opacity" />
+              </a>
               {!showEditor && (
                 <Button
                   size="icon"

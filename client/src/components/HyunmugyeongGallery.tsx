@@ -243,8 +243,8 @@ export function HyunmugyeongGallery() {
         </Button>
       </div>
 
-      <div className="flex items-center justify-center mt-4">
-        <span className="text-sm text-muted-foreground">
+      <div className="flex items-center justify-center mt-2">
+        <span className="text-xs text-muted-foreground">
           {selectedIndex + 1} / {pages.length}
         </span>
       </div>

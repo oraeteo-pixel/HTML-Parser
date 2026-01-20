@@ -328,7 +328,7 @@ export function GwangjechansaengbuGallery() {
       )}
 
       <div 
-        className="bg-white rounded-none overflow-auto flex items-center justify-center py-4"
+        className="bg-white rounded-none overflow-auto flex items-center justify-center py-1"
         data-testid="gallery-gwangjechansaengbu-page-1"
       >
         <DiaryContent scale={0.9} />

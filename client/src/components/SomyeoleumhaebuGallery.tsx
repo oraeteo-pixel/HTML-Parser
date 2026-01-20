@@ -207,6 +207,11 @@ export function SomyeoleumhaebuGallery() {
         )}
       </div>
 
+      <div className="flex items-center justify-center mt-2">
+        <span className="text-xs text-muted-foreground">
+          {selectedIndex + 1} / {pages.length}
+        </span>
+      </div>
 
       <Dialog open={fullscreenImage !== null} onOpenChange={() => closeFullscreen()}>
         <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 bg-black/95 border-none">

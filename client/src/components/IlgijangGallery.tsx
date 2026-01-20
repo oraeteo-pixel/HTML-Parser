@@ -321,10 +321,10 @@ export function IlgijangGallery() {
 
         {/* 28수부 */}
         <div style={{ ...colStyle, textAlign: 'center' }}>
-          {MANSION_28_TALISMANS[mansion.mansion] && (
+          {MANSION_28_TALISMANS[hwMansion.mansion] && (
             <img 
-              src={MANSION_28_TALISMANS[mansion.mansion]}
-              alt={`${mansion.mansion}수부`}
+              src={MANSION_28_TALISMANS[hwMansion.mansion]}
+              alt={`${hwMansion.mansion}수부`}
               style={{ height: sp(cfg.talismanImageHeight), objectFit: 'contain' }}
             />
           )}

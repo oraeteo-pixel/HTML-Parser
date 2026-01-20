@@ -5,6 +5,9 @@ import {
   getHwanggeukDate,
   getHwanggeukHourGanZhi,
   getHwanggeukDayGanZhi,
+  getSogungDaegung,
+  get64HexagramName,
+  getJeolguk,
   WEEKDAYS_HANJA,
 } from "@/lib/calendarData";
 
@@ -182,6 +185,11 @@ export function GwangjechansaengbuGallery() {
     const sixSpirits = getSixSpiritsForDay(hwDayStem);
     const threeBranches = getThreeBranchesFromDayBranch(hwDayBranch);
 
+    const sogungDaegung = getSogungDaegung(new Date());
+    const hexagram64 = get64HexagramName(sogungDaegung.sogung, sogungDaegung.daegung);
+    const jeolgukData = getJeolguk(hwanggeuk.year, hwanggeuk.month, hwanggeuk.day);
+    const jeolguk = jeolgukData.name;
+
     return {
       hwMansion,
       hwanggeuk,
@@ -189,11 +197,14 @@ export function GwangjechansaengbuGallery() {
       hwHourGanZhi,
       sixSpirits,
       threeBranches,
+      sogungDaegung,
+      hexagram64,
+      jeolguk,
       koreanDate: { year: adjustedYear, month: adjustedMonth, day: adjustedDay, hours, minutes }
     };
   }, [currentTime]);
 
-  const { hwMansion, hwanggeuk, hwDayGanZhi, hwHourGanZhi, sixSpirits, threeBranches } = calendarData;
+  const { hwMansion, hwanggeuk, hwDayGanZhi, hwHourGanZhi, sixSpirits, threeBranches, sogungDaegung, hexagram64, jeolguk } = calendarData;
 
   const DiaryContent = ({ scale = 1 }: { scale?: number }) => {
     const cfg = DIARY_CONFIG;
@@ -283,6 +294,10 @@ export function GwangjechansaengbuGallery() {
           </span>
           <span className="font-semibold text-gray-600 dark:text-gray-300">
             ({hwanggeuk.yearGanZhi}年 {hwanggeuk.monthGanZhi}月 {hwDayGanZhi}日 {hwHourGanZhi}時)
+          </span>
+          <span className="font-bold text-gray-700 dark:text-gray-200">{jeolguk}</span>
+          <span className="font-semibold text-gray-600 dark:text-gray-300">
+            &lt;소궁,대궁&gt;{sogungDaegung.isZungung ? "존궁" : `${sogungDaegung.sogung},${sogungDaegung.daegung}`} {hexagram64?.fullName || ''}
           </span>
           <button 
             className="slim-badge-cyan cursor-pointer"

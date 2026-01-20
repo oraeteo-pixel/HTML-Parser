@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { User, Star, BookOpen, CalendarDays, Users, LogOut, Loader2, Mail, Settings } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
@@ -8,7 +9,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { useToast } from "@/hooks/use-toast";
 import type { Post } from "@shared/schema";
+
+interface BeforeInstallPromptEvent extends Event {
+  prompt: () => Promise<void>;
+  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
+}
 
 type PostWithAuthor = Post & { author: string };
 
@@ -61,6 +68,33 @@ const getSizeValue = (size?: string): string => {
 export function Navigation() {
   const { user, isLoading, isAuthenticated, logout, isLoggingOut } = useAuth();
   const [, setLocation] = useLocation();
+  const { toast } = useToast();
+  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      e.preventDefault();
+      setDeferredPrompt(e as BeforeInstallPromptEvent);
+    };
+    window.addEventListener('beforeinstallprompt', handler);
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        toast({ title: "앱 설치 완료", description: "홈 화면에 앱이 추가되었습니다." });
+      }
+      setDeferredPrompt(null);
+    } else {
+      toast({ 
+        title: "앱 설치", 
+        description: "브라우저 메뉴에서 '홈 화면에 추가' 또는 '앱 설치'를 선택하세요." 
+      });
+    }
+  };
   
   const { data: siteSettings } = useQuery<LogoSettings>({
     queryKey: ["/api/settings"],
@@ -136,8 +170,9 @@ export function Navigation() {
                 <img 
                   src={logoImageUrl} 
                   alt="로고" 
-                  className="w-auto object-contain"
+                  className="w-auto object-contain cursor-pointer hover:opacity-80 transition-opacity"
                   data-testid="link-logo"
+                  onClick={handleInstallClick}
                   style={{
                     height: `clamp(28px, ${logoScale * 0.1}vw, 56px)`,
                     filter: `contrast(${logoSharpness}%)`,
@@ -161,7 +196,14 @@ export function Navigation() {
               </div>
             ) : (
               <div className="flex items-center gap-2">
-                <svg viewBox="0 0 40 40" className="h-8 w-8 sm:h-10 sm:w-10" fill="none" xmlns="http://www.w3.org/2000/svg" data-testid="link-logo">
+                <svg 
+                  viewBox="0 0 40 40" 
+                  className="h-8 w-8 sm:h-10 sm:w-10 cursor-pointer hover:opacity-80 transition-opacity" 
+                  fill="none" 
+                  xmlns="http://www.w3.org/2000/svg" 
+                  data-testid="link-logo"
+                  onClick={handleInstallClick}
+                >
                   <circle cx="20" cy="20" r="18" stroke={logoColor} strokeWidth="2.5" fill="none"/>
                   <circle cx="20" cy="20" r="14" stroke={logoColor} strokeWidth="2.5" fill="none"/>
                   <circle cx="20" cy="20" r="10" stroke={logoColor} strokeWidth="2.5" fill="none"/>

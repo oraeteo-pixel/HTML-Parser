@@ -1,0 +1,17 @@
+{
+  "name": "오래 - 황극력 달력",
+  "short_name": "오래",
+  "description": "한국 전통 달력 - 황극력과 선천력",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0d7377",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

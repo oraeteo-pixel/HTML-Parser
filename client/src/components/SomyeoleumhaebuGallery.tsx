@@ -111,8 +111,8 @@ export function SomyeoleumhaebuGallery() {
   return (
     <div className="w-full" data-testid="somyeoleumhaebu-gallery">
       {/* 황극력 정보박스 */}
-      <div className="slim-info-bar mb-2 mx-0 py-1 px-2" data-testid="somyeoleumhaebu-info-bar">
-        <div className="flex flex-col gap-0.5 text-xs">
+      <div className="slim-info-bar mb-2 mx-0 py-1.5 px-2" data-testid="somyeoleumhaebu-info-bar">
+        <div className="flex flex-col gap-0.5 text-sm">
           <div className="flex flex-wrap items-center gap-1">
             <span className="font-bold text-gray-700 dark:text-gray-200">
               {calendarData.hwanggeuk.year}.{calendarData.hwanggeuk.month}.{calendarData.hwanggeuk.day}
@@ -171,7 +171,7 @@ export function SomyeoleumhaebuGallery() {
                   <img
                     src={page}
                     alt={`소멸음해부 ${index + 1}쪽`}
-                    className="max-w-[280px] h-auto object-contain"
+                    className="max-w-[400px] h-auto object-contain"
                     loading="lazy"
                   />
                 </div>

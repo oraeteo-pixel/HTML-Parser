@@ -26,6 +26,7 @@ import {
 import choisuun from "@assets/최수운_1768891647413.jpg";
 import cheonjunim from "@assets/천주님_1768891653091.jpg";
 import yu from "@assets/사본_-_yu_1768891659139.jpg";
+import dodamIcon from "@assets/image_1768892173911.png";
 import type { Post, Comment, PageContent } from "@shared/schema";
 
 type PostWithAuthor = Post & { author: string; authorEmail: string | null; commentCount?: number };
@@ -684,19 +685,8 @@ export default function Madang() {
         <div className="w-full max-w-[990px] mx-auto px-0 sm:px-2 py-4 text-base" data-testid="madang-main">
         <Card className="p-4 mb-4 bg-gradient-to-r from-slate-50/50 to-slate-100/50 dark:from-slate-900/20 dark:to-slate-800/20">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <svg viewBox="0 0 40 40" className="w-8 h-8" style={{ color: "#0d7377" }}>
-                <circle cx="20" cy="20" r="18" stroke="currentColor" strokeWidth="2.5" fill="none"/>
-                <circle cx="20" cy="20" r="14" stroke="currentColor" strokeWidth="2.5" fill="none"/>
-                <circle cx="20" cy="20" r="10" stroke="currentColor" strokeWidth="2.5" fill="none"/>
-                <circle cx="20" cy="20" r="6" stroke="currentColor" strokeWidth="2.5" fill="none"/>
-                <circle cx="20" cy="20" r="2" fill="currentColor"/>
-                <line x1="20" y1="2" x2="20" y2="10" stroke="currentColor" strokeWidth="2.5"/>
-                <line x1="6" y1="12" x2="12" y2="16" stroke="currentColor" strokeWidth="2.5"/>
-                <line x1="28" y1="16" x2="34" y2="12" stroke="currentColor" strokeWidth="2.5"/>
-                <line x1="8" y1="28" x2="14" y2="24" stroke="currentColor" strokeWidth="2.5"/>
-                <line x1="26" y1="24" x2="32" y2="28" stroke="currentColor" strokeWidth="2.5"/>
-              </svg>
+            <div className="flex items-center gap-2">
+              <img src={dodamIcon} alt="도담" className="h-6 w-6 object-contain" />
               <h1 className="text-xl font-bold orae-navy" data-testid="text-madang-title">도담넷</h1>
             </div>
             <div className="flex items-center gap-2">

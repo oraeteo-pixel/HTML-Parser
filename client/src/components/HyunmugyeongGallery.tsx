@@ -209,8 +209,8 @@ export function HyunmugyeongGallery() {
                   data-testid={`gallery-page-${index + 1}`}
                 >
                   {(index === 0 || index === 1) && (
-                    <div className="text-center py-3" style={{ fontFamily: "'Noto Serif KR', 'Batang', serif" }}>
-                      <p className="text-2xl md:text-3xl font-bold text-gray-900 tracking-wide">
+                    <div className="text-center py-1" style={{ fontFamily: "'Noto Serif KR', 'Batang', serif" }}>
+                      <p className="text-base md:text-lg font-bold text-gray-900 tracking-wide">
                         普濟蒼生君不知 符書以外別無通
                       </p>
                     </div>

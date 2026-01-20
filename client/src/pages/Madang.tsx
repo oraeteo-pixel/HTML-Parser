@@ -751,9 +751,15 @@ export default function Madang() {
         )}
 
         <div className="bg-white rounded-none overflow-hidden flex items-center justify-center gap-4 py-4 mb-4 flex-wrap">
-          <img src={choisuun} alt="최수운" className="max-w-[150px] h-auto object-contain" />
-          <img src={cheonjunim} alt="천주님" className="max-w-[150px] h-auto object-contain" />
-          <img src={yu} alt="유" className="max-w-[150px] h-auto object-contain" />
+          <div className="w-[140px] h-[180px] overflow-hidden">
+            <img src={choisuun} alt="최수운" className="w-[160px] h-[200px] object-cover object-center -ml-[10px] -mt-[10px]" />
+          </div>
+          <div className="w-[140px] h-[180px] overflow-hidden">
+            <img src={cheonjunim} alt="천주님" className="w-[160px] h-[200px] object-cover object-center -ml-[10px] -mt-[10px]" />
+          </div>
+          <div className="w-[140px] h-[180px] overflow-hidden">
+            <img src={yu} alt="유" className="w-[160px] h-[200px] object-cover object-center -ml-[10px] -mt-[10px]" />
+          </div>
         </div>
 
         {showEditor && user && (

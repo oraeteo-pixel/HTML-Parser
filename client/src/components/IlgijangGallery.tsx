@@ -1,8 +1,4 @@
 import { useState, useEffect, useMemo } from "react";
-import { X, ZoomIn, ZoomOut } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import {
   getKoreanDate,
   get8Trigram,
@@ -169,8 +165,6 @@ function getSixBranchesFromDayBranch(dayBranch: string): string[] {
 
 export function IlgijangGallery() {
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [fullscreenOpen, setFullscreenOpen] = useState(false);
-  const [isZoomed, setIsZoomed] = useState(false);
   const [showTalisman, setShowTalisman] = useState(false);
 
   useEffect(() => {
@@ -234,25 +228,6 @@ export function IlgijangGallery() {
   }, [currentTime]);
 
   const { trigram, mansion, hwMansion, hwanggeuk, hwDayGanZhi, hwHourGanZhi, sixSpirits, sixBranches, sogungDaegung, hexagram64, jeolguk } = calendarData;
-
-  const openFullscreen = () => {
-    setFullscreenOpen(true);
-    setIsZoomed(false);
-  };
-
-  const closeFullscreen = () => {
-    setFullscreenOpen(false);
-    setIsZoomed(false);
-  };
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (!fullscreenOpen) return;
-      if (e.key === "Escape") closeFullscreen();
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [fullscreenOpen]);
 
   const DiaryContent = ({ scale = 1 }: { scale?: number }) => {
     const cfg = DIARY_CONFIG;
@@ -420,43 +395,11 @@ export function IlgijangGallery() {
       )}
 
       <div 
-        className="bg-white rounded-md overflow-auto cursor-pointer hover-elevate flex items-center justify-center py-8"
-        onClick={openFullscreen}
+        className="bg-white rounded-md overflow-auto flex items-center justify-center py-8"
         data-testid="gallery-ilgijang-page-1"
       >
         <DiaryContent scale={0.9} />
       </div>
-
-      <Dialog open={fullscreenOpen} onOpenChange={() => closeFullscreen()}>
-        <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 bg-black/95 border-none">
-          <VisuallyHidden>
-            <DialogTitle>황극력 일기장</DialogTitle>
-          </VisuallyHidden>
-          <div className="relative w-full h-[90vh] flex items-center justify-center overflow-auto">
-            <Button
-              size="icon"
-              variant="ghost"
-              className="absolute top-2 right-2 z-20 text-white hover:bg-white/20"
-              onClick={closeFullscreen}
-              data-testid="button-ilgijang-fullscreen-close"
-            >
-              <X className="h-6 w-6" />
-            </Button>
-
-            <Button
-              size="icon"
-              variant="ghost"
-              className="absolute top-2 right-14 z-20 text-white hover:bg-white/20"
-              onClick={() => setIsZoomed(!isZoomed)}
-              data-testid="button-ilgijang-fullscreen-zoom"
-            >
-              {isZoomed ? <ZoomOut className="h-5 w-5" /> : <ZoomIn className="h-5 w-5" />}
-            </Button>
-
-            <DiaryContent scale={isZoomed ? 1.5 : 1.2} />
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

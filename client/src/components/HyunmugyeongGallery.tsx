@@ -186,7 +186,7 @@ export function HyunmugyeongGallery() {
                       className="absolute text-center w-full" 
                       style={{ 
                         fontFamily: "'Noto Serif KR', 'Batang', serif",
-                        top: '22%'
+                        top: '28%'
                       }}
                     >
                       <p className="text-sm md:text-base font-bold text-gray-900 tracking-wide">

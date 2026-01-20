@@ -172,7 +172,7 @@ export function HyunmugyeongGallery() {
                 className="flex-[0_0_100%] min-w-0 px-0"
               >
                 <div 
-                  className="min-h-[85vh] bg-white rounded-none overflow-hidden flex flex-col items-center justify-center"
+                  className="min-h-[85vh] bg-white rounded-none overflow-hidden flex flex-col items-center justify-center relative"
                   data-testid={`gallery-page-${index + 1}`}
                 >
                   <img
@@ -182,7 +182,15 @@ export function HyunmugyeongGallery() {
                     loading="lazy"
                   />
                   {(index === 0 || index === 1) && (
-                    <div className="text-center py-1" style={{ fontFamily: "'Noto Serif KR', 'Batang', serif" }}>
+                    <div 
+                      className="absolute text-center" 
+                      style={{ 
+                        fontFamily: "'Noto Serif KR', 'Batang', serif",
+                        top: '18%',
+                        left: '50%',
+                        transform: 'translateX(-50%)'
+                      }}
+                    >
                       <p className="text-base md:text-lg font-bold text-gray-900 tracking-wide">
                         普濟蒼生君不知 符書以外別無通
                       </p>

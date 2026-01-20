@@ -151,7 +151,7 @@ export function HyunmugyeongGallery() {
   return (
     <div className="w-full" data-testid="hyunmugyeong-gallery">
       {/* 황극력 정보박스 */}
-      <div className="slim-info-bar mb-4" data-testid="hyunmugyeong-info-bar">
+      <div className="slim-info-bar mb-2 mx-0" data-testid="hyunmugyeong-info-bar">
         <div className="flex flex-wrap items-center gap-1.5 text-base">
           <span className="font-bold text-gray-700 dark:text-gray-200">
             {calendarData.hwanggeuk.year}.{calendarData.hwanggeuk.month}.{calendarData.hwanggeuk.day}
@@ -197,10 +197,10 @@ export function HyunmugyeongGallery() {
             {pages.map((page, index) => (
               <div
                 key={index}
-                className="flex-[0_0_100%] min-w-0 px-1"
+                className="flex-[0_0_100%] min-w-0 px-0"
               >
                 <div 
-                  className="min-h-[85vh] bg-white rounded-md overflow-hidden cursor-pointer hover-elevate flex items-center justify-center"
+                  className="min-h-[85vh] bg-white rounded-none overflow-hidden cursor-pointer hover-elevate flex items-center justify-center"
                   onClick={() => openFullscreen(index)}
                   data-testid={`gallery-page-${index + 1}`}
                 >

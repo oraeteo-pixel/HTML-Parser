@@ -95,8 +95,8 @@ const MANSION_28_TALISMANS: { [key: string]: string } = {
 // ========================================
 const DIARY_CONFIG = {
   // 전체 컨테이너
-  containerMinHeight: 500,      // 전체 높이 (px)
-  containerPadding: 8,         // 여백 (px)
+  containerMinHeight: 0,      // 전체 높이 (px)
+  containerPadding: 4,         // 여백 (px)
   
   // 열 간격
   columnSpacing: 8,             // 열 사이 간격 (px)

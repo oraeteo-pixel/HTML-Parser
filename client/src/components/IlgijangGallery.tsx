@@ -280,16 +280,16 @@ export function IlgijangGallery() {
             </div>
           </div>
           
-          {/* 하단: 言聽 神 計用 (좌→우 순서: 언청이 먼저, 계용이 뒤) */}
+          {/* 하단: 計用 神 言聽 (좌→우: 계용, 신, 언청) */}
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <div style={{ writingMode: 'vertical-rl', textOrientation: 'upright', fontSize: fs(cfg.titleFontSize), color: 'black', fontWeight: 'bold' }}>
-              言聽
+              計用
             </div>
             <div style={{ writingMode: 'vertical-rl', textOrientation: 'upright', fontSize: fs(cfg.titleFontSize), color: 'black', fontWeight: 'bold' }}>
               神
             </div>
             <div style={{ writingMode: 'vertical-rl', textOrientation: 'upright', fontSize: fs(cfg.titleFontSize), color: 'black', fontWeight: 'bold' }}>
-              計用
+              言聽
             </div>
           </div>
         </div>

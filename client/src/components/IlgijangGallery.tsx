@@ -262,14 +262,14 @@ export function IlgijangGallery() {
           marginLeft: sp(cfg.columnSpacing),
           direction: 'ltr'
         }}>
-          {/* 상단: 益者三友 ... 損者三友 */}
+          {/* 상단: 損者三友 ... 益者三友 (좌→우 순서) */}
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: sp(16) }}>
             <div style={{ writingMode: 'vertical-rl', textOrientation: 'upright', fontSize: fs(cfg.titleFontSize), color: 'black', fontWeight: 'bold' }}>
-              益者三友
+              損者三友
             </div>
             <div style={{ width: sp(40) }}></div>
             <div style={{ writingMode: 'vertical-rl', textOrientation: 'upright', fontSize: fs(cfg.titleFontSize), color: 'black', fontWeight: 'bold' }}>
-              損者三友
+              益者三友
             </div>
           </div>
           
@@ -280,7 +280,7 @@ export function IlgijangGallery() {
             </div>
           </div>
           
-          {/* 하단: 言聽 神 計用 */}
+          {/* 하단: 言聽 神 計用 (좌→우 순서: 언청이 먼저, 계용이 뒤) */}
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <div style={{ writingMode: 'vertical-rl', textOrientation: 'upright', fontSize: fs(cfg.titleFontSize), color: 'black', fontWeight: 'bold' }}>
               言聽

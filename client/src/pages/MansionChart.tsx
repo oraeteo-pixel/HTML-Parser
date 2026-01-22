@@ -1,7 +1,9 @@
 import { useMemo, useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { ArrowUp, ArrowDown } from "lucide-react";
 import { getHwanggeuk28Mansion, getHwanggeukDate, getDayGanZhi, getKoreanTime, getJeolguk, getSogungDaegung, getMansionGanjiMap, SIXTY_GANJI, getHwanggeukHourGanZhi, get64HexagramName, getHexagramInterpretation, HEXAGRAM_ORDER } from "@/lib/calendarData";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
@@ -371,6 +373,38 @@ export default function MansionChart() {
         </Card>
         </div>
         <Footer />
+
+        {/* 스크롤 네비게이션 화살표 */}
+        <div className="fixed bottom-4 right-4 flex flex-col gap-2 z-50">
+          <Button
+            size="icon"
+            variant="outline"
+            className="rounded-full shadow-lg"
+            onClick={() => {
+              const mainContainer = document.querySelector('main');
+              if (mainContainer) {
+                mainContainer.scrollTo({ top: 0, behavior: 'smooth' });
+              }
+            }}
+            data-testid="button-scroll-top"
+          >
+            <ArrowUp className="h-4 w-4" />
+          </Button>
+          <Button
+            size="icon"
+            variant="outline"
+            className="rounded-full shadow-lg"
+            onClick={() => {
+              const mainContainer = document.querySelector('main');
+              if (mainContainer) {
+                mainContainer.scrollTo({ top: mainContainer.scrollHeight, behavior: 'smooth' });
+              }
+            }}
+            data-testid="button-scroll-bottom"
+          >
+            <ArrowDown className="h-4 w-4" />
+          </Button>
+        </div>
       </main>
 
       {/* 64괘 주역 풀이 모달 */}

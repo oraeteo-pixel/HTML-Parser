@@ -1,6 +1,8 @@
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { Calendar } from "@/components/Calendar";
+import { Button } from "@/components/ui/button";
+import { ArrowUp, ArrowDown } from "lucide-react";
 
 export default function CalendarPage() {
   return (
@@ -12,6 +14,38 @@ export default function CalendarPage() {
           <Calendar />
         </div>
         <Footer />
+
+        {/* 스크롤 네비게이션 화살표 */}
+        <div className="fixed bottom-4 right-4 flex flex-col gap-2 z-50">
+          <Button
+            size="icon"
+            variant="outline"
+            className="rounded-full shadow-lg"
+            onClick={() => {
+              const mainContainer = document.querySelector('main');
+              if (mainContainer) {
+                mainContainer.scrollTo({ top: 0, behavior: 'smooth' });
+              }
+            }}
+            data-testid="button-scroll-top"
+          >
+            <ArrowUp className="h-4 w-4" />
+          </Button>
+          <Button
+            size="icon"
+            variant="outline"
+            className="rounded-full shadow-lg"
+            onClick={() => {
+              const mainContainer = document.querySelector('main');
+              if (mainContainer) {
+                mainContainer.scrollTo({ top: mainContainer.scrollHeight, behavior: 'smooth' });
+              }
+            }}
+            data-testid="button-scroll-bottom"
+          >
+            <ArrowDown className="h-4 w-4" />
+          </Button>
+        </div>
       </main>
     </div>
   );

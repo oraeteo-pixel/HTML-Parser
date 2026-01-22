@@ -130,12 +130,12 @@ export function DeukchaebuGallery() {
       </div>
 
       <Dialog open={fullscreenOpen} onOpenChange={() => closeFullscreen()}>
-        <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 bg-black/95 border-none">
+        <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 bg-white dark:bg-gray-900 border-none">
           <div className="relative w-full h-[90vh] flex items-center justify-center">
             <Button
               size="icon"
               variant="ghost"
-              className="absolute top-2 right-2 z-20 text-white hover:bg-white/20"
+              className="absolute top-2 right-2 z-20"
               onClick={closeFullscreen}
               data-testid="button-deukchae-fullscreen-close"
             >
@@ -145,7 +145,7 @@ export function DeukchaebuGallery() {
             <Button
               size="icon"
               variant="ghost"
-              className="absolute top-2 right-14 z-20 text-white hover:bg-white/20"
+              className="absolute top-2 right-14 z-20"
               onClick={() => setIsZoomed(!isZoomed)}
               data-testid="button-deukchae-fullscreen-zoom"
             >

@@ -1,10 +1,13 @@
+import { useState } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
-import { Calendar, LogIn, UserCircle, LogOut, Loader2 } from "lucide-react";
+import { Calendar, LogIn, UserCircle, LogOut, Loader2, UserPlus } from "lucide-react";
+import { SignUpModal } from "./SignUpModal";
 
 export function TopBar() {
   const { user, isLoading, isAuthenticated, logout, isLoggingOut } = useAuth();
+  const [showSignUpModal, setShowSignUpModal] = useState(false);
   
   const today = new Date();
   const dateStr = format(today, "yyyy.M.d");
@@ -70,19 +73,36 @@ export function TopBar() {
               </Button>
             </div>
           ) : (
-            <Button 
-              variant="default" 
-              size="sm"
-              onClick={handleLogin}
-              className="gap-1.5"
-              data-testid="button-login"
-            >
-              <LogIn className="h-4 w-4" />
-              로그인
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setShowSignUpModal(true)}
+                className="gap-1.5"
+                data-testid="button-signup"
+              >
+                <UserPlus className="h-4 w-4" />
+                회원가입
+              </Button>
+              <Button 
+                variant="default" 
+                size="sm"
+                onClick={handleLogin}
+                className="gap-1.5"
+                data-testid="button-login"
+              >
+                <LogIn className="h-4 w-4" />
+                로그인
+              </Button>
+            </div>
           )}
         </div>
       </div>
+      
+      <SignUpModal 
+        open={showSignUpModal} 
+        onOpenChange={setShowSignUpModal} 
+      />
     </div>
   );
 }

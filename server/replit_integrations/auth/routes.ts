@@ -5,6 +5,7 @@ import { z } from "zod";
 
 const oauthSignupSchema = z.object({
   provider: z.enum(["naver", "kakao"]),
+  name: z.string().min(1, "이름을 입력해주세요"),
   phone: z.string().min(1, "전화번호를 입력해주세요"),
   email: z.string().email("올바른 이메일 형식을 입력해주세요"),
 });
@@ -23,11 +24,11 @@ export function registerAuthRoutes(app: Express): void {
     }
   });
 
-  // OAuth signup with phone and email
+  // OAuth signup with name, phone and email
   app.post("/api/auth/oauth-signup", async (req, res) => {
     try {
       const validatedData = oauthSignupSchema.parse(req.body);
-      const { provider, phone, email } = validatedData;
+      const { provider, name, phone, email } = validatedData;
 
       // Check if email already exists
       const existingUser = await authStorage.getUserByEmail(email);
@@ -39,7 +40,7 @@ export function registerAuthRoutes(app: Express): void {
       const user = await authStorage.upsertUser({
         email,
         phone,
-        firstName: provider === "naver" ? "네이버 회원" : "카카오 회원",
+        firstName: name,
       });
 
       res.json({ success: true, user });

@@ -17,6 +17,7 @@ type Step = "select" | "form" | "success";
 export function SignUpModal({ open, onOpenChange }: SignUpModalProps) {
   const [step, setStep] = useState<Step>("select");
   const [provider, setProvider] = useState<"naver" | "kakao" | null>(null);
+  const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -30,10 +31,10 @@ export function SignUpModal({ open, onOpenChange }: SignUpModalProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!phone.trim() || !email.trim()) {
+    if (!name.trim() || !phone.trim() || !email.trim()) {
       toast({
         title: "입력 오류",
-        description: "전화번호와 이메일을 모두 입력해주세요.",
+        description: "모든 필수 항목을 입력해주세요.",
         variant: "destructive",
       });
       return;
@@ -55,7 +56,7 @@ export function SignUpModal({ open, onOpenChange }: SignUpModalProps) {
       const response = await fetch("/api/auth/oauth-signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ provider, phone, email }),
+        body: JSON.stringify({ provider, name, phone, email }),
       });
 
       if (!response.ok) {
@@ -78,6 +79,7 @@ export function SignUpModal({ open, onOpenChange }: SignUpModalProps) {
   const handleClose = () => {
     setStep("select");
     setProvider(null);
+    setName("");
     setPhone("");
     setEmail("");
     onOpenChange(false);
@@ -144,7 +146,23 @@ export function SignUpModal({ open, onOpenChange }: SignUpModalProps) {
             </DialogHeader>
             <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-4">
               <div className="space-y-2">
-                <Label htmlFor="phone">전화번호</Label>
+                <Label htmlFor="name" className="flex items-center gap-1">
+                  <span className="text-red-500">*</span> 회원이름
+                </Label>
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder="홍길동"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  data-testid="input-name"
+                />
+                <p className="text-xs text-muted-foreground">네이버/카카오 계정의 이름이 자동으로 입력됩니다</p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="phone" className="flex items-center gap-1">
+                  <span className="text-red-500">*</span> 휴대전화번호
+                </Label>
                 <Input
                   id="phone"
                   type="tel"
@@ -153,9 +171,12 @@ export function SignUpModal({ open, onOpenChange }: SignUpModalProps) {
                   onChange={(e) => setPhone(e.target.value)}
                   data-testid="input-phone"
                 />
+                <p className="text-xs text-muted-foreground">본인 확인 및 중요 알림 발송에 사용됩니다</p>
               </div>
               <div className="space-y-2">
-                <Label htmlFor="email">이메일</Label>
+                <Label htmlFor="email" className="flex items-center gap-1">
+                  <span className="text-red-500">*</span> 이메일 주소
+                </Label>
                 <Input
                   id="email"
                   type="email"
@@ -164,6 +185,7 @@ export function SignUpModal({ open, onOpenChange }: SignUpModalProps) {
                   onChange={(e) => setEmail(e.target.value)}
                   data-testid="input-email"
                 />
+                <p className="text-xs text-muted-foreground">계정 관련 알림 및 소식을 받아보실 수 있습니다</p>
               </div>
               <div className="flex gap-2 mt-2">
                 <Button

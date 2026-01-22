@@ -34,7 +34,17 @@ export function registerAuthRoutes(app: Express): void {
   // Get current authenticated user
   app.get("/api/auth/user", isAuthenticated, async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
+      // Check for OAuth session auth first (Naver, Kakao, Google)
+      if (req.oauthUser) {
+        const user = await authStorage.getUser(req.oauthUser.id);
+        return res.json(user);
+      }
+      
+      // Fallback to Replit Auth
+      const userId = req.user?.claims?.sub;
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
       const user = await authStorage.getUser(userId);
       res.json(user);
     } catch (error) {
@@ -108,7 +118,14 @@ export function registerAuthRoutes(app: Express): void {
       (req.session as any).userId = user.id;
       (req.session as any).provider = 'naver';
       
-      res.redirect("/calendar?login=success");
+      // Save session explicitly
+      req.session.save((err) => {
+        if (err) {
+          console.error("Session save error:", err);
+        }
+        console.log("Naver login successful for user:", user.id);
+        res.redirect("/calendar?login=success");
+      });
     } catch (error) {
       console.error("Naver OAuth callback error:", error);
       res.redirect("/?error=naver_auth_error");

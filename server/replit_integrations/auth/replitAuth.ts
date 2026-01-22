@@ -131,9 +131,20 @@ export async function setupAuth(app: Express) {
 }
 
 export const isAuthenticated: RequestHandler = async (req, res, next) => {
+  // Check for OAuth session-based auth (Naver, Kakao, Google)
+  const session = req.session as any;
+  if (session?.userId && session?.provider) {
+    (req as any).oauthUser = {
+      id: session.userId,
+      provider: session.provider
+    };
+    return next();
+  }
+
+  // Check for Replit Auth
   const user = req.user as any;
 
-  if (!req.isAuthenticated() || !user.expires_at) {
+  if (!req.isAuthenticated() || !user?.expires_at) {
     return res.status(401).json({ message: "Unauthorized" });
   }
 

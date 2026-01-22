@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, CheckCircle } from "lucide-react";
-import { SiNaver, SiKakaotalk } from "react-icons/si";
+import { SiNaver, SiKakaotalk, SiGoogle } from "react-icons/si";
 
 interface SignUpModalProps {
   open: boolean;
@@ -16,14 +16,14 @@ type Step = "select" | "form" | "success";
 
 export function SignUpModal({ open, onOpenChange }: SignUpModalProps) {
   const [step, setStep] = useState<Step>("select");
-  const [provider, setProvider] = useState<"naver" | "kakao" | null>(null);
+  const [provider, setProvider] = useState<"naver" | "kakao" | "google" | null>(null);
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
-  const handleProviderSelect = (selectedProvider: "naver" | "kakao") => {
+  const handleProviderSelect = (selectedProvider: "naver" | "kakao" | "google") => {
     setProvider(selectedProvider);
     setStep("form");
   };
@@ -120,6 +120,15 @@ export function SignUpModal({ open, onOpenChange }: SignUpModalProps) {
                 <SiKakaotalk className="w-5 h-5 mr-2" />
                 카카오로 가입하기
               </Button>
+              <Button
+                onClick={() => handleProviderSelect("google")}
+                className="w-full h-12 border"
+                variant="outline"
+                data-testid="button-signup-google"
+              >
+                <SiGoogle className="w-5 h-5 mr-2 text-red-500" />
+                구글로 가입하기
+              </Button>
             </div>
           </>
         )}
@@ -133,10 +142,15 @@ export function SignUpModal({ open, onOpenChange }: SignUpModalProps) {
                     <SiNaver className="w-5 h-5" style={{ color: "#03C75A" }} />
                     네이버 가입
                   </>
-                ) : (
+                ) : provider === "kakao" ? (
                   <>
                     <SiKakaotalk className="w-5 h-5" style={{ color: "#3C1E1E" }} />
                     카카오 가입
+                  </>
+                ) : (
+                  <>
+                    <SiGoogle className="w-5 h-5 text-red-500" />
+                    구글 가입
                   </>
                 )}
               </DialogTitle>

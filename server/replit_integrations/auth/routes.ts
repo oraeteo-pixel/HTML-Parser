@@ -4,7 +4,7 @@ import { isAuthenticated } from "./replitAuth";
 import { z } from "zod";
 
 const oauthSignupSchema = z.object({
-  provider: z.enum(["naver", "kakao"]),
+  provider: z.enum(["naver", "kakao", "google"]),
   name: z.string().min(1, "이름을 입력해주세요"),
   phone: z.string().min(1, "전화번호를 입력해주세요"),
   email: z.string().email("올바른 이메일 형식을 입력해주세요"),

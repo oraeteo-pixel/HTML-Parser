@@ -24,6 +24,9 @@ import {
   WEEKDAYS_HANJA,
 } from "@/lib/calendarData";
 import moakroLogo from "@assets/logo192_1768892579399.png";
+import choeSuunImg from "@assets/최수운_1769108121132.jpg";
+import cheonjuImg from "@assets/천주님_1769108127844.jpg";
+import jangSasuImg from "@assets/장사수_1769108132159.jpg";
 import type { Post, Comment, PageContent } from "@shared/schema";
 
 type PostWithAuthor = Post & { author: string; authorEmail: string | null; commentCount?: number };
@@ -682,7 +685,10 @@ export default function Madang() {
         <div className="w-full max-w-[990px] mx-auto px-0 sm:px-2 py-4 text-base" data-testid="madang-main">
         <Card className="p-4 mb-4 bg-gradient-to-r from-slate-50/50 to-slate-100/50 dark:from-slate-900/20 dark:to-slate-800/20">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
+              <a href="https://cafe.daum.net/pusan7777" target="_blank" rel="noopener noreferrer">
+                <img src={moakroLogo} alt="메인홈" className="h-10 w-10 object-contain hover:opacity-80 transition-opacity" />
+              </a>
               <h1 className="text-xl font-bold orae-navy" data-testid="text-madang-title">도담넷</h1>
             </div>
             <div className="flex items-center gap-2">
@@ -709,6 +715,12 @@ export default function Madang() {
             </div>
           </div>
         </Card>
+
+        <div className="flex justify-center items-center gap-4 mb-4 py-4">
+          <img src={choeSuunImg} alt="최수운" className="h-24 w-auto object-contain" />
+          <img src={cheonjuImg} alt="천주님" className="h-24 w-auto object-contain" />
+          <img src={jangSasuImg} alt="장사수" className="h-24 w-auto object-contain" />
+        </div>
 
         <div className="slim-info-bar mb-2 mx-0 py-1.5 px-2" data-testid="madang-info-bar">
           <div className="flex flex-col md:flex-row md:flex-wrap md:items-center gap-0.5 md:gap-2 text-sm">

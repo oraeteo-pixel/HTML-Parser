@@ -46,3 +46,5 @@ integrations = ["javascript_object_storage:2.0.0", "javascript_log_in_with_repli
 
 [userenv.development]
 NAVER_CALLBACK_URL = "https://df13948f-7958-4c63-9d19-168bb3ded2ff-00-38vjhwq42ht1k.picard.replit.dev/api/auth/naver/callback"
+KAKAO_CALLBACK_URL = "https://df13948f-7958-4c63-9d19-168bb3ded2ff-00-38vjhwq42ht1k.picard.replit.dev/api/auth/kakao/callback"
+GOOGLE_CALLBACK_URL = "https://df13948f-7958-4c63-9d19-168bb3ded2ff-00-38vjhwq42ht1k.picard.replit.dev/api/auth/google/callback"

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { User, Star, BookOpen, CalendarDays, Users, LogOut, Loader2, Mail, Settings } from "lucide-react";
+import { User, Star, BookOpen, CalendarDays, Users, LogOut, Loader2, Mail, Settings, UserPlus } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/popover";
 import { useToast } from "@/hooks/use-toast";
 import { MessagesDialog } from "@/components/MessagesDialog";
+import { SignUpModal } from "@/components/SignUpModal";
 import type { Post } from "@shared/schema";
 
 interface BeforeInstallPromptEvent extends Event {
@@ -72,6 +73,7 @@ export function Navigation() {
   const { toast } = useToast();
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [messagesOpen, setMessagesOpen] = useState(false);
+  const [showSignUpModal, setShowSignUpModal] = useState(false);
 
   useEffect(() => {
     const handler = (e: Event) => {
@@ -317,13 +319,49 @@ export function Navigation() {
               </Popover>
               </>
             ) : (
-              <button 
-                className="flex flex-col items-center gap-0 group cursor-pointer"
-                data-testid="nav-user"
-                onClick={handleLogin}
-              >
-                <User className="h-6 w-6 sm:h-8 sm:w-8 group-hover:opacity-70 transition-opacity" style={{ color: 'hsl(210 20% 30%)' }} strokeWidth={2.5} />
-              </button>
+              <>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button 
+                      className="flex flex-col items-center gap-0 group cursor-pointer"
+                      data-testid="nav-user"
+                    >
+                      <User className="h-6 w-6 sm:h-8 sm:w-8 group-hover:opacity-70 transition-opacity" style={{ color: 'hsl(210 20% 30%)' }} strokeWidth={2.5} />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-48 p-2">
+                    <div className="space-y-2">
+                      <p className="text-sm font-medium text-center text-muted-foreground">
+                        로그인이 필요합니다
+                      </p>
+                      <Button 
+                        variant="default"
+                        size="sm"
+                        className="w-full bg-green-600 hover:bg-green-700"
+                        onClick={() => setShowSignUpModal(true)}
+                        data-testid="button-signup"
+                      >
+                        <UserPlus className="h-4 w-4 mr-1" />
+                        회원가입
+                      </Button>
+                      <Button 
+                        variant="outline"
+                        size="sm"
+                        className="w-full"
+                        onClick={handleLogin}
+                        data-testid="button-login"
+                      >
+                        <User className="h-4 w-4 mr-1" />
+                        로그인
+                      </Button>
+                    </div>
+                  </PopoverContent>
+                </Popover>
+                <SignUpModal 
+                  open={showSignUpModal} 
+                  onOpenChange={setShowSignUpModal} 
+                />
+              </>
             )}
           </div>
         </div>

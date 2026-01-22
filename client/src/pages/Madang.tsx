@@ -716,13 +716,11 @@ export default function Madang() {
           </div>
         </Card>
 
-        <Card className="p-4 mb-4 bg-gradient-to-r from-slate-50/50 to-slate-100/50 dark:from-slate-900/20 dark:to-slate-800/20 border-0 shadow-none">
-          <div className="flex justify-center items-center gap-6">
-            <img src={choeSuunImg} alt="최수운" className="h-40 w-auto object-contain" />
-            <img src={cheonjuImg} alt="천주님" className="h-40 w-auto object-contain" />
-            <img src={jangSasuImg} alt="장사수" className="h-40 w-auto object-contain" />
-          </div>
-        </Card>
+        <div className="flex justify-center items-center gap-8 mb-4 py-4">
+          <img src={choeSuunImg} alt="최수운" className="h-56 w-auto object-contain" style={{border: 'none', outline: 'none'}} />
+          <img src={cheonjuImg} alt="천주님" className="h-56 w-auto object-contain" style={{border: 'none', outline: 'none'}} />
+          <img src={jangSasuImg} alt="장사수" className="h-56 w-auto object-contain" style={{border: 'none', outline: 'none'}} />
+        </div>
 
         <div className="slim-info-bar mb-2 mx-0 py-1.5 px-2" data-testid="madang-info-bar">
           <div className="flex flex-col md:flex-row md:flex-wrap md:items-center gap-0.5 md:gap-2 text-sm">

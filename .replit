@@ -41,3 +41,8 @@ waitForPort = 5000
 
 [agent]
 integrations = ["javascript_object_storage:2.0.0", "javascript_log_in_with_replit:2.0.0"]
+
+[userenv]
+
+[userenv.development]
+NAVER_CALLBACK_URL = "https://df13948f-7958-4c63-9d19-168bb3ded2ff-00-38vjhwq42ht1k.picard.replit.dev/api/auth/naver/callback"

@@ -1050,13 +1050,13 @@ export default function Madang() {
                               {postMediaItems.length > 0 && (
                                 <MediaDisplay items={postMediaItems} />
                               )}
-                              <div className="my-3 flex items-center justify-between flex-wrap gap-2">
+                              <div className="mt-3 pt-3 border-t flex items-center justify-between">
                                 <VoteButtons postId={post.id} likes={post.likes || 0} dislikes={post.dislikes || 0} user={user} />
-                                <div className="flex gap-1">
+                                <div className="flex gap-2">
                                   <Button
                                     variant="ghost"
-                                    size="sm"
-                                    className="!text-muted-foreground hover:!text-foreground"
+                                    size="icon"
+                                    className="h-8 w-8 !text-muted-foreground hover:!text-foreground"
                                     onClick={() => {
                                       if (!user) {
                                         toast({ title: "로그인이 필요합니다.", description: "답글을 작성하려면 로그인해 주세요." });
@@ -1070,13 +1070,12 @@ export default function Madang() {
                                     }}
                                     data-testid={`button-reply-post-${post.id}`}
                                   >
-                                    <Reply className="h-4 w-4 mr-1 text-inherit" />
-                                    답글
+                                    <Reply className="h-4 w-4" />
                                   </Button>
                                   <Button
                                     variant="ghost"
-                                    size="sm"
-                                    className="!text-muted-foreground hover:!text-foreground"
+                                    size="icon"
+                                    className="h-8 w-8 !text-muted-foreground hover:!text-foreground"
                                     onClick={() => {
                                       if (!user) {
                                         toast({ title: "로그인이 필요합니다.", description: "수정하려면 로그인해 주세요." });
@@ -1090,13 +1089,12 @@ export default function Madang() {
                                     }}
                                     data-testid={`button-edit-${post.id}`}
                                   >
-                                    <Pencil className="h-4 w-4 mr-1 text-inherit" />
-                                    수정
+                                    <Pencil className="h-4 w-4" />
                                   </Button>
                                   <Button
                                     variant="ghost"
-                                    size="sm"
-                                    className="!text-muted-foreground hover:!text-foreground"
+                                    size="icon"
+                                    className="h-8 w-8 !text-muted-foreground hover:!text-foreground"
                                     onClick={() => {
                                       if (!user) {
                                         toast({ title: "로그인이 필요합니다.", description: "삭제하려면 로그인해 주세요." });
@@ -1111,8 +1109,7 @@ export default function Madang() {
                                     disabled={deletePost.isPending}
                                     data-testid={`button-delete-${post.id}`}
                                   >
-                                    <Trash2 className="h-4 w-4 mr-1 text-inherit" />
-                                    삭제
+                                    <Trash2 className="h-4 w-4" />
                                   </Button>
                                 </div>
                               </div>

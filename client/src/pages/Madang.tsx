@@ -691,7 +691,10 @@ export default function Madang() {
             </div>
             <div className="flex items-center gap-2">
               <a href="https://cafe.daum.net/pusan7777" target="_blank" rel="noopener noreferrer">
-                <img src={moakroLogo} alt="메인홈" className="h-8 w-8 object-contain hover:opacity-80 transition-opacity" />
+                <img src={moakroLogo} alt="오래 홈" className="h-8 w-8 object-contain hover:opacity-80 transition-opacity" />
+              </a>
+              <a href="https://moakro.com" target="_blank" rel="noopener noreferrer">
+                <img src={moakroLogo} alt="모악로" className="h-8 w-8 object-contain hover:opacity-80 transition-opacity" />
               </a>
               {!showEditor && (
                 <Button

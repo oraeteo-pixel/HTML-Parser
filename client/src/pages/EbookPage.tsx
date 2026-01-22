@@ -41,6 +41,7 @@ export default function EbookPage() {
   const params = new URLSearchParams(searchString);
   const writeMode = params.get("write") === "true";
   const currentSection = params.get("section") || "";
+  const editPostId = params.get("edit");
   
   const [showEditor, setShowEditor] = useState(false);
   const [title, setTitle] = useState("");
@@ -276,6 +277,16 @@ export default function EbookPage() {
       if (ts) setEditTextStyle(ts);
     } catch (e) {}
   };
+
+  // Auto-open edit dialog when edit=id
+  useEffect(() => {
+    if (editPostId && posts && !editingPost) {
+      const postToEdit = posts.find(p => p.id === parseInt(editPostId, 10));
+      if (postToEdit && user && (user.id === postToEdit.authorId || user.isAdmin === 1)) {
+        startEdit(postToEdit);
+      }
+    }
+  }, [editPostId, posts, user]);
 
   const cancelEdit = () => {
     setEditingPost(null);

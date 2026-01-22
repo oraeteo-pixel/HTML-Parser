@@ -76,14 +76,10 @@ export function TopBar() {
             <div className="flex items-center gap-2">
               <Button 
                 type="button"
-                variant="outline" 
+                variant="secondary" 
                 size="sm"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  setShowSignUpModal(true);
-                }}
-                className="gap-1.5"
+                onClick={() => setShowSignUpModal(true)}
+                className="gap-1.5 bg-green-600 hover:bg-green-700 text-white"
                 data-testid="button-signup"
               >
                 <UserPlus className="h-4 w-4" />

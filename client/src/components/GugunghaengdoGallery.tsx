@@ -11,6 +11,20 @@ import {
   WEEKDAYS_HANJA,
 } from "@/lib/calendarData";
 
+import palgwaeImage from "@assets/image_1769055485170.png";
+
+const HAENGNO_DATA = [
+  { cheon: "一天", cols: ["二之二", "二之三", "二之四", "二之五", "二之六", "二之七", "二之八", "二之九", "二之十"], meanings: ["원(原)", "잠(潛)", "수(守)", "신(信)", "직(直)", "몽(蒙)", "한(閑)", "수(須)", "려(厲)"] },
+  { cheon: "二天", cols: ["三之二", "三之三", "三之四", "三之五", "三之六", "三之七", "三之八", "三之九", "三之十"], meanings: ["성(成)", "충(沖)", "진(振)", "기(祈)", "상(常)", "유(柔)", "이(易)", "친(親)", "화(華)"] },
+  { cheon: "三天", cols: ["四之二", "四之三", "四之四", "四之五", "四之六", "四之七", "四之八", "四之九", "四之十"], meanings: ["견(見)", "획(獲)", "종(從)", "교(交)", "육(育)", "장(壯)", "흥(興)", "흔(欣)", "서(舒)"] },
+  { cheon: "四天", cols: ["五之二", "五之三", "五之四", "五之五", "五之六", "五之七", "五之八", "五之九", "五之十"], meanings: ["비(比)", "개(開)", "진(晉)", "공(公)", "익(益)", "장(章)", "영(盈)", "석(錫)", "미(靡)"] },
+  { cheon: "五天", cols: ["六之二", "六之三", "六之四", "六之五", "六之六", "六之七", "六之八", "六之九", "六之十"], meanings: ["서(庶)", "결(決)", "예(豫)", "승(升)", "중(中)", "복(伏)", "과(過)", "의(疑)", "과(寡)"] },
+  { cheon: "六天", cols: ["七之二", "七之三", "七之四", "七之五", "七之六", "七之七", "七之八", "七之九", "七之十"], meanings: ["식(飾)", "려(戾)", "허(虛)", "매(昧)", "손(損)", "용(用)", "극(極)", "흡(翕)", "원(遠)"] },
+  { cheon: "七天", cols: ["八之二", "八之三", "八之四", "八之五", "八之六", "八之七", "八之八", "八之九", "八之十"], meanings: ["신(迅)", "구(懼)", "제(除)", "약(弱)", "질(疾)", "경(競)", "분(分)", "송(訟)", "수(收)"] },
+  { cheon: "八天", cols: ["九之二", "九之三", "九之四", "九之五", "九之六", "九之七", "九之八", "九之九", "九之十"], meanings: ["실(實)", "빈(賓)", "위(危)", "견(堅)", "혁(革)", "보(報)", "지(止)", "융(戎)", "결(結)"] },
+  { cheon: "九天", cols: ["十之二", "十之三", "十之四", "十之五", "十之六", "十之七", "十之八", "十之九", "十之十"], meanings: ["양(養)", "우(遇)", "승(勝)", "수(囚)", "임(任)", "고(固)", "이(移)", "타(墮)", "종(終)"] },
+];
+
 export function GugunghaengdoGallery() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showTalisman, setShowTalisman] = useState(false);
@@ -79,13 +93,52 @@ export function GugunghaengdoGallery() {
         </div>
       )}
 
+      {/* 팔괘그림 */}
       <div 
-        className="bg-white rounded-none overflow-hidden flex items-center justify-center py-4"
-        data-testid="gallery-gugunghaengdo-page-1"
+        className="bg-white dark:bg-gray-900 rounded-md overflow-hidden flex items-center justify-center py-6 mb-4"
+        data-testid="gallery-palgwae-image"
       >
-        <div className="text-center text-muted-foreground p-8">
-          <p className="text-lg font-semibold">구궁행로도</p>
-          <p className="text-sm mt-2">준비 중입니다</p>
+        <img
+          src={palgwaeImage}
+          alt="용담도에 적용한 천간 (동지기준)"
+          className="max-w-full max-h-[400px] object-contain"
+        />
+      </div>
+
+      {/* 황극력 9천 행로표 */}
+      <div 
+        className="bg-white dark:bg-gray-900 rounded-md overflow-hidden py-4 px-2"
+        data-testid="gallery-haengno-table"
+      >
+        <h3 className="text-center text-lg font-bold mb-4 text-gray-800 dark:text-gray-200">
+          &lt; 황극력 9천(天) 행로(行路)표 &gt;
+        </h3>
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse text-xs md:text-sm">
+            <tbody>
+              {HAENGNO_DATA.map((row, rowIndex) => (
+                <>
+                  <tr key={`${rowIndex}-cols`} className="border-b border-gray-300 dark:border-gray-600">
+                    <td className="border border-gray-300 dark:border-gray-600 px-1 py-1 text-center font-bold bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200" rowSpan={2}>
+                      {row.cheon}
+                    </td>
+                    {row.cols.map((col, colIndex) => (
+                      <td key={colIndex} className="border border-gray-300 dark:border-gray-600 px-1 py-1 text-center bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
+                        {col}
+                      </td>
+                    ))}
+                  </tr>
+                  <tr key={`${rowIndex}-meanings`} className="border-b border-gray-300 dark:border-gray-600">
+                    {row.meanings.map((meaning, meaningIndex) => (
+                      <td key={meaningIndex} className="border border-gray-300 dark:border-gray-600 px-1 py-1 text-center text-gray-800 dark:text-gray-200">
+                        {meaning}
+                      </td>
+                    ))}
+                  </tr>
+                </>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

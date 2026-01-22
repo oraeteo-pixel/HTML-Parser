@@ -13,6 +13,19 @@ import {
 
 import palgwaeImage from "@assets/image_1769055485170.png";
 
+const GUGUNG_HEADER = ["10乾", "9離", "8艮", "7兌", "6中", "5震", "4兌", "3坎", "2坤", "9宮", "80分1宮"];
+const GUGUNG_DATA = [
+  { cols: [10, 9, 8, 7, 6, 5, 4, 3, 2, "子", "11:00~12:20"] },
+  { cols: [9, 8, 5, 10, 6, 2, 7, 4, 3, "二次", "12:20~1:40"] },
+  { cols: [8, 5, 2, 9, 6, 3, 10, 7, 4, "三次", "1:40~3:00"] },
+  { cols: [7, 10, 9, 4, 6, 8, 3, 2, 5, "四次", "3:00~4:20"] },
+  { cols: [6, 6, 6, 6, 6, 6, 6, 6, 6, "五次", "4:20~5:40"] },
+  { cols: [5, 2, 3, 8, 6, 4, 9, 10, 7, "六次", "5:40~7:00"] },
+  { cols: [4, 7, 10, 3, 6, 9, 2, 5, 8, "七次", "7:00~8:20"] },
+  { cols: [3, 4, 7, 2, 6, 10, 5, 8, 9, "八次", "8:20~9:40"] },
+  { cols: [2, 3, 4, 5, 6, 7, 8, 9, 10, "九次", "9:40~11:00"] },
+];
+
 const HAENGNO_DATA = [
   { cheon: "一天", cols: ["二之二", "二之三", "二之四", "二之五", "二之六", "二之七", "二之八", "二之九", "二之十"], meanings: ["원(原)", "잠(潛)", "수(守)", "신(信)", "직(直)", "몽(蒙)", "한(閑)", "수(須)", "려(厲)"] },
   { cheon: "二天", cols: ["三之二", "三之三", "三之四", "三之五", "三之六", "三之七", "三之八", "三之九", "三之十"], meanings: ["성(成)", "충(沖)", "진(振)", "기(祈)", "상(常)", "유(柔)", "이(易)", "친(親)", "화(華)"] },
@@ -103,6 +116,40 @@ export function GugunghaengdoGallery() {
           alt="용담도에 적용한 천간 (동지기준)"
           className="max-w-full max-h-[400px] object-contain"
         />
+      </div>
+
+      {/* 대궁소궁 구궁 행로표 */}
+      <div 
+        className="bg-white dark:bg-gray-900 rounded-md overflow-hidden py-4 px-2 mb-4"
+        data-testid="gallery-gugung-table"
+      >
+        <h3 className="text-center text-base font-bold mb-3 text-gray-800 dark:text-gray-200">
+          皇極數 4.5日 九宮 行路 1宮 80分
+        </h3>
+        <div className="overflow-x-auto">
+          <table className="w-full border-collapse text-xs md:text-sm">
+            <thead>
+              <tr className="bg-gray-100 dark:bg-gray-800">
+                {GUGUNG_HEADER.map((header, idx) => (
+                  <th key={idx} className="border border-gray-300 dark:border-gray-600 px-1 py-1 text-center font-bold text-gray-800 dark:text-gray-200">
+                    {header}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {GUGUNG_DATA.map((row, rowIndex) => (
+                <tr key={rowIndex} className="border-b border-gray-300 dark:border-gray-600">
+                  {row.cols.map((col, colIndex) => (
+                    <td key={colIndex} className="border border-gray-300 dark:border-gray-600 px-1 py-1 text-center text-gray-800 dark:text-gray-200">
+                      {col}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
       {/* 황극력 9천 행로표 */}

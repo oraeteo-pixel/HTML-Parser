@@ -24,6 +24,7 @@ import {
   WEEKDAYS_HANJA,
 } from "@/lib/calendarData";
 import moakroLogo from "@assets/logo192_1768892579399.png";
+import oraeLogo from "@assets/image_1769109882558.png";
 import choeSuunImg from "@assets/최수운_1769108121132.jpg";
 import cheonjuImg from "@assets/천주님_1769108127844.jpg";
 import jangSasuImg from "@assets/장사수_1769108132159.jpg";
@@ -690,8 +691,8 @@ export default function Madang() {
               <h1 className="text-xl font-bold orae-navy" data-testid="text-madang-title">도담넷</h1>
             </div>
             <div className="flex items-center gap-2">
-              <a href="https://cafe.daum.net/pusan7777" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center h-8 w-8 hover:opacity-80 transition-opacity">
-                <Home className="h-6 w-6 orae-navy" />
+              <a href="https://cafe.daum.net/pusan7777" target="_blank" rel="noopener noreferrer">
+                <img src={oraeLogo} alt="오래 홈" className="h-8 w-8 object-contain hover:opacity-80 transition-opacity" />
               </a>
               <a href="https://moakro.com" target="_blank" rel="noopener noreferrer">
                 <img src={moakroLogo} alt="모악로" className="h-8 w-8 object-contain hover:opacity-80 transition-opacity" />

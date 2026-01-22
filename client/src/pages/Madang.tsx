@@ -1026,7 +1026,7 @@ export default function Madang() {
                             </div>
                           ) : (
                             <>
-                              <div className="mb-3 p-3 bg-slate-100 dark:bg-slate-800 rounded-md border-l-4 border-primary">
+                              <div className="mb-3 p-3 bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
                                 <h2 className="text-lg font-bold text-foreground">{post.title}</h2>
                                 <div className="text-sm text-muted-foreground mt-1">{post.author} · {formatDate(post.createdAt)}</div>
                               </div>

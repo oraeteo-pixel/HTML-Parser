@@ -716,20 +716,6 @@ export default function Madang() {
           </div>
         </Card>
 
-        <Card className="p-6 mb-4 bg-gradient-to-r from-amber-50/80 to-orange-50/80 dark:from-amber-900/20 dark:to-orange-900/20">
-          <div className="flex justify-center items-center gap-6">
-            <div className="overflow-hidden h-64 w-48">
-              <img src={choeSuunImg} alt="최수운" className="h-[120%] w-[120%] object-cover object-center scale-110" style={{marginTop: '-5%', marginLeft: '-10%'}} />
-            </div>
-            <div className="overflow-hidden h-64 w-48">
-              <img src={cheonjuImg} alt="천주님" className="h-[120%] w-[120%] object-cover object-center scale-110" style={{marginTop: '-5%', marginLeft: '-10%'}} />
-            </div>
-            <div className="overflow-hidden h-64 w-48">
-              <img src={jangSasuImg} alt="장사수" className="h-[120%] w-[120%] object-cover object-center scale-110" style={{marginTop: '-5%', marginLeft: '-10%'}} />
-            </div>
-          </div>
-        </Card>
-
         <div className="slim-info-bar mb-2 mx-0 py-1.5 px-2" data-testid="madang-info-bar">
           <div className="flex flex-col md:flex-row md:flex-wrap md:items-center gap-0.5 md:gap-2 text-sm">
             <div className="flex flex-wrap items-center gap-1">
@@ -773,6 +759,19 @@ export default function Madang() {
           </div>
         )}
 
+        <Card className="p-6 mb-4 bg-gradient-to-r from-amber-50/80 to-orange-50/80 dark:from-amber-900/20 dark:to-orange-900/20">
+          <div className="flex justify-center items-center gap-6">
+            <div className="overflow-hidden h-64 w-48 flex items-center justify-center">
+              <img src={choeSuunImg} alt="최수운" className="scale-[1.15] object-cover" />
+            </div>
+            <div className="overflow-hidden h-64 w-48 flex items-center justify-center">
+              <img src={cheonjuImg} alt="천주님" className="scale-[1.15] object-cover" />
+            </div>
+            <div className="overflow-hidden h-64 w-48 flex items-center justify-center">
+              <img src={jangSasuImg} alt="장사수" className="scale-[1.15] object-cover" />
+            </div>
+          </div>
+        </Card>
 
         {showEditor && user && (
           <div className="mb-4">

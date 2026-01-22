@@ -1,1 +1,0 @@
-<?php header("HTTP/1.0 404 Not Found");exit;?>a:1:{i:0;s:6:"picasa";}

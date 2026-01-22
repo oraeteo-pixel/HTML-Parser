@@ -1,1 +1,0 @@
-<?php header("HTTP/1.0 404 Not Found");exit;?>a:5:{s:9:"fb_app_id";s:15:"266299440185842";s:13:"fb_app_secret";s:32:"ff4aaa44d557e4389cfce731e78cb51f";s:15:"tw_consumer_key";s:21:"BXHQo3n1rcesZFJM0YK7g";s:18:"tw_consumer_secret";s:43:"1IdqdBSxd0UVvUcrIrDSH17qX4eGqUX53hhv02J7oLU";s:10:"m2_api_key";s:0:"";}

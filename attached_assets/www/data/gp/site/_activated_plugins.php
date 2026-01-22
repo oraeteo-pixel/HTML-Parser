@@ -1,1 +1,0 @@
-<?php header("HTTP/1.0 404 Not Found");exit;?>a:4:{i:0;s:11:"sociallogin";i:1;s:8:"logintry";i:2;s:7:"pushmsg";i:3;s:3:"seo";}

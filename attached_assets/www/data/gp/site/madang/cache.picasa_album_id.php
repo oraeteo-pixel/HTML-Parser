@@ -1,1 +1,0 @@
-<? $saved = array('album_name'=>'2015 March', 'album_id'=>'6122595614685924241'); ?>

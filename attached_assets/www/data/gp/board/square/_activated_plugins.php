@@ -1,1 +1,0 @@
-<?php header("HTTP/1.0 404 Not Found");exit;?>a:3:{i:0;s:6:"picasa";i:1;s:6:"skinel";i:2;s:8:"daum_map";}

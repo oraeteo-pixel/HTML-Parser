@@ -1,1 +1,0 @@
-<?php header("HTTP/1.0 404 Not Found");exit;?>a:1:{s:3:"uid";s:7:"mb_nick";}

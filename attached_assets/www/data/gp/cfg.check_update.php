@@ -1,1 +1,0 @@
-<?php header("HTTP/1.0 404 Not Found");exit;?>a:3:{s:10:"check_time";i:1765550993;s:15:"has_new_version";b:0;s:7:"version";s:5:"5.1.0";}

@@ -110,13 +110,15 @@ export function GugunghaengdoGallery() {
       <div className="flex flex-col md:flex-row gap-1 mb-4">
         {/* 팔괘그림 */}
         <div 
-          className="bg-white rounded-md overflow-hidden flex items-center justify-center py-2 md:w-1/3"
+          className="rounded-md overflow-hidden flex items-center justify-center py-2 md:w-1/3"
+          style={{ backgroundColor: '#FFFFFF' }}
           data-testid="gallery-palgwae-image"
         >
           <img
             src={palgwaeImage}
             alt="용담도에 적용한 천간 (동지기준)"
             className="max-w-full max-h-[350px] object-contain"
+            style={{ backgroundColor: '#FFFFFF' }}
           />
         </div>
 

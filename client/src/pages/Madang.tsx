@@ -685,13 +685,13 @@ export default function Madang() {
         <div className="w-full max-w-[990px] mx-auto px-0 sm:px-2 py-4 text-base" data-testid="madang-main">
         <Card className="p-4 mb-4 bg-gradient-to-r from-slate-50/50 to-slate-100/50 dark:from-slate-900/20 dark:to-slate-800/20">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <a href="https://cafe.daum.net/pusan7777" target="_blank" rel="noopener noreferrer">
-                <img src={moakroLogo} alt="메인홈" className="h-10 w-10 object-contain hover:opacity-80 transition-opacity" />
-              </a>
+            <div className="flex items-center gap-2">
               <h1 className="text-xl font-bold orae-navy" data-testid="text-madang-title">도담넷</h1>
             </div>
             <div className="flex items-center gap-2">
+              <a href="https://cafe.daum.net/pusan7777" target="_blank" rel="noopener noreferrer">
+                <img src={moakroLogo} alt="메인홈" className="h-8 w-8 object-contain hover:opacity-80 transition-opacity" />
+              </a>
               <a href="https://moakro.com" target="_blank" rel="noopener noreferrer">
                 <img src={moakroLogo} alt="모악로" className="h-8 w-8 object-contain hover:opacity-80 transition-opacity" />
               </a>

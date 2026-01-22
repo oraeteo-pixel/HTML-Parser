@@ -380,15 +380,6 @@ export default function EbookViewerPage() {
                 />
               </div>
             ))}
-            {post.content && (
-              <Card className="p-4">
-                <div className="prose prose-sm dark:prose-invert max-w-none">
-                  {post.content.split("\n").map((paragraph, i) => (
-                    <p key={i}>{paragraph}</p>
-                  ))}
-                </div>
-              </Card>
-            )}
           </div>
         ) : (
           <div className="max-w-4xl mx-auto px-2 py-8">
@@ -400,7 +391,15 @@ export default function EbookViewerPage() {
         
         <div className="max-w-4xl mx-auto px-2 py-4">
           <Card className="p-4">
-            <div className="flex items-center justify-between gap-2 flex-wrap">
+            {post.content && (
+              <div className="prose prose-sm dark:prose-invert max-w-none mb-4">
+                {post.content.split("\n").map((paragraph, i) => (
+                  <p key={i}>{paragraph}</p>
+                ))}
+              </div>
+            )}
+            
+            <div className="border-t pt-4 flex items-center justify-between gap-2 flex-wrap">
               <p className="text-sm text-muted-foreground flex items-center gap-1 flex-wrap">
                 <Popover>
                   <PopoverTrigger asChild>
@@ -449,7 +448,24 @@ export default function EbookViewerPage() {
               <div className="flex gap-1">
                 <Button
                   variant="ghost"
-                  size="sm"
+                  size="icon"
+                  className="h-8 w-8 !text-muted-foreground hover:!text-foreground"
+                  onClick={() => {
+                    if (!user) {
+                      toast({ title: "로그인이 필요합니다.", description: "답글을 작성하려면 로그인해 주세요." });
+                      return;
+                    }
+                    const commentBtn = document.querySelector(`[data-testid="button-new-comment-${post.id}"]`) as HTMLButtonElement;
+                    if (commentBtn) commentBtn.click();
+                  }}
+                  data-testid={`button-reply-ebook-${post.id}`}
+                >
+                  <Reply className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 !text-muted-foreground hover:!text-foreground"
                   onClick={() => {
                     if (!user) {
                       toast({ title: "로그인이 필요합니다.", description: "수정하려면 로그인해 주세요." });
@@ -463,12 +479,12 @@ export default function EbookViewerPage() {
                   }}
                   data-testid={`button-edit-ebook-${post.id}`}
                 >
-                  <Pencil className="h-3 w-3 mr-1" />
-                  수정
+                  <Pencil className="h-4 w-4" />
                 </Button>
                 <Button
                   variant="ghost"
-                  size="sm"
+                  size="icon"
+                  className="h-8 w-8 !text-muted-foreground hover:!text-foreground"
                   onClick={() => {
                     if (!user) {
                       toast({ title: "로그인이 필요합니다.", description: "삭제하려면 로그인해 주세요." });
@@ -483,8 +499,7 @@ export default function EbookViewerPage() {
                   disabled={deletePost.isPending}
                   data-testid={`button-delete-ebook-${post.id}`}
                 >
-                  <Trash2 className="h-3 w-3 mr-1" />
-                  삭제
+                  <Trash2 className="h-4 w-4" />
                 </Button>
               </div>
             </div>

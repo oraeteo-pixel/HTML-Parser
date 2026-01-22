@@ -106,49 +106,52 @@ export function GugunghaengdoGallery() {
         </div>
       )}
 
-      {/* 팔괘그림 */}
-      <div 
-        className="bg-white dark:bg-gray-900 rounded-md overflow-hidden flex items-center justify-center py-6 mb-4"
-        data-testid="gallery-palgwae-image"
-      >
-        <img
-          src={palgwaeImage}
-          alt="용담도에 적용한 천간 (동지기준)"
-          className="max-w-full max-h-[400px] object-contain"
-        />
-      </div>
+      {/* 팔괘그림 + 대궁소궁 구궁 행로표 (나란히) */}
+      <div className="flex flex-col md:flex-row gap-4 mb-4">
+        {/* 팔괘그림 */}
+        <div 
+          className="bg-white dark:bg-gray-900 rounded-md overflow-hidden flex items-center justify-center py-4 md:w-1/3"
+          data-testid="gallery-palgwae-image"
+        >
+          <img
+            src={palgwaeImage}
+            alt="용담도에 적용한 천간 (동지기준)"
+            className="max-w-full max-h-[350px] object-contain"
+          />
+        </div>
 
-      {/* 대궁소궁 구궁 행로표 */}
-      <div 
-        className="bg-white dark:bg-gray-900 rounded-md overflow-hidden py-4 px-2 mb-4"
-        data-testid="gallery-gugung-table"
-      >
-        <h3 className="text-center text-base font-bold mb-3 text-gray-800 dark:text-gray-200">
-          皇極數 4.5日 九宮 行路 1宮 80分
-        </h3>
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-xs md:text-sm">
-            <thead>
-              <tr className="bg-gray-100 dark:bg-gray-800">
-                {GUGUNG_HEADER.map((header, idx) => (
-                  <th key={idx} className="border border-gray-300 dark:border-gray-600 px-1 py-1 text-center font-bold text-gray-800 dark:text-gray-200">
-                    {header}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {GUGUNG_DATA.map((row, rowIndex) => (
-                <tr key={rowIndex} className="border-b border-gray-300 dark:border-gray-600">
-                  {row.cols.map((col, colIndex) => (
-                    <td key={colIndex} className="border border-gray-300 dark:border-gray-600 px-1 py-1 text-center text-gray-800 dark:text-gray-200">
-                      {col}
-                    </td>
+        {/* 대궁소궁 구궁 행로표 */}
+        <div 
+          className="bg-white dark:bg-gray-900 rounded-md overflow-hidden py-4 px-2 md:w-2/3"
+          data-testid="gallery-gugung-table"
+        >
+          <h3 className="text-center text-base font-bold mb-3 text-gray-800 dark:text-gray-200">
+            皇極數 4.5日 九宮 行路 1宮 80分
+          </h3>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse text-xs md:text-sm">
+              <thead>
+                <tr className="bg-gray-100 dark:bg-gray-800">
+                  {GUGUNG_HEADER.map((header, idx) => (
+                    <th key={idx} className="border border-gray-300 dark:border-gray-600 px-1 py-1 text-center font-bold text-gray-800 dark:text-gray-200">
+                      {header}
+                    </th>
                   ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {GUGUNG_DATA.map((row, rowIndex) => (
+                  <tr key={rowIndex} className="border-b border-gray-300 dark:border-gray-600">
+                    {row.cols.map((col, colIndex) => (
+                      <td key={colIndex} className="border border-gray-300 dark:border-gray-600 px-1 py-1 text-center text-gray-800 dark:text-gray-200">
+                        {col}
+                      </td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 

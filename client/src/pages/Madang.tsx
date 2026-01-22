@@ -23,11 +23,6 @@ import {
   getJeolguk,
   WEEKDAYS_HANJA,
 } from "@/lib/calendarData";
-import choisuun from "@assets/최수운_1768891647413.jpg";
-import cheonjunim from "@assets/천주님_1768891653091.jpg";
-import yu from "@assets/사본_-_yu_1768891659139.jpg";
-import dodamIcon from "@assets/image_1768892173911.png";
-import circleLogoIcon from "@assets/1000000061_1768892307348.png";
 import moakroLogo from "@assets/logo192_1768892579399.png";
 import type { Post, Comment, PageContent } from "@shared/schema";
 
@@ -688,13 +683,9 @@ export default function Madang() {
         <Card className="p-4 mb-4 bg-gradient-to-r from-slate-50/50 to-slate-100/50 dark:from-slate-900/20 dark:to-slate-800/20">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <img src={dodamIcon} alt="도담" className="h-8 w-8 object-contain" />
               <h1 className="text-xl font-bold orae-navy" data-testid="text-madang-title">도담넷</h1>
             </div>
             <div className="flex items-center gap-2">
-              <a href="https://cafe.daum.net/pusan7777/6pBc" target="_blank" rel="noopener noreferrer">
-                <img src={circleLogoIcon} alt="원로고" className="h-8 w-8 object-contain hover:opacity-80 transition-opacity" />
-              </a>
               <a href="https://moakro.com" target="_blank" rel="noopener noreferrer">
                 <img src={moakroLogo} alt="모악로" className="h-8 w-8 object-contain hover:opacity-80 transition-opacity" />
               </a>
@@ -762,17 +753,6 @@ export default function Madang() {
           </div>
         )}
 
-        <div className="bg-white rounded-none overflow-hidden flex items-center justify-center gap-4 py-4 mb-4 flex-wrap">
-          <div className="w-[140px] h-[180px] overflow-hidden">
-            <img src={choisuun} alt="최수운" className="w-[160px] h-[200px] object-cover object-center -ml-[10px] -mt-[10px]" />
-          </div>
-          <div className="w-[140px] h-[180px] overflow-hidden">
-            <img src={cheonjunim} alt="천주님" className="w-[160px] h-[200px] object-cover object-center -ml-[10px] -mt-[10px]" />
-          </div>
-          <div className="w-[140px] h-[180px] overflow-hidden">
-            <img src={yu} alt="유" className="w-[160px] h-[200px] object-cover object-center -ml-[10px] -mt-[10px]" />
-          </div>
-        </div>
 
         {showEditor && user && (
           <div className="mb-4">

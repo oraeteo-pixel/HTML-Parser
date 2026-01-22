@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RichEditor, MediaDisplay, type MediaItem, type TextStyle, getFontFamilyCSS } from "@/components/RichEditor";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { MessageSquare, ChevronDown, ChevronUp, X, Mail, Send, ThumbsUp, ThumbsDown, Pencil, Trash2, Plus, Reply, CornerDownRight } from "lucide-react";
+import { MessageSquare, ChevronDown, ChevronUp, X, Mail, Send, ThumbsUp, ThumbsDown, Pencil, Trash2, Plus, Reply, CornerDownRight, ArrowUp, ArrowDown } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
@@ -1171,6 +1171,38 @@ export default function Madang() {
             )}
           </Card>
         )}
+        </div>
+
+        {/* 스크롤 네비게이션 화살표 */}
+        <div className="fixed bottom-4 right-4 flex flex-col gap-2 z-50">
+          <Button
+            size="icon"
+            variant="outline"
+            className="rounded-full shadow-lg"
+            onClick={() => {
+              const mainContainer = document.querySelector('main');
+              if (mainContainer) {
+                mainContainer.scrollTo({ top: 0, behavior: 'smooth' });
+              }
+            }}
+            data-testid="button-scroll-top"
+          >
+            <ArrowUp className="h-4 w-4" />
+          </Button>
+          <Button
+            size="icon"
+            variant="outline"
+            className="rounded-full shadow-lg"
+            onClick={() => {
+              const mainContainer = document.querySelector('main');
+              if (mainContainer) {
+                mainContainer.scrollTo({ top: mainContainer.scrollHeight, behavior: 'smooth' });
+              }
+            }}
+            data-testid="button-scroll-bottom"
+          >
+            <ArrowDown className="h-4 w-4" />
+          </Button>
         </div>
       </main>
     </div>

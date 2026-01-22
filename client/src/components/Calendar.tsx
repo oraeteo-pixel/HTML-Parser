@@ -468,7 +468,13 @@ export function Calendar() {
     setSelectedDay(dateWithTime);
     setShowDayDetail(true);
     setTimeout(() => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      // main 컨테이너를 찾아서 스크롤 (overflow-auto가 main에 있음)
+      const mainContainer = document.querySelector('main');
+      if (mainContainer) {
+        mainContainer.scrollTo({ top: 0, behavior: 'smooth' });
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
     }, 50);
   };
 

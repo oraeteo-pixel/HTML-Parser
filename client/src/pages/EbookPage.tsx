@@ -17,7 +17,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useSearch, useLocation } from "wouter";
-import { BookOpen, FileText, Download, Play, Pencil, MessageSquare, Trash2 } from "lucide-react";
+import { BookOpen, FileText, Download, Play, Pencil, MessageSquare, Trash2, ArrowUp, ArrowDown } from "lucide-react";
 import type { Post, PageContent } from "@shared/schema";
 
 type PostWithAuthor = Post & { author: string; authorEmail: string | null; commentCount?: number };
@@ -663,6 +663,36 @@ export default function EbookPage() {
       </Dialog>
       </div>
       <Footer />
+
+      {/* 스크롤 네비게이션 화살표 */}
+      <div className="fixed bottom-4 right-4 flex flex-col gap-2 z-50">
+        <Button
+          size="icon"
+          variant="outline"
+          className="rounded-full shadow-lg"
+          onClick={() => {
+            if (mainRef.current) {
+              mainRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+          }}
+          data-testid="button-scroll-top"
+        >
+          <ArrowUp className="h-4 w-4" />
+        </Button>
+        <Button
+          size="icon"
+          variant="outline"
+          className="rounded-full shadow-lg"
+          onClick={() => {
+            if (mainRef.current) {
+              mainRef.current.scrollTo({ top: mainRef.current.scrollHeight, behavior: 'smooth' });
+            }
+          }}
+          data-testid="button-scroll-bottom"
+        >
+          <ArrowDown className="h-4 w-4" />
+        </Button>
+      </div>
       </main>
     </div>
   );

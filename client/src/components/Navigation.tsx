@@ -329,7 +329,7 @@ export function Navigation() {
                       <User className="h-6 w-6 sm:h-8 sm:w-8 group-hover:opacity-70 transition-opacity" style={{ color: 'hsl(210 20% 30%)' }} strokeWidth={2.5} />
                     </button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-48 p-2">
+                  <PopoverContent className="w-48 p-2" onPointerDownOutside={(e) => e.preventDefault()}>
                     <div className="space-y-2">
                       <p className="text-sm font-medium text-center text-muted-foreground">
                         로그인이 필요합니다

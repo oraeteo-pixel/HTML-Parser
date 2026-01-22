@@ -59,10 +59,11 @@ export function GugunghaengdoGallery() {
     const mansion = getHwanggeuk28Mansion(hwanggeuk.year, hwanggeuk.month, hwanggeuk.day);
     const weekdayHanja = WEEKDAYS_HANJA[new Date().getDay()];
     // 행로표 하이라이트 계산: 八之三 → 七天 row (index 6), 之三 col (index 1)
-    // day 값에서 천(天)과 일(日)을 계산
-    const hwDay = hwanggeuk.day;
-    const cheonIndex = Math.floor((hwDay - 1) / 9); // 0-indexed 천 (0=一天, 6=七天)
-    const dayIndex = (hwDay - 1) % 9; // 0-indexed 일 (0=之二, 1=之三, ...)
+    // 八之三에서 八은 hwanggeuk.month, 三은 hwanggeuk.day
+    // rowIndex = month - 2 (八=8 → 8-2=6 → 七天)
+    // colIndex = day - 2 (三=3 → 3-2=1)
+    const cheonIndex = hwanggeuk.month - 2; // 0-indexed 천 (八=8 → 6=七天)
+    const dayIndex = hwanggeuk.day - 2; // 0-indexed 일 (三=3 → 1)
     
     return { hwanggeuk, hwDayGanZhi, hwHourGanZhi, jeolguk: jeolgukData.name, sogungDaegung, hexagram64, mansion, weekdayHanja, cheonIndex, dayIndex };
   }, [currentTime]);

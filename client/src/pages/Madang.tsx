@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RichEditor, MediaDisplay, type MediaItem, type TextStyle, getFontFamilyCSS } from "@/components/RichEditor";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { MessageSquare, ChevronDown, ChevronUp, X, Mail, Send, ThumbsUp, ThumbsDown, Pencil, Trash2, Plus, Reply, CornerDownRight, ArrowUp, ArrowDown, Users } from "lucide-react";
+import { MessageSquare, ChevronDown, ChevronUp, X, Mail, Send, ThumbsUp, ThumbsDown, Pencil, Trash2, Plus, Reply, CornerDownRight, ArrowUp, ArrowDown, Users, Home } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
@@ -690,8 +690,8 @@ export default function Madang() {
               <h1 className="text-xl font-bold orae-navy" data-testid="text-madang-title">도담넷</h1>
             </div>
             <div className="flex items-center gap-2">
-              <a href="https://cafe.daum.net/pusan7777" target="_blank" rel="noopener noreferrer">
-                <img src={moakroLogo} alt="오래 홈" className="h-8 w-8 object-contain hover:opacity-80 transition-opacity" />
+              <a href="https://cafe.daum.net/pusan7777" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center h-8 w-8 hover:opacity-80 transition-opacity">
+                <Home className="h-6 w-6 orae-navy" />
               </a>
               <a href="https://moakro.com" target="_blank" rel="noopener noreferrer">
                 <img src={moakroLogo} alt="모악로" className="h-8 w-8 object-contain hover:opacity-80 transition-opacity" />

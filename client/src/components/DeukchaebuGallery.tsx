@@ -1,7 +1,4 @@
 import { useState, useEffect, useMemo } from "react";
-import { X, ZoomIn, ZoomOut } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
 import {
   getKoreanDate,
   getHwanggeuk28Mansion,
@@ -17,8 +14,6 @@ import {
 import page1 from "@assets/deukchaebu-final.png";
 
 export function DeukchaebuGallery() {
-  const [fullscreenOpen, setFullscreenOpen] = useState(false);
-  const [isZoomed, setIsZoomed] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
   const [showTalisman, setShowTalisman] = useState(false);
 
@@ -49,25 +44,6 @@ export function DeukchaebuGallery() {
     const weekdayHanja = WEEKDAYS_HANJA[new Date().getDay()];
     return { hwanggeuk, hwDayGanZhi, hwHourGanZhi, jeolguk: jeolgukData.name, sogungDaegung, hexagram64, mansion, weekdayHanja };
   }, [currentTime]);
-
-  const openFullscreen = () => {
-    setFullscreenOpen(true);
-    setIsZoomed(false);
-  };
-
-  const closeFullscreen = () => {
-    setFullscreenOpen(false);
-    setIsZoomed(false);
-  };
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (!fullscreenOpen) return;
-      if (e.key === "Escape") closeFullscreen();
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [fullscreenOpen]);
 
   return (
     <div className="w-full" data-testid="deukchaebu-gallery">
@@ -117,8 +93,7 @@ export function DeukchaebuGallery() {
       )}
 
       <div 
-        className="bg-white rounded-none overflow-hidden cursor-pointer hover-elevate flex items-center justify-center py-4"
-        onClick={openFullscreen}
+        className="bg-white rounded-none overflow-hidden flex items-center justify-center py-4"
         data-testid="gallery-deukchae-page-1"
       >
         <img
@@ -128,45 +103,6 @@ export function DeukchaebuGallery() {
           style={{ maxWidth: '100%' }}
         />
       </div>
-
-      <Dialog open={fullscreenOpen} onOpenChange={() => closeFullscreen()}>
-        <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 bg-white dark:bg-gray-900 border-none">
-          <div className="relative w-full h-[90vh] flex items-center justify-center">
-            <Button
-              size="icon"
-              variant="ghost"
-              className="absolute top-2 right-2 z-20"
-              onClick={closeFullscreen}
-              data-testid="button-deukchae-fullscreen-close"
-            >
-              <X className="h-6 w-6" />
-            </Button>
-
-            <Button
-              size="icon"
-              variant="ghost"
-              className="absolute top-2 right-14 z-20"
-              onClick={() => setIsZoomed(!isZoomed)}
-              data-testid="button-deukchae-fullscreen-zoom"
-            >
-              {isZoomed ? <ZoomOut className="h-5 w-5" /> : <ZoomIn className="h-5 w-5" />}
-            </Button>
-
-            <div 
-              className={`transition-transform duration-300 ${isZoomed ? 'overflow-auto' : 'overflow-hidden'}`}
-              style={{ maxWidth: '100%', maxHeight: '100%' }}
-            >
-              <img
-                src={page1}
-                alt="득체부"
-                className={`transition-transform duration-300 ${isZoomed ? 'scale-150 cursor-move' : 'max-w-full object-contain cursor-zoom-in'}`}
-                onClick={() => !isZoomed && setIsZoomed(true)}
-                data-testid="img-deukchae-fullscreen"
-              />
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

@@ -75,9 +75,14 @@ export function TopBar() {
           ) : (
             <div className="flex items-center gap-2">
               <Button 
+                type="button"
                 variant="outline" 
                 size="sm"
-                onClick={() => setShowSignUpModal(true)}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setShowSignUpModal(true);
+                }}
                 className="gap-1.5"
                 data-testid="button-signup"
               >
@@ -85,6 +90,7 @@ export function TopBar() {
                 회원가입
               </Button>
               <Button 
+                type="button"
                 variant="default" 
                 size="sm"
                 onClick={handleLogin}

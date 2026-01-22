@@ -747,7 +747,7 @@ export default function Madang() {
               <img 
                 src={`/img/${calendarData.mansion.image}.jpg`}
                 alt={`${calendarData.mansion.mansion} 부적`}
-                className="max-w-[200px] max-h-[280px] object-contain border border-border rounded-lg shadow-lg bg-white"
+                className="max-w-[200px] max-h-[280px] object-contain bg-white"
               />
             </div>
           </div>

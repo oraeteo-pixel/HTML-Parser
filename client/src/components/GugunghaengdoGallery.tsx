@@ -58,7 +58,13 @@ export function GugunghaengdoGallery() {
     const hexagram64 = get64HexagramName(sogungDaegung.sogung, sogungDaegung.daegung);
     const mansion = getHwanggeuk28Mansion(hwanggeuk.year, hwanggeuk.month, hwanggeuk.day);
     const weekdayHanja = WEEKDAYS_HANJA[new Date().getDay()];
-    return { hwanggeuk, hwDayGanZhi, hwHourGanZhi, jeolguk: jeolgukData.name, sogungDaegung, hexagram64, mansion, weekdayHanja };
+    // 행로표 하이라이트 계산: 八之三 → 七天 row (index 6), 之三 col (index 1)
+    // day 값에서 천(天)과 일(日)을 계산
+    const hwDay = hwanggeuk.day;
+    const cheonIndex = Math.floor((hwDay - 1) / 9); // 0-indexed 천 (0=一天, 6=七天)
+    const dayIndex = (hwDay - 1) % 9; // 0-indexed 일 (0=之二, 1=之三, ...)
+    
+    return { hwanggeuk, hwDayGanZhi, hwHourGanZhi, jeolguk: jeolgukData.name, sogungDaegung, hexagram64, mansion, weekdayHanja, cheonIndex, dayIndex };
   }, [currentTime]);
 
   return (
@@ -166,27 +172,36 @@ export function GugunghaengdoGallery() {
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-xs md:text-sm">
             <tbody>
-              {HAENGNO_DATA.map((row, rowIndex) => (
-                <>
-                  <tr key={`${rowIndex}-cols`} className="border-b border-gray-300 dark:border-gray-600">
-                    <td className="border border-gray-300 dark:border-gray-600 px-1 py-1 text-center font-bold bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200" rowSpan={2}>
-                      {row.cheon}
-                    </td>
-                    {row.cols.map((col, colIndex) => (
-                      <td key={colIndex} className="border border-gray-300 dark:border-gray-600 px-1 py-1 text-center bg-gray-50 dark:bg-gray-700 text-gray-700 dark:text-gray-300">
-                        {col}
+              {HAENGNO_DATA.map((row, rowIndex) => {
+                const isCurrentRow = rowIndex === calendarData.cheonIndex;
+                return (
+                  <>
+                    <tr key={`${rowIndex}-cols`} className="border-b border-gray-300 dark:border-gray-600">
+                      <td className={`border border-gray-300 dark:border-gray-600 px-1 py-1 text-center font-bold ${isCurrentRow ? 'bg-yellow-200 dark:bg-yellow-700' : 'bg-gray-100 dark:bg-gray-800'} text-gray-800 dark:text-gray-200`} rowSpan={2}>
+                        {row.cheon}
                       </td>
-                    ))}
-                  </tr>
-                  <tr key={`${rowIndex}-meanings`} className="border-b border-gray-300 dark:border-gray-600">
-                    {row.meanings.map((meaning, meaningIndex) => (
-                      <td key={meaningIndex} className="border border-gray-300 dark:border-gray-600 px-1 py-1 text-center text-gray-800 dark:text-gray-200">
-                        {meaning}
-                      </td>
-                    ))}
-                  </tr>
-                </>
-              ))}
+                      {row.cols.map((col, colIndex) => {
+                        const isHighlighted = isCurrentRow && colIndex === calendarData.dayIndex;
+                        return (
+                          <td key={colIndex} className={`border border-gray-300 dark:border-gray-600 px-1 py-1 text-center ${isHighlighted ? 'bg-yellow-300 dark:bg-yellow-600 font-bold' : 'bg-gray-50 dark:bg-gray-700'} text-gray-700 dark:text-gray-300`}>
+                            {col}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                    <tr key={`${rowIndex}-meanings`} className="border-b border-gray-300 dark:border-gray-600">
+                      {row.meanings.map((meaning, meaningIndex) => {
+                        const isHighlighted = isCurrentRow && meaningIndex === calendarData.dayIndex;
+                        return (
+                          <td key={meaningIndex} className={`border border-gray-300 dark:border-gray-600 px-1 py-1 text-center ${isHighlighted ? 'bg-yellow-300 dark:bg-yellow-600 font-bold' : ''} text-gray-800 dark:text-gray-200`}>
+                            {meaning}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                  </>
+                );
+              })}
             </tbody>
           </table>
         </div>

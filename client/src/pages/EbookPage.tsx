@@ -17,7 +17,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { useSearch, useLocation } from "wouter";
-import { BookOpen, FileText, Download, Play, Pencil, MessageSquare, Trash2, ArrowUp, ArrowDown } from "lucide-react";
+import { BookOpen, FileText, Download, Play, Pencil, MessageSquare, Trash2, ArrowUp, ArrowDown, Reply } from "lucide-react";
 import type { Post, PageContent } from "@shared/schema";
 
 type PostWithAuthor = Post & { author: string; authorEmail: string | null; commentCount?: number };
@@ -637,13 +637,39 @@ export default function EbookPage() {
               </div>
             )}
             
-            {user && viewingEbook && (user.id === viewingEbook.post.authorId || user.isAdmin) && (
-              <div className="mt-4 pt-4 border-t flex justify-end gap-2">
+            {viewingEbook && (
+              <div className="mt-4 pt-4 border-t flex justify-end gap-1">
                 <Button
                   variant="ghost"
                   size="icon"
                   className="h-8 w-8 !text-muted-foreground hover:!text-foreground"
-                  onClick={() => { setViewingEbook(null); startEdit(viewingEbook.post); }}
+                  onClick={() => {
+                    if (!user) {
+                      toast({ title: "로그인이 필요합니다.", description: "답글을 작성하려면 로그인해 주세요." });
+                      return;
+                    }
+                    toast({ title: "답글 기능", description: "전자책 답글 기능은 준비 중입니다." });
+                  }}
+                  data-testid={`button-reply-ebook-dialog`}
+                >
+                  <Reply className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 !text-muted-foreground hover:!text-foreground"
+                  onClick={() => {
+                    if (!user) {
+                      toast({ title: "로그인이 필요합니다.", description: "수정하려면 로그인해 주세요." });
+                      return;
+                    }
+                    if (user.id !== viewingEbook.post.authorId && user.isAdmin !== 1) {
+                      toast({ title: "권한이 없습니다.", description: "본인의 글만 수정할 수 있습니다." });
+                      return;
+                    }
+                    setViewingEbook(null);
+                    startEdit(viewingEbook.post);
+                  }}
                   data-testid={`button-edit-ebook-dialog`}
                 >
                   <Pencil className="h-4 w-4" />
@@ -652,7 +678,18 @@ export default function EbookPage() {
                   variant="ghost"
                   size="icon"
                   className="h-8 w-8 !text-muted-foreground hover:!text-foreground"
-                  onClick={() => { setViewingEbook(null); handleDelete(viewingEbook.post); }}
+                  onClick={() => {
+                    if (!user) {
+                      toast({ title: "로그인이 필요합니다.", description: "삭제하려면 로그인해 주세요." });
+                      return;
+                    }
+                    if (user.id !== viewingEbook.post.authorId && user.isAdmin !== 1) {
+                      toast({ title: "권한이 없습니다.", description: "본인의 글만 삭제할 수 있습니다." });
+                      return;
+                    }
+                    setViewingEbook(null);
+                    handleDelete(viewingEbook.post);
+                  }}
                   data-testid={`button-delete-ebook-dialog`}
                 >
                   <Trash2 className="h-4 w-4" />

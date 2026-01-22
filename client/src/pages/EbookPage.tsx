@@ -567,28 +567,6 @@ export default function EbookPage() {
                         {post.content}
                       </p>
                     )}
-                    {user && (user.id === post.authorId || user.isAdmin) && (
-                      <div className="flex items-center gap-1 mt-2">
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="h-7 w-7 p-0"
-                          onClick={(e) => { e.stopPropagation(); startEdit(post); }}
-                          data-testid={`button-edit-ebook-${post.id}`}
-                        >
-                          <Pencil className="h-3.5 w-3.5" />
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="h-7 w-7 p-0 text-destructive hover:text-destructive"
-                          onClick={(e) => { e.stopPropagation(); handleDelete(post); }}
-                          data-testid={`button-delete-ebook-${post.id}`}
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
-                      </div>
-                    )}
                   </CardHeader>
                 </Card>
               );
@@ -656,6 +634,29 @@ export default function EbookPage() {
                     <p key={i}>{paragraph}</p>
                   ))}
                 </div>
+              </div>
+            )}
+            
+            {user && viewingEbook && (user.id === viewingEbook.post.authorId || user.isAdmin) && (
+              <div className="mt-4 pt-4 border-t flex justify-end gap-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 !text-muted-foreground hover:!text-foreground"
+                  onClick={() => { setViewingEbook(null); startEdit(viewingEbook.post); }}
+                  data-testid={`button-edit-ebook-dialog`}
+                >
+                  <Pencil className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 !text-muted-foreground hover:!text-foreground"
+                  onClick={() => { setViewingEbook(null); handleDelete(viewingEbook.post); }}
+                  data-testid={`button-delete-ebook-dialog`}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
               </div>
             )}
           </div>

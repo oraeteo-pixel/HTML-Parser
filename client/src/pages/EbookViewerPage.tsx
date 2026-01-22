@@ -399,112 +399,62 @@ export default function EbookViewerPage() {
               </div>
             )}
             
-            <div className="border-t pt-4 flex items-center justify-between gap-2 flex-wrap">
-              <p className="text-sm text-muted-foreground flex items-center gap-1 flex-wrap">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <button
-                      className="font-medium hover:underline cursor-pointer"
-                      data-testid={`ebook-author-${post.id}`}
-                    >
-                      {post.author}
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-2" align="start">
-                    <div className="flex flex-col gap-2">
-                      {user && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="justify-start"
-                          onClick={() => {
-                            setLocation(`/messages?to=${post.authorId}&name=${encodeURIComponent(post.author)}`);
-                          }}
-                          data-testid={`ebook-message-author-${post.id}`}
-                        >
-                          <Mail className="h-4 w-4 mr-2" />
-                          쪽지 보내기
-                        </Button>
-                      )}
-                      {post.authorEmail && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="justify-start"
-                          onClick={() => {
-                            window.location.href = `mailto:${post.authorEmail}?subject=[오리알터] ${post.author}님께`;
-                          }}
-                          data-testid={`ebook-email-author-${post.id}`}
-                        >
-                          <Mail className="h-4 w-4 mr-2" />
-                          이메일 보내기
-                        </Button>
-                      )}
-                    </div>
-                  </PopoverContent>
-                </Popover>
-                <span> · {formatDate(post.createdAt)}</span>
-              </p>
-              <div className="flex gap-1">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 !text-muted-foreground hover:!text-foreground"
-                  onClick={() => {
-                    if (!user) {
-                      toast({ title: "로그인이 필요합니다.", description: "답글을 작성하려면 로그인해 주세요." });
-                      return;
-                    }
-                    const commentBtn = document.querySelector(`[data-testid="button-new-comment-${post.id}"]`) as HTMLButtonElement;
-                    if (commentBtn) commentBtn.click();
-                  }}
-                  data-testid={`button-reply-ebook-${post.id}`}
-                >
-                  <Reply className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 !text-muted-foreground hover:!text-foreground"
-                  onClick={() => {
-                    if (!user) {
-                      toast({ title: "로그인이 필요합니다.", description: "수정하려면 로그인해 주세요." });
-                      return;
-                    }
-                    if (user.id !== post.authorId && user.isAdmin !== 1) {
-                      toast({ title: "권한이 없습니다.", description: "본인의 전자책만 수정할 수 있습니다." });
-                      return;
-                    }
-                    setLocation(`/ebook?edit=${post.id}`);
-                  }}
-                  data-testid={`button-edit-ebook-${post.id}`}
-                >
-                  <Pencil className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 !text-muted-foreground hover:!text-foreground"
-                  onClick={() => {
-                    if (!user) {
-                      toast({ title: "로그인이 필요합니다.", description: "삭제하려면 로그인해 주세요." });
-                      return;
-                    }
-                    if (user.id !== post.authorId && user.isAdmin !== 1) {
-                      toast({ title: "권한이 없습니다.", description: "본인의 전자책만 삭제할 수 있습니다." });
-                      return;
-                    }
-                    handleDelete();
-                  }}
-                  disabled={deletePost.isPending}
-                  data-testid={`button-delete-ebook-${post.id}`}
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
-              </div>
+            <div className="border-t pt-4 flex justify-end gap-1">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 !text-muted-foreground hover:!text-foreground"
+                onClick={() => {
+                  if (!user) {
+                    toast({ title: "로그인이 필요합니다.", description: "답글을 작성하려면 로그인해 주세요." });
+                    return;
+                  }
+                  toast({ title: "답글 기능", description: "전자책 답글 기능은 준비 중입니다." });
+                }}
+                data-testid={`button-reply-ebook-${post.id}`}
+              >
+                <Reply className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 !text-muted-foreground hover:!text-foreground"
+                onClick={() => {
+                  if (!user) {
+                    toast({ title: "로그인이 필요합니다.", description: "수정하려면 로그인해 주세요." });
+                    return;
+                  }
+                  if (user.id !== post.authorId && user.isAdmin !== 1) {
+                    toast({ title: "권한이 없습니다.", description: "본인의 전자책만 수정할 수 있습니다." });
+                    return;
+                  }
+                  setLocation(`/ebook?edit=${post.id}`);
+                }}
+                data-testid={`button-edit-ebook-${post.id}`}
+              >
+                <Pencil className="h-4 w-4" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 !text-muted-foreground hover:!text-foreground"
+                onClick={() => {
+                  if (!user) {
+                    toast({ title: "로그인이 필요합니다.", description: "삭제하려면 로그인해 주세요." });
+                    return;
+                  }
+                  if (user.id !== post.authorId && user.isAdmin !== 1) {
+                    toast({ title: "권한이 없습니다.", description: "본인의 전자책만 삭제할 수 있습니다." });
+                    return;
+                  }
+                  handleDelete();
+                }}
+                disabled={deletePost.isPending}
+                data-testid={`button-delete-ebook-${post.id}`}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
             </div>
-            
-            <CommentSection postId={post.id} user={user} />
           </Card>
         </div>
       </main>

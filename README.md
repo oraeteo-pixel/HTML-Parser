@@ -1,6 +1,6 @@
 # 오래
 <p align="center">
-  <img src="mk_8g.png" width="300" alt="HTML-Parser Logo">
+  <img src="mk_8g.png" width="50" alt="HTML-Parser Logo">
 </p>
 
 Repository for https://replit.com/@oraeteo/HTML-Parser

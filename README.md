@@ -22,6 +22,3 @@ Repository for https://replit.com/@oraeteo/HTML-Parser
 
 ## 🚀 시작하기
 
-<p align="center">
-  <img src="mk_8g.png" width="300" alt="HTML-Parser Logo">
-</p>

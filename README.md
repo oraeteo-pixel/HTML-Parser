@@ -1,4 +1,8 @@
-# HTML-Parser
+# 오래
+<p align="center">
+  <img src="mk_8g.png" width="300" alt="HTML-Parser Logo">
+</p>
+
 Repository for https://replit.com/@oraeteo/HTML-Parser
 # ☀️ HTML-Parser: 태양과 달을 품은 순환의 황극력 🌙
 
@@ -17,10 +21,7 @@ Repository for https://replit.com/@oraeteo/HTML-Parser
 - **음양의 조화**: 정적 페이지와 동적 요소 사이의 균형 잡힌 파싱을 지원합니다.
 
 ## 🚀 시작하기
-```bash
-# 황극력을 깨우는 첫 단계
-npm install
-node index.js
+
 <p align="center">
   <img src="mk_8g.png" width="300" alt="HTML-Parser Logo">
 </p>

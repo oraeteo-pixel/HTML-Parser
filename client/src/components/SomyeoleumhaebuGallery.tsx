@@ -140,18 +140,22 @@ export function SomyeoleumhaebuGallery() {
         </div>
       </div>
 
-      {/* 28장 부적 표시 */}
-      {!calendarData.mansion.isZunkong && (
-        <div 
-          className={`overflow-hidden transition-all duration-300 ease-in-out talisman-box rounded-lg ${showTalisman ? 'max-h-[200px] opacity-100 p-2 my-1' : 'max-h-0 opacity-0 p-0 my-0'}`}
-        >
-          <div className="flex flex-col items-center">
-            <img 
-              src={`/img/${calendarData.mansion.image}.jpg`}
-              alt={`${calendarData.mansion.mansion} 부적`}
-              className="max-w-[100px] max-h-[140px] object-contain border border-border rounded-md shadow-md bg-white"
-            />
-          </div>
+      {showTalisman && (
+        <div className="p-3 rounded-md mansion-info-panel my-2">
+          {calendarData.mansion.isZunkong ? (
+            <div className="inline-block px-2 py-1 border border-gray-400 dark:border-gray-500 rounded text-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800">
+              {calendarData.mansion.mansion}
+            </div>
+          ) : (
+            <div className="inline-block p-2 border border-gray-400 dark:border-gray-500 rounded bg-white dark:bg-gray-800">
+              <img 
+                src={`/img/${calendarData.mansion.image}.jpg`}
+                alt={`${calendarData.mansion.general}`}
+                className="max-w-[150px] max-h-[200px] object-contain"
+              />
+              <div className="text-center mt-1 text-sm text-gray-700 dark:text-gray-300">{calendarData.mansion.general}</div>
+            </div>
+          )}
         </div>
       )}
 

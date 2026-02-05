@@ -744,27 +744,26 @@ export default function Madang() {
                 {calendarData.mansion.isZunkong ? calendarData.mansion.mansion : `${calendarData.mansion.mansion}, ${calendarData.mansion.general}`}
               </button>
             </div>
-          </div>
-        </div>
-
-        {showTalisman && (
-          <div className="p-3 rounded-md mansion-info-panel my-2">
-            {calendarData.mansion.isZunkong ? (
-              <div className="inline-block px-2 py-1 border border-gray-400 dark:border-gray-500 rounded text-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800">
-                {calendarData.mansion.mansion}
-              </div>
-            ) : (
-              <div className="inline-block p-2 border border-gray-400 dark:border-gray-500 rounded bg-white dark:bg-gray-800">
-                <img 
-                  src={`/img/${calendarData.mansion.image}.jpg`}
-                  alt={`${calendarData.mansion.general}`}
-                  className="max-w-[150px] max-h-[200px] object-contain"
-                />
-                <div className="text-center mt-1 text-sm text-gray-700 dark:text-gray-300">{calendarData.mansion.general}</div>
+            {showTalisman && (
+              <div className="mt-2 p-3 rounded-md mansion-info-panel">
+                {calendarData.mansion.isZunkong ? (
+                  <div className="inline-block px-2 py-1 border border-gray-400 dark:border-gray-500 rounded text-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800">
+                    {calendarData.mansion.mansion}
+                  </div>
+                ) : (
+                  <div className="inline-block p-2 border border-gray-400 dark:border-gray-500 rounded bg-white dark:bg-gray-800">
+                    <img 
+                      src={`/img/${calendarData.mansion.image}.jpg`}
+                      alt={`${calendarData.mansion.general}`}
+                      className="max-w-[150px] max-h-[200px] object-contain"
+                    />
+                    <div className="text-center mt-1 text-sm text-gray-700 dark:text-gray-300">{calendarData.mansion.general}</div>
+                  </div>
+                )}
               </div>
             )}
           </div>
-        )}
+        </div>
 
         <Card className="p-6 mb-4 bg-gradient-to-r from-amber-50/80 to-orange-50/80 dark:from-amber-900/20 dark:to-orange-900/20">
           <div className="flex justify-center items-center gap-6">

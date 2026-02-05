@@ -89,27 +89,26 @@ export function GugunghaengdoGallery() {
               {calendarData.mansion.isZunkong ? calendarData.mansion.mansion : `${calendarData.mansion.mansion}, ${calendarData.mansion.general}`}
             </button>
           </div>
-        </div>
-      </div>
-
-      {showTalisman && (
-        <div className="p-3 rounded-md mansion-info-panel my-2">
-          {calendarData.mansion.isZunkong ? (
-            <div className="inline-block px-2 py-1 border border-gray-400 dark:border-gray-500 rounded text-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800">
-              {calendarData.mansion.mansion}
-            </div>
-          ) : (
-            <div className="inline-block p-2 border border-gray-400 dark:border-gray-500 rounded bg-white dark:bg-gray-800">
-              <img 
-                src={`/img/${calendarData.mansion.image}.jpg`}
-                alt={`${calendarData.mansion.general}`}
-                className="max-w-[150px] max-h-[200px] object-contain"
-              />
-              <div className="text-center mt-1 text-sm text-gray-700 dark:text-gray-300">{calendarData.mansion.general}</div>
+          {showTalisman && (
+            <div className="mt-2 p-3 rounded-md mansion-info-panel">
+              {calendarData.mansion.isZunkong ? (
+                <div className="inline-block px-2 py-1 border border-gray-400 dark:border-gray-500 rounded text-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800">
+                  {calendarData.mansion.mansion}
+                </div>
+              ) : (
+                <div className="inline-block p-2 border border-gray-400 dark:border-gray-500 rounded bg-white dark:bg-gray-800">
+                  <img 
+                    src={`/img/${calendarData.mansion.image}.jpg`}
+                    alt={`${calendarData.mansion.general}`}
+                    className="max-w-[150px] max-h-[200px] object-contain"
+                  />
+                  <div className="text-center mt-1 text-sm text-gray-700 dark:text-gray-300">{calendarData.mansion.general}</div>
+                </div>
+              )}
             </div>
           )}
         </div>
-      )}
+      </div>
 
       {/* 팔괘그림 + 대궁소궁 구궁 행로표 (나란히) */}
       <div className="flex flex-col md:flex-row gap-1 mb-4">

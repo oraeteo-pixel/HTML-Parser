@@ -890,8 +890,21 @@ export function getSogungDaegung(date: Date): {
   const minutesInSlot = ((minutesFromEpoch % 80) + 80) % 80;
   const remainingMinutes = 80 - minutesInSlot;
   
-  // 중궁 여부 (position 6)
-  const isZungung = position === 6;
+  // 존궁(尊宮) 여부: 황극력 12월 30일 오후 ~ 12월 31일 전체
+  // 23:00 이후는 다음 날로 계산
+  const hours = koreanTime.getHours();
+  const adjustedDate = hours >= 23 
+    ? new Date(koreanTime.getTime() + 24 * 60 * 60 * 1000) 
+    : koreanTime;
+  const hwDate = getHwanggeukDate(
+    adjustedDate.getFullYear(), 
+    adjustedDate.getMonth() + 1, 
+    adjustedDate.getDate()
+  );
+  
+  // 12월 30일 오후(PM)부터 12월 31일까지 = 존궁
+  const isJongung = (hwDate.month === 12 && hwDate.day === 30 && !isAM) || 
+                    (hwDate.month === 12 && hwDate.day === 31);
   
   return { 
     sogung, 
@@ -901,7 +914,7 @@ export function getSogungDaegung(date: Date): {
     timeSlot: Math.min(18, Math.max(1, timeSlot)), 
     isAM, 
     remainingMinutes: Math.max(0, Math.min(80, remainingMinutes)),
-    isZungung
+    isZungung: isJongung
   };
 }
 

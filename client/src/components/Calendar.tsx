@@ -129,6 +129,7 @@ export function Calendar() {
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
   const [showDayDetail, setShowDayDetail] = useState(false);
   const [showTalisman, setShowTalisman] = useState(false);
+  const [showMansionInfo, setShowMansionInfo] = useState(false);
   const [selectedHexagram, setSelectedHexagram] = useState<{ sogung: number; daegung: number } | null>(null);
 
   const hwMonthData = useMemo(() => {
@@ -584,15 +585,22 @@ export function Calendar() {
                   <span className="font-semibold text-gray-600 dark:text-gray-300">&lt;소궁,대궁&gt;{infoSogungDaegung.isZungung ? "존궁" : `${infoSogungDaegung.sogung},${infoSogungDaegung.daegung}`}{(() => { const hex = get64HexagramName(infoSogungDaegung.sogung, infoSogungDaegung.daegung); return hex ? ` ${hex.fullName}` : ""; })()}</span>
                   <button 
                     className="slim-badge-cyan cursor-pointer"
-                    onClick={(e) => { e.stopPropagation(); setShowTalisman(!showTalisman); }}
+                    onClick={(e) => { e.stopPropagation(); setShowMansionInfo(!showMansionInfo); }}
                     data-testid="button-mansion-toggle"
                   >
                     {infoMansion.isZunkong ? infoMansion.mansion : `${infoMansion.mansion}, ${infoMansion.general}`}
                   </button>
                 </div>
+                {showMansionInfo && (
+                  <div className="mt-2 p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-800">
+                    <div className="inline-block px-2 py-1 border border-gray-400 dark:border-gray-500 rounded text-sm text-gray-700 dark:text-gray-300">
+                      {infoMansion.isZunkong ? infoMansion.mansion : `${infoMansion.mansion}, ${infoMansion.general}`}
+                    </div>
+                  </div>
+                )}
               </div>
               {/* PC: 1 line */}
-              <div className="hidden sm:flex items-center justify-between gap-2">
+              <div className="hidden sm:flex flex-col gap-2">
                 <div className="flex items-center gap-1.5 text-base">
                   <span className="font-bold text-gray-700 dark:text-gray-200">
                     {infoHwanggeuk.year}.{infoHwanggeuk.month}.{infoHwanggeuk.day}
@@ -607,12 +615,19 @@ export function Calendar() {
                   <span className="font-semibold text-gray-600 dark:text-gray-300">&lt;소궁,대궁&gt;{infoSogungDaegung.isZungung ? "존궁" : `${infoSogungDaegung.sogung},${infoSogungDaegung.daegung}`}{(() => { const hex = get64HexagramName(infoSogungDaegung.sogung, infoSogungDaegung.daegung); return hex ? ` ${hex.fullName}` : ""; })()}</span>
                   <button 
                     className="slim-badge-cyan cursor-pointer"
-                    onClick={(e) => { e.stopPropagation(); setShowTalisman(!showTalisman); }}
+                    onClick={(e) => { e.stopPropagation(); setShowMansionInfo(!showMansionInfo); }}
                     data-testid="button-mansion-toggle-pc"
                   >
                     {infoMansion.isZunkong ? infoMansion.mansion : `${infoMansion.mansion}, ${infoMansion.general}`}
                   </button>
                 </div>
+                {showMansionInfo && (
+                  <div className="p-2 border border-gray-300 dark:border-gray-600 rounded-md bg-gray-50 dark:bg-gray-800">
+                    <div className="inline-block px-2 py-1 border border-gray-400 dark:border-gray-500 rounded text-sm text-gray-700 dark:text-gray-300">
+                      {infoMansion.isZunkong ? infoMansion.mansion : `${infoMansion.mansion}, ${infoMansion.general}`}
+                    </div>
+                  </div>
+                )}
               </div>
             </>
           ) : (
@@ -769,7 +784,7 @@ export function Calendar() {
                 <div className="ganji-box mb-1">{dayData.dayGanZhi}</div>
                 <div className="flex-1 flex flex-col justify-end space-y-0.5">
                   <div className="trigram-text">{cellTrigram.trigram}</div>
-                  <div className="mansion-info">{cellMansion.mansion},{cellMansion.general}</div>
+                  <div className="mansion-info">{cellMansion.isZunkong ? cellMansion.mansion : `${cellMansion.mansion},${cellMansion.general}`}</div>
                   {cell81.isJongungAM && cell81.isJongungPM ? (
                     <>
                       <div className="palace-81-name text-xs font-bold text-amber-600 dark:text-amber-400">尊宮</div>
@@ -848,7 +863,7 @@ export function Calendar() {
                 
                 <div className="flex-1 flex flex-col justify-end space-y-0.5">
                   <div className="trigram-text">{cellTrigram.trigram}</div>
-                  <div className="mansion-info">{cellMansion.mansion},{cellMansion.general}</div>
+                  <div className="mansion-info">{cellMansion.isZunkong ? cellMansion.mansion : `${cellMansion.mansion},${cellMansion.general}`}</div>
                   {cell81.isTransitionDay ? (
                     <>
                       <div className="palace-81-name text-xs font-bold text-amber-600 dark:text-amber-400">
@@ -950,7 +965,7 @@ export function Calendar() {
                 <div className="ganji-box mb-1">{dayData.dayGanZhi}</div>
                 <div className="flex-1 flex flex-col justify-end space-y-0.5">
                   <div className="trigram-text">{cellTrigram.trigram}</div>
-                  <div className="mansion-info">{cellMansion.mansion},{cellMansion.general}</div>
+                  <div className="mansion-info">{cellMansion.isZunkong ? cellMansion.mansion : `${cellMansion.mansion},${cellMansion.general}`}</div>
                   {cell81.isJongungAM && cell81.isJongungPM ? (
                     <>
                       <div className="palace-81-name text-xs font-bold text-amber-600 dark:text-amber-400">尊宮</div>

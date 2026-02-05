@@ -592,7 +592,7 @@ export function Calendar() {
                   </button>
                 </div>
                 {showMansionInfo && (
-                  <div className="mt-2 p-3 rounded-md bg-gray-300 dark:bg-gray-700">
+                  <div className="mt-2 p-3 rounded-md mansion-info-panel">
                     {infoMansion.isZunkong ? (
                       <div className="inline-block px-2 py-1 border border-gray-400 dark:border-gray-500 rounded text-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800">
                         {infoMansion.mansion}
@@ -633,7 +633,7 @@ export function Calendar() {
                   </button>
                 </div>
                 {showMansionInfo && (
-                  <div className="p-3 rounded-md bg-gray-300 dark:bg-gray-700">
+                  <div className="p-3 rounded-md mansion-info-panel">
                     {infoMansion.isZunkong ? (
                       <div className="inline-block px-2 py-1 border border-gray-400 dark:border-gray-500 rounded text-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800">
                         {infoMansion.mansion}

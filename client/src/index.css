@@ -407,7 +407,8 @@ html, body {
 }
 
 .slim-info-bar {
-  background: #e8e8e8;
+  --slim-info-bg: #e8e8e8;
+  background: var(--slim-info-bg);
   border: 1px solid #d0d0d0;
   padding: 0.35rem 0.5rem;
   font-family: var(--font-korean);
@@ -422,8 +423,17 @@ html, body {
 }
 
 .dark .slim-info-bar {
-  background: hsl(0 0% 25%);
+  --slim-info-bg: hsl(0 0% 25%);
+  background: var(--slim-info-bg);
   border: 1px solid hsl(0 0% 35%);
+}
+
+.mansion-info-panel {
+  background: #e8e8e8;
+}
+
+.dark .mansion-info-panel {
+  background: hsl(0 0% 25%);
 }
 
 .talisman-box {

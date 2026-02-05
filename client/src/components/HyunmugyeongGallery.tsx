@@ -146,20 +146,20 @@ export function HyunmugyeongGallery() {
             </button>
           </div>
           {showTalisman && (
-            <div className="mt-2">
+            <div className="w-full mt-2">
               {calendarData.mansion.isZunkong ? (
-                <div className="inline-block px-2 py-1 border border-gray-400 dark:border-gray-500 rounded text-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800">
+                <span className="inline-block px-2 py-1 border border-gray-400 dark:border-gray-500 rounded text-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800">
                   {calendarData.mansion.mansion}
-                </div>
+                </span>
               ) : (
-                <div className="inline-block p-2 border border-gray-400 dark:border-gray-500 rounded bg-white dark:bg-gray-800">
+                <span className="inline-block p-2 border border-gray-400 dark:border-gray-500 rounded bg-white dark:bg-gray-800">
                   <img 
                     src={`/img/${calendarData.mansion.image}.jpg`}
                     alt={`${calendarData.mansion.general}`}
                     className="max-w-[150px] max-h-[200px] object-contain"
                   />
-                  <div className="text-center mt-1 text-sm text-gray-700 dark:text-gray-300">{calendarData.mansion.general}</div>
-                </div>
+                  <span className="block text-center mt-1 text-sm text-gray-700 dark:text-gray-300">{calendarData.mansion.general}</span>
+                </span>
               )}
             </div>
           )}

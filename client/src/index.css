@@ -323,23 +323,19 @@ html, body {
 }
 
 .ganji-box {
-  @apply px-0.5 py-0 rounded text-center mx-auto font-bold;
-  font-size: clamp(0.5rem, 2vw, 0.7rem);
-  background: linear-gradient(135deg, hsl(var(--orae-slate)) 0%, hsl(var(--orae-slate-light)) 100%);
-  color: white;
+  @apply text-center mx-auto font-bold;
+  font-size: clamp(0.6rem, 2.5vw, 0.85rem);
+  color: #ea580c;
 }
 
 @media (min-width: 640px) {
   .ganji-box {
-    @apply px-1 py-0.5;
-    font-size: clamp(0.625rem, 2.5vw, 0.875rem);
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    font-size: clamp(0.75rem, 3vw, 1rem);
   }
 }
 
 .dark .ganji-box {
-  background: linear-gradient(135deg, hsl(var(--orae-slate)) 0%, hsl(var(--orae-slate-light)) 100%);
-  color: white;
+  color: #fb923c;
 }
 
 .trigram-text {

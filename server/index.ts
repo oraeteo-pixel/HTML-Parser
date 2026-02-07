@@ -6,7 +6,7 @@ import path from "path";
 
 const app = express();
 
-app.use('/img', express.static(path.join(process.cwd(), 'attached_assets/img')));
+app.use('/img', express.static(path.join(process.cwd(), 'client/src/assets/img')));
 const httpServer = createServer(app);
 
 declare module "http" {

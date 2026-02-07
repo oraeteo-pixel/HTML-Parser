@@ -1,0 +1,395 @@
+
+	<div id="calDate" class="round5">
+			2025.10.1 月		(乙巳年 壬午月 辛酉日)
+			建和節局&nbsp;
+<소궁,대궁>8,4 현재시각 丙子時		
+		<button class="btn btn-info" id="btn28j">紫, 万修</button>		
+		<div id="twjang" class="round5"><img src='http://orae.com/img/28j_mansu.jpg' /><h3>紫万修</h3><h3>陽氣之理</h3></div>
+	</div>
+
+	<table cellspacing="0" cellpadding="0" id='calTable0' align='center'>
+		<tr align="center">
+			<td class="padd5"><a class="btn btn-default btn-xs" href="http://orae.com/_calendar/?cal=hw&Dcode=2024-10-1"><i class="fa fa-chevron-left"></i></a></td>
+			<td><select class="form-control" name="calY" onChange="window.open(value,'_self');">
+		<script>
+		for(y=1989; y<=2108; y++){
+			s = "";
+			if(y=='2025')	s = " selected";
+			document.write("<option value='http://orae.com/_calendar/?cal=hw&amp;Dcode="+y+"-10-1'"+s+">" + y + "년</option>");
+		}
+		</script></select></td>
+			<td class="padd5"><a class="btn btn-default btn-xs" href="http://orae.com/_calendar/?cal=hw&Dcode=2026-10-1"><i class="fa fa-chevron-right"></i></a></td>
+			<td class="padd5"><a class="btn btn-default btn-xs" href='/_calendar/?cal=hw&Dcode=2025-8-23' id='today'>오늘</a></td>
+			<td class="padd5"><a class="btn btn-default btn-xs" href="http://orae.com/_calendar/?cal=hw&Dcode=2025-9-1"><i class="fa fa-chevron-left"></i></a></td>
+			<td><select class="form-control" name="calM" onChange="window.open(value,'_self');">
+		<script>
+		for(n=1; n<=12; n++){
+			s = "";
+			if(n=='10') s = " selected";
+			document.write("<option value='http://orae.com/_calendar/?cal=hw&amp;Dcode=2025-"+n+"-1'"+s+">" + n + "월</option>");
+		}
+		</script></select></td>
+			<td class="padd5"><a class="btn btn-default btn-xs" href="http://orae.com/_calendar/?cal=hw&Dcode=2025-11-1"><i class="fa fa-chevron-right"></i></a></td>
+		</tr>
+	</table>
+		<div id="calendarBox">
+		<table id="calTable"  class="table table-bordered">
+			<thead>
+				<tr class="warning">
+					<th>일</th><th>월</th><th>화</th><th>수</th><th>목</th><th>금</th><th>토</th>
+				</tr>
+			</thead>
+			<tbody>
+<tr>					<td class="calTd active" rel="2025-9-30-hw">
+						<span class='sDay noneDay'>30</span>
+						<div class='sDay round5'>15</div>
+						<div class='hwganji round5'>庚申</div>
+						<div class='etcR'>
+							<strong class='Cnavy'>坤</strong><br />
+							參, 蓋延<br />
+							分<br />八之八						</div>
+					</td>
+
+					<td class="calTd " rel="2025-10-1-hw">
+						<span class='sDay fwB'>1</span>
+						<div class='sDay round5'>16</div>
+						<div class='hwganjiSel round5'>辛酉</div>
+						<div class='etcR'>
+							<strong class='Cnavy'>坎</strong><br />
+							紫, 万修<br />
+							分.誦<br />八之八.八之九						</div>
+					</td>
+
+					<td class="calTd " rel="2025-10-2-hw">
+						<span class='sDay fwB'>2</span>
+						<div class='sDay round5'>17</div>
+						<div class='hwganji round5'>壬戌</div>
+						<div class='etcR'>
+							<strong class='Cnavy'>兌</strong><br />
+							畢, 景丹<br />
+							誦<br />八之九						</div>
+					</td>
+
+					<td class="calTd " rel="2025-10-3-hw">
+						<span class='sDay fwB'>3</span>
+						<div class='sDay round5'>18</div>
+						<div class='hwganji round5'>癸亥</div>
+						<div class='etcR'>
+							<strong class='Cnavy'>震</strong><br />
+							昴, 李忠<br />
+							誦<br />八之九						</div>
+					</td>
+
+					<td class="calTd " rel="2025-10-4-hw">
+						<span class='sDay fwB'>4</span>
+						<div class='sDay round5'>19</div>
+						<div class='hwganji round5'>甲子</div>
+						<div class='etcR'>
+							<strong class='Cnavy'>中</strong><br />
+							胃, 祭遵<br />
+							誦<br />八之九						</div>
+					</td>
+
+					<td class="calTd " rel="2025-10-5-hw">
+						<span class='sDay fwB'>5</span>
+						<div class='sDay round5'>20</div>
+						<div class='hwganji round5'>乙丑</div>
+						<div class='etcR'>
+							<strong class='Cnavy'>巽</strong><br />
+							婁, 任光<br />
+							誦<br />八之九						</div>
+					</td>
+
+					<td class="calTd " rel="2025-10-6-hw">
+						<span class='sDay fwB'>6</span>
+						<div class='sDay round5'>21</div>
+						<div class='hwganji round5'>丙寅</div>
+						<div class='etcR'>
+							<strong class='Cnavy'>艮</strong><br />
+							奎, 朱佑<br />
+							收<br />八之十						</div>
+					</td>
+
+<tr>					<td class="calTd " rel="2025-10-7-hw">
+						<span class='sDay fwB'>7</span>
+						<div class='sDay round5'>22</div>
+						<div class='hwganji round5'>丁卯</div>
+						<div class='etcR'>
+							<strong class='Cnavy'>離</strong><br />
+							壁, 王覇<br />
+							收<br />八之十						</div>
+					</td>
+
+					<td class="calTd " rel="2025-10-8-hw">
+						<span class='sDay fwB'>8</span>
+						<div class='sDay round5'>23</div>
+						<div class='hwganji round5'>戊辰</div>
+						<div class='etcR'>
+							<strong class='Cnavy'>乾</strong><br />
+							室, 馮異<br />
+							收<br />八之十						</div>
+					</td>
+
+					<td class="calTd " rel="2025-10-9-hw">
+						<span class='sDay fwB'>9</span>
+						<div class='sDay round5'>24</div>
+						<div class='hwganji round5'>己巳</div>
+						<div class='etcR'>
+							<strong class='Cnavy'>中</strong><br />
+							危, 堅鐔<br />
+							收<br />八之十						</div>
+					</td>
+
+					<td class="calTd " rel="2025-10-10-hw">
+						<span class='sDay fwB'>10</span>
+						<div class='sDay round5'>25</div>
+						<div class='hwganji round5'>庚午</div>
+						<div class='etcR'>
+							<strong class='Cnavy'>坤</strong><br />
+							虛, 岑膨<br />
+							收.實<br />八之十.九之二						</div>
+					</td>
+
+					<td class="calTd " rel="2025-10-11-hw">
+						<span class='sDay fwB'>11</span>
+						<div class='sDay round5'>26</div>
+						<div class='hwganji round5'>辛未</div>
+						<div class='etcR'>
+							<strong class='Cnavy'>坎</strong><br />
+							女, 傅俊<br />
+							實<br />九之二						</div>
+					</td>
+
+					<td class="calTd " rel="2025-10-12-hw">
+						<span class='sDay fwB'>12</span>
+						<div class='sDay round5'>27</div>
+						<div class='hwganji round5'>壬申</div>
+						<div class='etcR'>
+							<strong class='Cnavy'>兌</strong><br />
+							牛, 寇恂<br />
+							實<br />九之二						</div>
+					</td>
+
+					<td class="calTd " rel="2025-10-13-hw">
+						<span class='sDay fwB'>13</span>
+						<div class='sDay round5'>28</div>
+						<div class='hwganji round5'>癸酉</div>
+						<div class='etcR'>
+							<strong class='Cnavy'>震</strong><br />
+							斗, 杜茂<br />
+							實<br />九之二						</div>
+					</td>
+
+<tr>					<td class="calTd " rel="2025-10-14-hw">
+						<span class='sDay fwB'>14</span>
+						<div class='sDaySel round5'><b>3.1</b></div>
+						<div class='hwganji round5'>甲戌</div>
+						<div class='etcR'>
+							<strong class='Cnavy'>中</strong><br />
+							箕, 耿弇<br />
+							實<br />九之二						</div>
+					</td>
+
+					<td class="calTd " rel="2025-10-15-hw">
+						<span class='sDay fwB'>15</span>
+						<div class='sDay round5'>2</div>
+						<div class='hwganji round5'>乙亥</div>
+						<div class='etcR'>
+							<strong class='Cnavy'>巽</strong><br />
+							尾, 陣俊<br />
+							賓<br />九之三						</div>
+					</td>
+
+					<td class="calTd " rel="2025-10-16-hw">
+						<span class='sDay fwB'>16</span>
+						<div class='sDay round5'>3</div>
+						<div class='hwganji round5'>丙子</div>
+						<div class='etcR'>
+							<strong class='Cnavy'>艮</strong><br />
+							心, 賈復<br />
+							賓<br />九之三						</div>
+					</td>
+
+					<td class="calTd " rel="2025-10-17-hw">
+						<span class='sDay fwB'>17</span>
+						<div class='sDay round5'>4</div>
+						<div class='hwganji round5'>丁丑</div>
+						<div class='etcR'>
+							<strong class='Cnavy'>離</strong><br />
+							房, 王梁<br />
+							賓<br />九之三						</div>
+					</td>
+
+					<td class="calTd " rel="2025-10-18-hw">
+						<span class='sDay fwB'>18</span>
+						<div class='sDay round5'>5</div>
+						<div class='hwganji round5'>戊寅</div>
+						<div class='etcR'>
+							<strong class='Cnavy'>乾</strong><br />
+							氐, 吳漢<br />
+							賓<br />九之三						</div>
+					</td>
+
+					<td class="calTd " rel="2025-10-19-hw">
+						<span class='sDay fwB'>19</span>
+						<div class='sDay round5'>6</div>
+						<div class='hwganji round5'>己卯</div>
+						<div class='etcR'>
+							<strong class='Cnavy'>中</strong><br />
+							中, 星宿尊空<br />
+							賓.危<br />九之三.九之四						</div>
+					</td>
+
+					<td class="calTd " rel="2025-10-20-hw">
+						<span class='sDay fwB'>20</span>
+						<div class='sDay round5'>7</div>
+						<div class='hwganji round5'>庚辰</div>
+						<div class='etcR'>
+							<strong class='Cnavy'>坤</strong><br />
+							中, 星宿尊空<br />
+							危<br />九之四						</div>
+					</td>
+
+<tr>					<td class="calTd " rel="2025-10-21-hw">
+						<span class='sDay fwB'>21</span>
+						<div class='sDay round5'>8</div>
+						<div class='hwganji round5'>辛巳</div>
+						<div class='etcR'>
+							<strong class='Cnavy'>坎</strong><br />
+							亢, 馬成<br />
+							危<br />九之四						</div>
+					</td>
+
+					<td class="calTd " rel="2025-10-22-hw">
+						<span class='sDay fwB'>22</span>
+						<div class='sDay round5'>9</div>
+						<div class='hwganji round5'>壬午</div>
+						<div class='etcR'>
+							<strong class='Cnavy'>兌</strong><br />
+							角, 鄧禹<br />
+							危<br />九之四						</div>
+					</td>
+
+					<td class="calTd " rel="2025-10-23-hw">
+						<span class='sDay fwB'>23</span>
+						<div class='sDay round5'>10</div>
+						<div class='hwganji round5'>癸未</div>
+						<div class='etcR'>
+							<strong class='Cnavy'>震</strong><br />
+							軫, 劉隆<br />
+							危<br />九之四						</div>
+					</td>
+
+					<td class="calTd " rel="2025-10-24-hw">
+						<span class='sDay fwB'>24</span>
+						<div class='sDay round5'>11</div>
+						<div class='hwganji round5'>甲申</div>
+						<div class='etcR'>
+							<strong class='Cnavy'>中</strong><br />
+							翼, 馬武<br />
+							堅<br />九之五						</div>
+					</td>
+
+					<td class="calTd " rel="2025-10-25-hw">
+						<span class='sDay fwB'>25</span>
+						<div class='sDay round5'>12</div>
+						<div class='hwganji round5'>乙酉</div>
+						<div class='etcR'>
+							<strong class='Cnavy'>巽</strong><br />
+							張, 藏宮<br />
+							堅<br />九之五						</div>
+					</td>
+
+					<td class="calTd " rel="2025-10-26-hw">
+						<span class='sDay fwB'>26</span>
+						<div class='sDay round5'>13</div>
+						<div class='hwganji round5'>丙戌</div>
+						<div class='etcR'>
+							<strong class='Cnavy'>艮</strong><br />
+							星, 耿純<br />
+							堅<br />九之五						</div>
+					</td>
+
+					<td class="calTd " rel="2025-10-27-hw">
+						<span class='sDay fwB'>27</span>
+						<div class='sDay round5'>14</div>
+						<div class='hwganji round5'>丁亥</div>
+						<div class='etcR'>
+							<strong class='Cnavy'>離</strong><br />
+							柳, 劉植<br />
+							堅<br />九之五						</div>
+					</td>
+
+<tr>					<td class="calTd " rel="2025-10-28-hw">
+						<span class='sDay fwB'>28</span>
+						<div class='sDay round5'>15</div>
+						<div class='hwganji round5'>戊子</div>
+						<div class='etcR'>
+							<strong class='Cnavy'>乾</strong><br />
+							鬼, 銚期<br />
+							堅.革<br />九之五.九之六						</div>
+					</td>
+
+					<td class="calTd " rel="2025-10-29-hw">
+						<span class='sDay fwB'>29</span>
+						<div class='sDay round5'>16</div>
+						<div class='hwganji round5'>己丑</div>
+						<div class='etcR'>
+							<strong class='Cnavy'>中</strong><br />
+							井, 邳肜<br />
+							革<br />九之六						</div>
+					</td>
+
+					<td class="calTd " rel="2025-10-30-hw">
+						<span class='sDay fwB'>30</span>
+						<div class='sDay round5'>17</div>
+						<div class='hwganji round5'>庚寅</div>
+						<div class='etcR'>
+							<strong class='Cnavy'>坤</strong><br />
+							參, 蓋延<br />
+							革<br />九之六						</div>
+					</td>
+
+					<td class="calTd " rel="2025-10-31-hw">
+						<span class='sDay fwB'>31</span>
+						<div class='sDay round5'>18</div>
+						<div class='hwganji round5'>辛卯</div>
+						<div class='etcR'>
+							<strong class='Cnavy'>坎</strong><br />
+							觜, 万修<br />
+							革<br />九之六						</div>
+					</td>
+
+					<td class="calTd active" rel="2025-11-1-hw">
+						<span class='sDay noneDay'>1</span>
+						<div class='sDay round5'>19</div>
+						<div class='hwganji round5'>壬辰</div>
+						<div class='etcR'>
+							<strong class='Cnavy'>兌</strong><br />
+							畢, 景丹<br />
+							革<br />九之六						</div>
+					</td>
+
+					<td class="calTd active" rel="2025-11-2-hw">
+						<span class='sDay noneDay'>2</span>
+						<div class='sDay round5'>20</div>
+						<div class='hwganji round5'>癸巳</div>
+						<div class='etcR'>
+							<strong class='Cnavy'>震</strong><br />
+							昴, 李忠<br />
+							報<br />九之七						</div>
+					</td>
+
+					<td class="calTd active" rel="2025-11-3-hw">
+						<span class='sDay noneDay'>3</span>
+						<div class='sDay round5'>21</div>
+						<div class='hwganji round5'>甲午</div>
+						<div class='etcR'>
+							<strong class='Cnavy'>中</strong><br />
+							胃, 祭遵<br />
+							報<br />九之七						</div>
+					</td>
+
+			</tbody>
+		</table>
+	</div>

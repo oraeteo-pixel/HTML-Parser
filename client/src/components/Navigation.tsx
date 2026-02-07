@@ -14,11 +14,6 @@ import { MessagesDialog } from "@/components/MessagesDialog";
 import { SignUpModal } from "@/components/SignUpModal";
 import type { Post } from "@shared/schema";
 
-interface BeforeInstallPromptEvent extends Event {
-  prompt: () => Promise<void>;
-  userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>;
-}
-
 type PostWithAuthor = Post & { author: string };
 
 interface LogoSettings {
@@ -71,34 +66,8 @@ export function Navigation() {
   const { user, isLoading, isAuthenticated, logout, isLoggingOut } = useAuth();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
-  const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [messagesOpen, setMessagesOpen] = useState(false);
   const [showSignUpModal, setShowSignUpModal] = useState(false);
-
-  useEffect(() => {
-    const handler = (e: Event) => {
-      e.preventDefault();
-      setDeferredPrompt(e as BeforeInstallPromptEvent);
-    };
-    window.addEventListener('beforeinstallprompt', handler);
-    return () => window.removeEventListener('beforeinstallprompt', handler);
-  }, []);
-
-  const handleInstallClick = async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      const { outcome } = await deferredPrompt.userChoice;
-      if (outcome === 'accepted') {
-        toast({ title: "앱 설치 완료", description: "홈 화면에 앱이 추가되었습니다." });
-      }
-      setDeferredPrompt(null);
-    } else {
-      toast({ 
-        title: "앱 설치", 
-        description: "브라우저 메뉴에서 '홈 화면에 추가' 또는 '앱 설치'를 선택하세요." 
-      });
-    }
-  };
   
   const { data: siteSettings } = useQuery<LogoSettings>({
     queryKey: ["/api/settings"],
@@ -176,7 +145,7 @@ export function Navigation() {
                   alt="로고" 
                   className="w-auto object-contain cursor-pointer hover:opacity-80 transition-opacity"
                   data-testid="link-logo"
-                  onClick={handleInstallClick}
+                  onClick={() => setLocation("/calendar")}
                   style={{
                     height: `clamp(28px, ${logoScale * 0.1}vw, 56px)`,
                     filter: `contrast(${logoSharpness}%)`,
@@ -206,7 +175,7 @@ export function Navigation() {
                   fill="none" 
                   xmlns="http://www.w3.org/2000/svg" 
                   data-testid="link-logo"
-                  onClick={handleInstallClick}
+                  onClick={() => setLocation("/calendar")}
                 >
                   <circle cx="20" cy="20" r="18" stroke={logoColor} strokeWidth="2.5" fill="none"/>
                   <circle cx="20" cy="20" r="14" stroke={logoColor} strokeWidth="2.5" fill="none"/>

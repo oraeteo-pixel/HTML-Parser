@@ -215,6 +215,12 @@ export function Calendar() {
     return prevDays;
   }, [firstDayOfWeek, prevMonthData]);
 
+  // 이전 달 데이터가 부족할 때 빈 셀 수
+  const emptyBlanksCount = useMemo(() => {
+    if (firstDayOfWeek === 0) return 0;
+    return firstDayOfWeek - prevMonthBlanks.length;
+  }, [firstDayOfWeek, prevMonthBlanks]);
+
   // 다음 달 빈칸에 표시할 날짜 개수 계산
   const totalCellsInMonth = useMemo(() => {
     const currentMonthDays = calType === "hw" ? hwMonthData.length : solarMonthData.length;
@@ -783,6 +789,10 @@ export function Calendar() {
       </div>
 
       <div className="calendar-grid">
+        {/* 이전 달 데이터 없을 때 빈 셀 */}
+        {Array.from({ length: emptyBlanksCount }).map((_, i) => (
+          <div key={`empty-${i}`} className="calendar-cell prev-month" />
+        ))}
         {/* 이전 달 날짜 */}
         {calType === "hw" ? (
           prevMonthBlanks.map((dayInfo: any, i: number) => {

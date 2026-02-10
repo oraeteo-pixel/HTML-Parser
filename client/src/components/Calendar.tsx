@@ -32,7 +32,8 @@ import {
   CalendarDayData,
   WEEKDAYS_HANJA as WEEKDAYS_HANJA_DATA,
   MANSION_GENERAL_IMAGES,
-  HEXAGRAM_ORDER
+  HEXAGRAM_ORDER,
+  HW_MONTH_DAYS_EXPORT
 } from "@/lib/calendarData";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 
@@ -169,6 +170,20 @@ export function Calendar() {
       const prevHwYear = hwMonth === 1 ? hwYear - 1 : hwYear;
       if (prevHwYear >= 1989) {
         return getHwanggeukMonthData(prevHwYear, prevHwMonth);
+      } else {
+        const firstSolar = hwanggeukToSolar(hwYear, hwMonth, 1);
+        const firstSolarDate = new Date(firstSolar.year, firstSolar.month - 1, firstSolar.day);
+        const dow = firstSolarDate.getDay();
+        if (dow > 0) {
+          const prevDaysCount = HW_MONTH_DAYS_EXPORT[prevHwMonth - 1] || 31;
+          const result = [];
+          for (let i = dow; i > 0; i--) {
+            const sd = new Date(firstSolarDate.getTime() - i * 24 * 60 * 60 * 1000);
+            const dayData = getCalendarDayData(sd.getFullYear(), sd.getMonth() + 1, sd.getDate());
+            result.push({ hwDay: prevDaysCount - i + 1, solarDate: sd, dayData });
+          }
+          return result;
+        }
       }
     } else if (calType === "df") {
       const prevSolarMonth = solarMonth === 1 ? 12 : solarMonth - 1;

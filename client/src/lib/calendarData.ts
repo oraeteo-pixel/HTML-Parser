@@ -449,6 +449,7 @@ const HW_EPOCH_MONTH = 4;
 const HW_EPOCH_DAY = 21;
 const HW_DAYS_PER_YEAR = 366;
 const HW_MONTH_DAYS = [30, 31, 30, 31, 30, 31, 30, 31, 30, 31, 30, 31];
+export const HW_MONTH_DAYS_EXPORT = HW_MONTH_DAYS;
 
 function getHwanggeukDaysFromEpoch(year: number, month: number, day: number): number {
   const epochDate = new Date(HW_EPOCH_YEAR, HW_EPOCH_MONTH - 1, HW_EPOCH_DAY);

@@ -373,6 +373,7 @@ export function Calendar() {
   }, [infoYear, infoMonth, infoDay, currentTime]);
 
   const isPreEpoch = infoHwanggeuk.year < 1989;
+  const hasJeolguk = !(infoHwanggeuk.year < 1989 || (infoHwanggeuk.year === 1989 && infoHwanggeuk.month === 1 && infoHwanggeuk.day < 3));
 
   const infoDayGanZhi = useMemo(() => {
     // 황극력 기준 일진 사용
@@ -606,9 +607,13 @@ export function Calendar() {
                   </div>
                 )}
                 <div className="flex items-center gap-1.5 text-base flex-wrap">
-                  <span className="font-bold text-gray-700 dark:text-gray-200">{isPreEpoch ? "복중팔십년신명(腹中八十年神明)" : infoJeolguk.name}</span>
-                  {!isPreEpoch && (
-                    <span className="font-semibold text-gray-600 dark:text-gray-300">&lt;소궁,대궁&gt;{infoSogungDaegung.isZungung ? "존궁" : `${infoSogungDaegung.sogung},${infoSogungDaegung.daegung}`}{(() => { const hex = get64HexagramName(infoSogungDaegung.sogung, infoSogungDaegung.daegung); return hex ? ` ${hex.fullName}` : ""; })()}</span>
+                  {isPreEpoch ? (
+                    <span className="font-bold text-gray-700 dark:text-gray-200">복중팔십년신명(腹中八十年神明)</span>
+                  ) : (
+                    <>
+                      {hasJeolguk && <span className="font-bold text-gray-700 dark:text-gray-200">{infoJeolguk.name}</span>}
+                      <span className="font-semibold text-gray-600 dark:text-gray-300">&lt;소궁,대궁&gt;{infoSogungDaegung.isZungung ? "존궁" : `${infoSogungDaegung.sogung},${infoSogungDaegung.daegung}`}{(() => { const hex = get64HexagramName(infoSogungDaegung.sogung, infoSogungDaegung.daegung); return hex ? ` ${hex.fullName}` : ""; })()}</span>
+                    </>
                   )}
                   <button 
                     className="slim-badge-cyan cursor-pointer"
@@ -653,9 +658,13 @@ export function Calendar() {
                       </span>
                     </>
                   )}
-                  <span className="font-bold text-gray-700 dark:text-gray-200">{isPreEpoch ? "복중팔십년신명(腹中八十年神明)" : infoJeolguk.name}</span>
-                  {!isPreEpoch && (
-                    <span className="font-semibold text-gray-600 dark:text-gray-300">&lt;소궁,대궁&gt;{infoSogungDaegung.isZungung ? "존궁" : `${infoSogungDaegung.sogung},${infoSogungDaegung.daegung}`}{(() => { const hex = get64HexagramName(infoSogungDaegung.sogung, infoSogungDaegung.daegung); return hex ? ` ${hex.fullName}` : ""; })()}</span>
+                  {isPreEpoch ? (
+                    <span className="font-bold text-gray-700 dark:text-gray-200">복중팔십년신명(腹中八十年神明)</span>
+                  ) : (
+                    <>
+                      {hasJeolguk && <span className="font-bold text-gray-700 dark:text-gray-200">{infoJeolguk.name}</span>}
+                      <span className="font-semibold text-gray-600 dark:text-gray-300">&lt;소궁,대궁&gt;{infoSogungDaegung.isZungung ? "존궁" : `${infoSogungDaegung.sogung},${infoSogungDaegung.daegung}`}{(() => { const hex = get64HexagramName(infoSogungDaegung.sogung, infoSogungDaegung.daegung); return hex ? ` ${hex.fullName}` : ""; })()}</span>
+                    </>
                   )}
                   <button 
                     className="slim-badge-cyan cursor-pointer"

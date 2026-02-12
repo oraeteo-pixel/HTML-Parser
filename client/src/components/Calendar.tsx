@@ -372,6 +372,8 @@ export function Calendar() {
     return getHwanggeukDate(infoYear, infoMonth, infoDay, currentTime.getHours());
   }, [infoYear, infoMonth, infoDay, currentTime]);
 
+  const isPreEpoch = infoHwanggeuk.year < 1989;
+
   const infoDayGanZhi = useMemo(() => {
     // 황극력 기준 일진 사용
     return getHwanggeukDayGanZhi(infoHwanggeuk.year, infoHwanggeuk.month, infoHwanggeuk.day);
@@ -603,14 +605,20 @@ export function Calendar() {
                 </div>
                 <div className="flex items-center gap-1.5 text-base flex-wrap">
                   <span className="font-bold text-gray-700 dark:text-gray-200">{infoJeolguk.name}</span>
-                  <span className="font-semibold text-gray-600 dark:text-gray-300">&lt;소궁,대궁&gt;{infoSogungDaegung.isZungung ? "존궁" : `${infoSogungDaegung.sogung},${infoSogungDaegung.daegung}`}{(() => { const hex = get64HexagramName(infoSogungDaegung.sogung, infoSogungDaegung.daegung); return hex ? ` ${hex.fullName}` : ""; })()}</span>
-                  <button 
-                    className="slim-badge-cyan cursor-pointer"
-                    onClick={(e) => { e.stopPropagation(); setShowMansionInfo(!showMansionInfo); }}
-                    data-testid="button-mansion-toggle"
-                  >
-                    {infoMansion.isZunkong ? infoMansion.mansion : `${infoMansion.mansion}, ${infoMansion.general}`}
-                  </button>
+                  {isPreEpoch ? (
+                    <span className="font-semibold text-gray-600 dark:text-gray-300">복중팔십년신명(腹中八十年神明)</span>
+                  ) : (
+                    <>
+                      <span className="font-semibold text-gray-600 dark:text-gray-300">&lt;소궁,대궁&gt;{infoSogungDaegung.isZungung ? "존궁" : `${infoSogungDaegung.sogung},${infoSogungDaegung.daegung}`}{(() => { const hex = get64HexagramName(infoSogungDaegung.sogung, infoSogungDaegung.daegung); return hex ? ` ${hex.fullName}` : ""; })()}</span>
+                      <button 
+                        className="slim-badge-cyan cursor-pointer"
+                        onClick={(e) => { e.stopPropagation(); setShowMansionInfo(!showMansionInfo); }}
+                        data-testid="button-mansion-toggle"
+                      >
+                        {infoMansion.isZunkong ? infoMansion.mansion : `${infoMansion.mansion}, ${infoMansion.general}`}
+                      </button>
+                    </>
+                  )}
                 </div>
                 {showMansionInfo && (
                   <div className="mt-2 p-3 rounded-md mansion-info-panel">
@@ -644,14 +652,20 @@ export function Calendar() {
                     ({infoHwanggeuk.yearGanZhi}年 {infoHwanggeuk.monthGanZhi}月 {infoDayGanZhi}日 {infoHourGanZhi}時)
                   </span>
                   <span className="font-bold text-gray-700 dark:text-gray-200">{infoJeolguk.name}</span>
-                  <span className="font-semibold text-gray-600 dark:text-gray-300">&lt;소궁,대궁&gt;{infoSogungDaegung.isZungung ? "존궁" : `${infoSogungDaegung.sogung},${infoSogungDaegung.daegung}`}{(() => { const hex = get64HexagramName(infoSogungDaegung.sogung, infoSogungDaegung.daegung); return hex ? ` ${hex.fullName}` : ""; })()}</span>
-                  <button 
-                    className="slim-badge-cyan cursor-pointer"
-                    onClick={(e) => { e.stopPropagation(); setShowMansionInfo(!showMansionInfo); }}
-                    data-testid="button-mansion-toggle-pc"
-                  >
-                    {infoMansion.isZunkong ? infoMansion.mansion : `${infoMansion.mansion}, ${infoMansion.general}`}
-                  </button>
+                  {isPreEpoch ? (
+                    <span className="font-semibold text-gray-600 dark:text-gray-300">복중팔십년신명(腹中八十年神明)</span>
+                  ) : (
+                    <>
+                      <span className="font-semibold text-gray-600 dark:text-gray-300">&lt;소궁,대궁&gt;{infoSogungDaegung.isZungung ? "존궁" : `${infoSogungDaegung.sogung},${infoSogungDaegung.daegung}`}{(() => { const hex = get64HexagramName(infoSogungDaegung.sogung, infoSogungDaegung.daegung); return hex ? ` ${hex.fullName}` : ""; })()}</span>
+                      <button 
+                        className="slim-badge-cyan cursor-pointer"
+                        onClick={(e) => { e.stopPropagation(); setShowMansionInfo(!showMansionInfo); }}
+                        data-testid="button-mansion-toggle-pc"
+                      >
+                        {infoMansion.isZunkong ? infoMansion.mansion : `${infoMansion.mansion}, ${infoMansion.general}`}
+                      </button>
+                    </>
+                  )}
                 </div>
                 {showMansionInfo && (
                   <div className="p-3 rounded-md mansion-info-panel">

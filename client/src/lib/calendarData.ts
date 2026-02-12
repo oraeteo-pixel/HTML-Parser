@@ -730,7 +730,7 @@ export function getJeolguk(hwYear: number, hwMonth: number, hwDay: number): {
   let periodIndex: number;
   if (periodInMonth === -1) {
     if (hwMonth === 1) {
-      periodIndex = 23;
+      periodIndex = 0;
     } else {
       periodIndex = (hwMonth - 2) * 2 + 1;
     }

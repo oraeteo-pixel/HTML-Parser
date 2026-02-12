@@ -717,18 +717,12 @@ export function getJeolguk(hwYear: number, hwMonth: number, hwDay: number): {
   sogung: number;
   daegung: number;
 } {
-  const JEOLGUK_START_YEAR = 2025;
+  const JEOLGUK_BASE_YEAR = 2025;
   
   const daysFromHwEpoch = (hwYear - HW_EPOCH_YEAR) * HW_DAYS_PER_YEAR + 
     HW_MONTH_DAYS.slice(0, hwMonth - 1).reduce((a, b) => a + b, 0) + hwDay - 1;
   const sogung = (((daysFromHwEpoch % 9) + 9) % 9) + 1;
   const daegung = ((Math.floor(Math.abs(daysFromHwEpoch) / 9) % 9)) + 1;
-  
-  if (hwYear < JEOLGUK_START_YEAR) {
-    const normalizedDays = ((daysFromHwEpoch % 24) + 24) % 24;
-    const name = JEOLGUK_NAMES[normalizedDays] + "節局";
-    return { name, periodType: "", sogung, daegung };
-  }
   
   const periodInMonth = hwDay >= 18 ? 1 : (hwDay >= 3 ? 0 : -1);
   
@@ -743,7 +737,7 @@ export function getJeolguk(hwYear: number, hwMonth: number, hwDay: number): {
     periodIndex = (hwMonth - 1) * 2 + periodInMonth;
   }
   
-  const yearOffset = hwYear - JEOLGUK_START_YEAR;
+  const yearOffset = hwYear - JEOLGUK_BASE_YEAR;
   const totalPeriods = yearOffset * 24 + periodIndex;
   
   const jeolgukIndex = ((totalPeriods % 24) + 24) % 24;

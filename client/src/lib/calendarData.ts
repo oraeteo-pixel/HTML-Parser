@@ -536,7 +536,8 @@ export function hwanggeukToSolar(hwYear: number, hwMonth: number, hwDay: number)
   const daysFromEpoch = yearsFromEpoch * HW_DAYS_PER_YEAR + dayOfYear - 1;
   
   const epochDate = new Date(HW_EPOCH_YEAR, HW_EPOCH_MONTH - 1, HW_EPOCH_DAY);
-  const resultDate = new Date(epochDate.getTime() + daysFromEpoch * 24 * 60 * 60 * 1000);
+  const resultDate = new Date(epochDate);
+  resultDate.setDate(resultDate.getDate() + daysFromEpoch);
   
   return {
     year: resultDate.getFullYear(),

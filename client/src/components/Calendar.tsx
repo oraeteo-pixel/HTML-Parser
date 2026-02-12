@@ -599,9 +599,11 @@ export function Calendar() {
                   <span className="font-semibold text-gray-600 dark:text-gray-300">
                     {WEEKDAYS_HANJA[infoDate.getDay()]}
                   </span>
-                  <span className="font-semibold text-gray-600 dark:text-gray-300 whitespace-nowrap">
-                    {infoHwanggeuk.yearGanZhi} {infoHwanggeuk.monthGanZhi} {infoDayGanZhi} {infoHourGanZhi}
-                  </span>
+                  {!isPreEpoch && (
+                    <span className="font-semibold text-gray-600 dark:text-gray-300 whitespace-nowrap">
+                      {infoHwanggeuk.yearGanZhi} {infoHwanggeuk.monthGanZhi} {infoDayGanZhi} {infoHourGanZhi}
+                    </span>
+                  )}
                 </div>
                 <div className="flex items-center gap-1.5 text-base flex-wrap">
                   <span className="font-bold text-gray-700 dark:text-gray-200">{isPreEpoch ? "복중팔십년신명(腹中八十年神明)" : infoJeolguk.name}</span>
@@ -642,9 +644,11 @@ export function Calendar() {
                   <span className="font-semibold text-gray-600 dark:text-gray-300">
                     {WEEKDAYS_HANJA[infoDate.getDay()]}
                   </span>
-                  <span className="font-semibold text-gray-600 dark:text-gray-300">
-                    ({infoHwanggeuk.yearGanZhi}年 {infoHwanggeuk.monthGanZhi}月 {infoDayGanZhi}日 {infoHourGanZhi}時)
-                  </span>
+                  {!isPreEpoch && (
+                    <span className="font-semibold text-gray-600 dark:text-gray-300">
+                      ({infoHwanggeuk.yearGanZhi}年 {infoHwanggeuk.monthGanZhi}月 {infoDayGanZhi}日 {infoHourGanZhi}時)
+                    </span>
+                  )}
                   <span className="font-bold text-gray-700 dark:text-gray-200">{isPreEpoch ? "복중팔십년신명(腹中八十年神明)" : infoJeolguk.name}</span>
                   <span className="font-semibold text-gray-600 dark:text-gray-300">&lt;소궁,대궁&gt;{infoSogungDaegung.isZungung ? "존궁" : `${infoSogungDaegung.sogung},${infoSogungDaegung.daegung}`}{(() => { const hex = get64HexagramName(infoSogungDaegung.sogung, infoSogungDaegung.daegung); return hex ? ` ${hex.fullName}` : ""; })()}</span>
                   <button 

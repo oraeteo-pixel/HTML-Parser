@@ -369,10 +369,6 @@ export function get28Mansion(year: number, month: number, day: number): {
 export function get8Trigram(year: number, month: number, day: number): { trigram: string; direction: string } {
   const daysFromEpoch = getHwanggeukDaysFromEpochExport(year, month, day);
   
-  if (daysFromEpoch < 0) {
-    return { trigram: "-", direction: "-" };
-  }
-  
   const offset = 2;
   const index = ((daysFromEpoch + offset) % 10 + 10) % 10;
   return {

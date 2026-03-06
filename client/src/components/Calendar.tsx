@@ -709,7 +709,7 @@ export function Calendar() {
                     (음{infoSeoncheonData.lunarMonth}.{infoSeoncheonData.lunarDay})
                   </span>
                   <span className="font-semibold text-gray-600 dark:text-gray-300">
-                    {infoSeoncheonData.yearGanZhi} {infoSeoncheonData.monthGanZhi} {infoSeoncheonData.dayGanZhi} {infoSeoncheonHourGanZhi}
+                    {infoSeoncheonData.lunarGanZhi.year} {infoSeoncheonData.lunarGanZhi.month} {infoSeoncheonData.dayGanZhi} {infoSeoncheonHourGanZhi}
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5 text-sm">
@@ -730,7 +730,7 @@ export function Calendar() {
                     (음력 {infoSeoncheonData.lunarMonth}.{infoSeoncheonData.lunarDay})
                   </span>
                   <span className="font-semibold text-gray-600 dark:text-gray-300">
-                    ({infoSeoncheonData.yearGanZhi}年 {infoSeoncheonData.monthGanZhi}月 {infoSeoncheonData.dayGanZhi}日 {infoSeoncheonHourGanZhi}時)
+                    ({infoSeoncheonData.lunarGanZhi.year}年 {infoSeoncheonData.lunarGanZhi.month}月 {infoSeoncheonData.dayGanZhi}日 {infoSeoncheonHourGanZhi}時)
                   </span>
                   <span className="font-bold text-gray-700 dark:text-gray-200">{infoSeoncheonData.currentTerm.hanja}</span>
                   <span className="slim-badge-navy">{infoSeoncheonData.currentTerm.general}</span>

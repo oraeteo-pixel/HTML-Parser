@@ -755,60 +755,93 @@ export function Calendar() {
           </div>
         )}
 
-        <div className="flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap py-1 sm:py-2 bg-white dark:bg-background rounded">
-          <Button variant="ghost" size="icon" className="h-5 w-5 sm:h-8 sm:w-8" onClick={handlePrevYear} data-testid="button-prev-year">
-            <ChevronLeft className="h-3 w-3 sm:h-4 sm:w-4" />
-          </Button>
-          
-          <Select 
-            value={String(calType === "hw" ? hwYear : solarYear)} 
-            onValueChange={(v) => handleYearSelect(Number(v))}
-          >
-            <SelectTrigger className="w-[68px] sm:w-[100px] h-5 sm:h-8 text-xs sm:text-sm px-1.5 bg-white dark:bg-card" data-testid="select-year">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {years.map((y) => (
-                <SelectItem key={y} value={String(y)}>{y}년</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <div className="flex flex-col gap-1 py-1 sm:py-2 bg-white dark:bg-background rounded">
+          <div className="flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap">
+            <Button variant="ghost" size="icon" className="h-5 w-5 sm:h-8 sm:w-8" onClick={handlePrevYear} data-testid="button-prev-year">
+              <ChevronLeft className="h-3 w-3 sm:h-4 sm:w-4" />
+            </Button>
+            
+            <Select 
+              value={String(calType === "hw" ? hwYear : solarYear)} 
+              onValueChange={(v) => handleYearSelect(Number(v))}
+            >
+              <SelectTrigger className="w-[68px] sm:w-[100px] h-5 sm:h-8 text-xs sm:text-sm px-1.5 bg-white dark:bg-card" data-testid="select-year">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {years.map((y) => (
+                  <SelectItem key={y} value={String(y)}>{y}년</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
-          <Button variant="ghost" size="icon" className="h-5 w-5 sm:h-8 sm:w-8" onClick={handleNextYear} data-testid="button-next-year">
-            <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
-          </Button>
+            <Button variant="ghost" size="icon" className="h-5 w-5 sm:h-8 sm:w-8" onClick={handleNextYear} data-testid="button-next-year">
+              <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
+            </Button>
 
-          <Button 
-            size="sm" 
-            onClick={goToday}
-            className="mx-2 sm:mx-3 text-white border-0 h-5 sm:h-8 text-xs sm:text-sm px-2 sm:px-3"
-            style={{ backgroundColor: 'hsl(210 20% 40%)' }}
-            data-testid="button-today"
-          >
-            오늘
-          </Button>
+            <Button 
+              size="sm" 
+              onClick={goToday}
+              className="mx-2 sm:mx-3 text-white border-0 h-5 sm:h-8 text-xs sm:text-sm px-2 sm:px-3"
+              style={{ backgroundColor: 'hsl(210 20% 40%)' }}
+              data-testid="button-today"
+            >
+              오늘
+            </Button>
 
-          <Button variant="ghost" size="icon" className="h-5 w-5 sm:h-8 sm:w-8" onClick={handlePrevMonth} data-testid="button-prev-month">
-            <ChevronLeft className="h-3 w-3 sm:h-4 sm:w-4" />
-          </Button>
+            <Button variant="ghost" size="icon" className="h-5 w-5 sm:h-8 sm:w-8" onClick={handlePrevMonth} data-testid="button-prev-month">
+              <ChevronLeft className="h-3 w-3 sm:h-4 sm:w-4" />
+            </Button>
 
-          <Select 
-            value={String(calType === "hw" ? hwMonth : solarMonth)} 
-            onValueChange={(v) => handleMonthSelect(Number(v))}
-          >
-            <SelectTrigger className="w-[56px] sm:w-[80px] h-5 sm:h-8 text-xs sm:text-sm px-1.5 bg-white dark:bg-card" data-testid="select-month">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {months.map((m) => (
-                <SelectItem key={m} value={String(m)}>{m}월</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            <Select 
+              value={String(calType === "hw" ? hwMonth : solarMonth)} 
+              onValueChange={(v) => handleMonthSelect(Number(v))}
+            >
+              <SelectTrigger className="w-[56px] sm:w-[80px] h-5 sm:h-8 text-xs sm:text-sm px-1.5 bg-white dark:bg-card" data-testid="select-month">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {months.map((m) => (
+                  <SelectItem key={m} value={String(m)}>{m}월</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
-          <Button variant="ghost" size="icon" className="h-5 w-5 sm:h-8 sm:w-8" onClick={handleNextMonth} data-testid="button-next-month">
-            <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
-          </Button>
+            <Button variant="ghost" size="icon" className="h-5 w-5 sm:h-8 sm:w-8" onClick={handleNextMonth} data-testid="button-next-month">
+              <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
+            </Button>
+          </div>
+
+          <div className="flex items-center gap-2 px-2 sm:px-4">
+            <span className="text-[10px] sm:text-xs text-muted-foreground whitespace-nowrap w-[32px] sm:w-[40px] text-right">{years[0]}</span>
+            <input
+              type="range"
+              min={years[0]}
+              max={years[years.length - 1]}
+              value={calType === "hw" ? hwYear : solarYear}
+              onChange={(e) => {
+                const val = Number(e.target.value);
+                if (calType === "hw") { setHwYear(val); } else { setSolarYear(val); }
+              }}
+              className="flex-1 h-1.5 sm:h-2 accent-slate-600 cursor-pointer"
+              data-testid="slider-year"
+            />
+            <span className="text-[10px] sm:text-xs text-muted-foreground whitespace-nowrap w-[32px] sm:w-[40px]">{years[years.length - 1]}</span>
+            <span className="text-[10px] sm:text-xs text-muted-foreground mx-1">|</span>
+            <input
+              type="range"
+              min={1}
+              max={12}
+              value={calType === "hw" ? hwMonth : solarMonth}
+              onChange={(e) => {
+                const val = Number(e.target.value);
+                if (calType === "hw") { setHwMonth(val); } else { setSolarMonth(val); }
+              }}
+              className="w-[80px] sm:w-[120px] h-1.5 sm:h-2 accent-slate-600 cursor-pointer"
+              data-testid="slider-month"
+            />
+            <span className="text-[10px] sm:text-xs text-muted-foreground whitespace-nowrap">{calType === "hw" ? hwMonth : solarMonth}월</span>
+          </div>
         </div>
       </div>
 

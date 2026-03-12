@@ -520,3 +520,21 @@ html, body {
 .text-fluid-lg {
   font-size: clamp(1rem, 3.5vw, 1.25rem);
 }
+
+.scrollbar-visible::-webkit-scrollbar {
+  width: 8px;
+}
+.scrollbar-visible::-webkit-scrollbar-track {
+  background: hsl(var(--muted));
+  border-radius: 4px;
+}
+.scrollbar-visible::-webkit-scrollbar-thumb {
+  background: hsl(var(--muted-foreground) / 0.4);
+  border-radius: 4px;
+}
+.scrollbar-visible::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground) / 0.6);
+}
+.scrollbar-visible {
+  scrollbar-width: thin;
+}

@@ -1,9 +1,8 @@
 import { useState, useMemo, useEffect } from "react";
 import { format, getDay, isSameDay } from "date-fns";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import { useLocation } from "wouter";
 import { Button } from "./ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { 
   getCalendarDayData, 
   getHwanggeukDate,
@@ -132,6 +131,19 @@ export function Calendar() {
   const [showTalisman, setShowTalisman] = useState(false);
   const [showMansionInfo, setShowMansionInfo] = useState(false);
   const [selectedHexagram, setSelectedHexagram] = useState<{ sogung: number; daegung: number } | null>(null);
+  const [showYearPicker, setShowYearPicker] = useState(false);
+  const [showMonthPicker, setShowMonthPicker] = useState(false);
+
+  useEffect(() => {
+    if (!showYearPicker && !showMonthPicker) return;
+    const handler = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (!target.closest('[data-testid="select-year"]') && showYearPicker) setShowYearPicker(false);
+      if (!target.closest('[data-testid="select-month"]') && showMonthPicker) setShowMonthPicker(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [showYearPicker, showMonthPicker]);
 
   const hwMonthData = useMemo(() => {
     if (calType === "hw") {
@@ -755,93 +767,84 @@ export function Calendar() {
           </div>
         )}
 
-        <div className="flex flex-col gap-1 py-1 sm:py-2 bg-white dark:bg-background rounded">
-          <div className="flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap">
-            <Button variant="ghost" size="icon" className="h-5 w-5 sm:h-8 sm:w-8" onClick={handlePrevYear} data-testid="button-prev-year">
-              <ChevronLeft className="h-3 w-3 sm:h-4 sm:w-4" />
-            </Button>
-            
-            <Select 
-              value={String(calType === "hw" ? hwYear : solarYear)} 
-              onValueChange={(v) => handleYearSelect(Number(v))}
+        <div className="flex items-center justify-center gap-1.5 sm:gap-2 flex-wrap py-1 sm:py-2 bg-white dark:bg-background rounded">
+          <Button variant="ghost" size="icon" className="h-5 w-5 sm:h-8 sm:w-8" onClick={handlePrevYear} data-testid="button-prev-year">
+            <ChevronLeft className="h-3 w-3 sm:h-4 sm:w-4" />
+          </Button>
+          
+          <div className="relative" data-testid="select-year">
+            <button
+              className="flex items-center justify-between w-[68px] sm:w-[100px] h-5 sm:h-8 text-xs sm:text-sm px-1.5 bg-white dark:bg-card border border-input rounded-md"
+              onClick={() => setShowYearPicker(!showYearPicker)}
             >
-              <SelectTrigger className="w-[68px] sm:w-[100px] h-5 sm:h-8 text-xs sm:text-sm px-1.5 bg-white dark:bg-card" data-testid="select-year">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
+              <span>{calType === "hw" ? hwYear : solarYear}년</span>
+              <ChevronDown className="h-3 w-3 opacity-50" />
+            </button>
+            {showYearPicker && (
+              <div className="absolute z-50 top-full mt-1 left-0 w-[100px] sm:w-[120px] max-h-[240px] overflow-y-auto bg-popover border border-border rounded-md shadow-lg scrollbar-visible" ref={(el) => {
+                if (el) {
+                  const currentYear = calType === "hw" ? hwYear : solarYear;
+                  const idx = years.indexOf(currentYear);
+                  if (idx >= 0) el.scrollTop = idx * 28 - 100;
+                }
+              }}>
                 {years.map((y) => (
-                  <SelectItem key={y} value={String(y)}>{y}년</SelectItem>
+                  <div
+                    key={y}
+                    className={`px-2 py-1 text-xs sm:text-sm cursor-pointer hover:bg-accent ${y === (calType === "hw" ? hwYear : solarYear) ? "bg-accent font-bold" : ""}`}
+                    onClick={() => { handleYearSelect(y); setShowYearPicker(false); }}
+                  >
+                    {y}년
+                  </div>
                 ))}
-              </SelectContent>
-            </Select>
+              </div>
+            )}
+          </div>
 
-            <Button variant="ghost" size="icon" className="h-5 w-5 sm:h-8 sm:w-8" onClick={handleNextYear} data-testid="button-next-year">
-              <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
-            </Button>
+          <Button variant="ghost" size="icon" className="h-5 w-5 sm:h-8 sm:w-8" onClick={handleNextYear} data-testid="button-next-year">
+            <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
+          </Button>
 
-            <Button 
-              size="sm" 
-              onClick={goToday}
-              className="mx-2 sm:mx-3 text-white border-0 h-5 sm:h-8 text-xs sm:text-sm px-2 sm:px-3"
-              style={{ backgroundColor: 'hsl(210 20% 40%)' }}
-              data-testid="button-today"
+          <Button 
+            size="sm" 
+            onClick={goToday}
+            className="mx-2 sm:mx-3 text-white border-0 h-5 sm:h-8 text-xs sm:text-sm px-2 sm:px-3"
+            style={{ backgroundColor: 'hsl(210 20% 40%)' }}
+            data-testid="button-today"
+          >
+            오늘
+          </Button>
+
+          <Button variant="ghost" size="icon" className="h-5 w-5 sm:h-8 sm:w-8" onClick={handlePrevMonth} data-testid="button-prev-month">
+            <ChevronLeft className="h-3 w-3 sm:h-4 sm:w-4" />
+          </Button>
+
+          <div className="relative" data-testid="select-month">
+            <button
+              className="flex items-center justify-between w-[56px] sm:w-[80px] h-5 sm:h-8 text-xs sm:text-sm px-1.5 bg-white dark:bg-card border border-input rounded-md"
+              onClick={() => setShowMonthPicker(!showMonthPicker)}
             >
-              오늘
-            </Button>
-
-            <Button variant="ghost" size="icon" className="h-5 w-5 sm:h-8 sm:w-8" onClick={handlePrevMonth} data-testid="button-prev-month">
-              <ChevronLeft className="h-3 w-3 sm:h-4 sm:w-4" />
-            </Button>
-
-            <Select 
-              value={String(calType === "hw" ? hwMonth : solarMonth)} 
-              onValueChange={(v) => handleMonthSelect(Number(v))}
-            >
-              <SelectTrigger className="w-[56px] sm:w-[80px] h-5 sm:h-8 text-xs sm:text-sm px-1.5 bg-white dark:bg-card" data-testid="select-month">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
+              <span>{calType === "hw" ? hwMonth : solarMonth}월</span>
+              <ChevronDown className="h-3 w-3 opacity-50" />
+            </button>
+            {showMonthPicker && (
+              <div className="absolute z-50 top-full mt-1 left-0 w-[80px] sm:w-[100px] max-h-[240px] overflow-y-auto bg-popover border border-border rounded-md shadow-lg scrollbar-visible">
                 {months.map((m) => (
-                  <SelectItem key={m} value={String(m)}>{m}월</SelectItem>
+                  <div
+                    key={m}
+                    className={`px-2 py-1 text-xs sm:text-sm cursor-pointer hover:bg-accent ${m === (calType === "hw" ? hwMonth : solarMonth) ? "bg-accent font-bold" : ""}`}
+                    onClick={() => { handleMonthSelect(m); setShowMonthPicker(false); }}
+                  >
+                    {m}월
+                  </div>
                 ))}
-              </SelectContent>
-            </Select>
-
-            <Button variant="ghost" size="icon" className="h-5 w-5 sm:h-8 sm:w-8" onClick={handleNextMonth} data-testid="button-next-month">
-              <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
-            </Button>
+              </div>
+            )}
           </div>
 
-          <div className="flex items-center gap-2 px-2 sm:px-4">
-            <span className="text-[10px] sm:text-xs text-muted-foreground whitespace-nowrap w-[32px] sm:w-[40px] text-right">{years[0]}</span>
-            <input
-              type="range"
-              min={years[0]}
-              max={years[years.length - 1]}
-              value={calType === "hw" ? hwYear : solarYear}
-              onChange={(e) => {
-                const val = Number(e.target.value);
-                if (calType === "hw") { setHwYear(val); } else { setSolarYear(val); }
-              }}
-              className="flex-1 h-1.5 sm:h-2 accent-slate-600 cursor-pointer"
-              data-testid="slider-year"
-            />
-            <span className="text-[10px] sm:text-xs text-muted-foreground whitespace-nowrap w-[32px] sm:w-[40px]">{years[years.length - 1]}</span>
-            <span className="text-[10px] sm:text-xs text-muted-foreground mx-1">|</span>
-            <input
-              type="range"
-              min={1}
-              max={12}
-              value={calType === "hw" ? hwMonth : solarMonth}
-              onChange={(e) => {
-                const val = Number(e.target.value);
-                if (calType === "hw") { setHwMonth(val); } else { setSolarMonth(val); }
-              }}
-              className="w-[80px] sm:w-[120px] h-1.5 sm:h-2 accent-slate-600 cursor-pointer"
-              data-testid="slider-month"
-            />
-            <span className="text-[10px] sm:text-xs text-muted-foreground whitespace-nowrap">{calType === "hw" ? hwMonth : solarMonth}월</span>
-          </div>
+          <Button variant="ghost" size="icon" className="h-5 w-5 sm:h-8 sm:w-8" onClick={handleNextMonth} data-testid="button-next-month">
+            <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
+          </Button>
         </div>
       </div>
 

@@ -1,25 +1,26 @@
-import { mysqlTable, varchar, int, datetime, json, index } from "drizzle-orm/mysql-core";
+import { sql } from "drizzle-orm";
+import { index, integer, jsonb, pgTable, timestamp, varchar } from "drizzle-orm/pg-core";
 
-export const sessions = mysqlTable(
+export const sessions = pgTable(
   "sessions",
   {
-    sid: varchar("sid", { length: 128 }).primaryKey(),
-    sess: json("sess").notNull(),
-    expire: datetime("expire").notNull(),
+    sid: varchar("sid").primaryKey(),
+    sess: jsonb("sess").notNull(),
+    expire: timestamp("expire").notNull(),
   },
   (table) => [index("IDX_session_expire").on(table.expire)]
 );
 
-export const users = mysqlTable("users", {
-  id: varchar("id", { length: 36 }).primaryKey(),
-  email: varchar("email", { length: 255 }).unique(),
-  firstName: varchar("first_name", { length: 255 }),
-  lastName: varchar("last_name", { length: 255 }),
-  phone: varchar("phone", { length: 50 }),
-  profileImageUrl: varchar("profile_image_url", { length: 1024 }),
-  isAdmin: int("is_admin").default(0),
-  createdAt: datetime("created_at"),
-  updatedAt: datetime("updated_at"),
+export const users = pgTable("users", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  email: varchar("email").unique(),
+  firstName: varchar("first_name"),
+  lastName: varchar("last_name"),
+  phone: varchar("phone"),
+  profileImageUrl: varchar("profile_image_url"),
+  isAdmin: integer("is_admin").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export type UpsertUser = typeof users.$inferInsert;

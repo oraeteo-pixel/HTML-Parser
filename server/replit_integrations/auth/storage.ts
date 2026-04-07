@@ -1,7 +1,6 @@
 import { users, type User, type UpsertUser } from "@shared/models/auth";
 import { db } from "../../db";
 import { eq } from "drizzle-orm";
-import { randomUUID } from "crypto";
 
 export interface IAuthStorage {
   getUser(id: string): Promise<User | undefined>;
@@ -21,24 +20,17 @@ class AuthStorage implements IAuthStorage {
   }
 
   async upsertUser(userData: UpsertUser): Promise<User> {
-    const id = userData.id || randomUUID();
-    const dataWithId = { ...userData, id };
-
-    await db
+    const [user] = await db
       .insert(users)
-      .values(dataWithId)
-      .onDuplicateKeyUpdate({
+      .values(userData)
+      .onConflictDoUpdate({
+        target: users.id,
         set: {
-          email: dataWithId.email,
-          firstName: dataWithId.firstName,
-          lastName: dataWithId.lastName,
-          profileImageUrl: dataWithId.profileImageUrl,
-          phone: dataWithId.phone,
+          ...userData,
           updatedAt: new Date(),
         },
-      });
-
-    const [user] = await db.select().from(users).where(eq(users.id, id));
+      })
+      .returning();
     return user;
   }
 }

@@ -72,12 +72,6 @@ export interface IStorage {
   getActiveLogo(): Promise<SiteLogo | null>;
 }
 
-// MySQL does not support RETURNING; helper to fetch by id after insert
-async function fetchById<T>(table: any, id: number): Promise<T> {
-  const [row] = await db.select().from(table).where(eq(table.id, id));
-  return row as T;
-}
-
 export class DatabaseStorage implements IStorage {
   async getUser(id: string): Promise<User | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
@@ -85,8 +79,8 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createPost(post: InsertPost): Promise<Post> {
-    const result = await db.insert(posts).values(post);
-    return fetchById<Post>(posts, (result as any)[0].insertId);
+    const [newPost] = await db.insert(posts).values(post).returning();
+    return newPost;
   }
 
   async getPosts(): Promise<(Post & { author: string; authorEmail: string | null })[]> {
@@ -193,8 +187,8 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createComment(comment: InsertComment): Promise<Comment> {
-    const result = await db.insert(comments).values(comment);
-    return fetchById<Comment>(comments, (result as any)[0].insertId);
+    const [newComment] = await db.insert(comments).values(comment).returning();
+    return newComment;
   }
 
   async getCommentsByPostId(postId: number): Promise<(Comment & { author: string; authorEmail: string | null })[]> {
@@ -218,17 +212,17 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateComment(commentId: number, content: string, mediaUrls?: string[], youtubeUrls?: string[]): Promise<Comment | null> {
-    await db.update(comments)
+    const [updated] = await db.update(comments)
       .set({ content, mediaUrls, youtubeUrls })
-      .where(eq(comments.id, commentId));
-    const [updated] = await db.select().from(comments).where(eq(comments.id, commentId));
+      .where(eq(comments.id, commentId))
+      .returning();
     return updated || null;
   }
 
   async deleteComment(commentId: number): Promise<boolean> {
     await db.delete(comments).where(eq(comments.parentId, commentId));
     const result = await db.delete(comments).where(eq(comments.id, commentId));
-    return (result as any)[0].affectedRows > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
   async getCommentById(commentId: number): Promise<Comment | null> {
@@ -287,18 +281,16 @@ export class DatabaseStorage implements IStorage {
   async updatePost(postId: number, authorId: string, data: { title: string; content: string; mediaUrls?: string[]; youtubeUrls?: string[] }): Promise<Post | null> {
     const [existingPost] = await db.select().from(posts).where(eq(posts.id, postId));
     if (!existingPost || existingPost.authorId !== authorId) return null;
-
-    await db.update(posts)
+    const [updatedPost] = await db.update(posts)
       .set({
         title: data.title,
         content: data.content,
         mediaUrls: data.mediaUrls || [],
         youtubeUrls: data.youtubeUrls || []
       })
-      .where(eq(posts.id, postId));
-
-    const [updated] = await db.select().from(posts).where(eq(posts.id, postId));
-    return updated || null;
+      .where(eq(posts.id, postId))
+      .returning();
+    return updatedPost;
   }
 
   async deletePost(postId: number, authorId: string): Promise<boolean> {
@@ -311,8 +303,8 @@ export class DatabaseStorage implements IStorage {
   }
 
   async sendMessage(message: InsertMessage): Promise<Message> {
-    const result = await db.insert(messages).values(message);
-    return fetchById<Message>(messages, (result as any)[0].insertId);
+    const [newMessage] = await db.insert(messages).values(message).returning();
+    return newMessage;
   }
 
   async getReceivedMessages(userId: string): Promise<(Message & { senderName: string; senderEmail: string | null })[]> {
@@ -376,14 +368,14 @@ export class DatabaseStorage implements IStorage {
   async setSiteSetting(key: string, value: string): Promise<SiteSetting> {
     const existing = await this.getSiteSetting(key);
     if (existing) {
-      await db.update(siteSettings)
+      const [updated] = await db.update(siteSettings)
         .set({ value, updatedAt: new Date() })
-        .where(eq(siteSettings.key, key));
-      const [updated] = await db.select().from(siteSettings).where(eq(siteSettings.key, key));
+        .where(eq(siteSettings.key, key))
+        .returning();
       return updated;
     } else {
-      const result = await db.insert(siteSettings).values({ key, value });
-      return fetchById<SiteSetting>(siteSettings, (result as any)[0].insertId);
+      const [newSetting] = await db.insert(siteSettings).values({ key, value }).returning();
+      return newSetting;
     }
   }
 
@@ -401,13 +393,12 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createMadangCategory(category: InsertMadangCategory): Promise<MadangCategory> {
-    const result = await db.insert(madangCategories).values(category);
-    return fetchById<MadangCategory>(madangCategories, (result as any)[0].insertId);
+    const [newCategory] = await db.insert(madangCategories).values(category).returning();
+    return newCategory;
   }
 
   async updateMadangCategory(id: number, data: Partial<InsertMadangCategory>): Promise<MadangCategory | null> {
-    await db.update(madangCategories).set(data).where(eq(madangCategories.id, id));
-    const [updated] = await db.select().from(madangCategories).where(eq(madangCategories.id, id));
+    const [updated] = await db.update(madangCategories).set(data).where(eq(madangCategories.id, id)).returning();
     return updated || null;
   }
 
@@ -428,14 +419,14 @@ export class DatabaseStorage implements IStorage {
   async upsertPageContent(content: InsertPageContent): Promise<PageContent> {
     const existing = await this.getPageContent(content.pageSlug);
     if (existing) {
-      await db.update(pageContents)
+      const [updated] = await db.update(pageContents)
         .set({ ...content, updatedAt: new Date() })
-        .where(eq(pageContents.pageSlug, content.pageSlug));
-      const [updated] = await db.select().from(pageContents).where(eq(pageContents.pageSlug, content.pageSlug));
+        .where(eq(pageContents.pageSlug, content.pageSlug))
+        .returning();
       return updated;
     } else {
-      const result = await db.insert(pageContents).values(content);
-      return fetchById<PageContent>(pageContents, (result as any)[0].insertId);
+      const [newContent] = await db.insert(pageContents).values(content).returning();
+      return newContent;
     }
   }
 
@@ -444,27 +435,22 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createUser(data: { firstName: string; lastName?: string; email?: string; isAdmin?: number }): Promise<User> {
-    const id = randomUUID();
-    await db.insert(users).values({
-      id,
+    const [newUser] = await db.insert(users).values({
       firstName: data.firstName,
       lastName: data.lastName || null,
       email: data.email && data.email.trim() ? data.email.trim() : null,
       isAdmin: data.isAdmin || 0,
-    });
-    const [newUser] = await db.select().from(users).where(eq(users.id, id));
+    }).returning();
     return newUser;
   }
 
   async updateUserAdmin(userId: string, isAdmin: number): Promise<User | null> {
-    await db.update(users).set({ isAdmin }).where(eq(users.id, userId));
-    const [updated] = await db.select().from(users).where(eq(users.id, userId));
+    const [updated] = await db.update(users).set({ isAdmin }).where(eq(users.id, userId)).returning();
     return updated || null;
   }
 
   async updateUser(userId: string, data: { firstName?: string; lastName?: string; phone?: string; email?: string }): Promise<User | null> {
-    await db.update(users).set({ ...data, updatedAt: new Date() }).where(eq(users.id, userId));
-    const [updated] = await db.select().from(users).where(eq(users.id, userId));
+    const [updated] = await db.update(users).set({ ...data, updatedAt: new Date() }).where(eq(users.id, userId)).returning();
     return updated || null;
   }
 
@@ -488,15 +474,15 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createPageLayout(layout: InsertPageLayout): Promise<PageLayout> {
-    const result = await db.insert(pageLayouts).values(layout);
-    return fetchById<PageLayout>(pageLayouts, (result as any)[0].insertId);
+    const [newLayout] = await db.insert(pageLayouts).values(layout).returning();
+    return newLayout;
   }
 
   async updatePageLayout(id: number, data: Partial<InsertPageLayout>): Promise<PageLayout | null> {
-    await db.update(pageLayouts)
+    const [updated] = await db.update(pageLayouts)
       .set({ ...data, updatedAt: new Date() })
-      .where(eq(pageLayouts.id, id));
-    const [updated] = await db.select().from(pageLayouts).where(eq(pageLayouts.id, id));
+      .where(eq(pageLayouts.id, id))
+      .returning();
     return updated || null;
   }
 
@@ -521,18 +507,18 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createCodeSnippet(snippet: InsertCodeSnippet): Promise<CodeSnippet> {
-    const result = await db.insert(codeSnippets).values(snippet);
-    return fetchById<CodeSnippet>(codeSnippets, (result as any)[0].insertId);
+    const [newSnippet] = await db.insert(codeSnippets).values(snippet).returning();
+    return newSnippet;
   }
 
   async updateCodeSnippet(id: number, data: Partial<InsertCodeSnippet>): Promise<CodeSnippet | null> {
     const filteredData = Object.fromEntries(
       Object.entries(data).filter(([_, v]) => v !== undefined)
     );
-    await db.update(codeSnippets)
+    const [updated] = await db.update(codeSnippets)
       .set({ ...filteredData, updatedAt: new Date() })
-      .where(eq(codeSnippets.id, id));
-    const [updated] = await db.select().from(codeSnippets).where(eq(codeSnippets.id, id));
+      .where(eq(codeSnippets.id, id))
+      .returning();
     return updated || null;
   }
 
@@ -546,15 +532,19 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createSiteLogo(logo: InsertSiteLogo): Promise<SiteLogo> {
-    const result = await db.insert(siteLogos).values(logo);
-    return fetchById<SiteLogo>(siteLogos, (result as any)[0].insertId);
+    const [newLogo] = await db.insert(siteLogos).values(logo).returning();
+    return newLogo;
   }
 
   async setActiveLogo(id: number): Promise<SiteLogo | null> {
-    await db.update(siteLogos).set({ isActive: 0 });
-    await db.update(siteLogos).set({ isActive: 1 }).where(eq(siteLogos.id, id));
-    const [updated] = await db.select().from(siteLogos).where(eq(siteLogos.id, id));
-    return updated || null;
+    return await db.transaction(async (tx) => {
+      await tx.update(siteLogos).set({ isActive: 0 });
+      const [updated] = await tx.update(siteLogos)
+        .set({ isActive: 1 })
+        .where(eq(siteLogos.id, id))
+        .returning();
+      return updated || null;
+    });
   }
 
   async deleteSiteLogo(id: number): Promise<boolean> {

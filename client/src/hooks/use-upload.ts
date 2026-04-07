@@ -1,5 +1,4 @@
 import { useState, useCallback } from "react";
-import type { UppyFile } from "@uppy/core";
 
 interface UploadMetadata {
   name: string;
@@ -18,189 +17,67 @@ interface UseUploadOptions {
   onError?: (error: Error) => void;
 }
 
-/**
- * React hook for handling file uploads with presigned URLs.
- *
- * This hook implements the two-step presigned URL upload flow:
- * 1. Request a presigned URL from your backend (sends JSON metadata, NOT the file)
- * 2. Upload the file directly to the presigned URL
- *
- * @example
- * ```tsx
- * function FileUploader() {
- *   const { uploadFile, isUploading, error } = useUpload({
- *     onSuccess: (response) => {
- *       console.log("Uploaded to:", response.objectPath);
- *     },
- *   });
- *
- *   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
- *     const file = e.target.files?.[0];
- *     if (file) {
- *       await uploadFile(file);
- *     }
- *   };
- *
- *   return (
- *     <div>
- *       <input type="file" onChange={handleFileChange} disabled={isUploading} />
- *       {isUploading && <p>Uploading...</p>}
- *       {error && <p>Error: {error.message}</p>}
- *     </div>
- *   );
- * }
- * ```
- */
 export function useUpload(options: UseUploadOptions = {}) {
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [progress, setProgress] = useState(0);
 
-  /**
-   * Request a presigned URL from the backend.
-   * IMPORTANT: Send JSON metadata, NOT the file itself.
-   */
-  const requestUploadUrl = useCallback(
-    async (file: File): Promise<UploadResponse> => {
-      const response = await fetch("/api/uploads/request-url", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: file.name,
-          size: file.size,
-          contentType: file.type || "application/octet-stream",
-        }),
-      });
+  const uploadFile = useCallback(
+    async (file: File): Promise<UploadResponse | null> => {
+      setIsUploading(true);
+      setError(null);
+      setProgress(10);
 
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || "Failed to get upload URL");
-      }
-
-      return response.json();
-    },
-    []
-  );
-
-  /**
-   * Upload a file directly to the presigned URL.
-   */
-  const uploadToPresignedUrl = useCallback(
-    async (file: File, uploadURL: string): Promise<void> => {
       try {
-        const response = await fetch(uploadURL, {
-          method: "PUT",
-          body: file,
-          headers: {
-            "Content-Type": file.type || "application/octet-stream",
-          },
+        const formData = new FormData();
+        formData.append("file", file);
+
+        setProgress(30);
+        const response = await fetch("/api/uploads/request-url", {
+          method: "POST",
+          body: formData,
         });
 
         if (!response.ok) {
-          console.error("Upload failed with status:", response.status);
-          throw new Error("Failed to upload file to storage");
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.error || "업로드 실패");
         }
-      } catch (err) {
-        console.error("Upload error:", err);
-        // Check if it's a CORS or network error
-        if (err instanceof TypeError && err.message.includes("Failed to fetch")) {
-          throw new Error("네트워크 오류 또는 CORS 문제가 발생했습니다.");
-        }
-        throw err;
-      }
-    },
-    []
-  );
 
-  /**
-   * Upload a file using the presigned URL flow.
-   *
-   * @param file - The file to upload
-   * @returns The upload response containing the object path
-   */
-  const uploadFile = useCallback(
-    async (file: File): Promise<UploadResponse | null> => {
-      console.log("[useUpload] Starting upload for:", file.name);
-      setIsUploading(true);
-      setError(null);
-      setProgress(0);
-
-      try {
-        // Step 1: Request presigned URL (send metadata as JSON)
-        console.log("[useUpload] Step 1: Requesting presigned URL");
-        setProgress(10);
-        const uploadResponse = await requestUploadUrl(file);
-        console.log("[useUpload] Got presigned URL:", uploadResponse.objectPath);
-
-        // Step 2: Upload file directly to presigned URL
-        console.log("[useUpload] Step 2: Uploading to presigned URL");
-        setProgress(30);
-        await uploadToPresignedUrl(file, uploadResponse.uploadURL);
-        console.log("[useUpload] Upload to storage complete");
-
+        const uploadResponse: UploadResponse = await response.json();
         setProgress(100);
-        console.log("[useUpload] Calling onSuccess callback");
         options.onSuccess?.(uploadResponse);
         return uploadResponse;
       } catch (err) {
-        console.error("[useUpload] Error:", err);
         const error = err instanceof Error ? err : new Error("Upload failed");
         setError(error);
         options.onError?.(error);
         return null;
       } finally {
-        console.log("[useUpload] Setting isUploading to false");
         setIsUploading(false);
       }
     },
-    [requestUploadUrl, uploadToPresignedUrl, options]
+    [options]
   );
 
-  /**
-   * Get upload parameters for Uppy's AWS S3 plugin.
-   *
-   * IMPORTANT: This function receives the UppyFile object from Uppy.
-   * Use file.name, file.size, file.type to request per-file presigned URLs.
-   *
-   * Use this with the ObjectUploader component:
-   * ```tsx
-   * <ObjectUploader onGetUploadParameters={getUploadParameters}>
-   *   Upload
-   * </ObjectUploader>
-   * ```
-   */
   const getUploadParameters = useCallback(
-    async (
-      file: UppyFile<Record<string, unknown>, Record<string, unknown>>
-    ): Promise<{
-      method: "PUT";
-      url: string;
-      headers?: Record<string, string>;
-    }> => {
-      // Use the actual file properties to request a per-file presigned URL
+    async (file: any): Promise<{ method: "PUT"; url: string; headers?: Record<string, string> }> => {
+      const formData = new FormData();
+      formData.append("file", file.data || file);
+
       const response = await fetch("/api/uploads/request-url", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: file.name,
-          size: file.size,
-          contentType: file.type || "application/octet-stream",
-        }),
+        body: formData,
       });
 
       if (!response.ok) {
-        throw new Error("Failed to get upload URL");
+        throw new Error("Failed to upload file");
       }
 
       const data = await response.json();
       return {
         method: "PUT",
-        url: data.uploadURL,
-        headers: { "Content-Type": file.type || "application/octet-stream" },
+        url: data.objectPath,
+        headers: {},
       };
     },
     []
@@ -214,4 +91,3 @@ export function useUpload(options: UseUploadOptions = {}) {
     progress,
   };
 }
-

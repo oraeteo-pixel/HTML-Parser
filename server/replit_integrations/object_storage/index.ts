@@ -21,4 +21,3 @@ export {
 } from "./objectAcl";
 
 export { registerObjectStorageRoutes } from "./routes";
-

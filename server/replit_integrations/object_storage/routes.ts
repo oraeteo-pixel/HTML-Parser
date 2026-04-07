@@ -1,120 +1,79 @@
 import type { Express } from "express";
-import { ObjectStorageService, ObjectNotFoundError } from "./objectStorage";
+import multer from "multer";
+import path from "path";
+import { randomUUID } from "crypto";
+import { ObjectStorageService, ObjectNotFoundError, UPLOADS_DIR } from "./objectStorage";
 
-/**
- * Register object storage routes for file uploads.
- *
- * This provides example routes for the presigned URL upload flow:
- * 1. POST /api/uploads/request-url - Get a presigned URL for uploading
- * 2. The client then uploads directly to the presigned URL
- *
- * IMPORTANT: These are example routes. Customize based on your use case:
- * - Add authentication middleware for protected uploads
- * - Add file metadata storage (save to database after upload)
- * - Add ACL policies for access control
- */
+const storage = multer.diskStorage({
+  destination: (_req, _file, cb) => cb(null, UPLOADS_DIR),
+  filename: (_req, file, cb) => {
+    const ext = path.extname(file.originalname).replace(".", "");
+    const id = randomUUID();
+    cb(null, ext ? `${id}.${ext}` : id);
+  },
+});
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 50 * 1024 * 1024 },
+});
+
 export function registerObjectStorageRoutes(app: Express): void {
   const objectStorageService = new ObjectStorageService();
 
-  /**
-   * Request a presigned URL for file upload.
-   *
-   * Request body (JSON):
-   * {
-   *   "name": "filename.jpg",
-   *   "size": 12345,
-   *   "contentType": "image/jpeg"
-   * }
-   *
-   * Response:
-   * {
-   *   "uploadURL": "https://storage.googleapis.com/...",
-   *   "objectPath": "/objects/uploads/uuid"
-   * }
-   *
-   * IMPORTANT: The client should NOT send the file to this endpoint.
-   * Send JSON metadata only, then upload the file directly to uploadURL.
-   */
-  app.post("/api/uploads/request-url", async (req, res) => {
+  app.post("/api/uploads/request-url", upload.single("file"), async (req, res) => {
     try {
-      const { name, size, contentType } = req.body;
-
-      if (!name) {
-        return res.status(400).json({
-          error: "Missing required field: name",
-        });
+      if (!req.file) {
+        return res.status(400).json({ error: "No file uploaded" });
       }
-
-      const uploadURL = await objectStorageService.getObjectEntityUploadURL();
-
-      // Extract object path from the presigned URL for later reference
-      const objectPath = objectStorageService.normalizeObjectEntityPath(uploadURL);
-
+      const objectPath = `/objects/uploads/${req.file.filename}`;
       res.json({
-        uploadURL,
+        uploadURL: objectPath,
         objectPath,
-        // Echo back the metadata for client convenience
-        metadata: { name, size, contentType },
+        metadata: {
+          name: req.file.originalname,
+          size: req.file.size,
+          contentType: req.file.mimetype,
+        },
       });
     } catch (error) {
-      console.error("Error generating upload URL:", error);
-      res.status(500).json({ error: "Failed to generate upload URL" });
+      console.error("Upload error:", error);
+      res.status(500).json({ error: "Upload failed" });
     }
   });
 
-  /**
-   * Serve uploaded objects.
-   *
-   * GET /objects/:objectPath(*)
-   *
-   * This serves files from object storage. For public files, no auth needed.
-   * For protected files, add authentication middleware and ACL checks.
-   */
+  app.post("/api/uploads", upload.single("file"), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: "No file uploaded" });
+      }
+      const objectPath = `/objects/uploads/${req.file.filename}`;
+      res.json({
+        uploadURL: objectPath,
+        objectPath,
+        metadata: {
+          name: req.file.originalname,
+          size: req.file.size,
+          contentType: req.file.mimetype,
+        },
+      });
+    } catch (error) {
+      console.error("Upload error:", error);
+      res.status(500).json({ error: "Upload failed" });
+    }
+  });
+
   app.get("/objects/:objectPath(*)", async (req, res) => {
     try {
-      // Extract the base path without query string
       const fullPath = req.path;
-      const objectFile = await objectStorageService.getObjectEntityFile(fullPath);
-      
-      // Get content type hint from query params (set during upload)
-      const typeHint = req.query.type as string | undefined;
-      const nameHint = req.query.name as string | undefined;
-      
-      // Map type hints to MIME types
-      let contentTypeOverride: string | undefined;
-      if (typeHint === "video") {
-        // Infer video type from name if available
-        if (nameHint?.toLowerCase().endsWith(".mp4")) {
-          contentTypeOverride = "video/mp4";
-        } else if (nameHint?.toLowerCase().endsWith(".webm")) {
-          contentTypeOverride = "video/webm";
-        } else if (nameHint?.toLowerCase().endsWith(".mov")) {
-          contentTypeOverride = "video/quicktime";
-        } else {
-          contentTypeOverride = "video/mp4"; // Default to mp4
-        }
-      } else if (typeHint === "image") {
-        if (nameHint?.toLowerCase().endsWith(".png")) {
-          contentTypeOverride = "image/png";
-        } else if (nameHint?.toLowerCase().endsWith(".gif")) {
-          contentTypeOverride = "image/gif";
-        } else if (nameHint?.toLowerCase().endsWith(".webp")) {
-          contentTypeOverride = "image/webp";
-        } else {
-          contentTypeOverride = "image/jpeg";
-        }
-      } else if (typeHint === "pdf") {
-        contentTypeOverride = "application/pdf";
-      }
-      
-      await objectStorageService.downloadObject(objectFile, res, 3600, contentTypeOverride);
+      const objectId = fullPath.replace(/^\/objects\/uploads\//, "").replace(/^\/objects\//, "");
+      await objectStorageService.downloadObject(objectId, res);
     } catch (error) {
-      console.error("Error serving object:", error);
       if (error instanceof ObjectNotFoundError) {
         return res.status(404).json({ error: "Object not found" });
       }
+      console.error("Error serving object:", error);
       return res.status(500).json({ error: "Failed to serve object" });
     }
   });
 }
-

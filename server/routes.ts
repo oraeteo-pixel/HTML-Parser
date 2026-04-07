@@ -5,10 +5,27 @@ import { z } from "zod";
 import multer from "multer";
 import { randomUUID } from "crypto";
 import { setupAuth, registerAuthRoutes, isAuthenticated } from "./replit_integrations/auth";
-import { registerObjectStorageRoutes, objectStorageService, objectStorageClient } from "./replit_integrations/object_storage";
+import { registerObjectStorageRoutes, objectStorageService } from "./replit_integrations/object_storage";
+import { UPLOADS_DIR } from "./replit_integrations/object_storage/objectStorage";
+import path from "path";
 import { generateCalendarExcel } from "./calendarExport";
 
-const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 10 * 1024 * 1024 } });
+import fs from "fs";
+
+if (!fs.existsSync(UPLOADS_DIR)) {
+  fs.mkdirSync(UPLOADS_DIR, { recursive: true });
+}
+
+const diskStorage = multer.diskStorage({
+  destination: (_req, _file, cb) => cb(null, UPLOADS_DIR),
+  filename: (_req, file, cb) => {
+    const ext = path.extname(file.originalname).replace(".", "");
+    const id = randomUUID();
+    cb(null, ext ? `${id}.${ext}` : id);
+  },
+});
+
+const upload = multer({ storage: diskStorage, limits: { fileSize: 50 * 1024 * 1024 } });
 
 // 60갑자 계산 함수 (서버사이드)
 const HEAVENLY_STEMS = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"];
@@ -49,28 +66,8 @@ export async function registerRoutes(
       if (!file) {
         return res.status(400).json({ error: "No file uploaded" });
       }
-
-      const privateObjectDir = objectStorageService.getPrivateObjectDir();
-      const objectId = randomUUID();
-      const ext = file.originalname.split('.').pop() || '';
-      const objectPath = `${privateObjectDir}/uploads/${objectId}${ext ? '.' + ext : ''}`;
-      
-      const pathParts = objectPath.startsWith('/') ? objectPath.slice(1).split('/') : objectPath.split('/');
-      const bucketName = pathParts[0];
-      const objectName = pathParts.slice(1).join('/');
-      
-      const bucket = objectStorageClient.bucket(bucketName);
-      const gcsFile = bucket.file(objectName);
-      
-      await gcsFile.save(file.buffer, {
-        contentType: file.mimetype,
-        metadata: {
-          originalName: file.originalname,
-        },
-      });
-      
-      const url = `/objects/uploads/${objectId}${ext ? '.' + ext : ''}`;
-      res.json({ url, objectPath });
+      const url = `/objects/uploads/${file.filename}`;
+      res.json({ url, objectPath: url });
     } catch (error) {
       console.error("Upload error:", error);
       res.status(500).json({ error: "Upload failed" });

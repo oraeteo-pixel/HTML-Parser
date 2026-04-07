@@ -66,6 +66,11 @@ export async function registerRoutes(
       if (!file) {
         return res.status(400).json({ error: "No file uploaded" });
       }
+      // GCS 백업 (Replit 환경)
+      try {
+        const buf = require("fs").readFileSync(file.path);
+        await objectStorageService.uploadFromBuffer(buf, file.filename);
+      } catch {}
       const url = `/objects/uploads/${file.filename}`;
       res.json({ url, objectPath: url });
     } catch (error) {

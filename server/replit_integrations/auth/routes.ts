@@ -277,6 +277,58 @@ export function registerAuthRoutes(app: Express): void {
     }
   });
 
+  // Local email/password login
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      if (!email || !password) {
+        return res.status(400).json({ message: "이메일과 비밀번호를 입력해주세요." });
+      }
+      const user = await authStorage.verifyLocalPassword(email, password);
+      if (!user) {
+        return res.status(401).json({ message: "이메일 또는 비밀번호가 올바르지 않습니다." });
+      }
+      (req.session as any).userId = user.id;
+      (req.session as any).provider = 'local';
+      req.session.save((err) => {
+        if (err) console.error("Session save error:", err);
+        console.log("Local login successful for user:", user.id);
+        res.json({ success: true, user });
+      });
+    } catch (error) {
+      console.error("Local login error:", error);
+      res.status(500).json({ message: "로그인 처리 중 오류가 발생했습니다." });
+    }
+  });
+
+  // Local email/password register
+  app.post("/api/auth/register", async (req, res) => {
+    try {
+      const { email, password, firstName, phone } = req.body;
+      if (!email || !password || !firstName) {
+        return res.status(400).json({ message: "이름, 이메일, 비밀번호를 모두 입력해주세요." });
+      }
+      if (password.length < 6) {
+        return res.status(400).json({ message: "비밀번호는 6자 이상이어야 합니다." });
+      }
+      const existing = await authStorage.getUserByEmail(email);
+      if (existing) {
+        return res.status(400).json({ message: "이미 가입된 이메일입니다." });
+      }
+      const user = await authStorage.createLocalUser(email, password, firstName, phone);
+      (req.session as any).userId = user.id;
+      (req.session as any).provider = 'local';
+      req.session.save((err) => {
+        if (err) console.error("Session save error:", err);
+        console.log("Local register successful for user:", user.id);
+        res.json({ success: true, user });
+      });
+    } catch (error) {
+      console.error("Local register error:", error);
+      res.status(500).json({ message: "회원가입 처리 중 오류가 발생했습니다." });
+    }
+  });
+
   // Logout
   app.post("/api/auth/logout", (req, res) => {
     req.session.destroy((err) => {

@@ -3,269 +3,309 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, CheckCircle } from "lucide-react";
+import { Loader2, Eye, EyeOff } from "lucide-react";
 import { SiNaver, SiKakaotalk, SiGoogle } from "react-icons/si";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface SignUpModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-type Step = "select" | "form" | "success";
-
 export function SignUpModal({ open, onOpenChange }: SignUpModalProps) {
-  const [step, setStep] = useState<Step>("select");
-  const [provider, setProvider] = useState<"naver" | "kakao" | "google" | null>(null);
-  const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [email, setEmail] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [tab, setTab] = useState<"login" | "register">("login");
+
+  const [loginEmail, setLoginEmail] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+  const [showLoginPw, setShowLoginPw] = useState(false);
+  const [loginLoading, setLoginLoading] = useState(false);
+
+  const [regName, setRegName] = useState("");
+  const [regEmail, setRegEmail] = useState("");
+  const [regPhone, setRegPhone] = useState("");
+  const [regPassword, setRegPassword] = useState("");
+  const [regPasswordConfirm, setRegPasswordConfirm] = useState("");
+  const [showRegPw, setShowRegPw] = useState(false);
+  const [regLoading, setRegLoading] = useState(false);
+
   const { toast } = useToast();
-
-  const handleProviderSelect = (selectedProvider: "naver" | "kakao" | "google") => {
-    if (selectedProvider === "naver") {
-      window.location.href = "/api/auth/naver";
-      return;
-    }
-    if (selectedProvider === "kakao") {
-      window.location.href = "/api/auth/kakao";
-      return;
-    }
-    if (selectedProvider === "google") {
-      window.location.href = "/api/auth/google";
-      return;
-    }
-    setProvider(selectedProvider);
-    setStep("form");
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!name.trim() || !phone.trim() || !email.trim()) {
-      toast({
-        title: "입력 오류",
-        description: "모든 필수 항목을 입력해주세요.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      toast({
-        title: "입력 오류",
-        description: "올바른 이메일 형식을 입력해주세요.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsSubmitting(true);
-    
-    try {
-      const response = await fetch("/api/auth/oauth-signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ provider, name, phone, email }),
-      });
-
-      if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || "가입에 실패했습니다.");
-      }
-
-      setStep("success");
-    } catch (error: any) {
-      toast({
-        title: "가입 실패",
-        description: error.message || "가입 처리 중 오류가 발생했습니다.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  const queryClient = useQueryClient();
 
   const handleClose = () => {
-    setStep("select");
-    setProvider(null);
-    setName("");
-    setPhone("");
-    setEmail("");
+    setLoginEmail(""); setLoginPassword(""); setShowLoginPw(false);
+    setRegName(""); setRegEmail(""); setRegPhone(""); setRegPassword(""); setRegPasswordConfirm(""); setShowRegPw(false);
     onOpenChange(false);
   };
 
-  const handleBack = () => {
-    setStep("select");
-    setProvider(null);
+  const handleLoginSuccess = () => {
+    queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+    toast({ title: "로그인 성공", description: "환영합니다!" });
+    handleClose();
+  };
+
+  const handleLoginSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!loginEmail || !loginPassword) {
+      toast({ title: "입력 오류", description: "이메일과 비밀번호를 입력해주세요.", variant: "destructive" });
+      return;
+    }
+    setLoginLoading(true);
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ email: loginEmail, password: loginPassword }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "로그인 실패");
+      handleLoginSuccess();
+    } catch (err: any) {
+      toast({ title: "로그인 실패", description: err.message, variant: "destructive" });
+    } finally {
+      setLoginLoading(false);
+    }
+  };
+
+  const handleRegisterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!regName || !regEmail || !regPassword) {
+      toast({ title: "입력 오류", description: "이름, 이메일, 비밀번호를 모두 입력해주세요.", variant: "destructive" });
+      return;
+    }
+    if (regPassword.length < 6) {
+      toast({ title: "입력 오류", description: "비밀번호는 6자 이상이어야 합니다.", variant: "destructive" });
+      return;
+    }
+    if (regPassword !== regPasswordConfirm) {
+      toast({ title: "입력 오류", description: "비밀번호가 일치하지 않습니다.", variant: "destructive" });
+      return;
+    }
+    setRegLoading(true);
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ email: regEmail, password: regPassword, firstName: regName, phone: regPhone }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "회원가입 실패");
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+      toast({ title: "회원가입 완료", description: "환영합니다!" });
+      handleClose();
+    } catch (err: any) {
+      toast({ title: "회원가입 실패", description: err.message, variant: "destructive" });
+    } finally {
+      setRegLoading(false);
+    }
+  };
+
+  const handleSocial = (provider: "naver" | "kakao" | "google") => {
+    window.location.href = `/api/auth/${provider}`;
   };
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-md" data-testid="signup-modal">
-        {step === "select" && (
-          <>
-            <DialogHeader>
-              <DialogTitle className="text-center text-lg">회원가입</DialogTitle>
-              <DialogDescription className="text-center">
-                소셜 계정으로 간편하게 가입하세요
-              </DialogDescription>
-            </DialogHeader>
-            <div className="flex flex-col gap-3 mt-4">
-              <Button
-                onClick={() => handleProviderSelect("naver")}
-                className="w-full h-12 text-white"
-                style={{ backgroundColor: "#03C75A" }}
-                data-testid="button-signup-naver"
-              >
-                <SiNaver className="w-5 h-5 mr-2" />
-                네이버로 가입하기
-              </Button>
-              <Button
-                onClick={() => handleProviderSelect("kakao")}
-                className="w-full h-12 text-black"
-                style={{ backgroundColor: "#FEE500" }}
-                data-testid="button-signup-kakao"
-              >
-                <SiKakaotalk className="w-5 h-5 mr-2" />
-                카카오로 가입하기
-              </Button>
-              <Button
-                onClick={() => handleProviderSelect("google")}
-                className="w-full h-12 border"
-                variant="outline"
-                data-testid="button-signup-google"
-              >
-                <SiGoogle className="w-5 h-5 mr-2 text-red-500" />
-                구글로 가입하기
-              </Button>
-            </div>
-          </>
-        )}
+      <DialogContent className="sm:max-w-md p-0 overflow-hidden" data-testid="signup-modal">
+        <Tabs value={tab} onValueChange={(v) => setTab(v as "login" | "register")} className="w-full">
+          <TabsList className="w-full rounded-none h-12 bg-muted/50 border-b">
+            <TabsTrigger value="login" className="flex-1 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary" data-testid="tab-login">
+              로그인
+            </TabsTrigger>
+            <TabsTrigger value="register" className="flex-1 rounded-none data-[state=active]:border-b-2 data-[state=active]:border-primary" data-testid="tab-register">
+              회원가입
+            </TabsTrigger>
+          </TabsList>
 
-        {step === "form" && (
-          <>
-            <DialogHeader>
-              <DialogTitle className="text-center text-lg flex items-center justify-center gap-2">
-                {provider === "naver" ? (
-                  <>
-                    <SiNaver className="w-5 h-5" style={{ color: "#03C75A" }} />
-                    네이버 가입
-                  </>
-                ) : provider === "kakao" ? (
-                  <>
-                    <SiKakaotalk className="w-5 h-5" style={{ color: "#3C1E1E" }} />
-                    카카오 가입
-                  </>
-                ) : (
-                  <>
-                    <SiGoogle className="w-5 h-5 text-red-500" />
-                    구글 가입
-                  </>
-                )}
-              </DialogTitle>
-              <DialogDescription className="text-center">
-                연락처 정보를 입력해주세요
+          {/* 로그인 탭 */}
+          <TabsContent value="login" className="mt-0 p-6 space-y-4">
+            <DialogHeader className="pb-2">
+              <DialogTitle className="text-center text-lg">로그인</DialogTitle>
+              <DialogDescription className="text-center text-sm">
+                이메일 또는 소셜 계정으로 로그인하세요
               </DialogDescription>
             </DialogHeader>
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4 mt-4">
-              <div className="space-y-2">
-                <Label htmlFor="name" className="flex items-center gap-1">
-                  <span className="text-red-500">*</span> 회원이름
-                </Label>
+            <form onSubmit={handleLoginSubmit} className="space-y-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="login-email">이메일</Label>
                 <Input
-                  id="name"
-                  type="text"
-                  placeholder="홍길동"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  data-testid="input-name"
-                />
-                <p className="text-xs text-muted-foreground">네이버/카카오 계정의 이름이 자동으로 입력됩니다</p>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="phone" className="flex items-center gap-1">
-                  <span className="text-red-500">*</span> 휴대전화번호
-                </Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  placeholder="010-1234-5678"
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  data-testid="input-phone"
-                />
-                <p className="text-xs text-muted-foreground">본인 확인 및 중요 알림 발송에 사용됩니다</p>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="email" className="flex items-center gap-1">
-                  <span className="text-red-500">*</span> 이메일 주소
-                </Label>
-                <Input
-                  id="email"
+                  id="login-email"
                   type="email"
                   placeholder="example@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  data-testid="input-email"
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
+                  data-testid="input-login-email"
+                  autoComplete="email"
                 />
-                <p className="text-xs text-muted-foreground">계정 관련 알림 및 소식을 받아보실 수 있습니다</p>
               </div>
-              <div className="flex gap-2 mt-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={handleBack}
-                  className="flex-1"
-                  data-testid="button-back"
-                >
-                  뒤로
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="flex-1"
-                  data-testid="button-confirm-signup"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                      처리 중...
-                    </>
-                  ) : (
-                    "가입하기"
-                  )}
-                </Button>
+              <div className="space-y-1.5">
+                <Label htmlFor="login-password">비밀번호</Label>
+                <div className="relative">
+                  <Input
+                    id="login-password"
+                    type={showLoginPw ? "text" : "password"}
+                    placeholder="비밀번호를 입력하세요"
+                    value={loginPassword}
+                    onChange={(e) => setLoginPassword(e.target.value)}
+                    data-testid="input-login-password"
+                    autoComplete="current-password"
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowLoginPw(!showLoginPw)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    tabIndex={-1}
+                  >
+                    {showLoginPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
               </div>
+              <Button type="submit" className="w-full" disabled={loginLoading} data-testid="button-login-submit">
+                {loginLoading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />로그인 중...</> : "로그인"}
+              </Button>
             </form>
-          </>
-        )}
 
-        {step === "success" && (
-          <>
-            <DialogHeader>
-              <DialogTitle className="text-center text-lg">가입 완료</DialogTitle>
-            </DialogHeader>
-            <div className="flex flex-col items-center gap-4 py-6">
-              <div className="w-16 h-16 rounded-full bg-green-100 dark:bg-green-900 flex items-center justify-center">
-                <CheckCircle className="w-10 h-10 text-green-600 dark:text-green-400" />
+            <div className="relative my-2">
+              <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">또는 소셜 로그인</span>
               </div>
-              <p className="text-center text-muted-foreground">
-                회원가입이 완료되었습니다!<br />
-                이제 로그인하여 서비스를 이용하실 수 있습니다.
-              </p>
-              <Button
-                onClick={handleClose}
-                className="w-full mt-2"
-                data-testid="button-close-success"
-              >
-                확인
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <Button onClick={() => handleSocial("naver")} className="w-full h-11 text-white" style={{ backgroundColor: "#03C75A" }} data-testid="button-login-naver">
+                <SiNaver className="w-4 h-4 mr-2" /> 네이버로 로그인
+              </Button>
+              <Button onClick={() => handleSocial("kakao")} className="w-full h-11 text-black" style={{ backgroundColor: "#FEE500" }} data-testid="button-login-kakao">
+                <SiKakaotalk className="w-4 h-4 mr-2" /> 카카오로 로그인
+              </Button>
+              <Button onClick={() => handleSocial("google")} variant="outline" className="w-full h-11" data-testid="button-login-google">
+                <SiGoogle className="w-4 h-4 mr-2 text-red-500" /> 구글로 로그인
               </Button>
             </div>
-          </>
-        )}
+
+            <p className="text-center text-xs text-muted-foreground pt-1">
+              계정이 없으신가요?{" "}
+              <button onClick={() => setTab("register")} className="text-primary underline underline-offset-2 hover:opacity-80">
+                회원가입
+              </button>
+            </p>
+          </TabsContent>
+
+          {/* 회원가입 탭 */}
+          <TabsContent value="register" className="mt-0 p-6 space-y-4">
+            <DialogHeader className="pb-2">
+              <DialogTitle className="text-center text-lg">회원가입</DialogTitle>
+              <DialogDescription className="text-center text-sm">
+                이메일 또는 소셜 계정으로 가입하세요
+              </DialogDescription>
+            </DialogHeader>
+            <form onSubmit={handleRegisterSubmit} className="space-y-3">
+              <div className="space-y-1.5">
+                <Label htmlFor="reg-name">이름 <span className="text-red-500">*</span></Label>
+                <Input
+                  id="reg-name"
+                  type="text"
+                  placeholder="홍길동"
+                  value={regName}
+                  onChange={(e) => setRegName(e.target.value)}
+                  data-testid="input-register-name"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="reg-email">이메일 <span className="text-red-500">*</span></Label>
+                <Input
+                  id="reg-email"
+                  type="email"
+                  placeholder="example@email.com"
+                  value={regEmail}
+                  onChange={(e) => setRegEmail(e.target.value)}
+                  data-testid="input-register-email"
+                  autoComplete="email"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="reg-phone">휴대폰번호</Label>
+                <Input
+                  id="reg-phone"
+                  type="tel"
+                  placeholder="010-1234-5678"
+                  value={regPhone}
+                  onChange={(e) => setRegPhone(e.target.value)}
+                  data-testid="input-register-phone"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="reg-password">비밀번호 <span className="text-red-500">*</span></Label>
+                <div className="relative">
+                  <Input
+                    id="reg-password"
+                    type={showRegPw ? "text" : "password"}
+                    placeholder="6자 이상 입력하세요"
+                    value={regPassword}
+                    onChange={(e) => setRegPassword(e.target.value)}
+                    data-testid="input-register-password"
+                    autoComplete="new-password"
+                    className="pr-10"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowRegPw(!showRegPw)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    tabIndex={-1}
+                  >
+                    {showRegPw ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="reg-password-confirm">비밀번호 확인 <span className="text-red-500">*</span></Label>
+                <Input
+                  id="reg-password-confirm"
+                  type={showRegPw ? "text" : "password"}
+                  placeholder="비밀번호를 다시 입력하세요"
+                  value={regPasswordConfirm}
+                  onChange={(e) => setRegPasswordConfirm(e.target.value)}
+                  data-testid="input-register-password-confirm"
+                  autoComplete="new-password"
+                />
+              </div>
+              <Button type="submit" className="w-full" disabled={regLoading} data-testid="button-register-submit">
+                {regLoading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />처리 중...</> : "가입하기"}
+              </Button>
+            </form>
+
+            <div className="relative my-2">
+              <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">또는 소셜 가입</span>
+              </div>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <Button onClick={() => handleSocial("naver")} className="w-full h-11 text-white" style={{ backgroundColor: "#03C75A" }} data-testid="button-register-naver">
+                <SiNaver className="w-4 h-4 mr-2" /> 네이버로 가입
+              </Button>
+              <Button onClick={() => handleSocial("kakao")} className="w-full h-11 text-black" style={{ backgroundColor: "#FEE500" }} data-testid="button-register-kakao">
+                <SiKakaotalk className="w-4 h-4 mr-2" /> 카카오로 가입
+              </Button>
+              <Button onClick={() => handleSocial("google")} variant="outline" className="w-full h-11" data-testid="button-register-google">
+                <SiGoogle className="w-4 h-4 mr-2 text-red-500" /> 구글로 가입
+              </Button>
+            </div>
+
+            <p className="text-center text-xs text-muted-foreground pt-1">
+              이미 계정이 있으신가요?{" "}
+              <button onClick={() => setTab("login")} className="text-primary underline underline-offset-2 hover:opacity-80">
+                로그인
+              </button>
+            </p>
+          </TabsContent>
+        </Tabs>
       </DialogContent>
     </Dialog>
   );

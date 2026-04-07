@@ -71,11 +71,11 @@ export function registerAuthRoutes(app: Express): void {
       const sessionState = (req.session as any).oauthState;
 
       if (!code || !NAVER_CLIENT_ID || !NAVER_CLIENT_SECRET) {
-        return res.redirect("/calendar?error=naver_auth_failed");
+        return res.redirect("/auth/callback?error=naver_auth_failed");
       }
       if (!state || typeof state !== 'string' || state !== sessionState) {
         console.error("State mismatch. Got:", state, "Expected:", sessionState);
-        return res.redirect("/calendar?error=invalid_state");
+        return res.redirect("/auth/callback?error=invalid_state");
       }
 
       delete (req.session as any).oauthState;
@@ -86,7 +86,7 @@ export function registerAuthRoutes(app: Express): void {
 
       if (!tokenData.access_token) {
         console.error("Naver token error:", tokenData);
-        return res.redirect("/calendar?error=naver_token_failed");
+        return res.redirect("/auth/callback?error=naver_token_failed");
       }
 
       const profileResponse = await fetch("https://openapi.naver.com/v1/nid/me", {
@@ -96,7 +96,7 @@ export function registerAuthRoutes(app: Express): void {
 
       if (profileData.resultcode !== "00") {
         console.error("Naver profile error:", profileData);
-        return res.redirect("/calendar?error=naver_profile_failed");
+        return res.redirect("/auth/callback?error=naver_profile_failed");
       }
 
       const naverUser = profileData.response;
@@ -114,11 +114,11 @@ export function registerAuthRoutes(app: Express): void {
       req.session.save((err) => {
         if (err) console.error("Session save error:", err);
         console.log("Naver login successful for user:", user.id);
-        res.redirect("/calendar?login=success");
+        res.redirect("/auth/callback?login=success");
       });
     } catch (error) {
       console.error("Naver OAuth callback error:", error);
-      res.redirect("/calendar?error=naver_auth_error");
+      res.redirect("/auth/callback?error=naver_auth_error");
     }
   });
 
@@ -143,11 +143,11 @@ export function registerAuthRoutes(app: Express): void {
       const sessionState = (req.session as any).oauthState;
 
       if (!code || !KAKAO_CLIENT_ID || !KAKAO_CLIENT_SECRET) {
-        return res.redirect("/calendar?error=kakao_auth_failed");
+        return res.redirect("/auth/callback?error=kakao_auth_failed");
       }
       if (!state || typeof state !== 'string' || state !== sessionState) {
         console.error("State mismatch. Got:", state, "Expected:", sessionState);
-        return res.redirect("/calendar?error=invalid_state");
+        return res.redirect("/auth/callback?error=invalid_state");
       }
 
       delete (req.session as any).oauthState;
@@ -168,7 +168,7 @@ export function registerAuthRoutes(app: Express): void {
 
       if (!tokenData.access_token) {
         console.error("Kakao token error:", tokenData);
-        return res.redirect("/calendar?error=kakao_token_failed");
+        return res.redirect("/auth/callback?error=kakao_token_failed");
       }
 
       const profileResponse = await fetch("https://kapi.kakao.com/v2/user/me", {
@@ -193,11 +193,11 @@ export function registerAuthRoutes(app: Express): void {
       req.session.save((err) => {
         if (err) console.error("Session save error:", err);
         console.log("Kakao login successful for user:", user.id);
-        res.redirect("/calendar?login=success");
+        res.redirect("/auth/callback?login=success");
       });
     } catch (error) {
       console.error("Kakao OAuth callback error:", error);
-      res.redirect("/calendar?error=kakao_auth_error");
+      res.redirect("/auth/callback?error=kakao_auth_error");
     }
   });
 
@@ -222,11 +222,11 @@ export function registerAuthRoutes(app: Express): void {
       const sessionState = (req.session as any).oauthState;
 
       if (!code || !GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
-        return res.redirect("/calendar?error=google_auth_failed");
+        return res.redirect("/auth/callback?error=google_auth_failed");
       }
       if (!state || typeof state !== 'string' || state !== sessionState) {
         console.error("State mismatch. Got:", state, "Expected:", sessionState);
-        return res.redirect("/calendar?error=invalid_state");
+        return res.redirect("/auth/callback?error=invalid_state");
       }
 
       delete (req.session as any).oauthState;
@@ -247,7 +247,7 @@ export function registerAuthRoutes(app: Express): void {
 
       if (!tokenData.access_token) {
         console.error("Google token error:", tokenData);
-        return res.redirect("/calendar?error=google_token_failed");
+        return res.redirect("/auth/callback?error=google_token_failed");
       }
 
       const profileResponse = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
@@ -269,11 +269,11 @@ export function registerAuthRoutes(app: Express): void {
       req.session.save((err) => {
         if (err) console.error("Session save error:", err);
         console.log("Google login successful for user:", user.id);
-        res.redirect("/calendar?login=success");
+        res.redirect("/auth/callback?login=success");
       });
     } catch (error) {
       console.error("Google OAuth callback error:", error);
-      res.redirect("/calendar?error=google_auth_error");
+      res.redirect("/auth/callback?error=google_auth_error");
     }
   });
 

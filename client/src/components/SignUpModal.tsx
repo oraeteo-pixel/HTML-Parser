@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -32,6 +32,30 @@ export function SignUpModal({ open, onOpenChange }: SignUpModalProps) {
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const popupRef = useRef<Window | null>(null);
+
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      if (event.origin !== window.location.origin) return;
+      if (event.data?.type !== "oauth_callback") return;
+      const { login, error } = event.data;
+      if (login === "success") {
+        queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
+        toast({ title: "로그인 성공", description: "환영합니다!" });
+        handleClose();
+      } else if (error) {
+        const msgs: Record<string, string> = {
+          invalid_state: "로그인 요청이 만료됐습니다. 다시 시도해주세요.",
+          naver_auth_failed: "네이버 로그인에 실패했습니다.",
+          kakao_auth_failed: "카카오 로그인에 실패했습니다.",
+          google_auth_failed: "구글 로그인에 실패했습니다.",
+        };
+        toast({ title: "로그인 실패", description: msgs[error] || "다시 시도해주세요.", variant: "destructive" });
+      }
+    };
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
+  }, []);
 
   const handleClose = () => {
     setLoginEmail(""); setLoginPassword(""); setShowLoginPw(false);
@@ -104,7 +128,22 @@ export function SignUpModal({ open, onOpenChange }: SignUpModalProps) {
   };
 
   const handleSocial = (provider: "naver" | "kakao" | "google") => {
-    window.location.href = `/api/auth/${provider}`;
+    const width = 600;
+    const height = 700;
+    const left = window.screenX + (window.outerWidth - width) / 2;
+    const top = window.screenY + (window.outerHeight - height) / 2;
+    const popup = window.open(
+      `/api/auth/${provider}`,
+      `${provider}_oauth`,
+      `width=${width},height=${height},left=${left},top=${top},resizable=yes,scrollbars=yes`
+    );
+    if (popup) {
+      popupRef.current = popup;
+      popup.focus();
+    } else {
+      // 팝업 차단된 경우 현재 페이지에서 이동
+      window.location.href = `/api/auth/${provider}`;
+    }
   };
 
   return (

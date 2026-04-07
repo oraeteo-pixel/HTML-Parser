@@ -18,6 +18,7 @@ import Messages from "@/pages/Messages";
 import Admin from "@/pages/Admin";
 import TermsPage from "@/pages/TermsPage";
 import PrivacyPage from "@/pages/PrivacyPage";
+import OAuthCallback from "@/pages/OAuthCallback";
 
 function Router() {
   return (
@@ -37,6 +38,7 @@ function Router() {
       <Route path="/admin" component={Admin} />
       <Route path="/terms" component={TermsPage} />
       <Route path="/privacy" component={PrivacyPage} />
+      <Route path="/auth/callback" component={OAuthCallback} />
       <Route component={NotFound} />
     </Switch>
   );

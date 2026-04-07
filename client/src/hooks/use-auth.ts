@@ -30,10 +30,14 @@ export function useAuth() {
 
   const logoutMutation = useMutation({
     mutationFn: async () => {
-      window.location.href = "/api/logout";
+      await fetch("/api/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
     },
     onSuccess: () => {
       queryClient.setQueryData(["/api/auth/user"], null);
+      queryClient.invalidateQueries({ queryKey: ["/api/auth/user"] });
     },
   });
 

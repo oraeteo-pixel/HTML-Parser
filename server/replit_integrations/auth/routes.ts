@@ -25,32 +25,19 @@ const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 const GOOGLE_CALLBACK_URL = process.env.GOOGLE_CALLBACK_URL || "https://orae.com/api/auth/google/callback";
 
-// Simple in-memory state store for OAuth CSRF protection
-const oauthStates = new Map<string, { createdAt: number }>();
-
-// Clean up old states (older than 10 minutes)
-setInterval(() => {
-  const now = Date.now();
-  const entries = Array.from(oauthStates.entries());
-  entries.forEach(([state, data]) => {
-    if (now - data.createdAt > 10 * 60 * 1000) {
-      oauthStates.delete(state);
-    }
-  });
-}, 60 * 1000);
+function generateState(): string {
+  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+}
 
 // Register auth-specific routes
 export function registerAuthRoutes(app: Express): void {
   // Get current authenticated user
   app.get("/api/auth/user", isAuthenticated, async (req: any, res) => {
     try {
-      // Check for OAuth session auth first (Naver, Kakao, Google)
       if (req.oauthUser) {
         const user = await authStorage.getUser(req.oauthUser.id);
         return res.json(user);
       }
-      
-      // Fallback to Replit Auth
       const userId = req.user?.claims?.sub;
       if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
@@ -66,56 +53,53 @@ export function registerAuthRoutes(app: Express): void {
   // Naver OAuth - Start login flow
   app.get("/api/auth/naver", (req, res) => {
     if (!NAVER_CLIENT_ID) {
-      return res.status(500).json({ message: "네이버 OAuth가 설정되지 않았습니다. NAVER_CLIENT_ID를 설정해주세요." });
+      return res.status(500).json({ message: "네이버 OAuth가 설정되지 않았습니다." });
     }
-    
-    // Generate and store state for CSRF protection
-    const state = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-    oauthStates.set(state, { createdAt: Date.now() });
-    
-    const naverAuthUrl = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${NAVER_CLIENT_ID}&redirect_uri=${encodeURIComponent(NAVER_CALLBACK_URL)}&state=${state}`;
-    
-    res.redirect(naverAuthUrl);
+    const state = generateState();
+    (req.session as any).oauthState = state;
+    (req.session as any).oauthProvider = 'naver';
+    req.session.save(() => {
+      const url = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${NAVER_CLIENT_ID}&redirect_uri=${encodeURIComponent(NAVER_CALLBACK_URL)}&state=${state}`;
+      res.redirect(url);
+    });
   });
 
   // Naver OAuth - Callback handler
   app.get("/api/auth/naver/callback", async (req, res) => {
     try {
       const { code, state } = req.query;
-      
+      const sessionState = (req.session as any).oauthState;
+
       if (!code || !NAVER_CLIENT_ID || !NAVER_CLIENT_SECRET) {
         return res.redirect("/calendar?error=naver_auth_failed");
       }
-
-      // Validate state for CSRF protection
-      if (!state || typeof state !== 'string' || !oauthStates.has(state)) {
+      if (!state || typeof state !== 'string' || state !== sessionState) {
+        console.error("State mismatch. Got:", state, "Expected:", sessionState);
         return res.redirect("/calendar?error=invalid_state");
       }
-      oauthStates.delete(state);
-      
-      // Exchange code for access token
+
+      delete (req.session as any).oauthState;
+      delete (req.session as any).oauthProvider;
+
       const tokenResponse = await fetch(`https://nid.naver.com/oauth2.0/token?grant_type=authorization_code&client_id=${NAVER_CLIENT_ID}&client_secret=${NAVER_CLIENT_SECRET}&redirect_uri=${encodeURIComponent(NAVER_CALLBACK_URL)}&code=${code}&state=${state}`);
       const tokenData = await tokenResponse.json() as any;
-      
+
       if (!tokenData.access_token) {
         console.error("Naver token error:", tokenData);
         return res.redirect("/calendar?error=naver_token_failed");
       }
 
-      // Get user profile from Naver
       const profileResponse = await fetch("https://openapi.naver.com/v1/nid/me", {
         headers: { Authorization: `Bearer ${tokenData.access_token}` }
       });
       const profileData = await profileResponse.json() as any;
-      
+
       if (profileData.resultcode !== "00") {
         console.error("Naver profile error:", profileData);
         return res.redirect("/calendar?error=naver_profile_failed");
       }
 
       const naverUser = profileData.response;
-      
-      // Create or update user
       const user = await authStorage.upsertUser({
         id: `naver_${naverUser.id}`,
         email: naverUser.email,
@@ -124,15 +108,11 @@ export function registerAuthRoutes(app: Express): void {
         profileImageUrl: naverUser.profile_image,
       });
 
-      // Set session cookie for the user
       (req.session as any).userId = user.id;
       (req.session as any).provider = 'naver';
-      
-      // Save session explicitly
+
       req.session.save((err) => {
-        if (err) {
-          console.error("Session save error:", err);
-        }
+        if (err) console.error("Session save error:", err);
         console.log("Naver login successful for user:", user.id);
         res.redirect("/calendar?login=success");
       });
@@ -145,60 +125,60 @@ export function registerAuthRoutes(app: Express): void {
   // Kakao OAuth - Start login flow
   app.get("/api/auth/kakao", (req, res) => {
     if (!KAKAO_CLIENT_ID) {
-      return res.status(500).json({ message: "카카오 OAuth가 설정되지 않았습니다. KAKAO_CLIENT_ID를 설정해주세요." });
+      return res.status(500).json({ message: "카카오 OAuth가 설정되지 않았습니다." });
     }
-    
-    const state = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-    oauthStates.set(state, { createdAt: Date.now() });
-    
-    const kakaoAuthUrl = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${KAKAO_CLIENT_ID}&redirect_uri=${encodeURIComponent(KAKAO_CALLBACK_URL)}&state=${state}`;
-    
-    res.redirect(kakaoAuthUrl);
+    const state = generateState();
+    (req.session as any).oauthState = state;
+    (req.session as any).oauthProvider = 'kakao';
+    req.session.save(() => {
+      const url = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${KAKAO_CLIENT_ID}&redirect_uri=${encodeURIComponent(KAKAO_CALLBACK_URL)}&state=${state}`;
+      res.redirect(url);
+    });
   });
 
   // Kakao OAuth - Callback handler
   app.get("/api/auth/kakao/callback", async (req, res) => {
     try {
       const { code, state } = req.query;
-      
+      const sessionState = (req.session as any).oauthState;
+
       if (!code || !KAKAO_CLIENT_ID || !KAKAO_CLIENT_SECRET) {
         return res.redirect("/calendar?error=kakao_auth_failed");
       }
-
-      if (!state || typeof state !== 'string' || !oauthStates.has(state)) {
+      if (!state || typeof state !== 'string' || state !== sessionState) {
+        console.error("State mismatch. Got:", state, "Expected:", sessionState);
         return res.redirect("/calendar?error=invalid_state");
       }
-      oauthStates.delete(state);
-      
-      // Exchange code for access token
+
+      delete (req.session as any).oauthState;
+      delete (req.session as any).oauthProvider;
+
       const tokenResponse = await fetch("https://kauth.kakao.com/oauth/token", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({
           grant_type: "authorization_code",
           client_id: KAKAO_CLIENT_ID,
-          client_secret: KAKAO_CLIENT_SECRET,
+          client_secret: KAKAO_CLIENT_SECRET!,
           redirect_uri: KAKAO_CALLBACK_URL,
           code: code as string,
         }),
       });
       const tokenData = await tokenResponse.json() as any;
-      
+
       if (!tokenData.access_token) {
         console.error("Kakao token error:", tokenData);
         return res.redirect("/calendar?error=kakao_token_failed");
       }
 
-      // Get user profile from Kakao
       const profileResponse = await fetch("https://kapi.kakao.com/v2/user/me", {
         headers: { Authorization: `Bearer ${tokenData.access_token}` }
       });
       const profileData = await profileResponse.json() as any;
-      
+
       const kakaoAccount = profileData.kakao_account || {};
       const profile = kakaoAccount.profile || {};
-      
-      // Create or update user
+
       const user = await authStorage.upsertUser({
         id: `kakao_${profileData.id}`,
         email: kakaoAccount.email,
@@ -209,7 +189,7 @@ export function registerAuthRoutes(app: Express): void {
 
       (req.session as any).userId = user.id;
       (req.session as any).provider = 'kakao';
-      
+
       req.session.save((err) => {
         if (err) console.error("Session save error:", err);
         console.log("Kakao login successful for user:", user.id);
@@ -224,57 +204,57 @@ export function registerAuthRoutes(app: Express): void {
   // Google OAuth - Start login flow
   app.get("/api/auth/google", (req, res) => {
     if (!GOOGLE_CLIENT_ID) {
-      return res.status(500).json({ message: "구글 OAuth가 설정되지 않았습니다. GOOGLE_CLIENT_ID를 설정해주세요." });
+      return res.status(500).json({ message: "구글 OAuth가 설정되지 않았습니다." });
     }
-    
-    const state = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-    oauthStates.set(state, { createdAt: Date.now() });
-    
-    const googleAuthUrl = `https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(GOOGLE_CALLBACK_URL)}&state=${state}&scope=openid%20email%20profile`;
-    
-    res.redirect(googleAuthUrl);
+    const state = generateState();
+    (req.session as any).oauthState = state;
+    (req.session as any).oauthProvider = 'google';
+    req.session.save(() => {
+      const url = `https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(GOOGLE_CALLBACK_URL)}&state=${state}&scope=openid%20email%20profile`;
+      res.redirect(url);
+    });
   });
 
   // Google OAuth - Callback handler
   app.get("/api/auth/google/callback", async (req, res) => {
     try {
       const { code, state } = req.query;
-      
+      const sessionState = (req.session as any).oauthState;
+
       if (!code || !GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
         return res.redirect("/calendar?error=google_auth_failed");
       }
-
-      if (!state || typeof state !== 'string' || !oauthStates.has(state)) {
+      if (!state || typeof state !== 'string' || state !== sessionState) {
+        console.error("State mismatch. Got:", state, "Expected:", sessionState);
         return res.redirect("/calendar?error=invalid_state");
       }
-      oauthStates.delete(state);
-      
-      // Exchange code for access token
+
+      delete (req.session as any).oauthState;
+      delete (req.session as any).oauthProvider;
+
       const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: new URLSearchParams({
           grant_type: "authorization_code",
           client_id: GOOGLE_CLIENT_ID,
-          client_secret: GOOGLE_CLIENT_SECRET,
+          client_secret: GOOGLE_CLIENT_SECRET!,
           redirect_uri: GOOGLE_CALLBACK_URL,
           code: code as string,
         }),
       });
       const tokenData = await tokenResponse.json() as any;
-      
+
       if (!tokenData.access_token) {
         console.error("Google token error:", tokenData);
         return res.redirect("/calendar?error=google_token_failed");
       }
 
-      // Get user profile from Google
       const profileResponse = await fetch("https://www.googleapis.com/oauth2/v2/userinfo", {
         headers: { Authorization: `Bearer ${tokenData.access_token}` }
       });
       const profileData = await profileResponse.json() as any;
-      
-      // Create or update user
+
       const user = await authStorage.upsertUser({
         id: `google_${profileData.id}`,
         email: profileData.email,
@@ -285,7 +265,7 @@ export function registerAuthRoutes(app: Express): void {
 
       (req.session as any).userId = user.id;
       (req.session as any).provider = 'google';
-      
+
       req.session.save((err) => {
         if (err) console.error("Session save error:", err);
         console.log("Google login successful for user:", user.id);
@@ -297,19 +277,25 @@ export function registerAuthRoutes(app: Express): void {
     }
   });
 
+  // Logout
+  app.post("/api/auth/logout", (req, res) => {
+    req.session.destroy((err) => {
+      if (err) console.error("Session destroy error:", err);
+      res.json({ success: true });
+    });
+  });
+
   // OAuth signup with name, phone and email
   app.post("/api/auth/oauth-signup", async (req, res) => {
     try {
       const validatedData = oauthSignupSchema.parse(req.body);
       const { provider, name, phone, email } = validatedData;
 
-      // Check if email already exists
       const existingUser = await authStorage.getUserByEmail(email);
       if (existingUser) {
         return res.status(400).json({ message: "이미 가입된 이메일입니다." });
       }
 
-      // Create new user with OAuth provider info
       const user = await authStorage.upsertUser({
         email,
         phone,

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { User, Star, BookOpen, CalendarDays, Users, LogOut, Loader2, Mail, Settings, UserPlus } from "lucide-react";
+import { User, Star, BookOpen, CalendarDays, Users, LogOut, Loader2, Mail, Settings } from "lucide-react";
+import { SiNaver, SiKakaotalk, SiGoogle } from "react-icons/si";
 import { Link, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
@@ -125,10 +126,6 @@ export function Navigation() {
     { icon: BookOpen, label: "Ebook", korLabel: "현무경", href: "/ebook", hasUserContent: userHasEbookPosts },
     { icon: Users, label: "Community", korLabel: "마당", href: "/madang", hasUserContent: userHasMadangPosts },
   ];
-
-  const handleLogin = () => {
-    setShowSignUpModal(true);
-  };
 
   const handleLogout = () => {
     logout();
@@ -304,30 +301,40 @@ export function Navigation() {
                       <User className="h-6 w-6 sm:h-8 sm:w-8 group-hover:opacity-70 transition-opacity" style={{ color: 'hsl(210 20% 30%)' }} strokeWidth={2.5} />
                     </button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-48 p-2">
+                  <PopoverContent className="w-52 p-3">
                     <div className="space-y-2">
-                      <p className="text-sm font-medium text-center text-muted-foreground">
-                        로그인이 필요합니다
+                      <p className="text-xs font-medium text-center text-muted-foreground pb-1">
+                        소셜 계정으로 로그인
                       </p>
-                      <Button 
-                        variant="default"
+                      <Button
                         size="sm"
-                        className="w-full bg-green-600 hover:bg-green-700"
-                        onClick={() => setShowSignUpModal(true)}
-                        data-testid="button-signup"
+                        className="w-full text-white text-xs h-9"
+                        style={{ backgroundColor: "#03C75A" }}
+                        onClick={() => { window.location.href = "/api/auth/naver"; }}
+                        data-testid="button-login-naver"
                       >
-                        <UserPlus className="h-4 w-4 mr-1" />
-                        회원가입
+                        <SiNaver className="w-3.5 h-3.5 mr-1.5" />
+                        네이버로 로그인
                       </Button>
-                      <Button 
-                        variant="outline"
+                      <Button
                         size="sm"
-                        className="w-full"
-                        onClick={handleLogin}
-                        data-testid="button-login"
+                        className="w-full text-black text-xs h-9"
+                        style={{ backgroundColor: "#FEE500" }}
+                        onClick={() => { window.location.href = "/api/auth/kakao"; }}
+                        data-testid="button-login-kakao"
                       >
-                        <User className="h-4 w-4 mr-1" />
-                        로그인
+                        <SiKakaotalk className="w-3.5 h-3.5 mr-1.5" />
+                        카카오로 로그인
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="w-full text-xs h-9"
+                        onClick={() => { window.location.href = "/api/auth/google"; }}
+                        data-testid="button-login-google"
+                      >
+                        <SiGoogle className="w-3.5 h-3.5 mr-1.5 text-red-500" />
+                        구글로 로그인
                       </Button>
                     </div>
                   </PopoverContent>

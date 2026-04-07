@@ -84,12 +84,12 @@ export function registerAuthRoutes(app: Express): void {
       const { code, state } = req.query;
       
       if (!code || !NAVER_CLIENT_ID || !NAVER_CLIENT_SECRET) {
-        return res.redirect("/?error=naver_auth_failed");
+        return res.redirect("/calendar?error=naver_auth_failed");
       }
 
       // Validate state for CSRF protection
       if (!state || typeof state !== 'string' || !oauthStates.has(state)) {
-        return res.redirect("/?error=invalid_state");
+        return res.redirect("/calendar?error=invalid_state");
       }
       oauthStates.delete(state);
       
@@ -99,7 +99,7 @@ export function registerAuthRoutes(app: Express): void {
       
       if (!tokenData.access_token) {
         console.error("Naver token error:", tokenData);
-        return res.redirect("/?error=naver_token_failed");
+        return res.redirect("/calendar?error=naver_token_failed");
       }
 
       // Get user profile from Naver
@@ -110,7 +110,7 @@ export function registerAuthRoutes(app: Express): void {
       
       if (profileData.resultcode !== "00") {
         console.error("Naver profile error:", profileData);
-        return res.redirect("/?error=naver_profile_failed");
+        return res.redirect("/calendar?error=naver_profile_failed");
       }
 
       const naverUser = profileData.response;
@@ -138,7 +138,7 @@ export function registerAuthRoutes(app: Express): void {
       });
     } catch (error) {
       console.error("Naver OAuth callback error:", error);
-      res.redirect("/?error=naver_auth_error");
+      res.redirect("/calendar?error=naver_auth_error");
     }
   });
 
@@ -162,11 +162,11 @@ export function registerAuthRoutes(app: Express): void {
       const { code, state } = req.query;
       
       if (!code || !KAKAO_CLIENT_ID || !KAKAO_CLIENT_SECRET) {
-        return res.redirect("/?error=kakao_auth_failed");
+        return res.redirect("/calendar?error=kakao_auth_failed");
       }
 
       if (!state || typeof state !== 'string' || !oauthStates.has(state)) {
-        return res.redirect("/?error=invalid_state");
+        return res.redirect("/calendar?error=invalid_state");
       }
       oauthStates.delete(state);
       
@@ -186,7 +186,7 @@ export function registerAuthRoutes(app: Express): void {
       
       if (!tokenData.access_token) {
         console.error("Kakao token error:", tokenData);
-        return res.redirect("/?error=kakao_token_failed");
+        return res.redirect("/calendar?error=kakao_token_failed");
       }
 
       // Get user profile from Kakao
@@ -217,7 +217,7 @@ export function registerAuthRoutes(app: Express): void {
       });
     } catch (error) {
       console.error("Kakao OAuth callback error:", error);
-      res.redirect("/?error=kakao_auth_error");
+      res.redirect("/calendar?error=kakao_auth_error");
     }
   });
 
@@ -241,11 +241,11 @@ export function registerAuthRoutes(app: Express): void {
       const { code, state } = req.query;
       
       if (!code || !GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
-        return res.redirect("/?error=google_auth_failed");
+        return res.redirect("/calendar?error=google_auth_failed");
       }
 
       if (!state || typeof state !== 'string' || !oauthStates.has(state)) {
-        return res.redirect("/?error=invalid_state");
+        return res.redirect("/calendar?error=invalid_state");
       }
       oauthStates.delete(state);
       
@@ -265,7 +265,7 @@ export function registerAuthRoutes(app: Express): void {
       
       if (!tokenData.access_token) {
         console.error("Google token error:", tokenData);
-        return res.redirect("/?error=google_token_failed");
+        return res.redirect("/calendar?error=google_token_failed");
       }
 
       // Get user profile from Google
@@ -293,7 +293,7 @@ export function registerAuthRoutes(app: Express): void {
       });
     } catch (error) {
       console.error("Google OAuth callback error:", error);
-      res.redirect("/?error=google_auth_error");
+      res.redirect("/calendar?error=google_auth_error");
     }
   });
 

@@ -310,7 +310,7 @@ export function Navigation() {
                         size="sm"
                         className="w-full text-white text-xs h-9"
                         style={{ backgroundColor: "#03C75A" }}
-                        onClick={() => { window.location.href = "/api/auth/naver"; }}
+                        onClick={() => { (window.top || window).location.href = "/api/auth/naver"; }}
                         data-testid="button-login-naver"
                       >
                         <SiNaver className="w-3.5 h-3.5 mr-1.5" />
@@ -320,7 +320,7 @@ export function Navigation() {
                         size="sm"
                         className="w-full text-black text-xs h-9"
                         style={{ backgroundColor: "#FEE500" }}
-                        onClick={() => { window.location.href = "/api/auth/kakao"; }}
+                        onClick={() => { (window.top || window).location.href = "/api/auth/kakao"; }}
                         data-testid="button-login-kakao"
                       >
                         <SiKakaotalk className="w-3.5 h-3.5 mr-1.5" />
@@ -330,7 +330,7 @@ export function Navigation() {
                         size="sm"
                         variant="outline"
                         className="w-full text-xs h-9"
-                        onClick={() => { window.location.href = "/api/auth/google"; }}
+                        onClick={() => { (window.top || window).location.href = "/api/auth/google"; }}
                         data-testid="button-login-google"
                       >
                         <SiGoogle className="w-3.5 h-3.5 mr-1.5 text-red-500" />

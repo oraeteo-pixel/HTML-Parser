@@ -24,17 +24,17 @@ export function SignUpModal({ open, onOpenChange }: SignUpModalProps) {
   const { toast } = useToast();
 
   const handleProviderSelect = (selectedProvider: "naver" | "kakao" | "google") => {
-    // Redirect to OAuth provider using window.open for same window navigation
+    const top = window.top || window;
     if (selectedProvider === "naver") {
-      window.open("/api/auth/naver", "_self");
+      top.location.href = "/api/auth/naver";
       return;
     }
     if (selectedProvider === "kakao") {
-      window.open("/api/auth/kakao", "_self");
+      top.location.href = "/api/auth/kakao";
       return;
     }
     if (selectedProvider === "google") {
-      window.open("/api/auth/google", "_self");
+      top.location.href = "/api/auth/google";
       return;
     }
     setProvider(selectedProvider);

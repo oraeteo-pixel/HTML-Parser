@@ -68,6 +68,12 @@ export function Navigation() {
   const { toast } = useToast();
   const [messagesOpen, setMessagesOpen] = useState(false);
   const [showSignUpModal, setShowSignUpModal] = useState(false);
+
+  useEffect(() => {
+    const handler = () => setShowSignUpModal(true);
+    window.addEventListener('showLoginModal', handler);
+    return () => window.removeEventListener('showLoginModal', handler);
+  }, []);
   
   const { data: siteSettings } = useQuery<LogoSettings>({
     queryKey: ["/api/settings"],
@@ -121,7 +127,7 @@ export function Navigation() {
   ];
 
   const handleLogin = () => {
-    window.location.href = "/api/login";
+    setShowSignUpModal(true);
   };
 
   const handleLogout = () => {

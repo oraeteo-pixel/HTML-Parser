@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
@@ -14,8 +14,14 @@ export function TopBar() {
   const dayNames = ["日", "月", "火", "水", "木", "金", "土"];
   const dayName = dayNames[today.getDay()];
   
+  useEffect(() => {
+    const handler = () => setShowSignUpModal(true);
+    window.addEventListener('showLoginModal', handler);
+    return () => window.removeEventListener('showLoginModal', handler);
+  }, []);
+
   const handleLogin = () => {
-    window.location.href = "/api/login";
+    setShowSignUpModal(true);
   };
 
   const handleLogout = () => {

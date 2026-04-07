@@ -7,7 +7,8 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
-import { Mail, Send, Inbox, Check, Loader2, Home } from "lucide-react";
+import { Mail, Send, Inbox, Check, Loader2, Home, LogIn } from "lucide-react";
+import { SignUpModal } from "@/components/SignUpModal";
 import { useToast } from "@/hooks/use-toast";
 import { format } from "date-fns";
 import { ko } from "date-fns/locale";
@@ -50,6 +51,7 @@ export default function Messages() {
   const [composeReceiverId, setComposeReceiverId] = useState(toUserId || "");
   const [composeReceiverName, setComposeReceiverName] = useState(toUserName || "");
   const [composeContent, setComposeContent] = useState("");
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   const { data: receivedMessages, isLoading: receivedLoading } = useQuery<ReceivedMessage[]>({
     queryKey: ["/api/messages/received"],
@@ -121,10 +123,12 @@ export default function Messages() {
         <Card className="p-6 text-center">
           <Mail className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
           <p className="mb-4">쪽지함을 사용하려면 로그인하세요.</p>
-          <Button onClick={() => window.location.href = "/api/login"} data-testid="button-login-messages">
+          <Button onClick={() => setShowLoginModal(true)} data-testid="button-login-messages">
+            <LogIn className="h-4 w-4 mr-2" />
             로그인
           </Button>
         </Card>
+        <SignUpModal open={showLoginModal} onOpenChange={setShowLoginModal} />
       </div>
     );
   }

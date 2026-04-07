@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { User, Star, BookOpen, CalendarDays, Users, LogOut, Loader2, Mail, Settings } from "lucide-react";
-import { SiNaver, SiKakaotalk, SiGoogle } from "react-icons/si";
 import { Link, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "@/hooks/use-auth";
@@ -292,53 +291,13 @@ export function Navigation() {
               </>
             ) : (
               <>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <button 
-                      className="flex flex-col items-center gap-0 group cursor-pointer"
-                      data-testid="nav-user"
-                    >
-                      <User className="h-6 w-6 sm:h-8 sm:w-8 group-hover:opacity-70 transition-opacity" style={{ color: 'hsl(210 20% 30%)' }} strokeWidth={2.5} />
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-52 p-3">
-                    <div className="space-y-2">
-                      <p className="text-xs font-medium text-center text-muted-foreground pb-1">
-                        소셜 계정으로 로그인
-                      </p>
-                      <Button
-                        size="sm"
-                        className="w-full text-white text-xs h-9"
-                        style={{ backgroundColor: "#03C75A" }}
-                        onClick={() => { window.location.href = "/api/auth/naver"; }}
-                        data-testid="button-login-naver"
-                      >
-                        <SiNaver className="w-3.5 h-3.5 mr-1.5" />
-                        네이버로 로그인
-                      </Button>
-                      <Button
-                        size="sm"
-                        className="w-full text-black text-xs h-9"
-                        style={{ backgroundColor: "#FEE500" }}
-                        onClick={() => { window.location.href = "/api/auth/kakao"; }}
-                        data-testid="button-login-kakao"
-                      >
-                        <SiKakaotalk className="w-3.5 h-3.5 mr-1.5" />
-                        카카오로 로그인
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="w-full text-xs h-9"
-                        onClick={() => { window.location.href = "/api/auth/google"; }}
-                        data-testid="button-login-google"
-                      >
-                        <SiGoogle className="w-3.5 h-3.5 mr-1.5 text-red-500" />
-                        구글로 로그인
-                      </Button>
-                    </div>
-                  </PopoverContent>
-                </Popover>
+                <button 
+                  className="flex flex-col items-center gap-0 group cursor-pointer"
+                  data-testid="nav-user"
+                  onClick={() => setShowSignUpModal(true)}
+                >
+                  <User className="h-6 w-6 sm:h-8 sm:w-8 group-hover:opacity-70 transition-opacity" style={{ color: 'hsl(210 20% 30%)' }} strokeWidth={2.5} />
+                </button>
                 <SignUpModal 
                   open={showSignUpModal} 
                   onOpenChange={setShowSignUpModal} 

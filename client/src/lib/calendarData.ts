@@ -260,7 +260,7 @@ export function getMonthGanZhi(year: number, month: number, day?: number): strin
     } else if (month === 2) {
       monthBranch = 2; // 인월(寅月) - 새해 시작
     } else {
-      monthBranch = month; // 해당월 지지
+      monthBranch = month % 12; // 12월 대설 이후: 자월(子月)=0, 나머지는 그대로
     }
   }
   

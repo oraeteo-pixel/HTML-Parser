@@ -13,17 +13,17 @@ const oauthSignupSchema = z.object({
 // Naver OAuth configuration
 const NAVER_CLIENT_ID = process.env.NAVER_CLIENT_ID;
 const NAVER_CLIENT_SECRET = process.env.NAVER_CLIENT_SECRET;
-const NAVER_CALLBACK_URL = process.env.NAVER_CALLBACK_URL || "https://orae.com/api/auth/naver/callback";
+const NAVER_CALLBACK_URL = process.env.NAVER_CALLBACK_URL || "https://oraem.cafe24app.com/api/auth/naver/callback";
 
 // Kakao OAuth configuration
 const KAKAO_CLIENT_ID = process.env.KAKAO_CLIENT_ID;
 const KAKAO_CLIENT_SECRET = process.env.KAKAO_CLIENT_SECRET;
-const KAKAO_CALLBACK_URL = process.env.KAKAO_CALLBACK_URL || "https://orae.com/api/auth/kakao/callback";
+const KAKAO_CALLBACK_URL = process.env.KAKAO_CALLBACK_URL || "https://oraem.cafe24app.com/api/auth/kakao/callback";
 
 // Google OAuth configuration
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-const GOOGLE_CALLBACK_URL = process.env.GOOGLE_CALLBACK_URL || "https://orae.com/api/auth/google/callback";
+const GOOGLE_CALLBACK_URL = process.env.GOOGLE_CALLBACK_URL || "https://oraem.cafe24app.com/api/auth/google/callback";
 
 function generateState(): string {
   return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);

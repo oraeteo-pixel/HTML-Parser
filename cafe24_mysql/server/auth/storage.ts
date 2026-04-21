@@ -1,5 +1,5 @@
 import { users, type User, type UpsertUser } from "@shared/models/auth";
-import { db } from "../db";
+import { db } from "../../db";
 import { eq } from "drizzle-orm";
 import { randomUUID } from "crypto";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";

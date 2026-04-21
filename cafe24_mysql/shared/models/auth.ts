@@ -18,6 +18,7 @@ export const users = mysqlTable("users", {
   phone: varchar("phone", { length: 50 }),
   profileImageUrl: varchar("profile_image_url", { length: 1024 }),
   isAdmin: int("is_admin").default(0),
+  passwordHash: varchar("password_hash", { length: 255 }),
   createdAt: datetime("created_at"),
   updatedAt: datetime("updated_at"),
 });

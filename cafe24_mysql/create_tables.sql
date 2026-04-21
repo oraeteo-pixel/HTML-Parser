@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `phone` VARCHAR(50),
   `profile_image_url` VARCHAR(1024),
   `is_admin` INT DEFAULT 0,
+  `password_hash` VARCHAR(255),
   `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
   `updated_at` DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -160,3 +161,26 @@ CREATE TABLE IF NOT EXISTS `site_logos` (
 -- =============================================
 -- 완료! 총 12개 테이블이 생성되었습니다.
 -- =============================================
+
+-- =============================================
+-- 관리자 계정 초기 설정 (oraeteo@gmail.com / nero2014)
+-- =============================================
+INSERT INTO `users` (`id`, `email`, `first_name`, `last_name`, `phone`, `is_admin`, `password_hash`, `created_at`, `updated_at`)
+VALUES (
+  '44256201',
+  'oraeteo@gmail.com',
+  'ajee',
+  'kang',
+  '01024385087',
+  1,
+  'c54563a3eeef60619a615d7aee1854650960239b60bea415a515dfab7f8879cf8cfbb9d703bfc3eea84690d934be7a1b1b0bda6f119207c72e99a183f25c840b.b552e862775adc4a02fbb9e8ebd54cee',
+  NOW(),
+  NOW()
+) ON DUPLICATE KEY UPDATE
+  `is_admin` = 1,
+  `password_hash` = VALUES(`password_hash`),
+  `updated_at` = NOW();
+
+-- 사이트 URL 설정
+INSERT INTO `site_settings` (`key`, `value`) VALUES ('siteUrl', 'https://oraem.cafe24app.com')
+ON DUPLICATE KEY UPDATE `value` = VALUES(`value`);

@@ -2,17 +2,43 @@ import { users, type User, type UpsertUser } from "@shared/models/auth";
 import { db } from "../db";
 import { eq } from "drizzle-orm";
 import { randomUUID } from "crypto";
+import { scrypt, randomBytes, timingSafeEqual } from "crypto";
+import { promisify } from "util";
+
+const scryptAsync = promisify(scrypt);
+
+async function hashPassword(password: string): Promise<string> {
+  const salt = randomBytes(16).toString("hex");
+  const buf = (await scryptAsync(password, salt, 64)) as Buffer;
+  return `${buf.toString("hex")}.${salt}`;
+}
+
+async function comparePassword(supplied: string, stored: string): Promise<boolean> {
+  const [hashed, salt] = stored.split(".");
+  const hashedBuf = Buffer.from(hashed, "hex");
+  const suppliedBuf = (await scryptAsync(supplied, salt, 64)) as Buffer;
+  return timingSafeEqual(hashedBuf, suppliedBuf);
+}
+
+export type SafeUser = Omit<User, "passwordHash">;
+
+function stripPassword(user: User): SafeUser {
+  const { passwordHash: _, ...safe } = user;
+  return safe;
+}
 
 export interface IAuthStorage {
-  getUser(id: string): Promise<User | undefined>;
+  getUser(id: string): Promise<SafeUser | undefined>;
   getUserByEmail(email: string): Promise<User | undefined>;
-  upsertUser(user: UpsertUser): Promise<User>;
+  upsertUser(user: UpsertUser): Promise<SafeUser>;
+  createLocalUser(email: string, password: string, firstName: string, phone?: string): Promise<SafeUser>;
+  verifyLocalPassword(email: string, password: string): Promise<SafeUser | null>;
 }
 
 class AuthStorage implements IAuthStorage {
-  async getUser(id: string): Promise<User | undefined> {
+  async getUser(id: string): Promise<SafeUser | undefined> {
     const [user] = await db.select().from(users).where(eq(users.id, id));
-    return user;
+    return user ? stripPassword(user) : undefined;
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
@@ -20,7 +46,7 @@ class AuthStorage implements IAuthStorage {
     return user;
   }
 
-  async upsertUser(userData: UpsertUser): Promise<User> {
+  async upsertUser(userData: UpsertUser): Promise<SafeUser> {
     const id = userData.id || randomUUID();
     const dataWithId = { ...userData, id };
 
@@ -39,7 +65,22 @@ class AuthStorage implements IAuthStorage {
       });
 
     const [user] = await db.select().from(users).where(eq(users.id, id));
-    return user;
+    return stripPassword(user);
+  }
+
+  async createLocalUser(email: string, password: string, firstName: string, phone?: string): Promise<SafeUser> {
+    const passwordHash = await hashPassword(password);
+    const id = randomUUID();
+    await db.insert(users).values({ id, email, passwordHash, firstName, phone, createdAt: new Date(), updatedAt: new Date() });
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return stripPassword(user);
+  }
+
+  async verifyLocalPassword(email: string, password: string): Promise<SafeUser | null> {
+    const user = await this.getUserByEmail(email);
+    if (!user || !user.passwordHash) return null;
+    const valid = await comparePassword(password, user.passwordHash);
+    return valid ? stripPassword(user) : null;
   }
 }
 

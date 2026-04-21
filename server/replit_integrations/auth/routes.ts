@@ -13,17 +13,37 @@ const oauthSignupSchema = z.object({
 // Naver OAuth configuration
 const NAVER_CLIENT_ID = process.env.NAVER_CLIENT_ID;
 const NAVER_CLIENT_SECRET = process.env.NAVER_CLIENT_SECRET;
-const NAVER_CALLBACK_URL = process.env.NAVER_CALLBACK_URL || "https://oraem.cafe24app.com/api/auth/naver/callback";
 
 // Kakao OAuth configuration
 const KAKAO_CLIENT_ID = process.env.KAKAO_CLIENT_ID;
 const KAKAO_CLIENT_SECRET = process.env.KAKAO_CLIENT_SECRET;
-const KAKAO_CALLBACK_URL = process.env.KAKAO_CALLBACK_URL || "https://oraem.cafe24app.com/api/auth/kakao/callback";
 
 // Google OAuth configuration
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID;
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
-const GOOGLE_CALLBACK_URL = process.env.GOOGLE_CALLBACK_URL || "https://oraem.cafe24app.com/api/auth/google/callback";
+
+// 요청 Host 기반으로 콜백 URL 동적 생성
+// 환경변수가 설정되어 있으면 그것을 사용 (프로덕션), 없으면 현재 요청 host 사용 (개발)
+function getBaseUrl(req: any): string {
+  if (process.env.NAVER_CALLBACK_URL) {
+    // 환경변수에 풀 URL이 있으면 base 추출
+    const url = new URL(process.env.NAVER_CALLBACK_URL);
+    return `${url.protocol}//${url.host}`;
+  }
+  const proto = req.headers['x-forwarded-proto'] || req.protocol || 'https';
+  const host = req.headers['x-forwarded-host'] || req.get('host');
+  return `${proto}://${host}`;
+}
+
+function getNaverCallbackUrl(req: any): string {
+  return process.env.NAVER_CALLBACK_URL || `${getBaseUrl(req)}/api/auth/naver/callback`;
+}
+function getKakaoCallbackUrl(req: any): string {
+  return process.env.KAKAO_CALLBACK_URL || `${getBaseUrl(req)}/api/auth/kakao/callback`;
+}
+function getGoogleCallbackUrl(req: any): string {
+  return process.env.GOOGLE_CALLBACK_URL || `${getBaseUrl(req)}/api/auth/google/callback`;
+}
 
 function generateState(): string {
   return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
@@ -56,10 +76,12 @@ export function registerAuthRoutes(app: Express): void {
       return res.status(500).json({ message: "네이버 OAuth가 설정되지 않았습니다." });
     }
     const state = generateState();
+    const callbackUrl = getNaverCallbackUrl(req);
     (req.session as any).oauthState = state;
     (req.session as any).oauthProvider = 'naver';
+    (req.session as any).oauthCallbackUrl = callbackUrl;
     req.session.save(() => {
-      const url = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${NAVER_CLIENT_ID}&redirect_uri=${encodeURIComponent(NAVER_CALLBACK_URL)}&state=${state}`;
+      const url = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${NAVER_CLIENT_ID}&redirect_uri=${encodeURIComponent(callbackUrl)}&state=${state}`;
       res.redirect(url);
     });
   });
@@ -81,7 +103,8 @@ export function registerAuthRoutes(app: Express): void {
       delete (req.session as any).oauthState;
       delete (req.session as any).oauthProvider;
 
-      const tokenResponse = await fetch(`https://nid.naver.com/oauth2.0/token?grant_type=authorization_code&client_id=${NAVER_CLIENT_ID}&client_secret=${NAVER_CLIENT_SECRET}&redirect_uri=${encodeURIComponent(NAVER_CALLBACK_URL)}&code=${code}&state=${state}`);
+      const savedCallbackUrl = (req.session as any).oauthCallbackUrl || getNaverCallbackUrl(req);
+      const tokenResponse = await fetch(`https://nid.naver.com/oauth2.0/token?grant_type=authorization_code&client_id=${NAVER_CLIENT_ID}&client_secret=${NAVER_CLIENT_SECRET}&redirect_uri=${encodeURIComponent(savedCallbackUrl)}&code=${code}&state=${state}`);
       const tokenData = await tokenResponse.json() as any;
 
       if (!tokenData.access_token) {
@@ -128,10 +151,12 @@ export function registerAuthRoutes(app: Express): void {
       return res.status(500).json({ message: "카카오 OAuth가 설정되지 않았습니다." });
     }
     const state = generateState();
+    const callbackUrl = getKakaoCallbackUrl(req);
     (req.session as any).oauthState = state;
     (req.session as any).oauthProvider = 'kakao';
+    (req.session as any).oauthCallbackUrl = callbackUrl;
     req.session.save(() => {
-      const url = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${KAKAO_CLIENT_ID}&redirect_uri=${encodeURIComponent(KAKAO_CALLBACK_URL)}&state=${state}`;
+      const url = `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${KAKAO_CLIENT_ID}&redirect_uri=${encodeURIComponent(callbackUrl)}&state=${state}`;
       res.redirect(url);
     });
   });
@@ -153,6 +178,7 @@ export function registerAuthRoutes(app: Express): void {
       delete (req.session as any).oauthState;
       delete (req.session as any).oauthProvider;
 
+      const kakaoCallbackUrl = (req.session as any).oauthCallbackUrl || getKakaoCallbackUrl(req);
       const tokenResponse = await fetch("https://kauth.kakao.com/oauth/token", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -160,7 +186,7 @@ export function registerAuthRoutes(app: Express): void {
           grant_type: "authorization_code",
           client_id: KAKAO_CLIENT_ID,
           client_secret: KAKAO_CLIENT_SECRET!,
-          redirect_uri: KAKAO_CALLBACK_URL,
+          redirect_uri: kakaoCallbackUrl,
           code: code as string,
         }),
       });
@@ -207,10 +233,12 @@ export function registerAuthRoutes(app: Express): void {
       return res.status(500).json({ message: "구글 OAuth가 설정되지 않았습니다." });
     }
     const state = generateState();
+    const callbackUrl = getGoogleCallbackUrl(req);
     (req.session as any).oauthState = state;
     (req.session as any).oauthProvider = 'google';
+    (req.session as any).oauthCallbackUrl = callbackUrl;
     req.session.save(() => {
-      const url = `https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(GOOGLE_CALLBACK_URL)}&state=${state}&scope=openid%20email%20profile`;
+      const url = `https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id=${GOOGLE_CLIENT_ID}&redirect_uri=${encodeURIComponent(callbackUrl)}&state=${state}&scope=openid%20email%20profile`;
       res.redirect(url);
     });
   });
@@ -232,6 +260,7 @@ export function registerAuthRoutes(app: Express): void {
       delete (req.session as any).oauthState;
       delete (req.session as any).oauthProvider;
 
+      const googleCallbackUrl = (req.session as any).oauthCallbackUrl || getGoogleCallbackUrl(req);
       const tokenResponse = await fetch("https://oauth2.googleapis.com/token", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
@@ -239,7 +268,7 @@ export function registerAuthRoutes(app: Express): void {
           grant_type: "authorization_code",
           client_id: GOOGLE_CLIENT_ID,
           client_secret: GOOGLE_CLIENT_SECRET!,
-          redirect_uri: GOOGLE_CALLBACK_URL,
+          redirect_uri: googleCallbackUrl,
           code: code as string,
         }),
       });

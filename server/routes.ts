@@ -110,7 +110,7 @@ export async function registerRoutes(
   // Create Post (protected)
   app.post("/api/posts", isAuthenticated, async (req, res) => {
     try {
-      const userId = (req.user as any)?.claims?.sub;
+      const userId = (req as any).oauthUser?.id;
       if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
       }
@@ -145,7 +145,7 @@ export async function registerRoutes(
   // Update post (protected - author only)
   app.put("/api/posts/:id", isAuthenticated, async (req, res) => {
     try {
-      const userId = (req.user as any)?.claims?.sub;
+      const userId = (req as any).oauthUser?.id;
       if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
       }
@@ -184,7 +184,7 @@ export async function registerRoutes(
   // Delete post (protected - author only)
   app.delete("/api/posts/:id", isAuthenticated, async (req, res) => {
     try {
-      const userId = (req.user as any)?.claims?.sub;
+      const userId = (req as any).oauthUser?.id;
       if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
       }
@@ -221,7 +221,7 @@ export async function registerRoutes(
   // Create comment (protected)
   app.post("/api/posts/:postId/comments", isAuthenticated, async (req, res) => {
     try {
-      const userId = (req.user as any)?.claims?.sub;
+      const userId = (req as any).oauthUser?.id;
       if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
       }
@@ -274,7 +274,7 @@ export async function registerRoutes(
   // Update comment (protected)
   app.patch("/api/comments/:id", isAuthenticated, async (req, res) => {
     try {
-      const userId = (req.user as any)?.claims?.sub;
+      const userId = (req as any).oauthUser?.id;
       if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
       }
@@ -318,7 +318,7 @@ export async function registerRoutes(
   // Delete comment (protected)
   app.delete("/api/comments/:id", isAuthenticated, async (req, res) => {
     try {
-      const userId = (req.user as any)?.claims?.sub;
+      const userId = (req as any).oauthUser?.id;
       if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
       }
@@ -350,7 +350,7 @@ export async function registerRoutes(
   // Vote on a post (like/dislike)
   app.post("/api/posts/:postId/vote", isAuthenticated, async (req, res) => {
     try {
-      const userId = (req.user as any)?.claims?.sub;
+      const userId = (req as any).oauthUser?.id;
       if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
       }
@@ -380,7 +380,7 @@ export async function registerRoutes(
 
   // Get user's vote on a post
   app.get("/api/posts/:postId/vote", isAuthenticated, async (req, res) => {
-    const userId = (req.user as any)?.claims?.sub;
+    const userId = (req as any).oauthUser?.id;
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
@@ -398,7 +398,7 @@ export async function registerRoutes(
   
   // Get unread message count
   app.get("/api/messages/unread-count", isAuthenticated, async (req, res) => {
-    const userId = (req.user as any)?.claims?.sub;
+    const userId = (req as any).oauthUser?.id;
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
@@ -408,7 +408,7 @@ export async function registerRoutes(
 
   // Get received messages
   app.get("/api/messages/received", isAuthenticated, async (req, res) => {
-    const userId = (req.user as any)?.claims?.sub;
+    const userId = (req as any).oauthUser?.id;
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
@@ -418,7 +418,7 @@ export async function registerRoutes(
 
   // Get sent messages
   app.get("/api/messages/sent", isAuthenticated, async (req, res) => {
-    const userId = (req.user as any)?.claims?.sub;
+    const userId = (req as any).oauthUser?.id;
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
@@ -429,7 +429,7 @@ export async function registerRoutes(
   // Send message
   app.post("/api/messages", isAuthenticated, async (req, res) => {
     try {
-      const userId = (req.user as any)?.claims?.sub;
+      const userId = (req as any).oauthUser?.id;
       if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
       }
@@ -466,7 +466,7 @@ export async function registerRoutes(
 
   // Mark message as read
   app.post("/api/messages/:id/read", isAuthenticated, async (req, res) => {
-    const userId = (req.user as any)?.claims?.sub;
+    const userId = (req as any).oauthUser?.id;
     if (!userId) {
       return res.status(401).json({ message: "Unauthorized" });
     }
@@ -531,7 +531,7 @@ export async function registerRoutes(
   // Update site setting (admin only)
   app.post("/api/settings", isAuthenticated, async (req, res) => {
     try {
-      const userId = (req.user as any)?.claims?.sub;
+      const userId = (req as any).oauthUser?.id;
       if (!userId) {
         return res.status(401).json({ message: "Unauthorized" });
       }
@@ -563,7 +563,7 @@ export async function registerRoutes(
 
   app.post("/api/admin/categories", isAuthenticated, async (req, res) => {
     try {
-      const userId = (req.user as any)?.claims?.sub;
+      const userId = (req as any).oauthUser?.id;
       const user = await storage.getUser(userId);
       if (!user || user.isAdmin !== 1) {
         return res.status(403).json({ message: "관리자만 카테고리를 생성할 수 있습니다." });
@@ -584,7 +584,7 @@ export async function registerRoutes(
 
   app.put("/api/admin/categories/:id", isAuthenticated, async (req, res) => {
     try {
-      const userId = (req.user as any)?.claims?.sub;
+      const userId = (req as any).oauthUser?.id;
       const user = await storage.getUser(userId);
       if (!user || user.isAdmin !== 1) {
         return res.status(403).json({ message: "관리자만 카테고리를 수정할 수 있습니다." });
@@ -605,7 +605,7 @@ export async function registerRoutes(
 
   app.delete("/api/admin/categories/:id", isAuthenticated, async (req, res) => {
     try {
-      const userId = (req.user as any)?.claims?.sub;
+      const userId = (req as any).oauthUser?.id;
       const user = await storage.getUser(userId);
       if (!user || user.isAdmin !== 1) {
         return res.status(403).json({ message: "관리자만 카테고리를 삭제할 수 있습니다." });
@@ -624,7 +624,7 @@ export async function registerRoutes(
   
   app.post("/api/admin/users", isAuthenticated, async (req, res) => {
     try {
-      const userId = (req.user as any)?.claims?.sub;
+      const userId = (req as any).oauthUser?.id;
       const user = await storage.getUser(userId);
       if (!user || user.isAdmin !== 1) {
         return res.status(403).json({ message: "관리자만 회원을 추가할 수 있습니다." });
@@ -650,7 +650,7 @@ export async function registerRoutes(
 
   app.get("/api/admin/users", isAuthenticated, async (req, res) => {
     try {
-      const userId = (req.user as any)?.claims?.sub;
+      const userId = (req as any).oauthUser?.id;
       const user = await storage.getUser(userId);
       if (!user || user.isAdmin !== 1) {
         return res.status(403).json({ message: "관리자만 접근할 수 있습니다." });
@@ -666,7 +666,7 @@ export async function registerRoutes(
 
   app.put("/api/admin/users/:id/admin", isAuthenticated, async (req, res) => {
     try {
-      const currentUserId = (req.user as any)?.claims?.sub;
+      const currentUserId = (req as any).oauthUser?.id;
       const currentUser = await storage.getUser(currentUserId);
       if (!currentUser || currentUser.isAdmin !== 1) {
         return res.status(403).json({ message: "관리자만 접근할 수 있습니다." });
@@ -695,7 +695,7 @@ export async function registerRoutes(
 
   app.put("/api/admin/users/:id", isAuthenticated, async (req, res) => {
     try {
-      const currentUserId = (req.user as any)?.claims?.sub;
+      const currentUserId = (req as any).oauthUser?.id;
       const currentUser = await storage.getUser(currentUserId);
       if (!currentUser || currentUser.isAdmin !== 1) {
         return res.status(403).json({ message: "관리자만 접근할 수 있습니다." });
@@ -717,7 +717,7 @@ export async function registerRoutes(
 
   app.delete("/api/admin/users/:id", isAuthenticated, async (req, res) => {
     try {
-      const currentUserId = (req.user as any)?.claims?.sub;
+      const currentUserId = (req as any).oauthUser?.id;
       const currentUser = await storage.getUser(currentUserId);
       if (!currentUser || currentUser.isAdmin !== 1) {
         return res.status(403).json({ message: "관리자만 접근할 수 있습니다." });
@@ -754,7 +754,7 @@ export async function registerRoutes(
 
   app.get("/api/admin/pages", isAuthenticated, async (req, res) => {
     try {
-      const userId = (req.user as any)?.claims?.sub;
+      const userId = (req as any).oauthUser?.id;
       const user = await storage.getUser(userId);
       if (!user || user.isAdmin !== 1) {
         return res.status(403).json({ message: "관리자만 접근할 수 있습니다." });
@@ -770,7 +770,7 @@ export async function registerRoutes(
 
   app.get("/api/admin/pages/:slug", isAuthenticated, async (req, res) => {
     try {
-      const userId = (req.user as any)?.claims?.sub;
+      const userId = (req as any).oauthUser?.id;
       const user = await storage.getUser(userId);
       if (!user || user.isAdmin !== 1) {
         return res.status(403).json({ message: "관리자만 접근할 수 있습니다." });
@@ -789,7 +789,7 @@ export async function registerRoutes(
 
   app.post("/api/admin/pages", isAuthenticated, async (req, res) => {
     try {
-      const userId = (req.user as any)?.claims?.sub;
+      const userId = (req as any).oauthUser?.id;
       const user = await storage.getUser(userId);
       if (!user || user.isAdmin !== 1) {
         return res.status(403).json({ message: "관리자만 페이지를 수정할 수 있습니다." });
@@ -819,7 +819,7 @@ export async function registerRoutes(
   
   app.get("/api/admin/layouts", isAuthenticated, async (req, res) => {
     try {
-      const userId = (req.user as any)?.claims?.sub;
+      const userId = (req as any).oauthUser?.id;
       const user = await storage.getUser(userId);
       if (!user || user.isAdmin !== 1) {
         return res.status(403).json({ message: "관리자만 접근할 수 있습니다." });
@@ -835,7 +835,7 @@ export async function registerRoutes(
 
   app.get("/api/admin/layouts/:id", isAuthenticated, async (req, res) => {
     try {
-      const userId = (req.user as any)?.claims?.sub;
+      const userId = (req as any).oauthUser?.id;
       const user = await storage.getUser(userId);
       if (!user || user.isAdmin !== 1) {
         return res.status(403).json({ message: "관리자만 접근할 수 있습니다." });
@@ -867,7 +867,7 @@ export async function registerRoutes(
 
   app.post("/api/admin/layouts", isAuthenticated, async (req, res) => {
     try {
-      const userId = (req.user as any)?.claims?.sub;
+      const userId = (req as any).oauthUser?.id;
       const user = await storage.getUser(userId);
       if (!user || user.isAdmin !== 1) {
         return res.status(403).json({ message: "관리자만 레이아웃을 생성할 수 있습니다." });
@@ -896,7 +896,7 @@ export async function registerRoutes(
 
   app.put("/api/admin/layouts/:id", isAuthenticated, async (req, res) => {
     try {
-      const userId = (req.user as any)?.claims?.sub;
+      const userId = (req as any).oauthUser?.id;
       const user = await storage.getUser(userId);
       if (!user || user.isAdmin !== 1) {
         return res.status(403).json({ message: "관리자만 레이아웃을 수정할 수 있습니다." });
@@ -925,7 +925,7 @@ export async function registerRoutes(
 
   app.delete("/api/admin/layouts/:id", isAuthenticated, async (req, res) => {
     try {
-      const userId = (req.user as any)?.claims?.sub;
+      const userId = (req as any).oauthUser?.id;
       const user = await storage.getUser(userId);
       if (!user || user.isAdmin !== 1) {
         return res.status(403).json({ message: "관리자만 레이아웃을 삭제할 수 있습니다." });
@@ -941,7 +941,7 @@ export async function registerRoutes(
 
   app.get("/api/admin/code-snippets", isAuthenticated, async (req, res) => {
     try {
-      const userId = (req.user as any)?.claims?.sub;
+      const userId = (req as any).oauthUser?.id;
       const user = await storage.getUser(userId);
       if (!user || user.isAdmin !== 1) {
         return res.status(403).json({ message: "관리자만 접근할 수 있습니다." });
@@ -957,7 +957,7 @@ export async function registerRoutes(
 
   app.get("/api/admin/code-snippets/language/:language", isAuthenticated, async (req, res) => {
     try {
-      const userId = (req.user as any)?.claims?.sub;
+      const userId = (req as any).oauthUser?.id;
       const user = await storage.getUser(userId);
       if (!user || user.isAdmin !== 1) {
         return res.status(403).json({ message: "관리자만 접근할 수 있습니다." });
@@ -973,7 +973,7 @@ export async function registerRoutes(
 
   app.get("/api/admin/code-snippets/:id", isAuthenticated, async (req, res) => {
     try {
-      const userId = (req.user as any)?.claims?.sub;
+      const userId = (req as any).oauthUser?.id;
       const user = await storage.getUser(userId);
       if (!user || user.isAdmin !== 1) {
         return res.status(403).json({ message: "관리자만 접근할 수 있습니다." });
@@ -992,7 +992,7 @@ export async function registerRoutes(
 
   app.post("/api/admin/code-snippets", isAuthenticated, async (req, res) => {
     try {
-      const userId = (req.user as any)?.claims?.sub;
+      const userId = (req as any).oauthUser?.id;
       const user = await storage.getUser(userId);
       if (!user || user.isAdmin !== 1) {
         return res.status(403).json({ message: "관리자만 코드 스니펫을 생성할 수 있습니다." });
@@ -1022,7 +1022,7 @@ export async function registerRoutes(
 
   app.put("/api/admin/code-snippets/:id", isAuthenticated, async (req, res) => {
     try {
-      const userId = (req.user as any)?.claims?.sub;
+      const userId = (req as any).oauthUser?.id;
       const user = await storage.getUser(userId);
       if (!user || user.isAdmin !== 1) {
         return res.status(403).json({ message: "관리자만 코드 스니펫을 수정할 수 있습니다." });
@@ -1051,7 +1051,7 @@ export async function registerRoutes(
 
   app.delete("/api/admin/code-snippets/:id", isAuthenticated, async (req, res) => {
     try {
-      const userId = (req.user as any)?.claims?.sub;
+      const userId = (req as any).oauthUser?.id;
       const user = await storage.getUser(userId);
       if (!user || user.isAdmin !== 1) {
         return res.status(403).json({ message: "관리자만 코드 스니펫을 삭제할 수 있습니다." });
@@ -1067,7 +1067,7 @@ export async function registerRoutes(
 
   app.get("/api/admin/logos", isAuthenticated, async (req, res) => {
     try {
-      const userId = (req.user as any)?.claims?.sub;
+      const userId = (req as any).oauthUser?.id;
       const user = await storage.getUser(userId);
       if (!user || user.isAdmin !== 1) {
         return res.status(403).json({ message: "관리자만 로고를 조회할 수 있습니다." });
@@ -1093,7 +1093,7 @@ export async function registerRoutes(
 
   app.post("/api/admin/logos", isAuthenticated, async (req, res) => {
     try {
-      const userId = (req.user as any)?.claims?.sub;
+      const userId = (req as any).oauthUser?.id;
       const user = await storage.getUser(userId);
       if (!user || user.isAdmin !== 1) {
         return res.status(403).json({ message: "관리자만 로고를 등록할 수 있습니다." });
@@ -1118,7 +1118,7 @@ export async function registerRoutes(
 
   app.put("/api/admin/logos/:id/activate", isAuthenticated, async (req, res) => {
     try {
-      const userId = (req.user as any)?.claims?.sub;
+      const userId = (req as any).oauthUser?.id;
       const user = await storage.getUser(userId);
       if (!user || user.isAdmin !== 1) {
         return res.status(403).json({ message: "관리자만 로고를 활성화할 수 있습니다." });
@@ -1137,7 +1137,7 @@ export async function registerRoutes(
 
   app.delete("/api/admin/logos/:id", isAuthenticated, async (req, res) => {
     try {
-      const userId = (req.user as any)?.claims?.sub;
+      const userId = (req as any).oauthUser?.id;
       const user = await storage.getUser(userId);
       if (!user || user.isAdmin !== 1) {
         return res.status(403).json({ message: "관리자만 로고를 삭제할 수 있습니다." });

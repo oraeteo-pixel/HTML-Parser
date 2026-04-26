@@ -4,7 +4,11 @@ import fs from "fs";
 import path from "path";
 import mime from "mime-types";
 
-export const UPLOADS_DIR = path.resolve(process.cwd(), "uploads");
+// Vercel 환경에서는 /tmp 만 쓰기 가능, 그 외에는 프로젝트 루트의 uploads/
+const isVercel = process.env.VERCEL === "1";
+export const UPLOADS_DIR = isVercel
+  ? "/tmp/uploads"
+  : path.resolve(process.cwd(), "uploads");
 
 if (!fs.existsSync(UPLOADS_DIR)) {
   fs.mkdirSync(UPLOADS_DIR, { recursive: true });
@@ -24,7 +28,7 @@ try {
   const { Client } = require("@replit/object-storage");
   replitStorageClient = new Client();
 } catch {
-  // cafe24 등 Replit 외 환경에서는 로컬 디스크만 사용
+  // Replit 외 환경에서는 로컬 디스크만 사용
 }
 
 const GCS_PREFIX = ".private/uploads/";

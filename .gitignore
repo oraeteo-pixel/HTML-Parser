@@ -4,6 +4,14 @@ dist
 server/public
 vite.config.ts.*
 *.tar.gz
+.env
 .env.cafe24
 .env.local
 .env.*.local
+uploads/
+.replit
+replit.nix
+.upm/
+.cache/
+.config/
+mk_8g.png

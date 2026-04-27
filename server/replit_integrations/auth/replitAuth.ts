@@ -1,6 +1,9 @@
 import passport from "passport";
 import session from "express-session";
 import type { Express, RequestHandler } from "express";
+import { createRequire } from "module";
+
+const require = createRequire(import.meta.url);
 
 export function getSession() {
   const sessionTtl = 7 * 24 * 60 * 60 * 1000;

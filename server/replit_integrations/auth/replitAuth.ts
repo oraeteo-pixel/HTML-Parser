@@ -1,25 +1,54 @@
 import passport from "passport";
 import session from "express-session";
 import type { Express, RequestHandler } from "express";
-import connectPg from "connect-pg-simple";
 
 export function getSession() {
   const sessionTtl = 7 * 24 * 60 * 60 * 1000;
-  const pgStore = connectPg(session);
-  const sessionStore = new pgStore({
-    conString: process.env.DATABASE_URL,
-    createTableIfMissing: false,
-    ttl: sessionTtl,
-    tableName: "sessions",
-  });
+  const secret = process.env.SESSION_SECRET || "orae-default-dev-secret-change-in-production";
+
+  if (!process.env.SESSION_SECRET) {
+    console.warn("[auth] SESSION_SECRET not set. Using default secret (unsafe for production).");
+  }
+
+  if (process.env.DATABASE_URL) {
+    try {
+      const connectPg = require("connect-pg-simple");
+      const pgStore = connectPg(session);
+      const sessionStore = new pgStore({
+        conString: process.env.DATABASE_URL,
+        createTableIfMissing: true,
+        ttl: sessionTtl,
+        tableName: "sessions",
+      });
+      console.log("[auth] Using PostgreSQL session store.");
+      return session({
+        secret,
+        store: sessionStore,
+        resave: false,
+        saveUninitialized: false,
+        cookie: {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+          maxAge: sessionTtl,
+        },
+      });
+    } catch (err) {
+      console.error("[auth] Failed to init PostgreSQL session store, falling back to memory store:", err);
+    }
+  } else {
+    console.warn("[auth] DATABASE_URL not set. Using in-memory session store (sessions won't persist across restarts).");
+  }
+
+  const MemoryStore = require("memorystore")(session);
   return session({
-    secret: process.env.SESSION_SECRET!,
-    store: sessionStore,
+    secret,
+    store: new MemoryStore({ checkPeriod: sessionTtl }),
     resave: false,
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: false,
       maxAge: sessionTtl,
     },
   });

@@ -167,7 +167,7 @@ interface LogoSettings {
 
 const DEFAULT_SETTINGS: LogoSettings = {
   logoText: "ORAE",
-  logoTextKorean: "오래",
+  logoTextKorean: "悟来",
   logoTextHanja: "",
   logoColor: "#0d7377",
   logoFontFamily: "Noto Sans KR",

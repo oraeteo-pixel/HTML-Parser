@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "npx vite build",
+  "buildCommand": "npx vite build && cp -r client/src/assets/img dist/public/img",
   "outputDirectory": "dist/public",
   "functions": {
     "api/index.ts": {
@@ -14,10 +14,6 @@
     },
     {
       "source": "/objects/:path*",
-      "destination": "/api/index.ts"
-    },
-    {
-      "source": "/img/:path*",
       "destination": "/api/index.ts"
     },
     {

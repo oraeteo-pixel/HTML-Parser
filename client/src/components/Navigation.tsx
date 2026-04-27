@@ -171,25 +171,13 @@ export function Navigation() {
               </div>
             ) : (
               <div className="flex items-center gap-2">
-                <svg 
-                  viewBox="0 0 40 40" 
-                  className="h-8 w-8 sm:h-10 sm:w-10 cursor-pointer hover:opacity-80 transition-opacity" 
-                  fill="none" 
-                  xmlns="http://www.w3.org/2000/svg" 
+                <img
+                  src="/icon-192.png"
+                  alt="로고"
+                  className="h-8 w-8 sm:h-10 sm:w-10 cursor-pointer hover:opacity-80 transition-opacity object-contain"
                   data-testid="link-logo"
                   onClick={() => setLocation("/calendar")}
-                >
-                  <circle cx="20" cy="20" r="18" stroke={logoColor} strokeWidth="2.5" fill="none"/>
-                  <circle cx="20" cy="20" r="14" stroke={logoColor} strokeWidth="2.5" fill="none"/>
-                  <circle cx="20" cy="20" r="10" stroke={logoColor} strokeWidth="2.5" fill="none"/>
-                  <circle cx="20" cy="20" r="6" stroke={logoColor} strokeWidth="2.5" fill="none"/>
-                  <circle cx="20" cy="20" r="2" fill={logoColor}/>
-                  <line x1="20" y1="2" x2="20" y2="10" stroke={logoColor} strokeWidth="2.5"/>
-                  <line x1="6" y1="12" x2="12" y2="16" stroke={logoColor} strokeWidth="2.5"/>
-                  <line x1="28" y1="16" x2="34" y2="12" stroke={logoColor} strokeWidth="2.5"/>
-                  <line x1="8" y1="28" x2="14" y2="24" stroke={logoColor} strokeWidth="2.5"/>
-                  <line x1="26" y1="24" x2="32" y2="28" stroke={logoColor} strokeWidth="2.5"/>
-                </svg>
+                />
                 <Link href="/calendar" className="hover:opacity-80 transition-opacity">
                   <div className="flex flex-col leading-tight" style={{ fontFamily: `${logoFontFamily}, sans-serif` }}>
                     {logoText && <span className="font-bold" style={{ color: logoColor, fontSize: getSizeValue(logoTextSize) }}>{logoText}</span>}

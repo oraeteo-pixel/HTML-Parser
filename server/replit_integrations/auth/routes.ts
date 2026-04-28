@@ -354,11 +354,7 @@ export function registerAuthRoutes(app: Express): void {
       });
     } catch (error: any) {
       console.error("Local register error:", error);
-      res.status(500).json({ 
-        message: "회원가입 처리 중 오류가 발생했습니다.",
-        detail: error?.message,
-        code: error?.code
-      });
+      res.status(500).json({ message: "회원가입 처리 중 오류가 발생했습니다." });
     }
   });
 

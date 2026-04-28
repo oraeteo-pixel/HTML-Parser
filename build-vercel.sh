@@ -27,7 +27,6 @@ npx esbuild "$SCRIPT_DIR/api/index.ts" \
   --external:xlsx \
   --external:mime-types \
   --external:dotenv/config \
-  --external:ws \
   --log-level=warning
 
 echo "Bundle size: $(wc -l < "$SCRIPT_DIR/api/handler.js") lines"

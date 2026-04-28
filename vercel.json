@@ -3,18 +3,18 @@
   "buildCommand": "bash build-vercel.sh",
   "outputDirectory": "dist/public",
   "functions": {
-    "api/handler.mjs": {
+    "api/index.ts": {
       "maxDuration": 30
     }
   },
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "/api/handler.mjs"
+      "destination": "/api/index.ts"
     },
     {
       "source": "/objects/:path*",
-      "destination": "/api/handler.mjs"
+      "destination": "/api/index.ts"
     },
     {
       "source": "/((?!api|objects|img).*)",

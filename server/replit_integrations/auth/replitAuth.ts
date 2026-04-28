@@ -2,6 +2,7 @@ import passport from "passport";
 import session from "express-session";
 import type { Express, RequestHandler } from "express";
 import { createRequire } from "module";
+import { NeonSessionStore } from "./neonSessionStore";
 
 const require = createRequire(import.meta.url);
 
@@ -13,10 +14,27 @@ export function getSession() {
     console.warn("[auth] SESSION_SECRET not set. Using default secret (unsafe for production).");
   }
 
-  // connect-pg-simple uses TCP/WebSocket which doesn't work in Vercel serverless.
-  // Only use pg session store in non-Vercel environments.
   const isVercel = process.env.VERCEL === "1";
 
+  // Vercel 서버리스: Neon HTTP 세션 스토어 사용 (TCP 연결 불필요)
+  if (isVercel && process.env.DATABASE_URL) {
+    console.log("[auth] Vercel environment: using Neon HTTP session store.");
+    const store = new NeonSessionStore(process.env.DATABASE_URL, sessionTtl);
+    return session({
+      secret,
+      store,
+      resave: false,
+      saveUninitialized: false,
+      cookie: {
+        httpOnly: true,
+        secure: true,
+        sameSite: "lax",
+        maxAge: sessionTtl,
+      },
+    });
+  }
+
+  // 로컬/Replit: connect-pg-simple (TCP) 사용
   if (!isVercel && process.env.DATABASE_URL) {
     try {
       const pg = require("pg");
@@ -55,9 +73,7 @@ export function getSession() {
     } catch (err) {
       console.error("[auth] Failed to init PostgreSQL session store, falling back to memory store:", err);
     }
-  } else if (isVercel) {
-    console.log("[auth] Vercel environment detected. Using in-memory session store.");
-  } else {
+  } else if (!isVercel) {
     console.warn("[auth] DATABASE_URL not set. Using in-memory session store.");
   }
 
@@ -69,7 +85,7 @@ export function getSession() {
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: false,
       sameSite: "lax",
       maxAge: sessionTtl,
     },

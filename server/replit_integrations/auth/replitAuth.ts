@@ -13,7 +13,11 @@ export function getSession() {
     console.warn("[auth] SESSION_SECRET not set. Using default secret (unsafe for production).");
   }
 
-  if (process.env.DATABASE_URL) {
+  // connect-pg-simple uses TCP/WebSocket which doesn't work in Vercel serverless.
+  // Only use pg session store in non-Vercel environments.
+  const isVercel = process.env.VERCEL === "1";
+
+  if (!isVercel && process.env.DATABASE_URL) {
     try {
       const pg = require("pg");
 
@@ -51,6 +55,8 @@ export function getSession() {
     } catch (err) {
       console.error("[auth] Failed to init PostgreSQL session store, falling back to memory store:", err);
     }
+  } else if (isVercel) {
+    console.log("[auth] Vercel environment detected. Using in-memory session store.");
   } else {
     console.warn("[auth] DATABASE_URL not set. Using in-memory session store.");
   }
@@ -63,7 +69,8 @@ export function getSession() {
     saveUninitialized: false,
     cookie: {
       httpOnly: true,
-      secure: false,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
       maxAge: sessionTtl,
     },
   });

@@ -15,10 +15,22 @@ export function getSession() {
 
   if (process.env.DATABASE_URL) {
     try {
+      const pg = require("pg");
+
+      function cleanPgUrl(url: string): string {
+        try {
+          const u = new URL(url);
+          u.searchParams.delete("channel_binding");
+          return u.toString();
+        } catch {
+          return url;
+        }
+      }
+
       const connectPg = require("connect-pg-simple");
       const pgStore = connectPg(session);
       const sessionStore = new pgStore({
-        conString: process.env.DATABASE_URL,
+        conString: cleanPgUrl(process.env.DATABASE_URL!),
         createTableIfMissing: true,
         ttl: sessionTtl,
         tableName: "sessions",
@@ -40,7 +52,7 @@ export function getSession() {
       console.error("[auth] Failed to init PostgreSQL session store, falling back to memory store:", err);
     }
   } else {
-    console.warn("[auth] DATABASE_URL not set. Using in-memory session store (sessions won't persist across restarts).");
+    console.warn("[auth] DATABASE_URL not set. Using in-memory session store.");
   }
 
   const MemoryStore = require("memorystore")(session);

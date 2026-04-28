@@ -1,6 +1,5 @@
-import { Pool, neonConfig } from "@neondatabase/serverless";
-import { drizzle } from "drizzle-orm/neon-serverless";
-import ws from "ws";
+import { neon } from "@neondatabase/serverless";
+import { drizzle } from "drizzle-orm/neon-http";
 import * as schema from "../shared/schema";
 
 if (!process.env.DATABASE_URL) {
@@ -9,10 +8,8 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
-// Use ws for WebSocket in Node.js serverless environments
-neonConfig.webSocketConstructor = ws;
+const sql = neon(process.env.DATABASE_URL!);
+export const db = drizzle({ client: sql, schema });
 
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
-export const db = drizzle(pool, { schema });
-
-export { pool };
+// pool is not available in HTTP mode; export null for compat
+export const pool = null;

@@ -8,11 +8,14 @@ echo "Copying img assets..."
 cp -r client/src/assets/img dist/public/img
 
 echo "Bundling API into api/handler.js with esbuild..."
-npx esbuild api/index.ts \
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+echo "Working from: $SCRIPT_DIR"
+
+npx esbuild "$SCRIPT_DIR/api/index.ts" \
   --bundle \
   --platform=node \
   --format=esm \
-  --outfile=api/handler.js \
+  --outfile="$SCRIPT_DIR/api/handler.js" \
   --external:pg \
   --external:@neondatabase/serverless \
   --external:express \
@@ -27,5 +30,5 @@ npx esbuild api/index.ts \
   --external:ws \
   --log-level=warning
 
-echo "Bundle size: $(wc -l < api/handler.js) lines"
+echo "Bundle size: $(wc -l < "$SCRIPT_DIR/api/handler.js") lines"
 echo "Build complete!"

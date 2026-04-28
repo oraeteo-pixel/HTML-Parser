@@ -1,21 +1,20 @@
 {
   "version": 2,
-  "buildCommand": "npx vite build && cp -r client/src/assets/img dist/public/img",
+  "buildCommand": "npx vite build && cp -r client/src/assets/img dist/public/img && npx esbuild api/index.ts --bundle --platform=node --format=esm --outfile=api/handler.mjs --external:pg --external:@neondatabase/serverless --external:express --external:express-session --external:passport --external:connect-pg-simple --external:memorystore --external:multer --external:xlsx --external:mime-types --external:dotenv/config --external:ws --log-level=warning",
   "outputDirectory": "dist/public",
   "functions": {
-    "api/index.ts": {
-      "maxDuration": 30,
-      "includeFiles": "server/**,shared/**,node_modules/@neondatabase/**,node_modules/drizzle-orm/**"
+    "api/handler.mjs": {
+      "maxDuration": 30
     }
   },
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "/api/index.ts"
+      "destination": "/api/handler.mjs"
     },
     {
       "source": "/objects/:path*",
-      "destination": "/api/index.ts"
+      "destination": "/api/handler.mjs"
     },
     {
       "source": "/((?!api|objects|img).*)",

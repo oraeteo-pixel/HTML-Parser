@@ -8,8 +8,8 @@ if (!process.env.DATABASE_URL) {
   );
 }
 
-const sql = neon(process.env.DATABASE_URL!);
-export const db = drizzle({ client: sql, schema });
+// @neondatabase/serverless v1+ requires passing the URL directly to drizzle
+export const db = drizzle(process.env.DATABASE_URL!, { schema });
 
 // pool is not available in HTTP mode; export null for compat
 export const pool = null;

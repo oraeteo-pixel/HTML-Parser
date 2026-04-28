@@ -1,5 +1,5 @@
-import { users, posts, comments, postVotes, messages, siteSettings, madangCategories, pageContents, pageLayouts, codeSnippets, siteLogos, type User, type Post, type Comment, type PostVote, type Message, type SiteSetting, type MadangCategory, type PageContent, type PageLayout, type CodeSnippet, type SiteLogo } from "@shared/schema";
-import type { InsertPost, InsertComment, InsertPostVote, InsertMessage, InsertMadangCategory, InsertPageContent, InsertPageLayout, InsertCodeSnippet, InsertSiteLogo } from "@shared/schema";
+import { users, posts, comments, postVotes, messages, siteSettings, madangCategories, pageContents, pageLayouts, codeSnippets, siteLogos, type User, type Post, type Comment, type PostVote, type Message, type SiteSetting, type MadangCategory, type PageContent, type PageLayout, type CodeSnippet, type SiteLogo } from "../shared/schema";
+import type { InsertPost, InsertComment, InsertPostVote, InsertMessage, InsertMadangCategory, InsertPageContent, InsertPageLayout, InsertCodeSnippet, InsertSiteLogo } from "../shared/schema";
 import { db } from "./db";
 import { eq, desc, sql, and, asc } from "drizzle-orm";
 import { randomUUID } from "crypto";

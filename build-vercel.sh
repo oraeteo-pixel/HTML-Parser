@@ -7,12 +7,12 @@ npx vite build
 echo "Copying img assets..."
 cp -r client/src/assets/img dist/public/img
 
-echo "Bundling API into single file with esbuild..."
+echo "Bundling API into api/handler.js with esbuild..."
 npx esbuild api/index.ts \
   --bundle \
   --platform=node \
   --format=esm \
-  --outfile=api/index.js \
+  --outfile=api/handler.js \
   --external:pg \
   --external:@neondatabase/serverless \
   --external:express \
@@ -27,5 +27,5 @@ npx esbuild api/index.ts \
   --external:ws \
   --log-level=warning
 
-echo "Bundle size: $(wc -l < api/index.js) lines"
+echo "Bundle size: $(wc -l < api/handler.js) lines"
 echo "Build complete!"

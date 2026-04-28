@@ -1,6 +1,7 @@
 import "dotenv/config";
 import express, { type Request, Response, NextFunction } from "express";
 import { createServer } from "http";
+import { registerRoutes } from "../server/routes";
 
 const app = express();
 app.use(express.json({
@@ -12,8 +13,6 @@ let initError: Error | null = null;
 
 const initPromise = (async () => {
   try {
-    // Vercel 빌드 시 server/와 shared/가 api/ 안으로 복사됨
-    const { registerRoutes } = await import("./server/routes");
     const httpServer = createServer(app);
     await registerRoutes(httpServer, app);
     app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {

@@ -4,9 +4,9 @@ import { storage } from "./storage";
 import { z } from "zod";
 import multer from "multer";
 import { randomUUID } from "crypto";
-import { setupAuth, registerAuthRoutes, isAuthenticated } from "./replit_integrations/auth";
-import { registerObjectStorageRoutes, objectStorageService } from "./replit_integrations/object_storage";
-import { UPLOADS_DIR } from "./replit_integrations/object_storage/objectStorage";
+import { setupAuth, registerAuthRoutes, isAuthenticated } from "./integrations/auth";
+import { registerObjectStorageRoutes, objectStorageService } from "./integrations/object_storage";
+import { UPLOADS_DIR } from "./integrations/object_storage/objectStorage";
 import path from "path";
 import { generateCalendarExcel } from "./calendarExport";
 

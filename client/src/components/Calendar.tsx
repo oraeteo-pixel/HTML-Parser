@@ -86,6 +86,11 @@ function get60GanziHours(hwYear: number, hwMonth: number, hwDay: number): { am: 
   return { am, pm };
 }
 
+// 매달 1일 칸에는 날짜 대신 "월.1" 을 표시 (윤달이면 "윤5.1")
+function withMonth(day: number, month: number, isLeap = false): string | number {
+  return day === 1 ? `${isLeap ? "윤" : ""}${month}.1` : day;
+}
+
 function isTodayKorean(date: Date): boolean {
   const koreanNow = getKoreanTime();
   // 23:00 이후에는 다음날을 "오늘"로 표시
@@ -882,8 +887,8 @@ export function Calendar() {
                 onClick={() => handleDayClick(solarDate)}
               >
                 <div className="flex justify-between items-start mb-1">
-                  <span className={`day-number text-muted-foreground ${isSun ? "!text-red-400" : isSat ? "!text-blue-400" : ""}`}>{hwDay}</span>
-                  <span className="solar-day text-muted-foreground">{solarDate.getDate()}</span>
+                  <span className={`day-number text-muted-foreground ${isSun ? "!text-red-400" : isSat ? "!text-blue-400" : ""}`}>{withMonth(hwDay, hwDate.month)}</span>
+                  <span className="solar-day text-muted-foreground">{withMonth(solarDate.getDate(), solarDate.getMonth() + 1)}</span>
                 </div>
                 <div className="ganji-box mb-1">{dayData.dayGanZhi}</div>
                 <div className="flex-1 flex flex-col justify-end space-y-0.5">
@@ -916,8 +921,8 @@ export function Calendar() {
                 onClick={() => handleDayClick(solarDate)}
               >
                 <div className="flex justify-between items-start mb-1">
-                  <span className={`day-number text-muted-foreground ${isSun ? "!text-red-400" : isSat ? "!text-blue-400" : ""}`}>{solarDay}</span>
-                  <span className="solar-day text-purple-400">{dayData.lunarDay}</span>
+                  <span className={`day-number text-muted-foreground ${isSun ? "!text-red-400" : isSat ? "!text-blue-400" : ""}`}>{withMonth(solarDay, solarDate.getMonth() + 1)}</span>
+                  <span className="solar-day text-purple-400">{withMonth(dayData.lunarDay, dayData.lunarMonth, dayData.isLeapMonth)}</span>
                 </div>
                 <div className="ganji-box mb-1">{dayData.dayGanZhi}</div>
                 {dayData.solarTerm && (
@@ -954,10 +959,10 @@ export function Calendar() {
               >
                 <div className="flex justify-between items-start mb-1">
                   <span className={`day-number ${isSun ? "sunday" : isSat ? "saturday" : ""}`}>
-                    {hwDay}
+                    {withMonth(hwDay, hwMonth)}
                   </span>
                   <span className="solar-day">
-                    {solarDate.getDate()}
+                    {withMonth(solarDate.getDate(), solarDate.getMonth() + 1)}
                   </span>
                 </div>
                 
@@ -1017,10 +1022,12 @@ export function Calendar() {
               >
                 <div className="flex justify-between items-start mb-1">
                   <span className={`day-number ${isSun ? "sunday" : isSat ? "saturday" : ""}`}>
-                    {solarDay}
+                    {withMonth(solarDay, solarDate.getMonth() + 1)}
                   </span>
                   <span className="solar-day text-purple-500">
-                    {dayData.lunarDay}{dayData.isLeapMonth ? "윤" : ""}
+                    {dayData.lunarDay === 1
+                      ? withMonth(1, dayData.lunarMonth, dayData.isLeapMonth)
+                      : <>{dayData.lunarDay}{dayData.isLeapMonth ? "윤" : ""}</>}
                   </span>
                 </div>
                 
@@ -1063,8 +1070,8 @@ export function Calendar() {
                 onClick={() => handleDayClick(solarDate)}
               >
                 <div className="flex justify-between items-start mb-1">
-                  <span className={`day-number text-muted-foreground ${isSun ? "!text-red-400" : isSat ? "!text-blue-400" : ""}`}>{hwDay}</span>
-                  <span className="solar-day text-muted-foreground">{solarDate.getDate()}</span>
+                  <span className={`day-number text-muted-foreground ${isSun ? "!text-red-400" : isSat ? "!text-blue-400" : ""}`}>{withMonth(hwDay, hwDate.month)}</span>
+                  <span className="solar-day text-muted-foreground">{withMonth(solarDate.getDate(), solarDate.getMonth() + 1)}</span>
                 </div>
                 <div className="ganji-box mb-1">{dayData.dayGanZhi}</div>
                 <div className="flex-1 flex flex-col justify-end space-y-0.5">
@@ -1097,8 +1104,8 @@ export function Calendar() {
                 onClick={() => handleDayClick(solarDate)}
               >
                 <div className="flex justify-between items-start mb-1">
-                  <span className={`day-number text-muted-foreground ${isSun ? "!text-red-400" : isSat ? "!text-blue-400" : ""}`}>{solarDay}</span>
-                  <span className="solar-day text-purple-400">{dayData.lunarDay}</span>
+                  <span className={`day-number text-muted-foreground ${isSun ? "!text-red-400" : isSat ? "!text-blue-400" : ""}`}>{withMonth(solarDay, solarDate.getMonth() + 1)}</span>
+                  <span className="solar-day text-purple-400">{withMonth(dayData.lunarDay, dayData.lunarMonth, dayData.isLeapMonth)}</span>
                 </div>
                 <div className="ganji-box mb-1">{dayData.dayGanZhi}</div>
                 {dayData.solarTerm && (

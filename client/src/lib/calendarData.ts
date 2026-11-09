@@ -451,7 +451,8 @@ function getHwanggeukDaysFromEpoch(year: number, month: number, day: number): nu
   const epochDate = new Date(HW_EPOCH_YEAR, HW_EPOCH_MONTH - 1, HW_EPOCH_DAY);
   const targetDate = new Date(year, month - 1, day);
   const diffTime = targetDate.getTime() - epochDate.getTime();
-  return Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  // 서머타임이 있는 나라에서도 하루가 밀리지 않도록 반올림
+  return Math.round(diffTime / (1000 * 60 * 60 * 24));
 }
 
 export function getHwanggeukDate(year: number, month: number, day: number, hour?: number): { 

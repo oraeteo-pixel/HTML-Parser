@@ -205,6 +205,7 @@ export function GwangjechansaengbuGallery() {
   }, [currentTime]);
 
   const { hwMansion, hwanggeuk, hwDayGanZhi, hwHourGanZhi, sixSpirits, threeBranches, sogungDaegung, hexagram64, jeolguk } = calendarData;
+  const daySpirit = sixSpirits[0]; // 오늘 일진의 육신 (甲乙 靑龍, 丙丁 朱雀, 戊 句陳, 己 螣蛇, 庚辛 白虎, 壬癸 玄武)
 
   const DiaryContent = ({ scale = 1 }: { scale?: number }) => {
     const cfg = DIARY_CONFIG;
@@ -246,13 +247,14 @@ export function GwangjechansaengbuGallery() {
           {hwanggeuk.yearGanZhi}年{hwanggeuk.monthGanZhi}月{hwDayGanZhi}日{hwHourGanZhi}時
         </div>
 
+        {/* 세 부(符) 모두 그날 일진(日干)의 육신으로 표시 — 예: 丁亥日 → 朱雀 */}
         {threeBranches.map((branch, idx) => (
           <div key={idx} style={{ ...colStyle, textAlign: 'center' }}>
-            <span style={{ fontSize: fs(cfg.talismanLabelFontSize) }}>{sixSpirits[idx]}</span>
+            <span style={{ fontSize: fs(cfg.talismanLabelFontSize) }}>{daySpirit}</span>
             <br/>
             <img 
               src={BRANCH_TALISMANS[branch]}
-              alt={`${sixSpirits[idx]}${branch}부`}
+              alt={`${daySpirit}${branch}부`}
               style={{ height: sp(cfg.talismanImageHeight), objectFit: 'contain', marginTop: sp(cfg.talismanImageMarginTop) }}
             />
           </div>

@@ -1,17 +1,24 @@
 {
+  "id": "/",
   "name": "오래 - 황극력 달력",
   "short_name": "오래",
   "description": "한국 전통 달력 - 황극력과 선천력",
-  "start_url": "/",
+  "lang": "ko",
+  "start_url": "/?source=app",
+  "scope": "/",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#ffffff",
   "theme_color": "#0d7377",
   "icons": [
-    {
-      "src": "/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
+    { "src": "/pwa-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/pwa-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/pwa-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "달력", "url": "/calendar", "icons": [{ "src": "/pwa-192.png", "sizes": "192x192" }] },
+    { "name": "28수", "url": "/28su", "icons": [{ "src": "/pwa-192.png", "sizes": "192x192" }] },
+    { "name": "현무경", "url": "/ebook", "icons": [{ "src": "/pwa-192.png", "sizes": "192x192" }] },
+    { "name": "마당", "url": "/madang", "icons": [{ "src": "/pwa-192.png", "sizes": "192x192" }] }
   ]
 }
